@@ -1,8 +1,8 @@
 // How a chain value says when it was read. One format everywhere, so "read
-// 2026-11-16 14:02 UTC" means the same thing on an address card, a PAU
+// YYYY-MM-DD HH:MM UTC" means the same thing on an address card, a PAU
 // deployment and a CSV note.
 
-/** An ISO timestamp as "2026-11-16 14:02 UTC"; null for a missing or unparseable one. */
+/** An ISO timestamp as "YYYY-MM-DD HH:MM UTC"; null for a missing or unparseable one. */
 export function formatReadTime(iso: string | null | undefined): string | null {
   if (!iso || Number.isNaN(Date.parse(iso))) return null;
   return `${iso.slice(0, 16).replace("T", " ")} UTC`;
