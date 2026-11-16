@@ -33,6 +33,10 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
+## 2026-11-16
+
+- Reworded labels that overstated what comes from the Atlas: the Reports intro, the Rewards description, address "named near", "Likely counterparts", the chat verification chip, and the footer's preview and "app built" labels
+
 ## 2026-11-13
 
 - Fixed Chat missing a Prime Agent's own documents and recent changes when asked from its Radar pages.

@@ -128,6 +128,7 @@ export function Footer() {
         atlasRepo={atlasRepo}
         nodeCount={nodeCount}
         buildDate={buildDate}
+        preview={Boolean(preview)}
       />
       {/* Overlays the status slot when there's a contextual hint to give — see
           FooterHint. */}

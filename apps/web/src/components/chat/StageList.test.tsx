@@ -143,11 +143,11 @@ describe("StageList", () => {
           { stage: "checking", details: ["Auditing…"], at: 1, round: 1 },
         ]}
         collapsed
-        summary="atlas lookups and reasoning"
+        summary="lookups and reasoning"
         renderSlot={noSlot}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: /atlas lookups and reasoning/ }));
+    fireEvent.click(screen.getByRole("button", { name: /lookups and reasoning/ }));
     const rows = container.querySelectorAll("li.rlc-stage");
     expect(rows).toHaveLength(2);
     for (const row of rows) {
@@ -303,12 +303,12 @@ describe("StageList", () => {
       <StageList
         entries={[{ stage: "querying", details: [], at: 0, round: 1 }]}
         collapsed
-        summary="atlas lookups and reasoning"
+        summary="lookups and reasoning"
         renderSlot={noSlot}
       />,
     );
     expect(container.querySelector("ol.rlc-stages")).toBeNull();
-    const head = screen.getByRole("button", { name: /atlas lookups and reasoning/ });
+    const head = screen.getByRole("button", { name: /lookups and reasoning/ });
     expect(head).toHaveAttribute("aria-expanded", "false");
     expect(head).toHaveAttribute("aria-controls");
     expect(document.getElementById(head.getAttribute("aria-controls")!)).toBeNull();
@@ -319,13 +319,13 @@ describe("StageList", () => {
       <StageList
         entries={[{ stage: "querying", details: ["Searching…"], at: 0, round: 1 }]}
         collapsed
-        summary="atlas lookups and reasoning"
+        summary="lookups and reasoning"
         renderSlot={noSlot}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: /atlas lookups and reasoning/ }));
+    fireEvent.click(screen.getByRole("button", { name: /lookups and reasoning/ }));
     expect(screen.getByText("Looked for evidence")).toBeInTheDocument();
-    const head = screen.getByRole("button", { name: /atlas lookups and reasoning/ });
+    const head = screen.getByRole("button", { name: /lookups and reasoning/ });
     expect(head).toHaveAttribute("aria-expanded", "true");
     expect(document.getElementById(head.getAttribute("aria-controls")!)).toHaveClass("rlc-stages");
   });
@@ -342,7 +342,7 @@ describe("traceHeadline", () => {
       { name: "atlas_query", args: {}, ok: true, bytes: 5, round: 1 },
       { name: "atlas_get", args: {}, ok: false, bytes: null, round: 1 },
     ];
-    expect(traceHeadline(trace)).toBe("atlas lookups and reasoning");
+    expect(traceHeadline(trace)).toBe("lookups and reasoning");
   });
 
   it("names both when a turn has both", () => {
@@ -350,7 +350,7 @@ describe("traceHeadline", () => {
       { name: "glossary", args: {}, ok: true, bytes: null, kind: "fact", summary: "2 glossary definitions", round: 0 },
       { name: "atlas_get", args: {}, ok: true, bytes: 5, round: 1 },
     ];
-    expect(traceHeadline(trace)).toBe("recall, atlas lookups and reasoning");
+    expect(traceHeadline(trace)).toBe("recall, lookups and reasoning");
   });
 
   it("falls back to plain reasoning for an empty trace — the head must never be blank", () => {

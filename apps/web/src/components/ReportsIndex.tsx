@@ -63,8 +63,9 @@ export function ReportsIndex({ query }: { query: string }) {
           Reports
         </h1>
         <p className="text-xs mb-6" style={{ color: "var(--tan-3)" }}>
-          Unlabelled reports are rebuilt from the Atlas every time you open them. A badge marks the
-          ones that are not.
+          Reports are rebuilt every time you open them. Most read only the Atlas; some also use chain
+          reads, the vote record, a model or lists we keep by hand. A badge marks the AI-assessed and
+          curated ones, and each report says what else it draws on.
         </p>
         {sections(wording, "")}
         {byMeaning && (

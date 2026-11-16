@@ -43,9 +43,9 @@ describe("ReportsIndex", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("explains that unbadged reports are rebuilt from the Atlas", () => {
+  it("explains that reports are rebuilt on open and that some use more than the Atlas", () => {
     render(<ReportsIndex query="" />, { wrapper: wrap() });
-    expect(screen.getByText(/Unlabelled reports are rebuilt from the Atlas/)).toBeInTheDocument();
+    expect(screen.getByText(/some also use chain reads, the vote record, a model or lists we keep by hand/)).toBeInTheDocument();
   });
 
   it("badges only the reports that are not rebuilt live", () => {

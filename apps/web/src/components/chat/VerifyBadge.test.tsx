@@ -62,7 +62,7 @@ describe("VerifyBadge", () => {
     };
     render(<VerifyBadge verify={verify} onAtlas={noop} />);
     const btn = screen.getByRole("button");
-    expect(btn).toHaveTextContent("2 statements disputed by the atlas");
+    expect(btn).toHaveTextContent("2 statements disputed by an automated check");
     expect(btn).not.toBeDisabled();
     expect(btn).toHaveAttribute("aria-expanded", "false");
 

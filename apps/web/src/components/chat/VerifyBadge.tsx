@@ -17,7 +17,7 @@ function chipLabel(verify: VerifyState): string {
   if (verify.status === "checking" || verify.status === "pass") return LABEL[verify.status];
   if (verify.status === "fail") {
     const n = verify.contradictions.length;
-    return n > 0 ? `${n} statement${n === 1 ? "" : "s"} disputed by the atlas` : "failed verification";
+    return n > 0 ? `${n} statement${n === 1 ? "" : "s"} disputed by an automated check` : "failed verification";
   }
   // warn — ruling-only now that an unagreed candidate can never drive `warn`.
   return "caution: the answer issues a ruling";

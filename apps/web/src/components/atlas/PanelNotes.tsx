@@ -38,7 +38,7 @@ export function PanelNotes(props: PanelNotesProps) {
         <RelatedDocList {...list} label="linked documents" kind="linked_doc" items={linkedNodes.map((node) => ({ node }))} />
       )}
       {cousinDocs.length > 0 && (
-        <RelatedDocList {...list} label="cousin documents" kind="cousin_doc" blurb="Equivalent documents under the other Prime Agents."
+        <RelatedDocList {...list} label="cousin documents" kind="cousin_doc" blurb="Likely counterparts under the other Prime Agents."
           items={cousinDocs.map(({ node, agent }) => ({ node, eyebrow: <span className="atlas-agent-pill">{agent}</span> }))}
           className="mt-8 pt-5 border-t border-border" listClassName={CARD_STACK} />
       )}

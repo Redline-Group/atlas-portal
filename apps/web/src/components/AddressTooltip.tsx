@@ -30,7 +30,7 @@ function AddressTooltipContent({ address, href, onSettled }: { address: string; 
       </div>
       <dl className="mt-1.5 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 mono text-[10px]">
         {named && <TipRow label="address"><span className="break-all">{address}</span></TipRow>}
-        {owner && <TipRow label="owner">{owner}</TipRow>}
+        {owner && <TipRow label="named near">{owner}</TipRow>}
         <AddressTooltipOnchain address={address} map={map} multisigs={facts?.multisigs ?? []} onSettled={onSettled} />
         {facts && <AddressTooltipDocs docs={facts.docs} />}
         {href && (

@@ -121,7 +121,7 @@ describe("AddressTooltip", () => {
     expect([...tip.querySelectorAll("[data-usd]")].map((e) => e.textContent)).toEqual(["$6.00K", ""]);
   });
 
-  it("names the address's owner in its own row", async () => {
+  it("names the label found near the address in its own row", async () => {
     setAddressMap({ [EVM]: makeAddressInfo({ entityLabel: "Bonapublica" }) });
     loadBalancesCached.mockResolvedValue({ lastCheckedAt: null, nextRefreshAt: null, refreshed: false, addresses: {} });
     render(
@@ -130,7 +130,7 @@ describe("AddressTooltip", () => {
       </AddressTooltip>,
     );
     await hover(EVM);
-    const owner = [...screen.getByRole("tooltip").querySelectorAll("dt")].find((dt) => dt.textContent === "owner");
+    const owner = [...screen.getByRole("tooltip").querySelectorAll("dt")].find((dt) => dt.textContent === "named near");
     expect(owner?.nextElementSibling).toHaveTextContent("Bonapublica");
   });
 

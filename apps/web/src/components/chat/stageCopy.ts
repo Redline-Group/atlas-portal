@@ -26,8 +26,8 @@ export function stripTrailingEllipsis(detail: string): string {
 export function traceHeadline(trace: TraceRow[]): string {
   const facts = trace.some((t) => t.kind === "fact");
   const tools = trace.some((t) => t.kind !== "fact");
-  if (facts && tools) return "recall, atlas lookups and reasoning";
+  if (facts && tools) return "recall, lookups and reasoning";
   if (facts) return "recall and reasoning";
-  if (tools) return "atlas lookups and reasoning";
+  if (tools) return "lookups and reasoning";
   return "reasoning";
 }

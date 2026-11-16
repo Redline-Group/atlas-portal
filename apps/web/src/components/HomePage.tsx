@@ -79,8 +79,8 @@ export function HomePage() {
             Sky protocol
             </a>{" "} — thousands of interconnected sections defining roles, rules, and responsibilities across the ecosystem.
             Redline Portal makes it fast and approachable: full-text search, inline annotations and
-            history, a map of how parties relate to each other, and purpose-built reports extracted
-            straight from the source.
+            history, a map of how parties relate to each other, and purpose-built reports built from
+            the Atlas.
           </p>
         </div>
         <HelpBanner />
