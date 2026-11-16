@@ -4,7 +4,7 @@
 // different questions of different models:
 //   - citation-marks.ts (Jev, per (claim, cited doc) pair) → the Sources chip
 //   - refute.ts (the gemma verifier, per paragraph, over POOLED evidence)
-//     → the "N statements disputed by an automated check" list
+//     → the "N statements disputed by an AI check" list
 // Neither is redundant (cite-support.ts's header explains why refute cannot
 // see a wrong-doc citation), and both pass their own confirm gate before they
 // reach a reader — so when they collide, neither is simply "the wrong one".

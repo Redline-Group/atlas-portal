@@ -9,6 +9,8 @@ import { citationCounts } from "./citations.ts";
 export interface ConversationListOut {
   id: string;
   title: string | null;
+  // Where the title came from: 'seed' is the user's own first message, 'auto' a model, 'user' a rename.
+  titleSource: string;
   updatedAt: string;
   messageCount: number;
   // How full this conversation's REPLAY is — the rows a turn would send plus
@@ -28,6 +30,7 @@ export interface ConversationListOut {
 interface ListRow {
   id: string;
   title: string | null;
+  title_source: string;
   updated_at: string | Date;
   message_count: number;
   replay_chars: number;
@@ -42,9 +45,9 @@ interface ListRow {
 // c.summary_upto_id rather than on m.
 async function listRows(userId: string): Promise<ListRow[]> {
   return (await sql`
-    SELECT t.id, t.title, t.updated_at, t.message_count, t.replay_chars
+    SELECT t.id, t.title, t.title_source, t.updated_at, t.message_count, t.replay_chars
     FROM (
-      SELECT c.id, c.title, c.updated_at, count(m.id)::int AS message_count,
+      SELECT c.id, c.title, c.title_source, c.updated_at, count(m.id)::int AS message_count,
         COALESCE(sum(length(m.content)) FILTER (WHERE cut.at IS NULL OR m.created_at > cut.at), 0)::int
           + COALESCE(length(c.summary), 0)::int AS replay_chars
       FROM conversations c
@@ -52,7 +55,7 @@ async function listRows(userId: string): Promise<ListRow[]> {
       LEFT JOIN LATERAL (SELECT cm.created_at AS at FROM messages cm WHERE cm.id = c.summary_upto_id) cut ON true
       WHERE c.user_id = ${userId}
         AND EXISTS (SELECT 1 FROM messages a WHERE a.conversation_id = c.id AND a.role = 'assistant')
-      GROUP BY c.id, c.title, c.updated_at, c.summary
+      GROUP BY c.id, c.title, c.title_source, c.updated_at, c.summary
       ORDER BY c.updated_at DESC
       LIMIT 100
     ) t
@@ -62,7 +65,7 @@ async function listRows(userId: string): Promise<ListRow[]> {
 
 function toListOut(r: ListRow, citations: ReadonlyMap<string, number>): ConversationListOut {
   return {
-    id: r.id, title: r.title, updatedAt: new Date(r.updated_at).toISOString(), messageCount: r.message_count,
+    id: r.id, title: r.title, titleSource: r.title_source, updatedAt: new Date(r.updated_at).toISOString(), messageCount: r.message_count,
     // Replayed text / 4, plus the standing prefix — the same shape as
     // contextUsedTokens, which the detail route and the live meter compute
     // exactly. Approximated here because the exact figure needs every row's

@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import type { VerifyState } from "./useChatStream";
+import { SourceMark as ProvenanceMark } from "../SourceMark";
 import { VerifyFindings, hasFindings } from "./VerifyFindings";
 
 // Verification chip for an assistant answer (chat reliability harness,
@@ -10,19 +11,24 @@ import { VerifyFindings, hasFindings } from "./VerifyFindings";
 // absence of a badge is the quiet default.
 const LABEL: Record<string, string> = {
   checking: "verifying…",
-  pass: "no contradictions found",
+  pass: "no contradictions found by an AI check",
 };
 
 function chipLabel(verify: VerifyState): string {
   if (verify.status === "checking" || verify.status === "pass") return LABEL[verify.status];
   if (verify.status === "fail") {
     const n = verify.contradictions.length;
-    return n > 0 ? `${n} statement${n === 1 ? "" : "s"} disputed by an automated check` : "failed verification";
+    return n > 0 ? `${n} statement${n === 1 ? "" : "s"} disputed by an AI check` : "failed verification";
   }
   // warn — ruling-only now that an unagreed candidate can never drive `warn`.
   return "caution: the answer issues a ruling";
 }
 
+// The pass and fail labels name an AI check: every contradiction a reader sees
+// has passed the model confirm gate, and a pass means the model auditors found none.
+function byAiCheck(verify: VerifyState): boolean {
+  return verify.status === "pass" || (verify.status === "fail" && verify.contradictions.length > 0);
+}
 
 export function VerifyBadge({ verify, onAtlas }: { verify: VerifyState; onAtlas: (uuid: string) => void }) {
   const [open, setOpen] = useState(false);
@@ -47,6 +53,7 @@ export function VerifyBadge({ verify, onAtlas }: { verify: VerifyState; onAtlas:
         aria-controls={expandable ? findingsId : undefined}
       >
         <span className="rlc-verify-dot" aria-hidden="true" />
+        {byAiCheck(verify) && <ProvenanceMark source="ai" bare unlinked className="mr-1" />}
         {label}
       </button>
       {open && <VerifyFindings id={findingsId} verify={verify} onAtlas={onAtlas} />}

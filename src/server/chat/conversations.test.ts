@@ -56,7 +56,7 @@ function execTag(strings: TemplateStringsArray, ...values: unknown[]) {
       .map((c) => {
         const convMsgs = msgs.filter((m) => m.conversation_id === c.id);
         return {
-          id: c.id, title: c.title, updated_at: c.updated_at,
+          id: c.id, title: c.title, title_source: c.title_source, updated_at: c.updated_at,
           message_count: convMsgs.length,
           replay_chars: replayChars(c),
         };

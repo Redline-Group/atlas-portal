@@ -105,6 +105,14 @@ describe("RiskTable", () => {
     expect(screen.getByText("strong")).toBeInTheDocument();
   });
 
+  it("marks the model-written description line and the Risk Type column as AI", () => {
+    const { container } = render(<RiskTable rows={[ROW_ASSESSED, ROW_UNASSESSED]} docs={docs} expandedKey={null} onToggle={() => {}} />);
+    const header = screen.getByRole("columnheader", { name: /Risk Type/ });
+    expect(header.querySelector("[data-source='ai']")).toHaveAttribute("href", "/provenance#source-ai");
+    // One glyph beside the assessed row's description; the unassessed row has none.
+    expect(container.querySelectorAll("tbody [data-source='ai']")).toHaveLength(1);
+  });
+
   it("shows a stale badge for stale rows and an unassessed badge for unassessed rows", () => {
     render(<RiskTable rows={[ROW_ASSESSED, ROW_UNASSESSED]} docs={docs} expandedKey={null} onToggle={() => {}} />);
     expect(screen.getByText("stale")).toHaveClass("badge-red");

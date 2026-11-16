@@ -80,7 +80,7 @@ describe("useConversations", () => {
     await waitFor(() => expect(result.current.conversations).toHaveLength(1));
   });
 
-  it("rename() merges the PATCH response (no messageCount) into the existing row", async () => {
+  it("rename() merges the PATCH response (no messageCount) into the existing row, marking the title as the user's", async () => {
     currentUser = { id: "u1" };
     listConversations.mockResolvedValue([{ id: "c1", title: "Old", updatedAt: "t1", messageCount: 3 }]);
     renameConversation.mockResolvedValue({ id: "c1", title: "New", updatedAt: "t2" });
@@ -92,7 +92,7 @@ describe("useConversations", () => {
       returned = await result.current.rename("c1", "New");
     });
     expect(renameConversation).toHaveBeenCalledWith("c1", "New");
-    expect(result.current.conversations[0]).toEqual({ id: "c1", title: "New", updatedAt: "t2", messageCount: 3 });
+    expect(result.current.conversations[0]).toEqual({ id: "c1", title: "New", titleSource: "user", updatedAt: "t2", messageCount: 3 });
     // rename() returns void — no synchronous-updater value to hand back.
     expect(returned).toBeUndefined();
   });

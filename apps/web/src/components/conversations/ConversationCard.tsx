@@ -3,6 +3,7 @@ import { type ConversationSummary, MAX_CONVERSATION_TITLE_LEN } from "../../lib/
 import { formatTokens } from "../../lib/formatTokens";
 import { ConversationActions } from "./ConversationActions";
 import { InlineRenameInput } from "../InlineRenameInput";
+import { SourceMark } from "../SourceMark";
 import { formatCardDate } from "../../lib/timeAgo";
 
 const UNTITLED = "Untitled chat";
@@ -103,6 +104,9 @@ export function ConversationCard({
         ) : (
           <p className="text-sm font-medium truncate" style={{ color: "var(--tan)" }}>
             {conversation.title ?? UNTITLED}
+            {conversation.title && conversation.titleSource === "auto" && (
+              <SourceMark source="ai" bare unlinked detail="This title was written by a model." className="ml-1.5" />
+            )}
           </p>
         )}
         <p className="mono text-[11px] text-tan-3 whitespace-nowrap">

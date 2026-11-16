@@ -42,6 +42,11 @@ function shown(mark: CitationMark | undefined): mark is CitationMark {
   return !!mark && SHOWN.has(mark.status);
 }
 
+/** Whether any cited doc carries a mark a reader is allowed to see. */
+export function anyMarkShown(marks: Record<string, CitationMark> | undefined): boolean {
+  return !!marks && Object.values(marks).some(shown);
+}
+
 // The citing lines each status quotes. A supporting line is never quoted —
 // the ✓✓ already says it, and there is nothing for the reader to adjudicate.
 const QUOTED: Record<string, Claim["verdict"]> = {

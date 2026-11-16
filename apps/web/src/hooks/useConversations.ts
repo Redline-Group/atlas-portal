@@ -74,7 +74,7 @@ export function useConversations(): {
       const updated = await renameConversation(id, title);
       if (aliveRef.current) {
         setConversations((prev) =>
-          prev.map((c) => (c.id === id ? { ...c, title: updated.title, updatedAt: updated.updatedAt } : c)),
+          prev.map((c) => (c.id === id ? { ...c, title: updated.title, titleSource: "user", updatedAt: updated.updatedAt } : c)),
         );
       }
     },

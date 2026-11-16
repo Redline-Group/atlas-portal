@@ -128,7 +128,7 @@ describe("Message", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("no contradictions found")).toBeInTheDocument();
+    expect(screen.getByText(/no contradictions found by an AI check/)).toBeInTheDocument();
   });
 
   it("puts the answer-confidence facts right after the verify badge, as one unit", () => {

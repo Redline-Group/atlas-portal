@@ -5,6 +5,7 @@ import { riskSearchFields, type RiskRow, type RiskRowStatus } from "@/lib/riskAs
 import { hiddenMatches, type ReportQuery } from "@/lib/reportFilter";
 import { atlasHref } from "@/lib/routes";
 import { AtlasLink } from "../AtlasLink";
+import { SourceMark } from "../SourceMark";
 import { Highlight, MatchAside } from "./Highlight";
 
 export function RiskDocCell({ row, rq }: { row: RiskRow; rq: ReportQuery }) {
@@ -47,7 +48,7 @@ export function RiskRuleCell({ ruleTitle, stub, status, description, expanded, o
       {status !== "fresh" && (
         <span className={`badge ml-1.5 ${status === "stale" ? "badge-red" : "badge-muted"}`}>{status}</span>
       )}
-      {!expanded && description && <p className="text-xs text-tan-2 mt-0.5 line-clamp-2"><Highlight text={description} rq={rq} /></p>}
+      {!expanded && description && <p className="text-xs text-tan-2 mt-0.5 line-clamp-2"><SourceMark source="ai" bare unlinked className="mr-1" /><Highlight text={description} rq={rq} /></p>}
     </td>
   );
 }

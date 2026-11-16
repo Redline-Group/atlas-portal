@@ -5,7 +5,8 @@ import { Tooltip } from "../Tooltip";
 import type { Source } from "./markdown";
 import type { CitationMark } from "./api";
 import { showClaimInAnswer } from "./claimHighlight";
-import { SourceMark, sourceTooltipContent } from "./SourceMark";
+import { SourceMark as ProvenanceMark } from "../SourceMark";
+import { SourceMark, anyMarkShown, sourceTooltipContent } from "./SourceMark";
 import { useResolvedDocs, type ResolvedDoc } from "./useResolvedDocs";
 
 export interface SourceChipProps {
@@ -53,10 +54,18 @@ export interface CollectionLink {
 
 // "citations · N", plus "— view all docs from this conversation" once the conversation has a
 // collection to open.
-function SourcesLabel({ count, collection }: { count: number; collection?: CollectionLink }) {
+const CHECK_MEANING = "The marks beside a citation (✓✓ ! ⚠) are an AI check of whether that document states the lines that cite it.";
+
+function SourcesLabel({ count, collection, checked }: { count: number; collection?: CollectionLink; checked: boolean }) {
   return (
     <p className="rlc-sources-label">
       <span>citations · {count}</span>
+      {checked && (
+        <>
+          {" "}
+          <ProvenanceMark source="ai" unlinked detail={CHECK_MEANING} />
+        </>
+      )}
       {collection && (
         <>
           <span aria-hidden="true"> — </span>
@@ -97,7 +106,7 @@ export function Sources({ sources, marks, collection, onAtlas }: SourcesProps) {
   if (!sources.length) return null;
   return (
     <div className="rlc-sources">
-      <SourcesLabel count={sources.length} collection={collection} />
+      <SourcesLabel count={sources.length} collection={collection} checked={anyMarkShown(marks)} />
       <div className="rlc-sources-chips">
         {sources.map((s) => (
           <SourceChip

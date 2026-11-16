@@ -24,6 +24,23 @@ function conversation(over: Partial<ConversationSummary> = {}): ConversationSumm
 }
 
 describe("ConversationCard", () => {
+  const mark = (c: ConversationSummary) => {
+    const { container } = render(
+      <ConversationCard conversation={c} onOpen={() => {}} onViewCollection={() => {}} onRename={() => {}} onDelete={() => {}} />,
+    );
+    return container.querySelector("[data-source='ai']");
+  };
+
+  it("marks a model-written title, and only that", () => {
+    expect(mark(conversation({ titleSource: "auto" }))).not.toBeNull();
+    cleanup();
+    expect(mark(conversation({ titleSource: "user" }))).toBeNull();
+    cleanup();
+    expect(mark(conversation({ titleSource: "seed" }))).toBeNull();
+    cleanup();
+    expect(mark(conversation({ title: null, titleSource: "auto" }))).toBeNull();
+  });
+
   it("renders the title and message count", () => {
     render(
       <ConversationCard conversation={conversation()} onOpen={() => {}} onViewCollection={() => {}} onRename={() => {}} onDelete={() => {}} />,

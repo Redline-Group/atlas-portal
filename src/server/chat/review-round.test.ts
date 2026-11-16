@@ -89,13 +89,13 @@ describe("reviewRound", () => {
   describe("the newest answer", () => {
     it("gets the full block: badge, findings, disputes, coverage and marks", () => {
       const content = body(reviewRound(thread(note({
-        badge: "1 statement disputed by an automated check",
+        badge: "1 statement disputed by an AI check",
         findings: ["quote not found in any retrieved source: “a quote”"],
         disputes: [c()],
         coverage: "declined to answer",
         marks: ["doc 76405733 marked disputed"],
       }))));
-      expect(content).toContain("Badge: 1 statement disputed by an automated check");
+      expect(content).toContain("Badge: 1 statement disputed by an AI check");
       expect(content).toContain(" - quote not found in any retrieved source: “a quote”");
       expect(content).toContain("1. Your sentence:");
       expect(content).toContain("Source document: 76405733-0000-0000-0000-000000000000");

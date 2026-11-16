@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SourceMark } from "../SourceMark";
 import { getCollectionSummary, type CollectionSummary } from "../../lib/collectionsApi";
 
 // What the collection's docs are about, in a few words and a sentence. Written
@@ -26,6 +27,7 @@ export function CollectionBlurb({ id, updatedAt }: { id: string; updatedAt: stri
   if (!summary?.label || !summary.summary) return null;
   return (
     <p className="text-xs text-tan-3 mb-2">
+      <SourceMark source="ai" unlinked detail="The label and summary were written by a model from the documents." className="mr-1.5" />
       <span className="mono" style={{ color: "var(--tan)" }}>
         {summary.label}
       </span>

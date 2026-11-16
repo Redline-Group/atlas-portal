@@ -22,6 +22,13 @@ describe("CollectionBlurb", () => {
     expect(mocks.getCollectionSummary).toHaveBeenCalledWith("c1");
   });
 
+  it("marks the label and summary as written by a model", async () => {
+    mocks.getCollectionSummary.mockResolvedValue({ label: "Rate limits", summary: "Limits per agent." });
+    const { container } = render(<CollectionBlurb id="c1" updatedAt="t1" />);
+    await screen.findByText("Rate limits");
+    expect(container.querySelector("[data-source='ai']")).toHaveTextContent("AI");
+  });
+
   it("shows nothing when none could be written", async () => {
     mocks.getCollectionSummary.mockResolvedValue({ label: null, summary: null });
     const { container } = render(<CollectionBlurb id="c1" updatedAt="t1" />);
