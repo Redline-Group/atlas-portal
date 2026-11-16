@@ -44,7 +44,7 @@ describe(".railway/railway.ts", () => {
       [`service.${WEB_SERVICE}`, `service.${workerServiceName("production")}`].sort(),
     );
     // An omitted source plans as a disconnect; a branch would override every environment's own.
-    for (const r of definition.resources) expect(r.source).toEqual({ type: "github", repo: "Anscharo/redlens" });
+    for (const r of definition.resources) expect(r.source).toEqual({ type: "github", repo: "Redline-Group/atlas-portal" });
   });
 
   it("names the worker per environment and otherwise renders the same services everywhere", async () => {

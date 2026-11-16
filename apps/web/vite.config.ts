@@ -30,7 +30,7 @@ const repoUrl = (() => {
       .replace(/^git@github\.com:/, "https://github.com/")
       .replace(/\.git$/, "");
   } catch {
-    return "https://github.com/Anscharo/redlens";
+    return "https://github.com/Redline-Group/atlas-portal";
   }
 })();
 
