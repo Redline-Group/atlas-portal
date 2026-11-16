@@ -51,8 +51,8 @@ Address cards show the resolved label, aliases, explorer link, role tags, proxy 
 Requires [pnpm](https://pnpm.io/), Node 22+, and [Docker](https://docker.com) (for the local Postgres in `pnpm dev`; skippable with `DEV_NO_DB=1`).
 
 ```bash
-git clone --recurse-submodules https://github.com/Anscharo/redlens.git
-cd redlens
+git clone --recurse-submodules https://github.com/Redline-Group/atlas-portal.git
+cd atlas-portal
 pnpm install
 ```
 
