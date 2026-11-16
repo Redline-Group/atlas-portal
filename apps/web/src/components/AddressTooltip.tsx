@@ -7,6 +7,7 @@ import { useSharedAddressMap } from "../hooks/useSharedAddressMap";
 import { resolveAddressLabel } from "../lib/addressTooltip";
 import { useAddressGraphFacts } from "../hooks/useAddressGraphFacts";
 import { shortLink } from "../lib/format";
+import { SourceMark } from "./SourceMark";
 
 // Tooltip only re-measures its placement when its `content` element reference
 // changes (Tooltip.tsx's placement effect), and AddressTooltip creates that
@@ -30,7 +31,12 @@ function AddressTooltipContent({ address, href, onSettled }: { address: string; 
       </div>
       <dl className="mt-1.5 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 mono text-[10px]">
         {named && <TipRow label="address"><span className="break-all">{address}</span></TipRow>}
-        {owner && <TipRow label="named near">{owner}</TipRow>}
+        {owner && (
+          <TipRow label="named near">
+            {owner}
+            <SourceMark source="derived" bare unlinked hint="Our reading of the text around the address, not a stated owner." className="ml-1" />
+          </TipRow>
+        )}
         <AddressTooltipOnchain address={address} map={map} multisigs={facts?.multisigs ?? []} onSettled={onSettled} />
         {facts && <AddressTooltipDocs docs={facts.docs} />}
         {href && (

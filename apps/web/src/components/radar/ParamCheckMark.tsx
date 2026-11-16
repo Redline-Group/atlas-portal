@@ -5,6 +5,7 @@ import { Tooltip } from "../Tooltip";
 import { ClockGlyph } from "../ClockGlyph";
 import type { ParamMark } from "../../lib/paramChecks";
 import type { RowMark, TipLine } from "../../lib/rowMark";
+import { SourceMark } from "../SourceMark";
 
 /** An exclamation mark in a circle, at the text's size and colour. */
 const CIRCLED_BANG = (
@@ -63,6 +64,7 @@ function MarkTip({ mark }: { mark: RowMark }) {
   return (
     <div className="mono text-[10px] space-y-1" style={{ minWidth: 200, maxWidth: 360 }}>
       <p className="font-semibold" style={{ color: look.color }}>{look.glyph} {mark.head}</p>
+      <SourceMark source="onchain" unlinked hint="This mark compares the Atlas's value with what the contract holds." />
       {mark.lines.map((line, i) => <Line key={i} line={line} />)}
     </div>
   );

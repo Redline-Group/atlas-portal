@@ -23,6 +23,11 @@ describe("ActorList", () => {
     expect(screen.getByText("Agent One")).toBeInTheDocument();
   });
 
+  it("says once, under Overview, that the groups are our classification", () => {
+    const { container } = render(<ActorList groups={[]} selectedSlug={null} />);
+    expect([...container.querySelectorAll("[data-source]")].map((e) => e.getAttribute("data-source"))).toEqual(["derived"]);
+  });
+
   it("marks the selected actor's link with data-active=true", () => {
     const groups: SidebarGroup[] = [
       {

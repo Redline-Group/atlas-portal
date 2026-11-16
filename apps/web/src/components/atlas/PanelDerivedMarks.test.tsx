@@ -38,4 +38,10 @@ describe("right panel notes: derived lists", () => {
     const linked = [...container.querySelectorAll("p")].find((p) => p.textContent?.startsWith("linked documents"));
     expect(linked?.querySelector("[data-source]")).toBeNull();
   });
+
+  it("marks the cited-by list as derived", () => {
+    const { container } = render(<PanelNotes {...base} linkedNodes={[]} citedBy={[{ f: "x", s: ["A.9.9"] } as never]} />);
+    const head = [...container.querySelectorAll("p")].find((p) => p.textContent?.startsWith("cited by"))!;
+    expect(head.querySelector("[data-source='derived']")).not.toBeNull();
+  });
 });

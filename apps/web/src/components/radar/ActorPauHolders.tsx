@@ -11,6 +11,7 @@ import { PauOriginChip } from "./PauOriginChip";
 import { PauSectionHeading } from "./PauSectionHeading";
 import { MARK_TIP_MS } from "./PauAtlasMark";
 import { Tooltip } from "../Tooltip";
+import { SourceMark } from "../SourceMark";
 
 const STATUS: Record<HolderStatus, { mark: string; color: string; role: string; member: string }> = {
   holds: { mark: "✓", color: "var(--tan-2)", role: "holds the role", member: "the AdministeredAgent lists it" },
@@ -24,6 +25,7 @@ const ROLE_DEFINITIONS_DOC = "2ae4b91a-6900-41e8-9718-32805b956550";
 /** What a role is, with the main ones and the atlas's role definitions. */
 const RolesNote = () => (
   <Callout className="mb-2">
+    <SourceMark source="derived" unlinked detail="our summary" className="mr-1.5" />
     A role is a permission built into a contract: only an address holding it can call the functions it guards. The admin, Sky governance, grants and
     removes every other role. The relayer, an off-chain bot, moves funds through the controller within its rate limits, and the freezer can cut a
     relayer off in an emergency. More in the atlas&apos;s{" "}

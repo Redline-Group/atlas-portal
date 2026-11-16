@@ -4,6 +4,7 @@ import { useLoaded } from "../../hooks/useAtlasData";
 import { loadSettlements, reportsForPrime, formatMonth, formatUsd, teaserFigure } from "../../lib/settlements";
 import { settlementsHref } from "@/lib/routes";
 import { HEADER_OFFSET } from "../../lib/layout";
+import { SourceMark } from "../SourceMark";
 
 interface Props {
   slug: string;
@@ -29,6 +30,7 @@ export function ActorSettlementTeaser({ slug }: Props) {
       <h2 className="mono text-[10px] uppercase tracking-wider" style={{ color: "var(--tan-3)" }}>
         Monthly settlement
       </h2>
+      <SourceMark source="external" detail="Soter Labs" className="mt-1 inline-block" />
       <p className="mono text-[10px] mt-2" style={{ color: "var(--tan-3)" }}>
         {formatMonth(latest.month)}
       </p>

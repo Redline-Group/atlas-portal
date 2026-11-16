@@ -6,7 +6,7 @@ import { Section } from "./RadarSection";
 
 export function CompositePartySection({ members }: { members: ActorProfile["comprisesMembers"] }) {
   return (
-    <Section title="Composite Party">
+    <Section title="Composite Party" source="curated" sourceDetail="Written by Redline to explain the term; the Atlas definition is linked.">
       <p className="text-sm mb-3" style={{ color: "var(--tan-2)" }}>
         A composite party is the named legal counterparty in a Sky{" "}
         <AtlasLink to={atlasHref("104c3543-ce94-4a2f-9968-57f1ee858085")} className="text-accent hover:underline">

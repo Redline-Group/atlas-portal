@@ -4,6 +4,7 @@ import type { EdgeResult } from "../../lib/graph";
 import { RelatedDocList } from "./RelatedDocList";
 import { RelationsList } from "./RelationsList";
 import { SECTION_HEAD, type Nav, type PanelRelation } from "./panelSections";
+import { SourceMark } from "../SourceMark";
 
 interface PanelNotesProps {
   id: string;
@@ -53,7 +54,10 @@ export function PanelNotes(props: PanelNotesProps) {
 function CitedByList({ citedBy, onNav }: { citedBy: EdgeResult["inbound"]; onNav: Nav }) {
   return (
     <div className="mt-8">
-      <p className={`${SECTION_HEAD} mb-3`}>cited by · {citedBy.length}</p>
+      <p className={`${SECTION_HEAD} mb-3 flex items-center gap-2`}>
+        cited by · {citedBy.length}
+        <SourceMark source="derived" hint="Found by our scan of each document's links; the Atlas does not list what cites it." />
+      </p>
       <div className="space-y-1">
         {citedBy.map((e, i) => (
           <button

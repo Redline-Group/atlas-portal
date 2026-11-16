@@ -1,6 +1,7 @@
 import type { AgentPrimitiveStat } from "../../lib/primitiveStats";
 import { useUrlState, urlString } from "../../hooks/useUrlState";
 import { AgentPanel } from "./AgentPanel";
+import { SourceMark } from "../SourceMark";
 
 const execCodec = urlString(null);
 
@@ -22,8 +23,9 @@ export function PrimitiveDashboard({ agents }: Props) {
   return (
     <div className="flex-1 px-6 py-6 min-w-0">
       <div className="flex items-baseline justify-between mb-5">
-        <h2 className="text-xl" style={{ color: "var(--tan)" }}>
+        <h2 className="text-xl flex flex-wrap items-center gap-3" style={{ color: "var(--tan)" }}>
           Prime Agent Primitive Stats
+          <SourceMark source="derived" hint="The counts are ours: how many primitives each Prime Agent has activated, from the instances we extracted." />
         </h2>
         <div className="flex items-center gap-2">
           <button

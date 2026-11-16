@@ -46,4 +46,11 @@ describe("RateLimitKeyCard headings", () => {
       "Grove · Ethereum · 0x2222…2222",
     ]);
   });
+
+  it("marks the card on-chain with its read time up top, not at the foot", () => {
+    const { container } = render(<RateLimitKeyCard holders={[holder("diamond", RL1)]} />);
+    const mark = container.querySelector("[data-source='onchain']")!;
+    expect(mark).toHaveTextContent("read 2026-10-29");
+    expect(container.firstElementChild?.firstElementChild?.contains(mark)).toBe(true);
+  });
 });

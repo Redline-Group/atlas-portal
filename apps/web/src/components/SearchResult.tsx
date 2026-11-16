@@ -54,7 +54,7 @@ function GutterLabel({ label }: { label: HitLabel }) {
       style={{
         color: LABEL_NAME[label.kind],
         background: `color-mix(in srgb, ${accent} 15%, transparent)`,
-        border: `1px solid color-mix(in srgb, ${accent} 55%, transparent)`,
+        border: `1px dotted color-mix(in srgb, ${accent} 55%, transparent)`,
       }}
       title={labelTitle(label)}
     >

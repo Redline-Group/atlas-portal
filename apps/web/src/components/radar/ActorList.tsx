@@ -4,6 +4,7 @@ import { ROUTES, actorHref } from "@/lib/routes";
 import type { ActorPageKey } from "@/lib/radarPages";
 import type { SidebarGroup } from "../../lib/actorIndex";
 import { ActorSubNav } from "./ActorSubNav";
+import { SourceMark } from "../SourceMark";
 
 export interface ActorListProps {
   groups: SidebarGroup[];
@@ -59,6 +60,9 @@ export function ActorList({ groups, selectedSlug, page, subpages }: ActorListPro
         >
           <span className="flex-1 truncate">Overview</span>
         </Link>
+        <p className="px-3 mt-1">
+          <SourceMark source="derived" hint="The groups and badges are our classification of the parties the Atlas names." />
+        </p>
       </div>
       {groups.map((g) => (
         <div key={g.label} className="mb-4">
