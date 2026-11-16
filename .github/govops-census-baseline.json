@@ -327,7 +327,12 @@
     },
     {
       "uuid": "f9522bc0-64b0-47e3-ae97-91380b31b9de",
-      "doc_no": "A.6.1.1.1.2.6.1.3.1.5.3.4.1.2",
+      "doc_no": "A.6.1.1.1.2.6.1.3.1.3.3.4.1.2",
+      "title": "Sentinel Role Addresses"
+    },
+    {
+      "uuid": "13a93238-d281-46d4-a7ff-8806c0edbd32",
+      "doc_no": "A.6.1.1.1.2.6.1.3.5.2.1.4.1.2",
       "title": "Sentinel Role Addresses"
     },
     {
