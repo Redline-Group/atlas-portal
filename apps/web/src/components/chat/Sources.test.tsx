@@ -37,7 +37,7 @@ describe("Sources", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
     expect(screen.getByText("Some Doc")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("A.1.1")).toBeInTheDocument());
   });
@@ -109,7 +109,7 @@ describe("Sources", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "view all docs from this conversation" }));
     expect(onView).toHaveBeenCalledTimes(1);
   });

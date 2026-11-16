@@ -36,6 +36,7 @@
 ## 2026-11-16
 
 - Added source chips (on-chain, external, derived, AI, curated) to every report card and report page, a "Reading the marks" legend on the Provenance page, and a source note at the top of each report's CSV export
+- Marked non-Atlas links in Chat answers by where they point (⬡ chain explorer, ⧉ vote portal, forum or GitHub, Δ PR preview) and added an "other sources" row under answers listing the on-chain, external and derived sources they drew on
 - Added read times to on-chain values: an "as of" line for balances and Safe setups on address cards, a read time and block on contract view-function values, a read-time chip on each Liquidity Layer deployment, and footnotes marking rate limits whose live read failed or whose decimals were inferred
 - Marked app-derived data with the ∴ derived chip: Radar's Related Parties, Relationships, Notable and Responsibilities (with the documents each relationship was read from), the Duty and holder columns of the role reports, the Active Data columns, and the reader's relations and cousin documents
 - Marked AI-written content with the ✳ AI mark: collection names and summaries, conversation titles, Risk Rules descriptions and types, citation checks, and the verification chip, which now says it is an AI check

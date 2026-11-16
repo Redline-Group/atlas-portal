@@ -12,7 +12,7 @@ import { normalizeSources, type SourceClass } from "./provenance/sources";
 
 export const REPORT_SOURCES: Record<ReportId, readonly SourceClass[]> = Object.fromEntries(
   REPORTS.map((r) => [r.id, normalizeSources(r.sources)]),
-) as Record<ReportId, readonly SourceClass[]>;
+) as unknown as Record<ReportId, readonly SourceClass[]>;
 
 export interface ReportGroup {
   title: string;

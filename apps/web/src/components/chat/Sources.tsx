@@ -59,7 +59,7 @@ const CHECK_MEANING = "The marks beside a citation (✓✓ ! ⚠) are an AI chec
 function SourcesLabel({ count, collection, checked }: { count: number; collection?: CollectionLink; checked: boolean }) {
   return (
     <p className="rlc-sources-label">
-      <span>citations · {count}</span>
+      <span>atlas citations · {count}</span>
       {checked && (
         <>
           {" "}

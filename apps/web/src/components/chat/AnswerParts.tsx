@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import { AtlasMarkdown, balanceFences, extractSources } from "./markdown";
 import { Sources, type CollectionLink } from "./Sources";
+import { OtherSources } from "./OtherSources";
 import { ExportChips } from "./ExportChips";
 import { VerifyBadge } from "./VerifyBadge";
 import { AnswerFacts } from "./AnswerFacts";
@@ -62,6 +63,7 @@ export function AnswerFooter({
       <AnswerFacts coverage={msg.answerCoverage} marks={msg.citationMarks} />
       {msg.exports?.length ? <ExportChips exports={msg.exports} /> : null}
       {msg.done && <Sources sources={extractSources(msg.content)} marks={msg.citationMarks} collection={collection} onAtlas={onAtlas} />}
+      {msg.done && <OtherSources content={msg.content} calls={msg.sources} />}
     </>
   );
 }

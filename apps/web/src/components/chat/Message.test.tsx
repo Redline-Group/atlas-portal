@@ -53,7 +53,7 @@ describe("Message", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
   });
 
   it("shows a distinct failed-turn notice for a done, empty, failed assistant message", () => {

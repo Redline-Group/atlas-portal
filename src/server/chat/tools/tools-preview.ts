@@ -52,11 +52,11 @@ const OPEN_PRS_NOTE: Record<ToolCallContext["surface"], string> = {
 
 async function openPrs(a: Record<string, unknown>, ctx: ToolCallContext = ANON_MCP_CTX): Promise<ToolResult> {
   const all = await fetchOpenPrs();
-  if (!all) return { source_class: "history", status: "unavailable", message: "GitHub did not answer the open-PR list. Try again shortly." };
+  if (!all) return { source_class: "external", status: "unavailable", message: "GitHub did not answer the open-PR list. Try again shortly." };
   const prs = all.filter((p) => a.include_drafts !== false || !p.draft);
   const limit = (a.limit as number | undefined) ?? 30;
   return {
-    source_class: "history",
+    source_class: "external",
     repo: "sky-ecosystem/next-gen-atlas",
     total: prs.length,
     prs: prs.slice(0, limit).map((p) => ({

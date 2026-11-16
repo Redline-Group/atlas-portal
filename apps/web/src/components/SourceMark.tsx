@@ -12,6 +12,8 @@ export type SourceMarkProps = Omit<React.ComponentProps<"a">, "href" | "title" |
   bare?: boolean;
   /** Extra detail after the word, such as a read time: "on-chain · read 14:02 UTC". */
   detail?: string;
+  /** Extra detail in the tooltip only, for what is too long or too technical to sit on the page. */
+  hint?: string;
   /** Render a plain span. Needed inside another link, where a nested anchor is invalid. */
   unlinked?: boolean;
 };
@@ -19,11 +21,11 @@ export type SourceMarkProps = Omit<React.ComponentProps<"a">, "href" | "title" |
 const CHIP = "mono text-[10px] leading-none whitespace-nowrap no-underline";
 const CHIP_BOX = "px-1.5 py-0.5 rounded border border-dotted";
 
-export function SourceMark({ source, bare = false, detail, unlinked = false, className = "", ...props }: SourceMarkProps) {
+export function SourceMark({ source, bare = false, detail, hint, unlinked = false, className = "", ...props }: SourceMarkProps) {
   const def = SOURCE_CLASSES[source];
   const common = {
     "data-source": source,
-    title: detail ? `${def.meaning} ${detail}` : def.meaning,
+    title: [def.meaning, detail, hint].filter(Boolean).join(" "),
     className: `${CHIP} ${bare ? "" : CHIP_BOX} ${className}`.trim(),
     style: { color: "var(--source-mark)", borderColor: "var(--source-mark)" },
   };
