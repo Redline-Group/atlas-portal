@@ -248,7 +248,7 @@ rule-characterizations dangerous.
 ## 2026-07-23 — pushed & PR opened
 
 Branch atlas-crossview pushed to origin (github-darkstar alias, darkstar-covenant).
-PR: https://github.com/Anscharo/redlens/pull/194 (27 commits, base main).
+PR: https://github.com/Redline-Group/atlas-portal/pull/194 (27 commits, base main).
 
 - **(next commit)** "Chunk tree: full child listing + label tooltips"
   User caught two defects on A.2.2.10.1.2: (1) truncated labels had no

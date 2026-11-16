@@ -35,7 +35,7 @@ export function workerServiceName(environment: string | undefined): string {
 }
 
 /** The repository both services deploy, spelled as Railway records it. */
-const SOURCE: SourceConfig = { type: "github", repo: "Anscharo/redlens" };
+const SOURCE: SourceConfig = { type: "github", repo: "Redline-Group/atlas-portal" };
 
 /** The worker's cron period in minutes. The tail budget in atlas-worker.mjs stays under it. */
 export const WORKER_CRON_MINUTES = 12;

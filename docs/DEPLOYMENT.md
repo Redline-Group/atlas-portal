@@ -500,7 +500,7 @@ runs `railway config apply` (below). What it deliberately leaves alone:
   is not declared and is never touched.
 - **Variables.** `variables: { managed: false }` leaves every service variable
   to the dashboard ([railway-env-vars.md](./railway-env-vars.md)).
-- **Branch.** Each service names its repo (`Anscharo/redlens`; a service
+- **Branch.** Each service names its repo (`Redline-Group/atlas-portal`; a service
   without a source would plan as disconnected) but no branch, so each
   environment keeps the branch Railway already deploys.
 
