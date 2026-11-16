@@ -50,8 +50,11 @@ export function ActorPauTimeline({ groups, snaps, keyIndex }: Props) {
   if (groups.length === 0) return null;
   return (
     <section aria-labelledby={PAU_ANCHOR.changeHistory} className="mt-6">
-      <PauPartHeading anchor={{ id: PAU_ANCHOR.changeHistory, aliases: ["pau-history"] }}>Change history</PauPartHeading>
+      <PauPartHeading anchor={{ id: PAU_ANCHOR.changeHistory, aliases: ["pau-history"] }}>How it changes</PauPartHeading>
       <Intro groups={groups} />
+      <h3 className="mono text-[14px] uppercase tracking-wider mb-2" style={{ color: "var(--tan-2)" }}>
+        Change history
+      </h3>
       <ol className="space-y-3">
         {groups.map((g) => (
           <PauTimelineGroup key={g.key} g={g} anchor={anchors.get(g.key)!} names={{ keyIndex, derived }} beamOf={beamOf} />
