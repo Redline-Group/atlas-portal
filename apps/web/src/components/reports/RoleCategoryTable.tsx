@@ -70,7 +70,7 @@ export function RoleCategoryTable<R extends RoleRow>({
               <>
                 <th className="py-1 px-3 font-normal">Executor Agent</th>
                 <th className="py-1 px-3 font-normal w-40">
-                  {config.roleColumnHeader} <SourceMark source="derived" detail={HOLDER_DETAIL} />
+                  {config.roleColumnHeader} <SourceMark source="derived" hint={HOLDER_DETAIL} />
                 </th>
                 <th className="py-1 px-3 font-normal">Prime Agents</th>
               </>
@@ -81,12 +81,12 @@ export function RoleCategoryTable<R extends RoleRow>({
                   Duty{" "}
                   <SourceMark
                     source="derived"
-                    detail="Sentences the app matched by pattern as a duty. The text is the Atlas's; the choice of sentence is ours."
+                    hint="Sentences the app matched by pattern as a duty. The text is the Atlas's; the choice of sentence is ours."
                   />
                 </th>
                 {showRole && (
                   <th className={`py-1 px-3 font-normal ${config.dutyRoleColWidthClass}`}>
-                    {config.roleColumnHeader} <SourceMark source="derived" detail={HOLDER_DETAIL} />
+                    {config.roleColumnHeader} <SourceMark source="derived" hint={HOLDER_DETAIL} />
                   </th>
                 )}
                 {showPrime && <th className="py-1 px-3 font-normal w-36">Prime</th>}

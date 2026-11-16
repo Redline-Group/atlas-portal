@@ -4,6 +4,7 @@ import { SparkMark } from "./glyphs";
 import { track } from "../../lib/analytics";
 import { listConversations, type ConversationSummary } from "../../lib/conversationsApi";
 import type { PageContextView } from "./pageContext";
+import { TitleMark } from "../conversations/TitleMark";
 
 // Each starter is a showcase, so each must be ANSWERABLE with citations — the
 // old first slot asked who signs off on a facilitator budget, which the atlas
@@ -94,6 +95,7 @@ function RecentChats({ recent, onOpenConversation }: { recent: ConversationSumma
             }}
           >
             {c.title ?? "Untitled chat"}
+            <TitleMark conversation={c} className="ml-1.5" />
           </button>
         ))}
       </div>

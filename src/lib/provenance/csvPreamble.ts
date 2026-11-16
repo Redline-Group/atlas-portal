@@ -2,8 +2,11 @@
 // carries the Atlas commit; the preamble carries the rest of what the page said
 // about its sources, so a saved file is not mistaken for plain Atlas text.
 //
-// Every line starts with "#". Readers that parse the file as data skip them
-// with a comment option (pandas `comment="#"`); a spreadsheet shows them as rows.
+// Each line is one quoted CSV field starting with "#", so a spreadsheet shows a
+// single cell per line instead of splitting it at a comma. The first line says
+// how many lines the note takes, for a reader that skips them by count (pandas
+// `skiprows=N`); a comment option such as `comment="#"` would also cut a data
+// row at the first "#" in one of its cells, so the count is the safe way.
 import { SOURCE_CLASSES, normalizeSources, type SourceClass } from "./sources";
 
 export interface CsvPreambleInput {
@@ -14,10 +17,12 @@ export interface CsvPreambleInput {
   exportedAt: Date;
 }
 
+const field = (line: string): string => `"${line.replace(/"/g, '""')}"`;
+
 export function csvPreamble({ title, sources, sha, exportedAt }: CsvPreambleInput): string {
   const classes = normalizeSources(sources);
   const lines = [
-    `# Redline Portal: ${title}`,
+    "",
     `# Atlas commit: ${sha ? sha.slice(0, 8) : "unknown"}. Exported ${exportedAt.toISOString().slice(0, 16)}Z.`,
   ];
   if (classes.length === 0) {
@@ -29,5 +34,6 @@ export function csvPreamble({ title, sources, sha, exportedAt }: CsvPreambleInpu
       lines.push(`#   ${c.glyph} ${c.word}: ${c.meaning} ${c.caveat}`);
     }
   }
-  return `${lines.join("\n")}\n`;
+  lines[0] = `# Redline Portal: ${title} (${lines.length} note lines, then the column headings)`;
+  return `${lines.map(field).join("\n")}\n`;
 }

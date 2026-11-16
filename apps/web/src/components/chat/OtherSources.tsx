@@ -1,4 +1,5 @@
 import type { ToolCallRecord } from "./api";
+import { useDataSource } from "../../lib/dataSource";
 import { SOURCE_CLASSES } from "@/lib/provenance/sources";
 import { SourceMark } from "../SourceMark";
 import { LinkMark } from "./LinkMark";
@@ -12,7 +13,8 @@ const WHAT = { preview: "preview" } as const;
  * preview link the answer carries. Nothing when the answer used only Atlas text.
  */
 export function OtherSources({ content, calls }: { content: string; calls?: readonly ToolCallRecord[] }) {
-  const links = extractOtherLinks(content);
+  const previewSha = useDataSource().preview?.sha;
+  const links = extractOtherLinks(content, previewSha);
   const classes = toolClassesUsed(calls);
   const count = links.length + classes.length;
   if (count === 0) return null;

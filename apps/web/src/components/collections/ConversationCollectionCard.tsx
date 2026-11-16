@@ -1,17 +1,19 @@
 import type { ConversationSummary } from "../../lib/conversationsApi";
 import { ShareLinkButton } from "./ShareLinkButton";
 import { formatCardDate } from "../../lib/timeAgo";
+import { TitleMark } from "../conversations/TitleMark";
 
 const UNTITLED = "Untitled chat";
 
-function CardHead({ title, updatedAt }: { title: string | null; updatedAt: string }) {
+function CardHead({ conversation }: { conversation: ConversationSummary }) {
   return (
     <div className="flex items-start justify-between gap-3 mb-1 min-w-0">
       <h2 className="text-sm font-medium truncate min-w-0" style={{ color: "var(--tan)" }}>
-        {title ?? UNTITLED}
+        {conversation.title ?? UNTITLED}
+        <TitleMark conversation={conversation} className="ml-1.5" />
       </h2>
       <p className="mono text-[11px] text-tan-3 whitespace-nowrap shrink-0">
-        {formatCardDate(updatedAt)}
+        {formatCardDate(conversation.updatedAt)}
       </p>
     </div>
   );
@@ -24,7 +26,7 @@ export function ConversationCollectionCard({ conversation, onOpen }: { conversat
   const n = conversation.citationCount;
   return (
     <article className="px-4 py-4 rounded border" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
-      <CardHead title={conversation.title} updatedAt={conversation.updatedAt} />
+      <CardHead conversation={conversation} />
       <p className="text-xs text-tan-3 mb-3">
         {n} {n === 1 ? "document" : "documents"} cited
       </p>

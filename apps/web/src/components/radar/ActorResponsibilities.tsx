@@ -59,11 +59,11 @@ export function ActorResponsibilities({ rows }: Props) {
               <th className="py-1.5 px-3 font-normal">Responsible Party</th>
               <th className={`py-1.5 px-3 font-normal ${DERIVED_EDGE}`}>
                 Facilitator{" "}
-                <SourceMark source="derived" detail="Inferred through the agent chain; the documents it was read through are listed under the name." />
+                <SourceMark source="derived" hint="Inferred through the agent chain; the documents it was read through are listed under the name." />
               </th>
               <th className="py-1.5 px-3 font-normal">
                 Process{" "}
-                <SourceMark source="derived" detail="Classified by the app from the Active Data text: AC when it mentions the Alignment Conserver." />
+                <SourceMark source="derived" hint="Classified by the app from the Active Data text: AC when it mentions the Alignment Conserver." />
               </th>
             </tr>
           </thead>

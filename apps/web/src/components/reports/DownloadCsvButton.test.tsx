@@ -95,7 +95,7 @@ describe("DownloadCsvButton", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Download full report" }));
     const [, text] = downloadCSV.mock.calls[0] as [string, string];
-    expect(text).toMatch(/^# Redline Portal: Stale Dates\n/);
+    expect(text).toMatch(/^"# Redline Portal: Stale Dates \(\d+ note lines/);
     expect(text).toContain("# This report is not only Atlas text");
     expect(text.endsWith("\nfull,csv")).toBe(true);
     unmount();

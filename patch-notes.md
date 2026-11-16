@@ -41,7 +41,7 @@
 - Added read times to on-chain values: an "as of" line for balances and Safe setups on address cards, a read time and block on contract view-function values, a read-time chip on each Liquidity Layer deployment, and footnotes marking rate limits whose live read failed or whose decimals were inferred
 - Marked app-derived data with the ∴ derived chip: Radar's Related Parties, Relationships, Notable and Responsibilities (with the documents each relationship was read from), the Duty and holder columns of the role reports, the Active Data columns, and the reader's relations and cousin documents
 - Marked AI-written content with the ✳ AI mark: collection names and summaries, conversation titles, Risk Rules descriptions and types, citation checks, and the verification chip, which now says it is an AI check
-- Reworded labels that overstated what comes from the Atlas: the Reports intro, the Rewards description, address "named near", "Likely counterparts", the chat verification chip, and the footer's preview and "app built" labels
+- Reworded labels that overstated what comes from the Atlas: the Reports intro, the Rewards description, address and On-Chain Addresses "named near", "Likely counterparts", the chat verification chip, and the footer's preview and "app built" labels
 
 ## 2026-11-13
 

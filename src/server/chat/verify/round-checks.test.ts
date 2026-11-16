@@ -8,6 +8,11 @@ test("isErrorResult flags the tool error envelope only", () => {
   expect(isErrorResult('{"results":[]}')).toBe(false);
 });
 
+test("isEmptyResult: the source_classes stamp is not a finding", () => {
+  expect(isEmptyResult('{"entities":[],"total":0,"source_classes":["derived"]}')).toBe(true);
+  expect(isEmptyResult('{"entities":[{"slug":"spark"}],"source_classes":["derived"]}')).toBe(false);
+});
+
 test("isEmptyResult: all-empty arrays without substance = empty", () => {
   expect(isEmptyResult('{"results":[],"total":0}')).toBe(true);
   expect(isEmptyResult("[]")).toBe(true);

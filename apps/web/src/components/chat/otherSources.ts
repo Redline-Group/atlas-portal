@@ -18,14 +18,21 @@ export interface OtherLink {
 // Sources row's, and reference-style definitions only ever name atlas documents.
 const OTHER_LINK_RE = /\[([^\]\n]+)\]\(((?:https?:\/\/|\/preview\/)[^\s)]+)\)/gi;
 
-/** Links in the answer that point at a chain, an outside record or a preview, once each, in order. */
-export function extractOtherLinks(content: string): OtherLink[] {
+const PREVIEW_SHA_RE = /^\/preview\/([0-9a-f]{40})\//i;
+
+/**
+ * Links in the answer that point at a chain, an outside record or a preview, once
+ * each, in order. A link into the preview being viewed opens in place like an
+ * Atlas citation (markdown.tsx), so it is not listed.
+ */
+export function extractOtherLinks(content: string, previewSha?: string): OtherLink[] {
   const seen = new Set<string>();
   const out: OtherLink[] = [];
   for (const m of content.matchAll(OTHER_LINK_RE)) {
     const [, text, href] = m;
     const cls = classifyLink(href);
     if (!cls || seen.has(href)) continue;
+    if (previewSha && PREVIEW_SHA_RE.exec(href)?.[1].toLowerCase() === previewSha.toLowerCase()) continue;
     seen.add(href);
     out.push({ href, text, class: cls });
   }

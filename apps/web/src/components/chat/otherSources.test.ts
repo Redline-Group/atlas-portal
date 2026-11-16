@@ -19,6 +19,15 @@ describe("extractOtherLinks", () => {
   });
 });
 
+describe("extractOtherLinks in a preview", () => {
+  const sha = "a".repeat(40);
+  const text = `[this](/preview/${sha}/atlas?id=${"b".repeat(36)}) and [that](/preview/${"c".repeat(40)}/atlas?id=${"b".repeat(36)})`;
+  it("lists a link to another preview but not one into the preview being viewed", () => {
+    expect(extractOtherLinks(text).map((l) => l.text)).toEqual(["this", "that"]);
+    expect(extractOtherLinks(text, sha).map((l) => l.text)).toEqual(["that"]);
+  });
+});
+
 describe("toolClassesUsed", () => {
   it("unions the classes of successful calls, in registry order with the tools behind each", () => {
     const used = toolClassesUsed([call("atlas_entity"), call("redline_onchain"), call("atlas_get"), call("atlas_traverse"), call("external_msc", false)]);

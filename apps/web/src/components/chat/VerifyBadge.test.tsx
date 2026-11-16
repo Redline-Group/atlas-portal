@@ -47,11 +47,11 @@ describe("VerifyBadge", () => {
     expect(btn).toBeDisabled();
   });
 
-  it("carries no AI mark while checking or when only a ruling is issued", () => {
+  it("marks a ruling as AI too, but not the in-progress check", () => {
     const { rerender } = render(<VerifyBadge verify={{ ...base, status: "checking" }} onAtlas={noop} />);
     expect(screen.getByRole("button").querySelector("[data-source]")).toBeNull();
     rerender(<VerifyBadge verify={{ ...base, status: "warn" }} onAtlas={noop} />);
-    expect(screen.getByRole("button").querySelector("[data-source]")).toBeNull();
+    expect(screen.getByRole("button").querySelector("[data-source='ai']")).not.toBeNull();
   });
 
   it("shows a pluralized disputed-statement count for fail status and expands rows on click", () => {

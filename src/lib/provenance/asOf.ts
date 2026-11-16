@@ -4,8 +4,9 @@
 
 /** An ISO timestamp as "YYYY-MM-DD HH:MM UTC"; null for a missing or unparseable one. */
 export function formatReadTime(iso: string | null | undefined): string | null {
-  if (!iso || Number.isNaN(Date.parse(iso))) return null;
-  return `${iso.slice(0, 16).replace("T", " ")} UTC`;
+  const t = iso ? Date.parse(iso) : NaN;
+  if (Number.isNaN(t)) return null;
+  return `${new Date(t).toISOString().slice(0, 16).replace("T", " ")} UTC`;
 }
 
 /** The oldest of the timestamps that parse: the age every value in the set is at least as fresh as. */

@@ -35,11 +35,11 @@ export function isEmptyResult(content: string): boolean {
   if (obj == null) return true;
   if (Array.isArray(obj)) return obj.length === 0;
   if (typeof obj !== "object") return false;
-  // semantic_skipped describes the search's own health (a degraded leg), not a
-  // finding — a search that found nothing AND skipped semantic must still
-  // count as empty, so it's excluded from the substance scan below.
+  // semantic_skipped describes the search's own health (a degraded leg), and
+  // source_classes says what the tool draws on; neither is a finding, so a
+  // search that found nothing still counts as empty with either present.
   const values = Object.entries(obj as Record<string, unknown>)
-    .filter(([k]) => k !== "semantic_skipped")
+    .filter(([k]) => k !== "semantic_skipped" && k !== "source_classes")
     .map(([, v]) => v);
   const arrays = values.filter(Array.isArray);
   if (arrays.length === 0) return false;

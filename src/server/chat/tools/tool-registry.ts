@@ -18,7 +18,7 @@ import { HISTORY_TOOLS } from "./registry-history.ts";
 import { QUERY_TOOLS } from "./registry-query.ts";
 import { ONCHAIN_TOOLS } from "./registry-onchain.ts";
 import { REPORT_TOOLS } from "../../reports/index.ts";
-import { toolSources } from "../../../lib/provenance/toolSources.ts";
+import { PREVIEW_TOOL_NAMES, toolSources } from "../../../lib/provenance/toolSources.ts";
 
 export type { AtlasHandler, AtlasTool, DescribedTool } from "./tool-types.ts";
 
@@ -79,10 +79,13 @@ export function invokeTool<T extends { name?: string; emptyArgsAbsent?: boolean;
 /**
  * Stamps what the result draws on besides Atlas text (provenance/toolSources.ts),
  * appended last so a leading `source_class` marker (preview-evidence.ts) stays
- * first. A result that already names its own `source_classes` keeps it.
+ * first. A result that already names its own `source_classes` keeps it, and a
+ * preview tool's result says `"source_class":"preview"` instead: a preview is
+ * not Atlas text and not a source class.
  */
 function withSourceClasses(name: string, result: ToolResult | Promise<ToolResult>): ToolResult | Promise<ToolResult> {
   const stamp = (r: ToolResult): ToolResult => {
+    if (PREVIEW_TOOL_NAMES.has(name)) return r;
     const classes = toolSources(name);
     return classes && r.source_classes === undefined ? { ...r, source_classes: [...classes] } : r;
   };

@@ -20,7 +20,7 @@ const SEARCHES =
 function ActiveDataIntro({ docNo }: { docNo: string | undefined }) {
   return (
     <>
-      All Active Data sections with full responsibility chain — sourced from the Atlas graph.{" "}
+      All Active Data sections with full responsibility chain — built from the Atlas graph, where the Responsible Party, Facilitator and Process columns are our reading of it.{" "}
       <AtlasLink to={atlasHref(INTRO_DOC_UUID)} className="text-accent hover:underline">
         {docNo ? `${docNo} ` : ""}Updating Active Data ↗
       </AtlasLink>

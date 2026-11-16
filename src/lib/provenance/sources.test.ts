@@ -25,15 +25,20 @@ describe("source classes", () => {
 describe("csvPreamble", () => {
   const at = new Date("2026-11-16T13:05:59Z");
 
-  it("comments every line and lists each declared class with its caveat", () => {
+  it("writes every line as one quoted field, the first counting the note's lines, and lists each class with its caveat", () => {
     const text = csvPreamble({ title: "Stale Dates", sources: ["ai", "derived"], sha: "abcdef0123456789", exportedAt: at });
     const lines = text.trimEnd().split("\n");
-    expect(lines.every((l) => l.startsWith("#"))).toBe(true);
-    expect(lines[0]).toBe("# Redline Portal: Stale Dates");
-    expect(lines[1]).toBe("# Atlas commit: abcdef01. Exported 2026-11-16T13:05Z.");
+    expect(lines.every((l) => l.startsWith('"#') && l.endsWith('"'))).toBe(true);
+    expect(lines[0]).toBe(`"# Redline Portal: Stale Dates (${lines.length} note lines, then the column headings)"`);
+    expect(lines[1]).toBe('"# Atlas commit: abcdef01. Exported 2026-11-16T13:05Z."');
     expect(text).toContain("∴ derived");
     expect(text).toContain("✳ AI");
     expect(text.endsWith("\n")).toBe(true);
+  });
+
+  it("doubles a quote inside a line, so the field stays one cell", () => {
+    const text = csvPreamble({ title: 'The "Big" One', sources: [], sha: null, exportedAt: at });
+    expect(text.split("\n")[0]).toContain('The ""Big"" One');
   });
 
   it("says so when a report is Atlas text only, and when the commit is unknown", () => {

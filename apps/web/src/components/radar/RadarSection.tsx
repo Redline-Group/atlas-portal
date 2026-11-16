@@ -22,7 +22,7 @@ export function Section({
         <h2 className="mono text-[10px] uppercase tracking-wider" style={{ color: "var(--tan-3)" }}>
           {title}
         </h2>
-        {source && <SourceMark source={source} detail={sourceDetail} />}
+        {source && <SourceMark source={source} hint={sourceDetail} />}
       </div>
       {children}
     </section>

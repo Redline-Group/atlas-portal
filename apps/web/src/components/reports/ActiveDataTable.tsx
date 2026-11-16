@@ -104,7 +104,7 @@ export function ActiveDataTable({
                 {derived && (
                   <>
                     {" "}
-                    <SourceMark source="derived" detail={derived} />
+                    <SourceMark source="derived" hint={derived} />
                   </>
                 )}
               </th>

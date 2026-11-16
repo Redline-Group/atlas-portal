@@ -10,7 +10,7 @@ export type SourceMarkProps = Omit<React.ComponentProps<"a">, "href" | "title" |
   source: SourceClass;
   /** A glyph alone, for a lone value in a container that already explains it. */
   bare?: boolean;
-  /** Extra detail after the word, such as a read time: "on-chain · read 14:02 UTC". */
+  /** A short fact shown after the word, such as a read time. A sentence belongs in `hint`. */
   detail?: string;
   /** Extra detail in the tooltip only, for what is too long or too technical to sit on the page. */
   hint?: string;

@@ -10,6 +10,8 @@ import { CrossViewGlossary } from "./CrossViewGlossary";
 import { CrossViewConcepts, CrossViewAudit } from "./CrossViewConcepts";
 import { CrossViewToc } from "./CrossViewToc";
 import { CrossViewTopicIndex } from "./CrossViewTopicIndex";
+import { SourceMarks } from "../SourceMark";
+import { REPORT_SOURCES } from "@/lib/reportCatalog";
 
 export type CrossViewTab = "shape" | "concepts" | "audit" | "glossary";
 
@@ -50,6 +52,7 @@ export function CrossViewPage({ tab }: { tab: CrossViewTab }) {
         <h1 className="text-xl font-semibold mb-2" style={{ color: "var(--tan)" }}>
           Atlas CrossView
         </h1>
+        <SourceMarks sources={REPORT_SOURCES.crossview} className="mb-2" />
         <p className="text-sm mb-6" style={{ color: "var(--tan-2)" }}>
           Alternate categorizations of the Atlas: its functional chunks, how much weight each carries, and the terms it
           defines — instead of one monolith document or a pile of disconnected sections.

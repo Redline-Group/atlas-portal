@@ -25,8 +25,8 @@ test("a report tool takes its classes from the report's own declaration", () => 
 });
 
 test("the preview tools are exactly the ones whose results are a PR preview", () => {
-  expect([...PREVIEW_TOOL_NAMES].sort()).toEqual(PREVIEW_TOOLS.map((t) => t.name).filter((n) => PREVIEW_TOOL_NAMES.has(n)).sort());
-  expect(PREVIEW_TOOL_NAMES.size).toBe(2);
+  for (const t of PREVIEW_TOOLS) expect(PREVIEW_TOOL_NAMES.has(t.name), t.name).toBe(t.name.startsWith("atlas_preview_"));
+  expect([...PREVIEW_TOOL_NAMES].sort()).toEqual(["atlas_preview_diff", "atlas_preview_get"]);
 });
 
 const stub = (name: string, result: Record<string, unknown>, async = false) => ({
@@ -48,4 +48,10 @@ test("invokeTool leaves a result alone when the tool is undeclared or already sa
   expect("source_classes" in unknown).toBe(false);
   const own = await invokeTool({} as Indexes, stub("atlas_get", { source_classes: ["curated"] }), {});
   expect(own.source_classes).toEqual(["curated"]);
+});
+
+test("a preview tool's result is not stamped: it already says it is a preview, which is not a source class", async () => {
+  const r = await invokeTool({} as Indexes, stub("atlas_preview_get", { source_class: "preview", docs: [] }), {});
+  expect("source_classes" in r).toBe(false);
+  expect(Object.keys(r)).toEqual(["source_class", "docs"]);
 });

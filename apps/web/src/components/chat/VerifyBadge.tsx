@@ -24,10 +24,11 @@ function chipLabel(verify: VerifyState): string {
   return "caution: the answer issues a ruling";
 }
 
-// The pass and fail labels name an AI check: every contradiction a reader sees
-// has passed the model confirm gate, and a pass means the model auditors found none.
+// Every verdict but "checking" is a model's: a contradiction a reader sees has
+// passed the model confirm gate, a pass means the model auditors found none, and
+// a ruling is the model's judgement of what the answer did.
 function byAiCheck(verify: VerifyState): boolean {
-  return verify.status === "pass" || (verify.status === "fail" && verify.contradictions.length > 0);
+  return verify.status === "pass" || verify.status === "warn" || (verify.status === "fail" && verify.contradictions.length > 0);
 }
 
 export function VerifyBadge({ verify, onAtlas }: { verify: VerifyState; onAtlas: (uuid: string) => void }) {
