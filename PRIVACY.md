@@ -123,4 +123,4 @@ app after a change means you accept the updated policy.
 ## 8. Contact
 
 Questions about privacy or your data: open an issue on the app's
-[GitHub repository](https://github.com/Anscharo/redlens).
+[GitHub repository](https://github.com/Redline-Group/atlas-portal).
