@@ -5,6 +5,7 @@ import { PauPartHeading } from "./PauSectionHeading";
 import { Callout } from "../Callout";
 import { PauTimelineGroup } from "./PauTimelineGroup";
 import { PauTimelineKey } from "./PauTimelineKey";
+import { PauChangePaths } from "./PauChangePaths";
 
 const changeCount = (groups: TimelineGroup[]) => groups.reduce((n, g) => n + g.entries.reduce((m, e) => m + e.changes.length, 0), 0);
 
@@ -40,7 +41,8 @@ interface Props {
 /**
  * Every configuration change the stored history holds for this prime, newest
  * first, grouped by the executive whose spell made it (GET /api/pau/history).
- * Changes no spell made say what made them instead.
+ * Changes no spell made say what made them instead. Below the key, the
+ * diagram of the paths a change can take (PauChangePaths).
  */
 export function ActorPauTimeline({ groups, snaps, keyIndex }: Props) {
   const anchors = useMemo(() => groupAnchors(groups), [groups]);
@@ -52,6 +54,7 @@ export function ActorPauTimeline({ groups, snaps, keyIndex }: Props) {
     <section aria-labelledby={PAU_ANCHOR.changeHistory} className="mt-6">
       <PauPartHeading anchor={{ id: PAU_ANCHOR.changeHistory, aliases: ["pau-history"] }}>Change history</PauPartHeading>
       <Intro groups={groups} />
+      <PauChangePaths kinds={snaps.map((s) => s.kind)} />
       <ol className="space-y-3">
         {groups.map((g) => (
           <PauTimelineGroup key={g.key} g={g} anchor={anchors.get(g.key)!} names={{ keyIndex, derived }} beamOf={beamOf} />

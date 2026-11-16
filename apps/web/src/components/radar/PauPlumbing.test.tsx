@@ -49,16 +49,16 @@ describe("PauPlumbing", () => {
 });
 
 describe("PauChangePaths", () => {
-  it("draws the EVM lanes for EVM controllers, linking to the change history", () => {
+  it("draws the EVM lanes for EVM controllers under an h3 of the change history", () => {
     const { container } = render(<PauChangePaths kinds={["monolithic", "diamond"]} />);
     expect([...container.querySelectorAll("[data-lane]")].map((g) => g.getAttribute("data-lane"))).toEqual(["By spell", "By spell", "Without a spell", "Emergency"]);
     for (const to of ["anything", "limits", "relayers"]) expect(container.querySelector(`[data-edge$="-${to}"]`)).not.toBeNull();
-    expect(screen.getByRole("link", { name: "Change history" })).toHaveAttribute("href", "#change-history");
-    expect(screen.queryByRole("heading", { level: 3 })).toBeNull();
+    expect(screen.getByRole("heading", { level: 3, name: "How it changes" })).toHaveAttribute("id", "how-it-changes");
+    expect(screen.queryByRole("heading", { level: 4 })).toBeNull();
   });
   it("adds the Solana lanes for a Prime that also runs a Solana controller, each titled", () => {
     const { container } = render(<PauChangePaths kinds={["monolithic", "svm"]} />);
-    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual(["EVM chains", "Solana"]);
+    expect(screen.getAllByRole("heading", { level: 4 }).map((h) => h.textContent)).toEqual(["EVM chains", "Solana"]);
     expect(container.querySelector('[data-change-paths="pau-change-paths-svm"] [data-node="receiver"]')).toHaveTextContent("Governance program");
   });
   it("draws nothing for a Prime with no deployment read", () => {

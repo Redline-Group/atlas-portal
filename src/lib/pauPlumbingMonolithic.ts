@@ -32,7 +32,10 @@ export const MONOLITHIC_PLUMBING: Plumbing = {
     },
     { from: "controller", to: "almProxy", kind: "flow", grants: ["CONTROLLER on almProxy"], label: "executes through", rule: "onlyRole(CONTROLLER) on doCall", d: "M450 213 H544", lx: 497, ly: 204, align: "middle" },
     { from: "almProxy", to: "venues", kind: "flow", label: "calls", rule: "the proxy is the account the venue sees", d: "M710 213 H784", lx: 760, ly: 204, align: "middle" },
-    { from: "freezer", to: "relayer", kind: "stop", grants: ["FREEZER on controller"], label: "removes a relayer", rule: "onlyRole(FREEZER) on the controller's removeRelayer", d: "M100 330 V256", lx: 110, ly: 294 },
+    {
+      from: "freezer", to: "controller", kind: "stop", grants: ["FREEZER on controller"], label: "removes a relayer",
+      rule: "onlyRole(FREEZER) on the controller's removeRelayer", d: "M150 330 V293 H330 V256", lx: 158, ly: 286,
+    },
     {
       from: "freezer", to: "almProxy", kind: "stop", grants: ["FREEZER on almProxy"], label: "on a freezable proxy: removes its controller", optional: true,
       rule: "onlyRole(FREEZER) on ALMProxyFreezable.removeController", d: "M100 404 V446 H630 V256", lx: 112, ly: 462,

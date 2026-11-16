@@ -16,7 +16,6 @@ import { Callout } from "../Callout";
 import type { GraphEntity } from "@/types";
 import { PauDeployment } from "./ActorPauDeployment";
 import { ActorPauTimeline } from "./ActorPauTimeline";
-import { PauChangePaths } from "./PauChangePaths";
 
 interface Props {
   /** The prime agent: the PAU registry keys deployments by its id, and its params name its controller-wide keys. */
@@ -72,7 +71,6 @@ export function ActorPau(props: Props) {
       {snaps.map((s) => (
         <PauDeployment key={s.deployment} snap={s} keyIndex={keyIndex} namedIn={named} verdicts={verdicts} anchor={anchors.get(s.deployment)!} />
       ))}
-      <PauChangePaths className="mt-8" kinds={snaps.map((s) => s.kind)} />
       <ActorPauTimeline groups={groups} snaps={snaps} keyIndex={keyIndex} />
     </section>
   );

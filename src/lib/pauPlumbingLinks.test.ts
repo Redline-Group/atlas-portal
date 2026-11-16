@@ -31,6 +31,7 @@ describe("rowLinker", () => {
     expect(find("RELAYER 0x5 on 0x1")).toEqual({ holder: "n:relayer", grant: "e:relayer-controller", on: "n:controller" });
     expect(find("CONTROLLER 0x1 on 0x2")).toEqual({ holder: "n:controller", grant: "e:controller-almProxy", on: "n:almProxy" });
     expect(find("CONTROLLER 0x1 on 0x4")).toEqual({ holder: "n:controller", grant: "e:controller-rateLimits", on: "n:rateLimits" });
+    expect(find("FREEZER 0x6 on 0x1")).toEqual({ holder: "n:freezer", grant: "e:freezer-controller", on: "n:controller" });
     expect(find("FREEZER 0x6 on 0x3")).toEqual({ holder: "n:freezer", grant: "e:freezer-almProxy", on: "n:almProxy" });
     expect(find("DEFAULT_ADMIN_ROLE 0x7 on 0x2")).toEqual({ holder: "n:admin", grant: "e:admin-controller", on: "n:almProxy" });
   });
