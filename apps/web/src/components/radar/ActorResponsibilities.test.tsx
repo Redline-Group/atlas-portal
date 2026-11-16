@@ -84,4 +84,24 @@ describe("ActorResponsibilities", () => {
     const link = screen.getByRole("link", { name: /View all in Active Data Report/ });
     expect(link).toHaveAttribute("href", "/reports/active-data");
   });
+
+  it("marks the Facilitator and Process headers as derived, and lists the documents behind a facilitator", () => {
+    const r = row({
+      facilitator: {
+        name: "Endgame Edge",
+        id: "e1",
+        docId: null,
+        role: "facilitator" as never,
+        evidence: [
+          { docNo: "A.6.1.1", docId: "doc-1", label: "Executor" },
+          { docNo: "A.6.1.2", docId: null, label: "Facilitator" },
+        ],
+      },
+    });
+    const { container } = render(<ActorResponsibilities rows={[r]} />);
+    const heads = [...container.querySelectorAll("thead [data-source='derived']")];
+    expect(heads).toHaveLength(2);
+    expect(screen.getByRole("link", { name: "A.6.1.1" })).toHaveAttribute("href", "/atlas?id=doc-1");
+    expect(screen.getByText("A.6.1.2")).toBeInTheDocument();
+  });
 });

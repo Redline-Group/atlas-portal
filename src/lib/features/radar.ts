@@ -17,6 +17,7 @@ export const radar: FeatureGroup = {
         how: [
           "Open Radar and pick an actor from the list.",
           "Scan the dashboard sections; the composite party view ties an Agent's associated legal entities together as one party.",
+          "A ∴ derived chip beside Related Parties, Relationships, Notable and the Facilitator and Process columns means the app worked that out from the Atlas rather than the Atlas stating it. Each relationship lists the documents it was read from, and a facilitator lists the documents it was inferred through.",
           "A Prime Agent's row in the list opens into its pages instead: Info (the profile), Settlements, History, Primitives and Liquidity Layer Arch. (PAUs). Click a Prime's name to open or close its pages; the Prime you open a page of opens by itself and stays open until you close it, and no other Prime opens or closes on its own.",
         ],
         note: "Settlements is listed only for Primes with a Monthly Settlement Cycle workbook, and Liquidity Layer Arch. (PAUs) only once the atlas worker has read that Prime's controller contracts.",

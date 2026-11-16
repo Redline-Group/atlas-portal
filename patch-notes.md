@@ -36,6 +36,7 @@
 ## 2026-11-16
 
 - Added source chips (on-chain, external, derived, AI, curated) to every report card and report page, a "Reading the marks" legend on the Provenance page, and a source note at the top of each report's CSV export
+- Marked app-derived data with the ∴ derived chip: Radar's Related Parties, Relationships, Notable and Responsibilities (with the documents each relationship was read from), the Duty and holder columns of the role reports, the Active Data columns, and the reader's relations and cousin documents
 - Marked AI-written content with the ✳ AI mark: collection names and summaries, conversation titles, Risk Rules descriptions and types, citation checks, and the verification chip, which now says it is an AI check
 - Reworded labels that overstated what comes from the Atlas: the Reports intro, the Rewards description, address "named near", "Likely counterparts", the chat verification chip, and the footer's preview and "app built" labels
 

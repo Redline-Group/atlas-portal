@@ -6,15 +6,17 @@ import { adSearchFields, type ActiveDataRow } from "@/lib/activeDataIndex";
 import { hiddenMatches, type ReportQuery } from "@/lib/reportFilter";
 import { Highlight, MatchAside } from "./Highlight";
 import { EvidenceCell, LinkedName } from "./ActiveDataCells";
+import { SourceMark } from "../SourceMark";
 
-const HEADERS: [label: string, width: string][] = [
+// `derived`: what the mark's tooltip adds for a column the app worked out.
+const HEADERS: [label: string, width: string, derived?: string][] = [
   ["AD Doc Title", ""],
   ["Controller", "w-40"],
   ["Prime", "w-24"],
-  ["Responsible Party", "w-44"],
-  ["Facilitator", "w-44"],
+  ["Responsible Party", "w-44", "Resolved from the declared text through graph edges; the Evidence column shows the documents."],
+  ["Facilitator", "w-44", "Inferred through the agent chain; the Evidence column shows the documents."],
   ["Evidence", "w-64"],
-  ["Process", "w-32"],
+  ["Process", "w-32", "Classified by the app from the Active Data text."],
   ["Last Edited", "w-28"],
 ];
 
@@ -96,9 +98,15 @@ export function ActiveDataTable({
       <table className="w-full text-left" style={{ minWidth: "1120px" }}>
         <thead>
           <tr className="text-xs mono text-tan-3 border-b border-[var(--border)]">
-            {HEADERS.map(([label, w]) => (
+            {HEADERS.map(([label, w, derived]) => (
               <th key={label} className={`py-2 px-3 font-normal ${w}`}>
                 {label}
+                {derived && (
+                  <>
+                    {" "}
+                    <SourceMark source="derived" detail={derived} />
+                  </>
+                )}
               </th>
             ))}
           </tr>

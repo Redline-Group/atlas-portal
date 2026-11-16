@@ -21,6 +21,8 @@ vi.mock("./ActorRewards", () => ({ ActorRewards: () => <div data-testid="rewards
 vi.mock("./ActorHistory", () => ({ ActorHistory: () => <div data-testid="history" /> }));
 vi.mock("./ActorSettlementTeaser", () => ({ ActorSettlementTeaser: () => <div data-testid="settlements" /> }));
 
+vi.mock("../../lib/docs", async (importOriginal) => ({ ...(await importOriginal<typeof import("../../lib/docs")>()), loadAtlas: () => new Promise(() => {}) }));
+
 import { ActorDashboard } from "./ActorDashboard";
 
 afterEach(cleanup);

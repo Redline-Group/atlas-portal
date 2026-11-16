@@ -36,8 +36,8 @@ describe("OGCategoryTable", () => {
     render(<OGCategoryTable cat="definition" label="Definitions" rows={rows} chains={chains} />);
     expect(screen.getByRole("heading", { name: /Definitions \(1\)/ })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Section" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Duty" })).toBeInTheDocument();
-    expect(screen.queryByRole("columnheader", { name: "GovOps" })).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^Duty/ })).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: /^GovOps/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("columnheader", { name: "Prime" })).not.toBeInTheDocument();
     expect(screen.getByText("What GovOps Is")).toBeInTheDocument();
     expect(screen.getByText("role definition text")).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("OGCategoryTable", () => {
     ];
     render(<OGCategoryTable cat="assignment" label="GovOps Assignments" rows={rows} chains={chains} />);
     expect(screen.getByRole("columnheader", { name: "Executor Agent" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "GovOps" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^GovOps/ })).toBeInTheDocument();
     // The "Operational Executor Agent " prefix is stripped for display.
     expect(screen.getByText("Exec One")).toBeInTheDocument();
     expect(screen.getByText("GovOps Org")).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe("OGCategoryTable", () => {
     render(<OGCategoryTable cat="op-duty" label="Op Duty" rows={rows} chains={chains} />);
     // op-duty shows Prime via the (op-duty || core-duty) branch, not GovOps
     // as a text column (that's active-data/process-step only).
-    expect(screen.queryByRole("columnheader", { name: "GovOps" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: /^GovOps/ })).not.toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Prime" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Prime One" })).toBeInTheDocument();
   });
@@ -130,7 +130,7 @@ describe("OGCategoryTable", () => {
       },
     ];
     render(<OGCategoryTable cat="active-data" label="Active Data" rows={rows} chains={chains} />);
-    expect(screen.getByRole("columnheader", { name: "GovOps" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^GovOps/ })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Prime" })).toBeInTheDocument();
     expect(screen.getByText("GovOps Org")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Prime One" })).toBeInTheDocument();
