@@ -88,6 +88,34 @@ describe("AddressTooltip", () => {
     expect(tip).not.toHaveTextContent("USDS");
   });
 
+  it("dates the chain values once: the balances reading, and the price quote when something is priced", async () => {
+    setAddressMap({ [EVM]: makeAddressInfo({ chainlogId: "Test Multisig" }) });
+    loadBalancesCached.mockResolvedValue({
+      lastCheckedAt: null,
+      nextRefreshAt: null,
+      refreshed: false,
+      prices: { ETH: { usd: 3000, asOf: new Date().toISOString() } },
+      addresses: {
+        [`${EVM}|ethereum`]: {
+          chain: "ethereum",
+          checkedAt: "2026-11-16T14:02:10Z",
+          hasCode: null,
+          safe: { threshold: 4, owners: ["0x1", "0x2", "0x3", "0x4", "0x5", "0x6", "0x7"] },
+          balances: { ETH: { raw: "2500000000000000000", decimals: 18 } },
+        },
+      },
+    });
+    render(
+      <AddressTooltip address={EVM}>
+        <a href="#">{EVM}</a>
+      </AddressTooltip>,
+    );
+    await hover(EVM);
+    const row = [...screen.getByRole("tooltip").querySelectorAll("dt")].filter((dt) => dt.textContent === "as of");
+    expect(row).toHaveLength(1);
+    expect(row[0].nextElementSibling).toHaveTextContent(/read 2026-11-16 14:02 UTC · prices.*DefiLlama \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
+  });
+
   it("shows the holdings' total and each priced token's USD value", async () => {
     setAddressMap({ [EVM]: makeAddressInfo({ chainlogId: "Test Multisig" }) });
     const asOf = new Date().toISOString();

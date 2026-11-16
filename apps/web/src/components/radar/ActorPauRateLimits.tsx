@@ -13,6 +13,8 @@ import { isOff, limitName, orderedLimits } from "@/lib/pauLimitOrder";
 import { atlasRank, nextSort, sortLimits, type LimitSort } from "@/lib/pauLimitSort";
 import { rowNamedIn, type NamedIn } from "@/lib/pauConstantDocs";
 import { PauLimitName } from "./PauLimitName";
+import { LimitFootnote, LimitMarks } from "./PauLimitNotes";
+import { caveatCounts, limitCaveats } from "@/lib/pauLimitNotes";
 import { formatPerDay, limitDecimals, loadPauHistory, unitNote, type AtlasKeyRef, type LiveRateLimit, type PauHistoryResponse } from "../../lib/pau";
 import { nodeLink } from "@/lib/pauPlumbingLinks";
 
@@ -55,7 +57,7 @@ function LimitRow({ row: { r, shown, keyDocId, flag }, chain, keyIndex, namedIn 
   return (
     <tr className="border-t border-[var(--border)] mono" data-off={isOff(r) || undefined} style={{ color: isOff(r) ? "var(--tan-3)" : "var(--tan-2)" }}>
       <td className="py-0.5 pr-3 align-top max-w-[40rem] break-words"><PauLimitName r={r} chain={chain} keyIndex={keyIndex} namedIn={namedIn} /></td>
-      <td className={`${cell} text-right`} style={colRule} title={scale}>{isOff(r) ? "off" : <PauAmount raw={max} dec={dec} symbol={r.unit?.symbol} />}</td>
+      <td className={`${cell} text-right`} style={colRule} title={scale}>{isOff(r) ? "off" : <PauAmount raw={max} dec={dec} symbol={r.unit?.symbol} />}<LimitMarks {...limitCaveats(r, isOff(r))} /></td>
       <td className={`${cell} text-right`} style={colRule} title={scale}>{formatPerDay(r.data?.slope ?? r.configured.slope, dec)}</td>
       <td className={`${cell} text-center`} style={colRule} data-atlas-match={shown?.mark}>
         <PauAtlasMark verdict={shown} keyDocId={keyDocId} flag={flag} />
@@ -105,6 +107,7 @@ export function PauRateLimits(props: Props) {
           ))}
         </tbody>
       </table>}
+      <LimitFootnote {...caveatCounts(limits, isOff)} />
     </section>
   );
 }

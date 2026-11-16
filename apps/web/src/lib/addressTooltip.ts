@@ -3,7 +3,8 @@
 // from the shared address map, the balances cache and its prices.
 import type { AddressInfo } from "@/types";
 import type { BalanceMap, AddressBalances } from "@/lib/balances";
-import type { PriceMap } from "@/lib/tokenPrices";
+import { freshPrice, type PriceMap } from "@/lib/tokenPrices";
+import { oldestTime } from "@/lib/provenance/asOf";
 import { compactAmount } from "@/lib/tokens";
 import { hasResolvedName, resolveAddressName, resolveOwner } from "./addressName";
 import { PRIMARY_BALANCE_SYMBOLS } from "@/lib/onchainAddressesIndex";
@@ -138,4 +139,27 @@ export function resolveAddressHoldings(
     return { symbol: h.symbol, amount: compactAmount(h.raw, h.decimals), chain: h.chain, usd: usd == null ? undefined : compactUsd(usd) };
   });
   return { held, value: holdingsTotal(raw, prices) };
+}
+
+/**
+ * When an address's chain values were read: the oldest balances reading across
+ * the chains the atlas places it on (its Safe setup comes from the same row),
+ * and the oldest quote among the prices that value what it holds. Pegged
+ * holdings are valued at $1 with no quote, so they add no price time.
+ */
+export function resolveAddressAsOf(
+  address: string,
+  addrMap: Record<string, AddressInfo>,
+  balancesByAddress: Record<string, AddressBalances>,
+  prices: PriceMap = {},
+): { readAt: string | null; priceAt: string | null } {
+  const info = infoFor(address, addrMap);
+  if (!info) return { readAt: null, priceAt: null };
+  const key = address.toLowerCase();
+  const rows = info.chains.map((chain) => balancesByAddress[`${key}|${chain}`]).filter((r): r is AddressBalances => !!r);
+  const quoted = heldAcross(key, info.chains, balancesByAddress).filter((h) => freshPrice(h.symbol, prices) != null);
+  return {
+    readAt: oldestTime(rows.map((r) => r.checkedAt)),
+    priceAt: oldestTime(quoted.map((h) => prices[h.symbol]?.asOf)),
+  };
 }

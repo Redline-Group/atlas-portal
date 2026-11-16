@@ -3,6 +3,8 @@ import { useLoaded } from "../../hooks/useAtlasData";
 import { formatAmount, keysFromAddress, limitDecimals, listedAddress, loadPau, snapshotsForPrime } from "../../lib/pau";
 import { actorPageHref } from "@/lib/routes";
 import { Link } from "../Link";
+import { SourceMark } from "../SourceMark";
+import { formatReadTime } from "@/lib/provenance/asOf";
 
 /** The prime whose page this is: its id keys the PAU snapshots, its slug
  *  names its PAUs page. */
@@ -33,6 +35,9 @@ export function ParamAddressKeys({ prime, paramKey, value }: Props) {
             {m.key.slice(0, 10)}…{m.key.slice(-4)}
           </Link>
           {` · ${m.derived.constant} · ${m.chain} · ${m.maxAmount === "0" ? "off" : `${formatAmount(m.maxAmount, limitDecimals(m.unit, m.maxAmount))}${m.unit?.symbol ? ` ${m.unit.symbol}` : ""}`}`}
+          {" "}
+          <SourceMark source="onchain" bare unlinked detail={`read ${formatReadTime(m.readAt) ?? "at an unknown time"}`} />
+          {` read ${formatReadTime(m.readAt)?.slice(0, 10) ?? "—"}`}
         </li>
       ))}
     </ul>

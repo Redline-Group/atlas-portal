@@ -2,9 +2,10 @@ import type { AddressInfo } from "@/types";
 import type { ChainValue } from "../lib/chainstate";
 import { Address } from "./Address";
 import { resolveAddressName, resolveOwner, hasResolvedName } from "../lib/addressName";
-import { resolveAddressHoldings } from "../lib/addressTooltip";
+import { resolveAddressAsOf, resolveAddressHoldings } from "../lib/addressTooltip";
 import { useSharedBalances } from "../lib/sharedBalances";
 import { AddressTooltipBalances } from "./AddressTooltipBalances";
+import { AddressTooltipAsOf } from "./AddressTooltipAsOf";
 import { AddressCardBadges, AddressCardChainValues } from "./AddressCardParts";
 
 /** The card's holdings and their USD value. The one part that waits on
@@ -13,9 +14,11 @@ function AddressCardHoldings({ address, info }: { address: string; info: Address
   const { addresses, prices } = useSharedBalances(true);
   const { held, value } = resolveAddressHoldings(address, { [address]: info }, addresses, prices);
   if (held.length === 0) return null;
+  const { readAt, priceAt } = resolveAddressAsOf(address, { [address]: info }, addresses, prices);
   return (
     <dl className="mb-2 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-0.5 mono text-[11px]">
       <AddressTooltipBalances held={held} value={value} loading={false} />
+      <AddressTooltipAsOf readAt={readAt} priceAt={held.some((h) => h.usd) ? priceAt : null} />
     </dl>
   );
 }

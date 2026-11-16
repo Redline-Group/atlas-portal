@@ -27,6 +27,24 @@ describe("PauRateLimits", () => {
     errors.mockRestore();
   });
 
+  it("says at rest which rows have a failed live read or inferred decimals, and counts each", () => {
+    const read = { ...limit(RL1), key: "0x" + "b".repeat(64), data: { maxAmount: "1000000", slope: "0" }, unit: { decimals: 6, symbol: "USDC", source: "token" as const, token: "0xu" } } as ContractLimit;
+    const off = { ...limit(RL2), key: "0x" + "c".repeat(64), configured: { maxAmount: "0", slope: "0" } };
+    const { container } = render(<PauRateLimits chain="ethereum" limits={[limit(RL1), read, off]} keyIndex={new Map()} verdicts={new Map()} anchor={{ id: "ethereum", aliases: [] }} />);
+    // limit(RL1): no live read and no unit; `read`: both present; `off`: no live read, and no amount to guess a scale for.
+    expect(container).toHaveTextContent("† live read failed; showing the last value its history set (2)");
+    expect(container).toHaveTextContent("‡ decimals inferred from the limit's size (1)");
+    expect(container.querySelectorAll("[data-caveat='failed']")).toHaveLength(2);
+    expect(container.querySelectorAll("[data-caveat='inferred']")).toHaveLength(1);
+  });
+
+  it("shows no footnote when every limit was read live with a known unit", () => {
+    const read = { ...limit(RL1), data: { maxAmount: "1000000", slope: "0" }, unit: { decimals: 6, symbol: "USDC", source: "token" as const, token: "0xu" } } as ContractLimit;
+    const { container } = render(<PauRateLimits chain="ethereum" limits={[read]} keyIndex={new Map()} verdicts={new Map()} anchor={{ id: "ethereum", aliases: [] }} />);
+    expect(container.querySelector("[data-caveat]")).toBeNull();
+    expect(container).not.toHaveTextContent("decimals inferred");
+  });
+
   it("groups linked atlas keys first, then constant-named keys with same-name siblings together, a switched-off key staying in its run", () => {
     const k = (n: number) => "0x" + String(n).repeat(64);
     const mk = (key: string, constant?: string, args: string[] = [], maxAmount = "1000000"): ContractLimit => ({
