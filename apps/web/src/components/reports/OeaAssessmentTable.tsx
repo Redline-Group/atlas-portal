@@ -8,6 +8,7 @@ import { EMPTY_QUERY, type ReportQuery } from "@/lib/reportFilter";
 import { Highlight } from "./Highlight";
 import { RatingPill } from "./OeaRatingPill";
 import { OeaTableRow } from "./OeaTableRow";
+import { SourceMark } from "../SourceMark";
 
 
 const ELEMENT_LABELS: Record<PrecisionElement, string> = {
@@ -63,7 +64,7 @@ function ExpandedBody({ row, mechanisms, rq }: { row: OeaRow; mechanisms: Record
         )}
       </div>
       <p className="mono text-[10px] text-tan-3">
-        ✳ assessed by {e.model} · rubric {e.rubricVersion}
+        <SourceMark source="ai" bare /> assessed by {e.model} · rubric {e.rubricVersion}
         {row.status === "stale" && " · STALE — the atlas changed since this rating; re-queued on next run"}
       </p>
     </div>

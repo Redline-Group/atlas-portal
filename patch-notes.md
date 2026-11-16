@@ -35,6 +35,7 @@
 
 ## 2026-11-16
 
+- Added source chips (on-chain, external, derived, AI, curated) to every report card and report page, a "Reading the marks" legend on the Provenance page, and a source note at the top of each report's CSV export
 - Reworded labels that overstated what comes from the Atlas: the Reports intro, the Rewards description, address "named near", "Likely counterparts", the chat verification chip, and the footer's preview and "app built" labels
 
 ## 2026-11-13

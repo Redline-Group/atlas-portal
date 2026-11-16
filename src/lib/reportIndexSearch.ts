@@ -17,7 +17,8 @@
 // Ranking is catalog order, not score — the index is a handful of cards, and
 // jumping around as the user types is worse than a stable filter.
 import type { ReportCard, ReportCardGroup } from "./reportCatalog";
-import { PROVENANCE_LABELS, reportEmbedFields } from "./reportCatalog";
+import { reportEmbedFields } from "./reportCatalog";
+import { sourceSearchText } from "./provenance/sources";
 import { counterpartTerm } from "./searchInflect";
 
 // Floor against noise. Re-measured against title+description embeddings
@@ -61,8 +62,8 @@ function fieldMatch(field: string, q: string, qTokens: string[]): boolean {
   return qTokens.length > 0 && qTokens.every((t) => fieldHasToken(fn, t));
 }
 
-function badgeLabel(card: ReportCard): string | null {
-  return card.provenance === "live" ? null : PROVENANCE_LABELS[card.provenance];
+function sourceLabel(card: ReportCard): string | null {
+  return card.sources.length ? sourceSearchText(card.sources) : null;
 }
 
 /**
@@ -88,7 +89,7 @@ export function filterReportGroups(
       continue;
     }
     const cards = group.cards.filter((c) => {
-      const label = badgeLabel(c);
+      const label = sourceLabel(c);
       return (
         fieldMatch(c.title, q, qTokens) ||
         fieldMatch(c.description, q, qTokens) ||

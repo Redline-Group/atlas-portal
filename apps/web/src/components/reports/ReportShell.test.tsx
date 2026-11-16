@@ -32,6 +32,17 @@ describe("ReportShell", () => {
     expect(document.title).toBe("Active Data Index: Redline Portal");
   });
 
+  it("shows the report's declared sources as linked chips under the title", () => {
+    render(
+      <ReportShell report="stale-dates" query="">
+        <p>body</p>
+      </ReportShell>,
+    );
+    const marks = screen.getAllByRole("link").filter((a) => a.hasAttribute("data-source"));
+    expect(marks.map((a) => a.getAttribute("data-source"))).toEqual(["external", "derived", "ai"]);
+    for (const a of marks) expect(a.getAttribute("href")).toMatch(/^\/provenance#source-/);
+  });
+
   it("fires report_view once, with the page's extra properties", () => {
     const { rerender } = render(
       <ReportShell report="rewards" query="" viewProps={{ row_count: 12 }}>

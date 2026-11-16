@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { HistoryProvenance } from "./provenance/HistoryProvenance";
+import { SourceLegend } from "./provenance/SourceLegend";
 
 type Stage = { label: string; description: string; powers: string[] };
 
@@ -132,6 +133,7 @@ export function ProvenancePage() {
         {STAGES.map((stage, index) => (
           <PipelineStage key={stage.label} stage={stage} index={index} />
         ))}
+        <SourceLegend />
         <HistoryProvenance />
       </article>
     </div>

@@ -6,6 +6,6 @@ export const potentialMistakes = {
   description:
     "Suspected defects in the Atlas source text — typos, grammar slips, broken cross-references, wrong figures and internal contradictions, each quoted and linked to its document. Not an atlas concept and not a build artifact: an LLM-generated sweep that is re-run by hand, so findings can lag the current Atlas.",
   group: "health",
-  provenance: "ai-assessed",
+  sources: ["ai"],
   scope: { label: "mistakes", placeholder: "Filter findings — doc no, title, quoted text, issue" },
 } as const satisfies ReportMeta;

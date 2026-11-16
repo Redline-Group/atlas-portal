@@ -81,18 +81,14 @@ describe("filterReportGroups — lexical", () => {
     expect(ids).not.toContain("rewards");
   });
 
-  it("filters by provenance label, so 'curated' finds the hand-maintained reports", () => {
-    expect(idsOf("curated")).toEqual(["processes"]);
+  it("filters by source word, so 'curated' finds every report that uses a hand-maintained list", () => {
+    expect([...idsOf("curated")].sort()).toEqual(["crossview", "pau-audit", "processes", "rewards"]);
   });
 
   // Potential Mistakes is an LLM sweep, not a hand-maintained inventory: its
-  // findings are model judgement, which is what the badge has to warn about.
-  it("finds the AI-assessed reports by their badge label", () => {
-    expect([...idsOf("AI-assessed")].sort()).toEqual([
-      "oea-assessment",
-      "potential-mistakes",
-      "risk-rules",
-    ]);
+  // findings are model judgement, which is what the AI chip has to say.
+  it("finds the model-written reports by the AI chip's word", () => {
+    expect(idsOf("AI")).toEqual(expect.arrayContaining(["oea-assessment", "potential-mistakes", "risk-rules", "stale-dates"]));
   });
 
   it("drops empty groups and matches nothing for noise", () => {

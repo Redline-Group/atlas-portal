@@ -7,6 +7,7 @@ import type { ReportQuery } from "@/lib/reportFilter";
 import { NodeContent } from "../NodeContent";
 import { useNavigateToNode } from "../../hooks/useNavigation";
 import { IncentivesReasoning, PrecisionReasoning } from "./RiskReasoning";
+import { SourceMark } from "../SourceMark";
 
 interface RiskExpandedBodyProps {
   row: RiskRow;
@@ -45,7 +46,7 @@ export function RiskExpandedBody({ row, docs, rq }: RiskExpandedBodyProps) {
       <PrecisionReasoning entry={e} />
       <IncentivesReasoning entry={e} docs={docs} />
       <p className="mono text-[10px] text-tan-3">
-        ✳ assessed by {e.model}
+        <SourceMark source="ai" bare /> assessed by {e.model}
         {row.status === "stale" && " · STALE — the atlas changed since this rating; re-queued on next run"}
       </p>
     </div>

@@ -5,16 +5,16 @@ export const reports: FeatureGroup = {
     title: "Reports",
     route: "/reports",
     blurb:
-      "Purpose-built tables extracted straight from the Atlas — each with CSV export and shareable, URL-synced filters.",
+      "Purpose-built tables built from the Atlas — each with CSV export and shareable, URL-synced filters.",
     features: [
       {
         name: "Using a report",
         what: "Extracted, filterable tables you can narrow and export.",
         how: [
           "Open Reports and pick one — they are grouped by subject: roles and duties, on-chain and money, rules and risk, Atlas structure, and Atlas health.",
-          "Reports are rebuilt every time you open them. Most read only the Atlas; some also use chain reads, the vote record, a model or lists kept by hand. A badge on the card marks the AI-assessed ones (rubric-scored ratings) and the curated ones (hand-maintained lists that can lag the Atlas).",
+          "Reports are rebuilt every time you open them. Chips beside a report's title, on its card and under its heading on the report page, name what it draws on besides Atlas text: on-chain reads, external records, derived data, AI or curated lists. A report with no chip is Atlas text only. Each chip links to the Provenance page's \u201cReading the marks\u201d legend.",
           "Use the filter pills to narrow; the URL updates so you can share the exact filtered view.",
-          "Click Download CSV to export — full or filtered, with UUIDs and direct Atlas links.",
+          "Click Download CSV to export — full or filtered, with UUIDs and direct Atlas links. The file opens with comment lines (starting with #) naming the Atlas commit and the sources the report draws on.",
         ],
       },
       {
@@ -22,7 +22,7 @@ export const reports: FeatureGroup = {
         what: "The Reports list search matches names, categories, and descriptions, including similar phrasing.",
         how: [
           "Open Reports and type in the search pill — it filters the list in place.",
-          "A name fragment jumps to that report; a subject group like roles and duties or Atlas health shows that group; a badge label like curated or AI-assessed finds those reports.",
+          "A name fragment jumps to that report; a subject group like roles and duties or Atlas health shows that group; a source word like curated, AI or on-chain finds the reports that draw on it.",
           "Describing what you want (wallet addresses, outdated dates) finds the matching report even when the title is different. Similar-meaning extras show under Closest meaning, not mixed in with name matches.",
         ],
       },

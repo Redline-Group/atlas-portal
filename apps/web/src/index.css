@@ -28,6 +28,7 @@
   --tan-3: #b8a48e; /* bumped from #a38f79 — passes 4.5:1 on --bg and --surface */
   --magenta: #b81a72; /* status pills (e.g. update available) — 5.0:1 on --tan (was #c61f7c, 4.4:1) */
   --lilac: #bfa8ec; /* soft violet — preview "renumbered" note; distinct from --accent links */
+  --source-mark: #86a8c9; /* a muted cool blue, for provenance marks only; 7.1:1 on --surface */
   --terminal-green: #399930;
   --lily-green: #ecffea;
 
@@ -156,6 +157,7 @@
   --tan-3: #5e5e5e;
   --magenta: #b891fe; /* stays an INVERTED pill: Sky light purple on the --tan fill */
   --lilac: #6d40cc; /* Sky #8C68FF darkened — the source value is 3.4:1, too light for text */
+  --source-mark: #355f88; /* muted slate blue, for provenance marks only; 6.4:1 on --surface */
   --terminal-green: #047857;
   --lily-green: #14532d;
 
@@ -301,6 +303,7 @@
   --tan-3: #60656e;
   --magenta: #cdbcf7; /* an INVERTED pill: pale lavender on the dark --tan fill, 10.3:1 */
   --lilac: #6154a7; /* the preview "renumbered" note — a muted purple, so it stands apart from the navy --accent */
+  --source-mark: #325f85; /* muted slate blue, for provenance marks only; 6.5:1 on --surface */
   --terminal-green: #2c7552;
   --lily-green: #19472d;
 
@@ -506,6 +509,7 @@
   --tan-3: #b2b2b2;
   --magenta: #2f5777; /* an INVERTED pill: sits ON the near-white --tan fill, so it goes dark. Deep steel blue at 6.5:1 (was a plum at 4.65, the thinnest margin in the theme) — and blue is the right convention for its one job, the "update available" status in Footer.tsx */
   --lilac: #78b0df; /* the preview "renumbered" note. Brighter and bluer than --gray on purpose: as a muted violet it sat dE 0.080 from muted text and read as a styling accident rather than a notice. Now 0.103 from --gray, and 0.126 from the depth ramp it shares a hue with. */
+  --source-mark: #94adc4; /* a cool grey-blue, for provenance marks only; 7.3:1 on --surface */
   --terminal-green: #72906e;
   --lily-green: #e9f9e7;
 

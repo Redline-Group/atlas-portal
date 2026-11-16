@@ -7,6 +7,7 @@ import { OeaAssessmentCsvButton } from "./OeaAssessmentCsvButton";
 import { OeaCategoryTables } from "./OeaCategoryTables";
 import { ReportShell } from "./ReportShell";
 import { useOeaAssessmentState } from "./useOeaAssessmentState";
+import { SourceMark } from "../SourceMark";
 
 const REPORT: ReportId = "oea-assessment";
 // A.1.14.4.6.1.1 Executor Agent GovOps — the doc_no shown next to the link is
@@ -40,7 +41,7 @@ export function OeaAssessmentReport({ query, mode }: { query: string; mode: Repo
       description={<OeaIntro docNo={s.introDocNo} />}
       note={
         <>
-          ✳ assessed by {report?.model ?? "—"} · human-reviewed · rubric {report?.rubricVersion ?? "—"}
+          <SourceMark source="ai" bare /> assessed by {report?.model ?? "—"} · human-reviewed · rubric {report?.rubricVersion ?? "—"}
         </>
       }
       noteTitle="Ratings are LLM-drafted against the assessment rubric, then human-reviewed. Click a row for the reasoning."

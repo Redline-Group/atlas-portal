@@ -20,7 +20,7 @@ export function rateContrast(ratio: number): ContrastLevel {
 export const SWATCH_WORST_BG: Record<string, string> = {
   tan: "surface", "tan-2": "surface", "tan-3": "surface", gray: "surface",
   red: "surface", "red-dim": "bg", "error-text": "surface", warn: "surface",
-  accent: "surface", magenta: "tan", "terminal-green": "surface", "lily-green": "bg",
+  accent: "surface", "source-mark": "surface", magenta: "tan", "terminal-green": "surface", "lily-green": "bg",
   "entity-agent": "surface", "entity-facilitator-org": "surface",
   "entity-govops-org": "surface", "entity-delegate-org": "surface",
   "entity-development-company": "surface", "entity-foundation": "surface",
@@ -78,6 +78,8 @@ export const AUDIT_PAIRS: readonly AuditPair[] = [
   { fg: "warn",          bg: "bg",               label: "warn text / bg" },
   { fg: "warn",          bg: "surface",          label: "warn text / surface" },
   { fg: "lilac",         bg: "bg",               label: "lilac (preview renumbered note) / bg" },
+  { fg: "source-mark",   bg: "bg",               label: "source mark (provenance chips) / bg" },
+  { fg: "source-mark",   bg: "surface",          label: "source mark (provenance chips) / surface" },
   { fg: "preview-add",   bg: "bg",               label: "preview-add (redline new/changed) / bg" },
   { fg: "lily-green",    bg: "bg",               label: "lily-green / bg" },
   { fg: "diff-added-fg", bg: "diff-added-bg",    label: "diff added text" },
