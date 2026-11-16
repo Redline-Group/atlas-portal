@@ -82,12 +82,12 @@
       ]
     },
     "Core|addr": {
-      "total": 437,
+      "total": 456,
       "uncovered": 0,
       "samples": []
     },
     "Core|addr,bullet-kv": {
-      "total": 4,
+      "total": 2,
       "uncovered": 0,
       "samples": []
     },
@@ -137,7 +137,7 @@
       "samples": []
     },
     "Core|addr,table": {
-      "total": 11,
+      "total": 13,
       "uncovered": 0,
       "samples": []
     },
@@ -147,8 +147,8 @@
       "samples": []
     },
     "Core|bullet-kv": {
-      "total": 404,
-      "uncovered": 149,
+      "total": 410,
+      "uncovered": 151,
       "samples": [
         "A.2.2.10.1.1.1.2.3.1.2.1.1",
         "A.2.2.10.1.1.1.2.3.1.2.16.1",
@@ -158,13 +158,13 @@
       ]
     },
     "Core|bullet-kv,uuid-link": {
-      "total": 15,
+      "total": 17,
       "uncovered": 0,
       "samples": []
     },
     "Core|plain": {
-      "total": 8254,
-      "uncovered": 6349,
+      "total": 8298,
+      "uncovered": 6325,
       "samples": [
         "A.0.1.1.1",
         "A.0.1.1.10",
@@ -280,8 +280,8 @@
       "samples": []
     },
     "Core|s:transfer": {
-      "total": 34,
-      "uncovered": 32,
+      "total": 31,
+      "uncovered": 29,
       "samples": [
         "A.1.6.4.4",
         "A.2.8.2.1.2.10",
@@ -312,7 +312,7 @@
       "samples": []
     },
     "Core|uuid-link": {
-      "total": 1779,
+      "total": 1793,
       "uncovered": 0,
       "samples": []
     },
