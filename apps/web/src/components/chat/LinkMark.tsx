@@ -9,7 +9,7 @@ import { SourceMark } from "../SourceMark";
 export function LinkMark({ cls, className = "" }: { cls: LinkClass; className?: string }) {
   if (cls === "preview") {
     return (
-      <span className={`mono text-[10px] ${className}`} data-source="preview" title="A proposed change in a PR preview, not the live Atlas." style={{ color: "var(--source-mark)" }}>
+      <span className={`mono text-[11px] ${className}`} data-source="preview" title="A proposed change in a PR preview, not the live Atlas." style={{ color: "var(--source-mark)" }}>
         <span aria-hidden="true">Δ</span>
         <span className="sr-only">preview</span>
       </span>

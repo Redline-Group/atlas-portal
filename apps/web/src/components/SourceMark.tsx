@@ -18,7 +18,7 @@ export type SourceMarkProps = Omit<React.ComponentProps<"a">, "href" | "title" |
   unlinked?: boolean;
 };
 
-const CHIP = "mono text-[10px] leading-none whitespace-nowrap no-underline";
+const CHIP = "mono text-[11px] leading-none whitespace-nowrap no-underline";
 const CHIP_BOX = "px-1.5 py-0.5 rounded border border-dotted";
 
 export function SourceMark({ source, bare = false, detail, hint, unlinked = false, className = "", ...props }: SourceMarkProps) {
