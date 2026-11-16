@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import type { AtlasKeyRef, StoredPauSnapshot, TimelineGroup } from "../../lib/pau";
 import { groupAnchors, PAU_ANCHOR } from "@/lib/pauAnchors";
 import { PauPartHeading } from "./PauSectionHeading";
+import { PauSubHeading } from "./PauSubHeading";
 import { Callout } from "../Callout";
 import { PauTimelineGroup } from "./PauTimelineGroup";
 import { PauTimelineKey } from "./PauTimelineKey";
@@ -51,10 +52,11 @@ export function ActorPauTimeline({ groups, snaps, keyIndex }: Props) {
     snaps.filter((s) => s.chain === chain).flatMap((s) => s.contracts).find((c) => c.address === contract && c.beam)?.beam;
   if (groups.length === 0) return null;
   return (
-    <section aria-labelledby={PAU_ANCHOR.changeHistory} className="mt-6">
-      <PauPartHeading anchor={{ id: PAU_ANCHOR.changeHistory, aliases: ["pau-history"] }}>Change history</PauPartHeading>
+    <section aria-labelledby={PAU_ANCHOR.changes} className="mt-6">
+      <PauPartHeading anchor={{ id: PAU_ANCHOR.changes, aliases: [] }}>Changes</PauPartHeading>
       <Intro groups={groups} />
       <PauChangePaths kinds={snaps.map((s) => s.kind)} />
+      <PauSubHeading anchor={{ id: PAU_ANCHOR.changeHistory, aliases: ["pau-history"] }}>Change History</PauSubHeading>
       <ol className="space-y-3">
         {groups.map((g) => (
           <PauTimelineGroup key={g.key} g={g} anchor={anchors.get(g.key)!} names={{ keyIndex, derived }} beamOf={beamOf} />

@@ -1,9 +1,8 @@
 import type { ComponentProps } from "react";
 import { changePlumbings } from "@/lib/pauChangePaths";
 import { PAU_ANCHOR } from "@/lib/pauAnchors";
-import { CopyLink } from "../CopyLink";
 import type { PauKind } from "@/lib/pauRegistry";
-import { anchorProps } from "./PauSectionHeading";
+import { PauSubHeading } from "./PauSubHeading";
 import { PlumbingKey } from "./PauPlumbingKey";
 import { PlumbingSvg } from "./PauPlumbingSvg";
 
@@ -25,10 +24,7 @@ export function PauChangePaths({ kinds, className, ...props }: PauChangePathsPro
   if (diagrams.length === 0) return null;
   return (
     <section aria-labelledby={PAU_ANCHOR.changePaths} className={`mb-8 ${className ?? ""}`} {...props}>
-      <div className="relative mb-2">
-        <CopyLink id={PAU_ANCHOR.changePaths} label="How it changes" top={3} />
-        <h3 {...anchorProps(anchor)} className="mono text-[14px] uppercase tracking-wider" style={{ ...anchorProps(anchor).style, color: "var(--tan)" }}>How it changes</h3>
-      </div>
+      <PauSubHeading anchor={anchor}>How it changes</PauSubHeading>
       {diagrams.map((d) => (
         <figure key={d.id} className="mb-4" data-change-paths={d.id}>
           {diagrams.length > 1 && <h4 className="mono text-[12px] mb-1" style={{ color: "var(--tan)" }}>{d.title}</h4>}

@@ -80,7 +80,7 @@ afterEach(cleanup);
 describe("ActorPau change history", () => {
   it("groups changes under their executive, collapses the deployment, and chips each Set date with its origin", async () => {
     render(<ActorPau prime={prime} instances={instances} />);
-    const section = await screen.findByRole("region", { name: "Change history" });
+    const section = await screen.findByRole("region", { name: "Changes" });
     const groups = section.querySelectorAll(".pau-timeline-group");
     expect([...groups].map((g) => g.getAttribute("data-kind"))).toEqual(["executive", "deployment"]);
     expect(within(groups[0] as HTMLElement).getByRole("link", { name: "Executive Vote 2026-08-27" })).toHaveAttribute("href", "https://vote.example/x");
@@ -109,7 +109,7 @@ describe("ActorPau change history key and unattributed changes", () => {
     history.entries = saved.map((e, i) => ({ ...e, tx: "0x" + String(i + 1).repeat(64), origin: i === 0 ? null : { ...e.origin!, kind: "unknown" as const, spell: null, evidence: "the DSPause casts are not read to block 5 yet" }, executive: null }));
     try {
       render(<ActorPau prime={prime} instances={instances} />);
-      const section = await screen.findByRole("region", { name: "Change history" });
+      const section = await screen.findByRole("region", { name: "Changes" });
       await waitFor(() => expect(section.querySelector("[data-unattributed]")).toHaveTextContent("None of this Prime's 2 changes is attributed yet"));
       expect(section.querySelector("dl")).toBeNull();
       const groups = section.querySelectorAll(".pau-timeline-group");
@@ -173,17 +173,18 @@ describe("ActorPau", () => {
     expect(rows[5]).toHaveTextContent("off");
   });
 
-  it("heads the page's parts at h2, each chain, the change diagram and each history group at h3, and a chain's parts at h4", async () => {
+  it("heads the page's parts at h2, each chain, the change diagram, the change history and each history group at h3, and a chain's parts at h4", async () => {
     render(<ActorPau prime={prime} instances={instances} />);
-    await screen.findByRole("region", { name: "Change history" });
+    await screen.findByRole("region", { name: "Changes" });
     expect(screen.getAllByRole("heading", { level: 2 })).toEqual([
       screen.getByRole("heading", { level: 2, name: "Current state" }),
-      screen.getByRole("heading", { level: 2, name: "Change history" }),
+      screen.getByRole("heading", { level: 2, name: "Changes" }),
     ]);
     const h3 = screen.getAllByRole("heading", { level: 3 });
     expect(h3.slice(0, 2)).toEqual([screen.getByRole("heading", { level: 3, name: "Ethereum" }), screen.getByRole("heading", { level: 3, name: "Base" })]);
     expect(screen.getByRole("heading", { level: 3, name: "Deployment" })).toBeInTheDocument();
-    expect(within(screen.getByRole("region", { name: "Change history" })).getByRole("heading", { level: 3, name: "How it changes" })).toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "Changes" })).getByRole("heading", { level: 3, name: "How it changes" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Change History" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3, name: /Executive Vote 2026-08-27/ })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 4, name: "Roles" })).toBeInTheDocument();
   });
@@ -260,7 +261,7 @@ describe("ActorPau fragments", () => {
   const arrive = async (hash: string) => {
     window.location.hash = hash;
     render(<ActorPau prime={prime} instances={instances} />);
-    await screen.findByRole("region", { name: "Change history" });
+    await screen.findByRole("region", { name: "Changes" });
     return waitFor(() => {
       const el = document.querySelector("[data-arrived]");
       expect(el).not.toBeNull();
@@ -277,8 +278,8 @@ describe("ActorPau fragments", () => {
 
   it("names every chain, section and history group, each with a # that holds its link", async () => {
     render(<ActorPau prime={prime} instances={instances} />);
-    await screen.findByRole("region", { name: "Change history" });
-    for (const id of ["current-state", "ethereum", "base", "ethereum-roles", "ethereum-rate-limits", "change-history", "exec-vote-2026-08-27", "deployment-ethereum"]) {
+    await screen.findByRole("region", { name: "Changes" });
+    for (const id of ["current-state", "ethereum", "base", "ethereum-roles", "ethereum-rate-limits", "changes", "change-history", "exec-vote-2026-08-27", "deployment-ethereum"]) {
       expect(document.getElementById(id), id).not.toBeNull();
       expect(document.querySelector(`button.copy-link[data-link="#${id}"]`), id).not.toBeNull();
     }

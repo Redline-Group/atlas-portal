@@ -9,7 +9,7 @@
 import type { PauSnapshot } from "./pau.ts";
 import type { TimelineGroup } from "./pauTimeline.ts";
 
-export const PAU_ANCHOR = { changePaths: "how-it-changes", currentState: "current-state", changeHistory: "change-history" } as const;
+export const PAU_ANCHOR = { changePaths: "how-it-changes", currentState: "current-state", changeHistory: "change-history", changes: "changes" } as const;
 
 export type PauSection = "how-it-fits" | "roles" | "facets" | "rate-limits" | "configurator-limits" | "parameters";
 
