@@ -61,7 +61,7 @@ export const platform: FeatureGroup = {
         name: "Reference pages",
         what: "Supporting pages for provenance, changes, search help, and privacy.",
         how: [
-          "Provenance (/provenance) — how the data is built, and what each source mark means.",
+          "Provenance (/provenance) — how the data is built, what each source mark means, and for each mark where the app uses it, where the data comes from and how current it is.",
           "Recent improvements (/updates) — the changelog.",
           "Search help (/search-hints) — the full query syntax.",
           "Privacy (/privacy).",

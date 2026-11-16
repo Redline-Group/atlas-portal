@@ -66,7 +66,7 @@ export function FooterInfo({ block, atlasCommit, atlasRepo, nodeCount, buildDate
         {buildDate}
       </FooterItem>
       <Sep />
-      <FooterItem title="data flow, scripts, outputs — how each claim is traced back to Sky Atlas.md">
+      <FooterItem title="where each kind of data comes from, and what the marks mean">
         <a href={PROVENANCE_HREF} className="hover:underline" style={{ color: "var(--tan-3)" }}>
           provenance
         </a>
