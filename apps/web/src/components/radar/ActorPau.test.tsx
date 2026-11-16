@@ -293,7 +293,8 @@ describe("ActorPau fragments", () => {
     const button = await screen.findByRole("button", { name: "Copy link to Executive Vote 2026-08-27" });
     fireEvent.click(button);
     expect(writeText).toHaveBeenCalledWith(`${window.location.origin}${window.location.pathname}#exec-vote-2026-08-27`);
-    expect(await screen.findByRole("button", { name: "Link to Executive Vote 2026-08-27 copied" })).toHaveTextContent("✓");
+    await waitFor(() => expect(button).toHaveTextContent("✓"));
+    expect(button).toHaveAccessibleName("Link to Executive Vote 2026-08-27 copied");
     expect(window.location.href).toBe(before);
   });
 
