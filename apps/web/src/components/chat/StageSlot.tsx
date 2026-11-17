@@ -7,7 +7,6 @@ import { TraceRowView } from "./TraceRow";
 import { VerifyFindings } from "./VerifyFindings";
 import type { OnAtlas } from "./chatTypes";
 
-
 export interface StageSlotProps {
   /** What this stage row discloses — pick it with `stageSlotContent(msg, entry)`. */
   content: StageSlotContent;

@@ -136,9 +136,9 @@ describe("the node navigator and the notice", () => {
   it("panel navigation logs reader_annotation_nav only for a doc the reader moves to", () => {
     at("/atlas?id=in-a&subset=selected");
     const onNavigate = vi.fn();
-    const { result } = renderHook(() => usePanelNav(onNavigate, vi.fn()), { wrapper });
-    result.current.nav("related", "out");
-    result.current.nav("related", "in-b");
+    const { result } = renderHook(() => usePanelNav(onNavigate), { wrapper });
+    result.current("related", "out");
+    result.current("related", "in-b");
     expect(track.mock.calls.map((c) => c[0])).toEqual(["reader_annotation_nav"]);
     expect(onNavigate).toHaveBeenCalledTimes(2);
   });

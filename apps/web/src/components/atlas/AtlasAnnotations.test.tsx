@@ -36,7 +36,6 @@ function setup(over: Partial<Parameters<typeof AtlasAnnotations>[0]> = {}) {
     tab: "notes" as AtlasTab,
     onTabChange: vi.fn(),
     onNavigate: vi.fn(),
-    onNavigateByDocNo: vi.fn(),
     ...over,
   };
   return render(<AtlasAnnotations {...props} />);

@@ -14,7 +14,6 @@ interface PanelNotesProps {
   citedBy: EdgeResult["inbound"];
   relations: PanelRelation[];
   onNav: Nav;
-  onNavDoc: Nav;
   selectable?: boolean;
   byParent?: Map<string | null, AtlasNode[]>;
 }

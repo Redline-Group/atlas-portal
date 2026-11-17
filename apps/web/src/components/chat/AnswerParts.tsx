@@ -4,8 +4,7 @@ import { Sources, type CollectionLink } from "./Sources";
 import { ExportChips } from "./ExportChips";
 import { VerifyBadge } from "./VerifyBadge";
 import { AnswerFacts } from "./AnswerFacts";
-import type { ChatMsg } from "./chatTypes";
-import type { OnAtlas } from "./chatTypes";
+import type { ChatMsg, OnAtlas } from "./chatTypes";
 
 /** What the answer slot of a finished-or-running turn shows. */
 export type TurnOutcome = "failed" | "stopped" | "answer" | "pending";

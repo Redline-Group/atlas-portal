@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { atlasHref, ROUTES } from "@/lib/routes";
 import { useAtlasNodeId } from "../../hooks/useAtlasNodeId";
@@ -42,12 +42,16 @@ export function ChatWidget() {
   // Atlas citation click → SPA-navigate to the reader, keep the panel open. A
   // shift-click on the reader opens the doc in its comparison pane instead,
   // like shift-clicking any other doc link there.
+  // The route is read through a ref so onAtlas keeps one identity: every
+  // answer's markdown renderer is memoized on it.
+  const route = useRef(location);
+  route.current = location;
   const onAtlas = useCallback<OnAtlas>(
     (uuid, opts) => {
-      if (opts?.split && location === ROUTES.ATLAS) handleSplitChange(uuid, "link");
+      if (opts?.split && route.current === ROUTES.ATLAS) handleSplitChange(uuid, "link");
       else navigate(atlasHref(uuid));
     },
-    [navigate, location, handleSplitChange],
+    [navigate, handleSplitChange],
   );
   if (!open) return <ChatLauncher onOpen={openChat} context={context} />;
   return (

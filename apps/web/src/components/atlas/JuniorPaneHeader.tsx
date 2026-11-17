@@ -1,8 +1,7 @@
 import type { ComponentProps } from "react";
 import type { AtlasNode } from "@/types";
 import { depthColor, realDepth } from "@/lib/depth";
-import { atlasHref } from "@/lib/routes";
-import { useDocLinkShiftClick } from "./AtlasActionsContext";
+import { DocLink } from "../DocLink";
 
 export interface JuniorPaneHeaderProps extends Omit<ComponentProps<"div">, "children"> {
   /** The pane doc's ancestors, root first. */
@@ -19,24 +18,14 @@ type CrumbsProps = Pick<JuniorPaneHeaderProps, "ancestors" | "node" | "onReroot"
 // A breadcrumb click re-roots the pane; shift-click shows that ancestor in the
 // main reader (the pane's splitNavigate).
 function Crumbs({ ancestors, node, onReroot }: CrumbsProps) {
-  const shiftClick = useDocLinkShiftClick();
   return (
     <nav aria-label="Comparison pane breadcrumb" className="truncate flex-1 text-tan-3">
       {ancestors.map((a, i) => (
         <span key={a.id}>
           {i > 0 && <span> / </span>}
-          <a
-            href={atlasHref(a.id)}
-            onClick={(e) => {
-              if (shiftClick(e, a.id)) return;
-              e.preventDefault();
-              onReroot(a.id);
-            }}
-            className="hover:text-tan"
-            style={{ color: "var(--tan-3)" }}
-          >
+          <DocLink docId={a.id} onOpen={() => onReroot(a.id)} className="hover:text-tan" style={{ color: "var(--tan-3)" }}>
             {a.title}
-          </a>
+          </DocLink>
         </span>
       ))}
       {node && (

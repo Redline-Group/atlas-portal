@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useMemo, type CSSProperties } from "react";
 import type { AtlasNode } from "@/types";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { AtlasActionsContext } from "./AtlasActionsContext";
@@ -46,9 +46,15 @@ export function AtlasView({ id, onNavigate, view, onViewChange, splitId, onSplit
   const v = useAtlasView(id, onNavigate);
   const { preview } = useDataSource();
   const { data } = v;
+  // Memoized, and before the early return: every doc link under this provider
+  // (breadcrumbs, the right panel's cards and their text) reads it, so a fresh
+  // object per render would re-render them all on any AtlasView render.
+  const docNoToId = data?.atlas.docNoToId;
+  const actions = useMemo(
+    () => ({ navigate: v.handleNavigate, toggle: noop, splitNavigate: onSplitChange, docNoToId }),
+    [v.handleNavigate, onSplitChange, docNoToId],
+  );
   if (!data || (id && !data.atlas.docs[id])) return <AtlasLoadFallback id={id} load={v} />;
-  const docNoToId = data.atlas.docNoToId;
-  const actions = { navigate: v.handleNavigate, toggle: noop, splitNavigate: onSplitChange, docNoToId };
   return (
     <AtlasActionsContext.Provider value={actions}>
       <div className="flex-1 flex flex-col" style={COLUMN_STYLE}>

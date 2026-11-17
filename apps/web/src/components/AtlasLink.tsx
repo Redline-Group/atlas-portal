@@ -5,6 +5,7 @@ import { ROUTES } from "@/lib/routes";
 import { track } from "../lib/analytics";
 import { hiddenTargetHref, useFilterHides } from "../lib/atlasFilter";
 import { docIdFromPath } from "../lib/visitHistory";
+import { isPlainClick } from "../lib/clickKind";
 import { useDocLinkShiftClick } from "./atlas/AtlasActionsContext";
 
 // Like <Link>, but when the destination is /atlas, folds ?split=, ?subset=
@@ -56,8 +57,6 @@ function foldParams(to: string, live: URLSearchParams, filterHides: (id: string)
   return { href: `${ROUTES.ATLAS}?${np}`, splitId: null };
 }
 
-const isPlainClick = (e: MouseEvent) => e.button === 0 && !(e.ctrlKey || e.metaKey || e.altKey || e.shiftKey);
-
 export const AtlasLink = forwardRef<HTMLAnchorElement, Props>(function AtlasLink(
   { to, onClick, onClickCapture, ...rest },
   ref,
@@ -70,8 +69,9 @@ export const AtlasLink = forwardRef<HTMLAnchorElement, Props>(function AtlasLink
   // onClick, so a shift-click has to be taken here or not at all.
   const handleClickCapture = (e: MouseEvent<HTMLAnchorElement>) => {
     onClickCapture?.(e);
+    if (!e.shiftKey || e.defaultPrevented) return;
     const docId = docIdFromPath(to);
-    if (docId && !e.defaultPrevented) shiftClick(e, docId);
+    if (docId) shiftClick(e, docId);
   };
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);

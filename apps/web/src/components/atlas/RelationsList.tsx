@@ -6,17 +6,16 @@ import { PanelDocLink } from "./PanelDocLink";
 interface RelationsListProps {
   relations: PanelRelation[];
   onNav: Nav;
-  onNavDoc: Nav;
 }
 
 // The notes section's extracted relations, both directions.
-export function RelationsList({ relations, onNav, onNavDoc }: RelationsListProps) {
+export function RelationsList({ relations, onNav }: RelationsListProps) {
   return (
     <div className="mt-8">
       <p className={`${SECTION_HEAD} mb-3`}>relations · {relations.length}</p>
       <div className="space-y-2">
         {relations.map((rel, i) => (
-          <RelationRow key={i} rel={rel} onNav={onNav} onNavDoc={onNavDoc} />
+          <RelationRow key={i} rel={rel} onNav={onNav} />
         ))}
       </div>
     </div>
@@ -25,7 +24,7 @@ export function RelationsList({ relations, onNav, onNavDoc }: RelationsListProps
 
 // One relation: its kind, an inbound arrow, the far end (a link when it has a doc),
 // and the doc_nos that define it.
-function RelationRow({ rel, onNav, onNavDoc }: { rel: PanelRelation; onNav: Nav; onNavDoc: Nav }) {
+function RelationRow({ rel, onNav }: { rel: PanelRelation; onNav: Nav }) {
   const { edge: e, isOut } = rel;
   const { label, navId } = relationEnd(rel);
   return (
@@ -45,7 +44,7 @@ function RelationRow({ rel, onNav, onNavDoc }: { rel: PanelRelation; onNav: Nav;
           {e.s.map((docNo, j) => (
             <span key={docNo}>
               {j > 0 && ", "}
-              <SourceDocLink docNo={docNo} onNavDoc={onNavDoc} />
+              <SourceDocLink docNo={docNo} onNav={onNav} />
             </span>
           ))}
         </p>
@@ -54,13 +53,14 @@ function RelationRow({ rel, onNav, onNavDoc }: { rel: PanelRelation; onNav: Nav;
   );
 }
 
-// A relation's defining document, named by doc_no. A link once the doc_no
-// resolves to a document, so it opens like any other doc link; otherwise the
-// by-doc_no navigation stays a button.
-function SourceDocLink({ docNo, onNavDoc }: { docNo: string; onNavDoc: Nav }) {
+// A relation's defining document, named by doc_no: a link to it when the doc_no
+// names a document in this atlas, plain text when it does not.
+function SourceDocLink({ docNo, onNav }: { docNo: string; onNav: Nav }) {
   const docId = useContext(AtlasActionsContext)?.docNoToId?.get(docNo);
-  const open = () => onNavDoc("relation_source", docNo);
-  const className = "hover:underline text-accent";
-  if (!docId) return <button onClick={open} className={className}>{docNo}</button>;
-  return <PanelDocLink docId={docId} onOpen={open} className={className}>{docNo}</PanelDocLink>;
+  if (!docId) return <span>{docNo}</span>;
+  return (
+    <PanelDocLink docId={docId} onOpen={() => onNav("relation_source", docId)} className="hover:underline text-accent">
+      {docNo}
+    </PanelDocLink>
+  );
 }

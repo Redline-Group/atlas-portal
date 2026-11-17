@@ -1,8 +1,7 @@
 import { StageList } from "./StageList";
 import { StageSlot } from "./StageSlot";
 import { stageSlotContent } from "./stageSlotContent";
-import type { ChatMsg, StageLogEntry } from "./chatTypes";
-import type { OnAtlas } from "./chatTypes";
+import type { ChatMsg, OnAtlas, StageLogEntry } from "./chatTypes";
 
 export function UserTurn({ text }: { text: string }) {
   return (

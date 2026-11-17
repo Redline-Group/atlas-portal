@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, type MouseEvent } from "react";
 import type { SplitOpenVia } from "../../hooks/useSplitPane";
+import { isShiftClick } from "../../lib/clickKind";
 
 interface AtlasActions {
   navigate: (id: string) => void;
@@ -30,8 +31,6 @@ export function useAtlasActions(): AtlasActions {
   if (!ctx) throw new Error("useAtlasActions must be used within AtlasActionsContext.Provider");
   return ctx;
 }
-
-const isShiftClick = (e: MouseEvent) => e.shiftKey && e.button === 0 && !(e.ctrlKey || e.metaKey || e.altKey);
 
 /**
  * A doc link's shift-click inside the reader does what shift-clicking that

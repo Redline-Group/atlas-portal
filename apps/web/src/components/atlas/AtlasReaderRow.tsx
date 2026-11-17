@@ -25,10 +25,6 @@ const ATLAS_GRID_STYLE: CSSProperties = { minHeight: 0, overflow: "hidden" };
 // The reader column beside the annotations panel for the selected doc.
 export function AtlasReaderRow(props: AtlasReaderRowProps) {
   const { id, data, annotations, view, onViewChange, onNavigate, selectable, ...reader } = props;
-  const navigateByDocNo = (docNo: string) => {
-    const uuid = data.atlas.docNoToId.get(docNo);
-    if (uuid) onNavigate(uuid);
-  };
   return (
     <div id="atlas-reader-row" className="flex-1 flex" style={ATLAS_GRID_STYLE}>
       <AtlasReader id={id} data={data} {...reader} />
@@ -39,7 +35,6 @@ export function AtlasReaderRow(props: AtlasReaderRowProps) {
           tab={view}
           onTabChange={onViewChange}
           onNavigate={onNavigate}
-          onNavigateByDocNo={navigateByDocNo}
           selectable={selectable}
           byParent={data.atlas.byParent}
           docs={data.atlas.docs}
