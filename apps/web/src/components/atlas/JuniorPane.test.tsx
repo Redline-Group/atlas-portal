@@ -68,8 +68,14 @@ describe("JuniorPane breadcrumb", () => {
 
   it("calls onClose when the close button is clicked", () => {
     const { onClose } = setup();
-    fireEvent.click(screen.getByText("✕"));
+    fireEvent.click(screen.getByRole("button", { name: "Close comparison pane" }));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("puts the ancestor links in a labelled breadcrumb nav", () => {
+    setup();
+    const nav = screen.getByRole("navigation", { name: "Comparison pane breadcrumb" });
+    expect(nav).toContainElement(screen.getByRole("link", { name: "Mid Title" }));
   });
 });
 
@@ -176,6 +182,16 @@ describe("JuniorPane selection-group wrapper (R2)", () => {
     const selected = container.querySelector(".atlas-node.is-selected");
     expect(selected).not.toBeNull();
     expect(selected?.getAttribute("data-has-children")).toBeNull();
+  });
+
+  it("explains the shift-click gestures even for a top-level doc", () => {
+    const leaf = makeNode({ id: "leaf", doc_no: "A.9", title: "Leaf Title", depth: 1, parentId: null });
+    const loaded = makeLoadedData({
+      atlas: makeAtlasBundle([leaf]),
+      flatNodes: [makeFlatEntry({ node: leaf, depth: 1 })],
+    });
+    render(<JuniorPane splitId="leaf" data={loaded} onShiftNavigate={vi.fn()} onShowInMain={vi.fn()} onClose={() => {}} />);
+    expect(document.body.textContent).toContain("Shift-Click inside SplitView to highlight it in the main view.");
   });
 
   it("renders no selection-group for an unknown splitId (nothing to bound)", () => {

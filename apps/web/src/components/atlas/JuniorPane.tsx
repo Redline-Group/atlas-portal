@@ -4,6 +4,7 @@ import { CollapsibleNode } from "./CollapsibleNode";
 import { AtlasActionsContext } from "./AtlasActionsContext";
 import { useSplitHeight } from "./useSplitHeight";
 import { JuniorPaneHeader } from "./JuniorPaneHeader";
+import { SPLIT_PANE_CLASS } from "./useShiftClickDocLinks";
 import { descendantIds } from "../../lib/instanceDescendants";
 
 const ViewChildrenFill = ({ docNo, onExpand }: { docNo: string; onExpand: () => void }) => (
@@ -102,7 +103,6 @@ export function JuniorPane({
 
   const node = data.atlas.docs[splitId];
   const docNo = node?.doc_no ?? "";
-  const hasAbove = ancestors.length > 0;
 
   const { paneRef, scrollerRef, contentRef, height, startResize } = useSplitHeight();
 
@@ -117,8 +117,9 @@ export function JuniorPane({
   );
 
   const items = useMemo(() => {
-    const result: ReactElement[] = [];
-    if (hasAbove) result.push(<TopNote key="top" />);
+    // Always shown, root docs included: it is where the pane's shift-click
+    // gestures are explained.
+    const result: ReactElement[] = [<TopNote key="top" />];
     // slice[0] is always splitId's own entry (see above); everything after it
     // is that node's descendants. Bound the selected root's position:sticky to
     // a group spanning it + those descendants — mirrors AtlasReader's
@@ -159,7 +160,6 @@ export function JuniorPane({
   }, [
     slice,
     hasMore,
-    hasAbove,
     splitId,
     docNo,
     autoExpanded,
@@ -167,11 +167,11 @@ export function JuniorPane({
   ]);
 
   return (
-    // junior-pane: index.css swaps the shift-click hint in here for "highlight
-    // in main view", and useShiftClickDocLinks keys on the class.
+    // SPLIT_PANE_CLASS: index.css swaps the shift-click hint in here for
+    // "highlight in main view", and useShiftClickDocLinks keys on the class.
     <div
       ref={paneRef}
-      className="junior-pane flex flex-col"
+      className={`${SPLIT_PANE_CLASS} flex flex-col`}
       style={{
         // Falls back to the 45% default until the column has been measured.
         flex: height == null ? "0 0 45%" : `0 0 ${height}px`,
@@ -191,7 +191,7 @@ export function JuniorPane({
         title="Drag to resize"
         style={{ position: "absolute", left: 0, right: 0, top: 0, height: 6, cursor: "row-resize", zIndex: 10 }}
       />
-      <JuniorPaneHeader ancestors={ancestors} node={node} onShiftNavigate={onShiftNavigate} onClose={onClose} />
+      <JuniorPaneHeader ancestors={ancestors} node={node} onReroot={onShiftNavigate} onClose={onClose} />
       <div ref={scrollerRef} className="junior-scroll overflow-y-auto flex-1">
         <div ref={contentRef} className="mx-auto px-3 py-2">
           <AtlasActionsContext.Provider value={ctxValue}>{items}</AtlasActionsContext.Provider>

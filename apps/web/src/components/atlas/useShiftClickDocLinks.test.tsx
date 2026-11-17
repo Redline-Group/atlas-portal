@@ -4,8 +4,11 @@
 // the main reader. Everything else keeps the browser's own shift-click.
 
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, cleanup, fireEvent } from "@testing-library/react";
-import { useShiftClickDocLinks } from "./useShiftClickDocLinks";
+import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
+import { SPLIT_PANE_CLASS, useShiftClickDocLinks } from "./useShiftClickDocLinks";
+
+const trackMock = vi.hoisted(() => vi.fn());
+vi.mock("../../lib/analytics", () => ({ track: trackMock }));
 
 const DOCS = new Set(["doc-a", "doc-b"]);
 
@@ -19,7 +22,7 @@ function Harness({ linkClick }: { linkClick: () => void }) {
       <a href="/atlas?id=unknown">unknown doc</a>
       <a href="https://example.com/atlas?id=doc-a">outside link</a>
       <a href="/reports/stale-dates?id=doc-a">other route</a>
-      <div className="junior-pane">
+      <div className={SPLIT_PANE_CLASS}>
         <a href="/atlas?id=doc-b">
           <span>pane link</span>
         </a>
@@ -32,21 +35,26 @@ function setup() {
   const openInSplit = vi.fn();
   const showInMain = vi.fn();
   const linkClick = vi.fn();
+  const returned: { showInMain?: (id: string) => void } = {};
   function Reader() {
-    useShiftClickDocLinks({ hasDoc: (id) => DOCS.has(id), openInSplit, showInMain });
+    returned.showInMain = useShiftClickDocLinks({ hasDoc: (id) => DOCS.has(id), openInSplit, navigate: showInMain });
     return <Harness linkClick={linkClick} />;
   }
   render(<Reader />);
-  return { openInSplit, showInMain, linkClick };
+  return { openInSplit, showInMain, linkClick, returned };
 }
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  trackMock.mockClear();
+  window.history.replaceState(null, "", "/");
+});
 
 describe("useShiftClickDocLinks", () => {
   it("opens a shift-clicked doc link in the comparison pane, ahead of the link's own handler", () => {
     const { openInSplit, showInMain, linkClick } = setup();
     const notCancelled = fireEvent.click(screen.getByText("main link"), { shiftKey: true });
-    expect(openInSplit).toHaveBeenCalledWith("doc-a");
+    expect(openInSplit).toHaveBeenCalledWith("doc-a", "link");
     expect(showInMain).not.toHaveBeenCalled();
     expect(linkClick).not.toHaveBeenCalled();
     expect(notCancelled).toBe(false);
@@ -55,14 +63,29 @@ describe("useShiftClickDocLinks", () => {
   it("reads the doc from a link that already carries the reader's params", () => {
     const { openInSplit } = setup();
     fireEvent.click(screen.getByText("folded link"), { shiftKey: true });
-    expect(openInSplit).toHaveBeenCalledWith("doc-a");
+    expect(openInSplit).toHaveBeenCalledWith("doc-a", "link");
   });
 
-  it("highlights the doc in the main reader when the link is inside the pane", () => {
+  it("highlights the doc in the main reader when the link is inside the pane, and records it", () => {
+    window.history.replaceState(null, "", "/atlas?id=doc-a&split=doc-b");
     const { openInSplit, showInMain } = setup();
     fireEvent.click(screen.getByText("pane link"), { shiftKey: true });
     expect(showInMain).toHaveBeenCalledWith("doc-b");
     expect(openInSplit).not.toHaveBeenCalled();
+    expect(trackMock).toHaveBeenCalledWith("reader_split_show_in_main", {
+      node_id: "doc-a",
+      split_id: "doc-b",
+      target_id: "doc-b",
+      via: "link",
+    });
+  });
+
+  it("returns the same tracked action for the pane's rows", () => {
+    window.history.replaceState(null, "", "/atlas?id=doc-a&split=doc-b");
+    const { showInMain, returned } = setup();
+    act(() => returned.showInMain!("doc-b"));
+    expect(showInMain).toHaveBeenCalledWith("doc-b");
+    expect(trackMock).toHaveBeenCalledWith("reader_split_show_in_main", expect.objectContaining({ target_id: "doc-b", via: "row" }));
   });
 
   it("leaves a plain click to the link", () => {

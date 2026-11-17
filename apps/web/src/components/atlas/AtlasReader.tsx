@@ -23,6 +23,7 @@ import { useSelectionSet } from "../../lib/selectionFilter";
 import { useAtlasFilterSet } from "../../lib/atlasFilter";
 import { useSelection } from "../../lib/selection";
 import { ErrorBoundary, PanelError } from "../ErrorBoundary";
+import type { SplitChange } from "../../hooks/useSplitPane";
 import {
   ATLAS_EMPTY_SET,
   collectSubtree,
@@ -80,7 +81,7 @@ export const AtlasReader = memo(function AtlasReader({
   id: string;
   selectedId: string | null;
   splitId: string | null;
-  onSplitChange: (id: string | null) => void;
+  onSplitChange: SplitChange;
   data: LoadedData;
   agentByDoc?: Map<string, string> | null;
 }) {
@@ -655,7 +656,8 @@ export const AtlasReader = memo(function AtlasReader({
 
   // Doc links follow the rows: shift-click opens one in the comparison pane, or,
   // from inside the pane, shows it in the reader (see useShiftClickDocLinks).
-  useShiftClickDocLinks({ hasDoc: (d) => !!data.atlas.docs[d], openInSplit: onSplitChange, showInMain: navigate });
+  // The pane's rows share the same tracked showInMain.
+  const showInMain = useShiftClickDocLinks({ hasDoc: (d) => !!data.atlas.docs[d], openInSplit: onSplitChange, navigate });
 
   // Stable actions-context value: rebuilding it every render forced every
   // memo'd CollapsibleNode to re-render on any parent render (e.g. a selection
@@ -691,10 +693,9 @@ export const AtlasReader = memo(function AtlasReader({
         {splitId && (
           <ErrorBoundary resetKey={splitId} fallback={(error) => <PanelError error={error} />}>
             <JuniorPane
-              splitId={splitId}
-              data={data}
+              splitId={splitId} data={data}
               onShiftNavigate={onSplitChange}
-              onShowInMain={navigate}
+              onShowInMain={showInMain}
               onClose={() => onSplitChange(null)}
             />
           </ErrorBoundary>

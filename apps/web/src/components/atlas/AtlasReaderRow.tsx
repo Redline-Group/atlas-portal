@@ -4,6 +4,7 @@ import { AtlasAnnotations } from "./AtlasAnnotations";
 import type { LoadedData } from "@/lib/atlasHelpers";
 import type { useNodeAnnotations } from "../../hooks/useNodeAnnotations";
 import type { AtlasTab } from "../../lib/atlasTab";
+import type { SplitChange } from "../../hooks/useSplitPane";
 
 interface AtlasReaderRowProps {
   id: string;
@@ -15,7 +16,7 @@ interface AtlasReaderRowProps {
   selectable: boolean;
   selectedId: string | null;
   splitId: string | null;
-  onSplitChange: (id: string | null) => void;
+  onSplitChange: SplitChange;
   agentByDoc: Map<string, string> | null;
 }
 

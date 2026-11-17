@@ -9,6 +9,7 @@ import { DrawerToggle } from "../Drawer";
 import { useAtlasView } from "../../hooks/useAtlasView";
 import { useDataSource } from "../../lib/dataSource";
 import type { AtlasTab } from "../../lib/atlasTab";
+import type { SplitChange } from "../../hooks/useSplitPane";
 
 interface AtlasViewProps {
   id: string;
@@ -16,7 +17,7 @@ interface AtlasViewProps {
   view: AtlasTab;
   onViewChange: (v: AtlasTab) => void;
   splitId: string | null;
-  onSplitChange: (id: string | null) => void;
+  onSplitChange: SplitChange;
   onOpenTree?: () => void;
 }
 
