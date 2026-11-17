@@ -47,10 +47,13 @@ describe("RateLimitKeyCard headings", () => {
     ]);
   });
 
-  it("marks the card on-chain with its read time up top, not at the foot", () => {
+  it("marks the card on-chain with a glyph beside the heading that opens its legend entry in a new tab, and keeps the read time as plain text", () => {
     const { container } = render(<RateLimitKeyCard holders={[holder("diamond", RL1)]} />);
     const mark = container.querySelector("[data-source='onchain']")!;
-    expect(mark).toHaveTextContent("read 2026-10-29");
+    expect(mark).toHaveAttribute("href", "/provenance#source-onchain");
+    expect(mark).toHaveAttribute("target", "_blank");
+    expect(mark.textContent).toBe("⬡on-chain");
     expect(container.firstElementChild?.firstElementChild?.contains(mark)).toBe(true);
+    expect(container).toHaveTextContent("read 2026-10-29");
   });
 });

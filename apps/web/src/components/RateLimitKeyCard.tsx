@@ -51,14 +51,14 @@ export function RateLimitKeyCard({ holders }: { holders: KeyHolder[] }) {
   const read = readAt(holders);
   return (
     <div className="min-w-[10rem] max-w-[18rem]">
-      <div className="font-medium text-tan flex flex-wrap items-center gap-x-2 gap-y-1">
-        Rate limit
-        <SourceMark source="onchain" unlinked detail={read ? `read ${read}` : undefined} />
+      <div className="font-medium text-tan">
+        Rate limit <SourceMark source="onchain" bare target="_blank" rel="noopener noreferrer" />
       </div>
       {name && <div className="mono text-[10px] truncate" style={dim}>{name}</div>}
       <div className="mt-1">
         {holders.map((h) => <HolderLimit key={`${h.snap.deployment}:${h.contract}`} h={h} where={heading(h, holders)} />)}
       </div>
+      {read && <div className="mono text-[10px] mt-1.5" style={dim}>read {read}</div>}
     </div>
   );
 }

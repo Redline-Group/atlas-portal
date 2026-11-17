@@ -22,5 +22,8 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     e.preventDefault();
     startTransition(() => navigate(to));
   };
+  // A link that opens elsewhere (target="_blank") is the browser's to follow:
+  // wouter's own handler would navigate in place unless the default is prevented.
+  if (rest.target && rest.target !== "_self") return <a ref={ref} href={to} onClick={userOnClick} {...rest} />;
   return <WouterLink ref={ref} to={to} onClick={handle} {...rest} />;
 });

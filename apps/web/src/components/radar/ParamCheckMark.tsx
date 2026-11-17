@@ -65,8 +65,10 @@ function MarkTip({ mark }: { mark: RowMark }) {
   const look = LOOK[mark.mark];
   return (
     <div className="mono text-[10px] space-y-1" style={{ minWidth: 200, maxWidth: 360 }}>
-      <p className="font-semibold" style={{ color: look.color }}>{look.glyph} {mark.head}</p>
-      <SourceMark source="onchain" unlinked hint="This mark compares the Atlas's value with what the contract holds." />
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-semibold" style={{ color: look.color }}>{look.glyph} {mark.head}</p>
+        <SourceMark source="onchain" plain target="_blank" rel="noopener noreferrer" className="shrink-0" hint="This mark compares the Atlas's value with what the contract holds." />
+      </div>
       {mark.lines.map((line, i) => <Line key={i} line={line} />)}
     </div>
   );

@@ -25,7 +25,7 @@ const ROLE_DEFINITIONS_DOC = "2ae4b91a-6900-41e8-9718-32805b956550";
 /** What a role is, with the main ones and the atlas's role definitions. */
 const RolesNote = () => (
   <Callout className="mb-2">
-    <SourceMark source="derived" unlinked detail="our summary" className="mr-1.5" />
+    <SourceMark source="ai" unlinked detail="summary" className="mr-1.5" />
     A role is a permission built into a contract: only an address holding it can call the functions it guards. The admin, Sky governance, grants and
     removes every other role. The relayer, an off-chain bot, moves funds through the controller within its rate limits, and the freezer can cut a
     relayer off in an emergency. More in the atlas&apos;s{" "}

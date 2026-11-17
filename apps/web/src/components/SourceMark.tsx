@@ -13,6 +13,8 @@ interface SourceMarkShape {
   source: SourceClass;
   /** A glyph alone, for a lone value in a container that already explains it. */
   bare?: boolean;
+  /** The glyph and the word without the dotted outline, for a mark that sits in a corner of a small card. */
+  plain?: boolean;
   /** A short fact shown after the word, such as a read time. A sentence belongs in `hint`. */
   detail?: string;
   /** Extra detail in the tooltip only, for what is too long or too technical to sit on the page. */
@@ -29,11 +31,11 @@ export type SourceMarkProps = LinkedMarkProps | UnlinkedMarkProps;
 const CHIP_BOX = "px-1.5 py-0.5 rounded border border-dotted";
 
 /** What the element is made of, whichever tag it takes: the caller's own props go first and these win, except `style`, which is merged. */
-function markAttrs({ source, bare = false, detail, hint, className = "", style }: SourceMarkShape & { className?: string; style?: CSSProperties }) {
+function markAttrs({ source, bare = false, plain = false, detail, hint, className = "", style }: SourceMarkShape & { className?: string; style?: CSSProperties }) {
   return {
     "data-source": source,
     title: [SOURCE_CLASSES[source].meaning, detail, hint].filter(Boolean).join(" "),
-    className: `${MARK_TEXT} ${bare ? "" : CHIP_BOX} ${className}`.trim(),
+    className: `${MARK_TEXT} ${bare || plain ? "" : CHIP_BOX} ${className}`.trim(),
     style: { color: MARK_COLOR, borderColor: MARK_COLOR, ...style },
   };
 }
@@ -61,7 +63,7 @@ function MarkBody({ source, bare = false, detail }: SourceMarkShape) {
  * keys, so a prop added to SourceMarkShape without an entry here fails to
  * compile instead of leaking onto the DOM element.
  */
-const OWN_PROPS: Record<keyof SourceMarkShape | "unlinked", true> = { source: true, bare: true, detail: true, hint: true, unlinked: true };
+const OWN_PROPS: Record<keyof SourceMarkShape | "unlinked", true> = { source: true, bare: true, plain: true, detail: true, hint: true, unlinked: true };
 
 /** The caller's own props, without the ones this component reads. */
 function passThrough(props: object): Record<string, unknown> {

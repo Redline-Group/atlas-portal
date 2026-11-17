@@ -43,6 +43,16 @@ describe("SourceMark", () => {
   });
 });
 
+describe("SourceMark plain", () => {
+  it("shows the glyph and the word without the dotted outline", () => {
+    render(<SourceMark source="onchain" plain unlinked />);
+    const mark = document.querySelector("[data-source='onchain']")!;
+    expect(mark).toHaveTextContent("on-chain");
+    expect(mark.className).not.toContain("border");
+    expect(mark.hasAttribute("plain")).toBe(false);
+  });
+});
+
 describe("SourceMark props", () => {
   it("passes the caller's own props to an unlinked span, with the chip's identity winning", () => {
     let clicked = false;

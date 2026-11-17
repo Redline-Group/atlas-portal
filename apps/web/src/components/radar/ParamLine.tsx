@@ -5,6 +5,7 @@ import { Address } from "../Address";
 import { EVM_ADDRESS_EXACT_RE, SOL_ADDRESS_EXACT_RE } from "@/lib/patterns";
 import type { RowMark } from "../../lib/rowMark";
 import { ParamCheckMark } from "./ParamCheckMark";
+import { SourceMark } from "../SourceMark";
 
 // Whole-string address shape tests — sourced from patterns.ts (the src-side
 // home for these forms) so this doesn't drift into its own copy.
@@ -82,6 +83,11 @@ function ParamDocLink({ docId, name }: { docId: string; name: string }) {
   );
 }
 
+/** Every row is our extraction from the Atlas text: the ∴ sits in the mark column, just before the row's check against the chain. */
+function DerivedMark() {
+  return <SourceMark source="derived" bare unlinked className="ml-2 shrink-0 w-3 text-center" hint="This row is our extraction from the Atlas text." />;
+}
+
 interface ParamLineProps {
   p: InstanceParam;
   colWidth: number;
@@ -117,6 +123,7 @@ export function ParamLine({ p, colWidth, instanceHint, mark = null, markCol = fa
             back to the instance name when the key carries no chain hint. */}
         {renderValue(p.value, [p.key, instanceHint])}
       </span>
+      <DerivedMark />
       {markCol && <ParamCheckMark mark={mark} />}
     </div>
   );

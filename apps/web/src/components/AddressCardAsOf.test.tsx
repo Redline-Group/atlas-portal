@@ -49,8 +49,14 @@ describe("AddressCard as-of", () => {
     expect(row.nextElementSibling).toHaveTextContent("read 2026-11-16 14:02 UTC");
     expect(row.nextElementSibling).toHaveTextContent("prices");
     expect(row.nextElementSibling).toHaveTextContent("DefiLlama");
-    expect(row.nextElementSibling?.querySelector("[data-source='onchain']")).not.toBeNull();
-    expect(row.nextElementSibling?.querySelector("[data-source='external']")).not.toBeNull();
+    // Glyphs only, each a link to its legend entry that opens in a new tab: a word chip does not fit a hover card.
+    for (const [cls, glyph] of [["onchain", "\u2b21"], ["external", "\u29c9"]] as const) {
+      const mark = row.nextElementSibling!.querySelector(`[data-source='${cls}']`)!;
+      expect(mark).toHaveAttribute("href", `/provenance#source-${cls}`);
+      expect(mark).toHaveAttribute("target", "_blank");
+      expect(mark.querySelector("[aria-hidden]")?.textContent).toBe(glyph);
+      expect(mark.className).not.toContain("border");
+    }
   });
 
   it("leaves out the price clause when nothing held is priced, and the row when no time is known", () => {
