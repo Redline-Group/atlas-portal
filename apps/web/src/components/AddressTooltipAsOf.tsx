@@ -22,7 +22,7 @@ export function AddressTooltipAsOf({ readAt, priceAt }: { readAt: string | null;
       </div>
       {quoted && (
         <div>
-          prices <SourceMark source="external" bare {...NEW_TAB} /> DefiLlama {quoted}
+          <SourceMark source="external" bare {...NEW_TAB} /> prices DefiLlama {quoted}
         </div>
       )}
     </TipRow>
