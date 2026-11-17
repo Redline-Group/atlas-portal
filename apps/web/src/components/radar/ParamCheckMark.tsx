@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { explorerTxUrl } from "@/lib/explorer";
 import { atlasOnchainHref } from "@/lib/routes";
 import { AtlasLink } from "../AtlasLink";
@@ -76,15 +77,15 @@ function MarkTip({ mark }: { mark: RowMark }) {
 
 /**
  * A card row's verdict against the chain, in the card's mark column: ✓ ✗ ! ?, a clock (pending),
- * – or a circled ! (the chain holds an ID or value the atlas leaves unstated), linked to the stating document's Onchain tab. The column is kept empty
- * for a row with nothing to check, so every mark in a card lines up.
+ * – or a circled ! (the chain holds an ID or value the atlas leaves unstated), linked to the stating document's Onchain tab. A row with nothing
+ * to check shows `children` in the same slot instead (the card's derived symbol), so the column holds one symbol per row and lines up.
  */
-export function ParamCheckMark({ mark }: { mark: RowMark | null }) {
+export function ParamCheckMark({ mark, children }: { mark: RowMark | null; children?: ReactNode }) {
   const look = mark ? LOOK[mark.mark] : null;
   const glyph = look && <span style={{ color: look.color }}>{look.glyph}</span>;
   return (
     <span className={`${mark ? "relative z-10 " : ""}mono text-[10px] shrink-0 w-4 ml-2 text-center font-semibold`} data-check={mark?.mark}>
-      {mark && (
+      {mark ? (
         <Tooltip content={<MarkTip mark={mark} />} delay={CHECK_TIP_MS}>
           {mark.docId ? (
             <AtlasLink to={atlasOnchainHref(mark.docId)} aria-label={mark.head}>{glyph}</AtlasLink>
@@ -92,6 +93,8 @@ export function ParamCheckMark({ mark }: { mark: RowMark | null }) {
             <span role="img" tabIndex={0} aria-label={mark.head}>{glyph}</span>
           )}
         </Tooltip>
+      ) : (
+        children
       )}
     </span>
   );

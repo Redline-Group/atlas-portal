@@ -56,7 +56,6 @@ export function InstanceCard({ inst, prime, headingLevel = 4, marks }: InstanceC
     return Math.max(...inst.signalParams.map((p) => measureKeyPx(p.key))) + MIN_DOTS_PX;
   }, [inst.signalParams]);
   const rowMarks = useMemo(() => inst.signalParams.map((p) => (marks ? rowMarkFor(marks, inst.docId, p) : null)), [marks, inst.docId, inst.signalParams]);
-  const markCol = rowMarks.some((m) => m !== null);
 
   return (
     <div
@@ -79,7 +78,7 @@ export function InstanceCard({ inst, prime, headingLevel = 4, marks }: InstanceC
       {inst.signalParams.length > 0 && (
         <div>
           {inst.signalParams.map((p, i) => (
-            <ParamRow key={p.key} p={p} prime={prime} colWidth={colWidth} instanceHint={inst.displayName} mark={rowMarks[i]} markCol={markCol} />
+            <ParamRow key={p.key} p={p} prime={prime} colWidth={colWidth} instanceHint={inst.displayName} mark={rowMarks[i]} />
           ))}
         </div>
       )}

@@ -59,9 +59,12 @@ const marks: CardMarks = {
 const shown = (container: HTMLElement) => [...container.querySelectorAll("span.w-4")].map((e) => e.getAttribute("data-check"));
 
 describe("InstanceCard on-chain marks", () => {
-  it("marks every checked row in one column, leaving the rest of the column empty", () => {
+  it("marks every checked row in the one mark column, the rest of it holding the derived symbol", () => {
     const { container } = render(<InstanceCard inst={inst} marks={marks} />);
     expect(shown(container)).toEqual(["not-stated", null, "unsure", "match", "mismatch", "unsure"]);
+    // One symbol per row: a check where there is one, the derived symbol where there is not, never both.
+    const slots = [...container.querySelectorAll("span.w-4")];
+    expect(slots.map((s) => s.querySelector("[data-source='derived']") !== null)).toEqual([false, true, false, false, false, false]);
   });
 
   it("links a mark to the Onchain tab of the document stating the row", () => {
@@ -88,9 +91,11 @@ describe("InstanceCard on-chain marks", () => {
     expect(shown(container)).toEqual(["not-stated"]);
   });
 
-  it("keeps no mark column on a card with nothing checked", () => {
+  it("puts the derived symbol on every row of a card with nothing checked", () => {
     const { container } = render(<InstanceCard inst={inst} />);
-    expect(shown(container)).toEqual([]);
+    const slots = [...container.querySelectorAll("span.w-4")];
+    expect(slots).toHaveLength(6);
+    for (const s of slots) expect(s.querySelector("[data-source='derived']")).not.toBeNull();
   });
 
   it("links every row to the document that states it", () => {
