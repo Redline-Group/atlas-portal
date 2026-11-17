@@ -47,31 +47,28 @@ type ChainSvgProps = Omit<ComponentProps<"svg">, "children"> & { second: ReactNo
 
 /**
  * The first block and the line, then whatever stands in the second block's place.
- * The wrapper is exactly one line tall, aligned to the top of the line box, and
- * centres the svg inside it. That puts the mark at the middle of the line in any
- * font (a baseline offset would drift with the font's metrics), without lengthening
- * the line, so a chip stays as tall as its neighbours. A small lift sits it
- * with the ink of the words and glyphs beside it, which is above the line's centre.
+ * `vertical-align: middle` puts the mark's midpoint at the x-height centre of the
+ * text beside it, which follows whatever font is in use (a baseline offset would
+ * drift with the font's metrics). The mark is shorter than the line, so it never
+ * lengthens it and a chip stays as tall as its neighbours.
  */
 function ChainSvg({ second, style, ...props }: ChainSvgProps) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", width: "1.2em", height: "1lh", verticalAlign: "top" }}>
-      <svg
-        viewBox="0 0 16 10"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        style={{ display: "block", width: "100%", height: "0.75em", transform: "translateY(-0.15em)", ...style }}
-        {...props}
-      >
-        <rect x=".8" y="2.25" width="5.5" height="5.5" rx=".7" />
-        <path d="M6.3 5h3.4" />
-        {second}
-      </svg>
-    </span>
+    <svg
+      viewBox="0 0 16 10"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={{ display: "inline-block", width: "1.2em", height: "0.75em", verticalAlign: "middle", ...style }}
+      {...props}
+    >
+      <rect x=".8" y="2.25" width="5.5" height="5.5" rx=".7" />
+      <path d="M6.3 5h3.4" />
+      {second}
+    </svg>
   );
 }
 

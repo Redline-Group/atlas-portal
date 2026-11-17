@@ -29,10 +29,7 @@ type UnlinkedMarkProps = SourceMarkShape & { unlinked: true } & Omit<ComponentPr
 
 export type SourceMarkProps = LinkedMarkProps | UnlinkedMarkProps;
 
-// The padding is lopsided on purpose: monospace text sits above the middle of its
-// line box (the descender room is below), so a little more at the top centres the
-// ink between the borders.
-const CHIP_BOX = "px-1.5 pt-[5px] pb-0 rounded border border-dotted";
+const CHIP_BOX = "px-1.5 py-0.5 rounded border border-dotted";
 
 /** What the element is made of, whichever tag it takes: the caller's own props go first and these win, except `style`, which is merged. */
 function markAttrs({ source, bare = false, plain = false, detail, hint, className = "", style }: SourceMarkShape & { className?: string; style?: CSSProperties }) {
