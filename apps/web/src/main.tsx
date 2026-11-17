@@ -1,6 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Router } from "wouter";
+// The mono face, served with the app: its metrics decide where text sits in a chip,
+// so it must not depend on a third-party request or a system fallback.
+import "@fontsource/source-code-pro/400.css";
+import "@fontsource/source-code-pro/500.css";
+import "@fontsource/source-code-pro/700.css";
 import "./index.css";
 import App from "./App.tsx";
 import { ErrorBoundary, PanelError } from "./components/ErrorBoundary";

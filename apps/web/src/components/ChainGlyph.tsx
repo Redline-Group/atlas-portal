@@ -49,8 +49,9 @@ type ChainSvgProps = Omit<ComponentProps<"svg">, "children"> & { second: ReactNo
  * The first block and the line, then whatever stands in the second block's place.
  * `vertical-align: middle` puts the mark's midpoint at the x-height centre of the
  * text beside it, which follows whatever font is in use (a baseline offset would
- * drift with the font's metrics). The mark is shorter than the line, so it never
- * lengthens it and a chip stays as tall as its neighbours.
+ * drift with the font's metrics); the small lift matches the optical centre of the
+ * ⊢ and ⧉ glyphs. The mark is shorter than the line, so it never lengthens it and a
+ * chip stays as tall as its neighbours.
  */
 function ChainSvg({ second, style, ...props }: ChainSvgProps) {
   return (
@@ -62,7 +63,7 @@ function ChainSvg({ second, style, ...props }: ChainSvgProps) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      style={{ display: "inline-block", width: "1.2em", height: "0.75em", verticalAlign: "middle", ...style }}
+      style={{ display: "inline-block", width: "1.2em", height: "0.75em", verticalAlign: "middle", transform: "translateY(-0.05em)", ...style }}
       {...props}
     >
       <rect x=".8" y="2.25" width="5.5" height="5.5" rx=".7" />
