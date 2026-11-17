@@ -5,8 +5,6 @@ import { SourceMark } from "../SourceMark";
 import { LinkMark } from "./LinkMark";
 import { extractOtherLinks, toolClassesUsed } from "./otherSources";
 
-const WHAT = { preview: "preview" } as const;
-
 /**
  * The row under the Atlas citations for everything else the answer drew on: a
  * chip per source class the turn's tools returned, then each chain, outside or
@@ -28,7 +26,7 @@ export function OtherSources({ content, calls }: { content: string; calls?: read
           c.class === "preview" ? (
             <span key="preview" className="rlc-cite" title={`Tool results from a PR preview (${c.tools.join(", ")})`}>
               <LinkMark cls="preview" className="mr-1" />
-              <span className="rlc-cite-title">{WHAT.preview}</span>
+              <span className="rlc-cite-title">preview</span>
             </span>
           ) : (
             <SourceMark key={c.class} source={c.class} unlinked hint={`Tool results this turn: ${c.tools.join(", ")}. ${SOURCE_CLASSES[c.class].caveat}`} />

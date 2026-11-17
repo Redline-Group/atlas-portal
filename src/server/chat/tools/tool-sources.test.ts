@@ -53,11 +53,9 @@ test("invokeTool stamps source_classes last, keeping a leading source_class mark
   expect(later.source_classes).toEqual([]);
 });
 
-test("invokeTool leaves a result alone when the tool is undeclared or already says what it draws on", async () => {
+test("invokeTool leaves a result alone when the tool is not declared in the table", async () => {
   const unknown = await invokeTool({} as Indexes, stub("not_a_tool", { a: 1 }), {});
   expect("source_classes" in unknown).toBe(false);
-  const own = await invokeTool({} as Indexes, stub("atlas_get", { source_classes: ["curated"] }), {});
-  expect(own.source_classes).toEqual(["curated"]);
 });
 
 test("a preview tool's result is not stamped: it already says it is a preview, which is not a source class", async () => {

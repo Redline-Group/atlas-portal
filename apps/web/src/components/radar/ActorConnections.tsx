@@ -17,7 +17,7 @@ export function ActorConnections({ profile: { relations, recommendations } }: Ac
           title="Relationships"
           id={RADAR_SECTION.relationships}
           source="derived"
-          sourceDetail="Edges the app extracted from Atlas text. Each row lists the documents it was read from."
+          sourceHint="Edges the app extracted from Atlas text. Each row lists the documents it was read from."
         >
           {relations.map((r, i) => (
             <RelationRow key={i} r={r} />
@@ -29,7 +29,7 @@ export function ActorConnections({ profile: { relations, recommendations } }: Ac
           title="Notable"
           id={RADAR_SECTION.notable}
           source="derived"
-          sourceDetail="Judgements the app computed from the relationships and documents."
+          sourceHint="Judgements the app computed from the relationships and documents."
         >
           {recommendations.map((rec, i) => (
             <RecRow key={i} rec={rec} />

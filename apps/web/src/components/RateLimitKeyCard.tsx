@@ -52,7 +52,7 @@ export function RateLimitKeyCard({ holders }: { holders: KeyHolder[] }) {
   return (
     <div className="min-w-[10rem] max-w-[18rem]">
       <div className="font-medium text-tan">
-        Rate limit <SourceMark source="onchain" bare target="_blank" rel="noopener noreferrer" />
+        Rate limit <SourceMark source="onchain" bare />
       </div>
       {name && <div className="mono text-[10px] truncate" style={dim}>{name}</div>}
       <div className="mt-1">

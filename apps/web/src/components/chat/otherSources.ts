@@ -3,8 +3,8 @@
 // they point, not by anything the model wrote), and the source classes of the
 // tools it called (provenance/toolSources.ts, the table the tool results are
 // stamped from).
-import { classifyLink, type LinkClass } from "@/lib/provenance/linkClass";
-import { normalizeSources, type SourceClass } from "@/lib/provenance/sources";
+import { classifyLink, previewShaOf, type LinkClass } from "@/lib/provenance/linkClass";
+import { SOURCE_CLASS_IDS } from "@/lib/provenance/sources";
 import { PREVIEW_TOOL_NAMES, toolSources } from "@/lib/provenance/toolSources";
 import type { ToolCallRecord } from "./api";
 
@@ -23,8 +23,6 @@ const OTHER_LINK_RE = /\[([^\]\n]+)\]\(((?:https?:\/\/|\/preview\/)[^\s)]+)(?:\s
 // not a link and is not a source.
 const CODE_RE = /(```|~~~)[\s\S]*?(?:\1|$)|`[^`\n]+`/g;
 
-const PREVIEW_SHA_RE = /^\/preview\/([0-9a-f]{40})\//i;
-
 /**
  * Links in the answer that point at a chain, an outside record or a preview, once
  * each, in order. A link into the preview being viewed opens in place like an
@@ -37,7 +35,7 @@ export function extractOtherLinks(content: string, previewSha?: string): OtherLi
     const [, text, href] = m;
     const cls = classifyLink(href);
     if (!cls || seen.has(href)) continue;
-    if (previewSha && PREVIEW_SHA_RE.exec(href)?.[1].toLowerCase() === previewSha.toLowerCase()) continue;
+    if (previewSha && previewShaOf(href) === previewSha.toLowerCase()) continue;
     seen.add(href);
     out.push({ href, text, class: cls });
   }
@@ -45,15 +43,18 @@ export function extractOtherLinks(content: string, previewSha?: string): OtherLi
 }
 
 export interface ToolClassUse {
-  class: SourceClass | "preview";
+  class: LinkClass;
   /** The tools whose results carry it, in call order, once each. */
   tools: string[];
 }
 
+/** Registry order, with a preview last. */
+const CLASS_ORDER: readonly LinkClass[] = [...SOURCE_CLASS_IDS, "preview"];
+
 /** The classes the turn's successful tool calls drew on, in registry order, preview last. */
 export function toolClassesUsed(calls: readonly ToolCallRecord[] | undefined): ToolClassUse[] {
-  const byClass = new Map<SourceClass | "preview", string[]>();
-  const note = (cls: SourceClass | "preview", name: string) => {
+  const byClass = new Map<LinkClass, string[]>();
+  const note = (cls: LinkClass, name: string) => {
     const names = byClass.get(cls) ?? [];
     if (!names.includes(name)) names.push(name);
     byClass.set(cls, names);
@@ -63,6 +64,5 @@ export function toolClassesUsed(calls: readonly ToolCallRecord[] | undefined): T
     if (PREVIEW_TOOL_NAMES.has(c.name)) note("preview", c.name);
     for (const cls of toolSources(c.name) ?? []) note(cls, c.name);
   }
-  const ordered = normalizeSources([...byClass.keys()].filter((k): k is SourceClass => k !== "preview"));
-  return [...ordered, ...(byClass.has("preview") ? (["preview"] as const) : [])].map((cls) => ({ class: cls, tools: byClass.get(cls)! }));
+  return CLASS_ORDER.filter((c) => byClass.has(c)).map((c) => ({ class: c, tools: byClass.get(c)! }));
 }

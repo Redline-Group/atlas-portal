@@ -30,7 +30,7 @@ describe("csvPreamble", () => {
     const lines = text.trimEnd().split("\n");
     expect(lines.every((l) => l.startsWith('"#') && l.endsWith('"'))).toBe(true);
     expect(lines[0]).toBe(`"# Redline Portal: Stale Dates (${lines.length} note lines, then the column headings)"`);
-    expect(lines[1]).toBe('"# Atlas commit: abcdef01. Exported 2026-11-16T13:05Z."');
+    expect(lines[1]).toBe('"# Atlas commit: abcdef01. Exported 2026-11-16 13:05 UTC."');
     expect(text).toContain("∴ derived");
     expect(text).toContain("✳ AI");
     expect(text.endsWith("\n")).toBe(true);

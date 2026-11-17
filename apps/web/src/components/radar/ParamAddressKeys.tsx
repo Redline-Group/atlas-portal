@@ -36,8 +36,8 @@ export function ParamAddressKeys({ prime, paramKey, value }: Props) {
           </Link>
           {` · ${m.derived.constant} · ${m.chain} · ${m.maxAmount === "0" ? "off" : `${formatAmount(m.maxAmount, limitDecimals(m.unit, m.maxAmount))}${m.unit?.symbol ? ` ${m.unit.symbol}` : ""}`}`}
           {" "}
-          <SourceMark source="onchain" bare unlinked detail={`read ${formatReadTime(m.readAt) ?? "at an unknown time"}`} />
-          {` read ${formatReadTime(m.readAt)?.slice(0, 10) ?? "—"}`}
+          <SourceMark source="onchain" bare unlinked />
+          {` read ${formatReadTime(m.readAt) ?? "at an unknown time"}`}
         </li>
       ))}
     </ul>

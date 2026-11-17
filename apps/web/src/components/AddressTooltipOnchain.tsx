@@ -41,7 +41,7 @@ export function AddressTooltipOnchain({
         <AddressTooltipSafe key={safe.chains.join()} safe={safe} />
       ))}
       <AddressTooltipBalances held={held} value={value} loading={!ready} />
-      {ready && (safes.length > 0 || held.length > 0) && <AddressTooltipAsOf readAt={readAt} priceAt={held.some((h) => h.usd) ? priceAt : null} />}
+      {ready && (safes.length > 0 || held.length > 0) && <AddressTooltipAsOf readAt={readAt} priceAt={priceAt} />}
     </>
   );
 }

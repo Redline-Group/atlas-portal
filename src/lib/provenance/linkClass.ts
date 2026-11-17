@@ -11,7 +11,12 @@ import type { SourceClass } from "./sources";
 /** A preview's copy of a document is its own state, not a source class (see sources.ts). */
 export type LinkClass = SourceClass | "preview";
 
-const PREVIEW_PATH_RE = /^\/preview\/[0-9a-f]{40}\//i;
+const PREVIEW_PATH_RE = /^\/preview\/([0-9a-f]{40})\//i;
+
+/** The commit sha of a preview path (`/preview/<sha>/…`); null for any other href. */
+export function previewShaOf(href: string): string | null {
+  return PREVIEW_PATH_RE.exec(href)?.[1].toLowerCase() ?? null;
+}
 
 /** Block explorers, from the chain registry: an address, transaction or block page is a chain read. */
 const EXPLORER_HOSTS = new Set(
@@ -29,7 +34,7 @@ const EXTERNAL_HOSTS = new Set(["forum.sky.money", "vote.sky.money", "github.com
 
 export function classifyLink(href: string | undefined): LinkClass | null {
   if (!href) return null;
-  if (PREVIEW_PATH_RE.test(href)) return "preview";
+  if (previewShaOf(href)) return "preview";
   let host: string;
   try {
     host = new URL(href).host.toLowerCase();

@@ -21,7 +21,7 @@ export function OeaRatingCells({ row }: { row: OeaRow }) {
       <td className="py-2 px-3 align-top"><RatingPill r={e?.precision.rating ?? null} /></td>
       <td className="py-2 px-3 align-top">
         <RatingPill r={e?.incentives.rating ?? null} />
-        {e && <SourceMark source="ai" bare unlinked detail={`Assessed by ${e.model}.`} className="ml-1" />}
+        {e && <SourceMark source="ai" bare unlinked hint={`Assessed by ${e.model}.`} className="ml-1" />}
       </td>
       <td className="py-2 px-3 align-top">
         {row.status !== "fresh" && (

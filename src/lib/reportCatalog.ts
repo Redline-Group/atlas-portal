@@ -50,7 +50,7 @@ const BY_ID = new Map(REPORTS.map((r) => [r.id as ReportId, r]));
 
 function toCard(id: ReportId, category: string, hint: string): ReportCard {
   const r = BY_ID.get(id)!;
-  return { id, title: r.title, description: r.description, sources: normalizeSources(r.sources), category, hint };
+  return { id, title: r.title, description: r.description, sources: REPORT_SOURCES[id], category, hint };
 }
 
 /** Every report id the index renders — the completeness check's input. */

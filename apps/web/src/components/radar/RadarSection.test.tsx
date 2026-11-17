@@ -13,7 +13,7 @@ describe("Section", () => {
   });
 
   it("names the class beside the heading, with the detail on hover", () => {
-    render(<Section title="Relationships" source="derived" sourceDetail="Edges the app extracted."><p>x</p></Section>);
+    render(<Section title="Relationships" source="derived" sourceHint="Edges the app extracted."><p>x</p></Section>);
     const mark = screen.getByRole("link", { name: /derived/ });
     expect(mark.getAttribute("title")).toContain("Edges the app extracted.");
     expect(screen.getByRole("heading", { name: "Relationships", level: 2 })).toBeInTheDocument();

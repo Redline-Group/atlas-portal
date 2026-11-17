@@ -14,8 +14,7 @@ export function buildActorRelations(
   entityById: ReadonlyMap<string, GraphEntity>,
   docs: Record<string, AtlasNode>,
 ): ActorRelation[] {
-  let idByDocNo: Map<string, string> | undefined;
-  const lookup = () => (idByDocNo ??= docIdByDocNo(docs));
+  const idByDocNo = docIdByDocNo(docs);
   const relations: ActorRelation[] = [];
   for (const e of edges) {
     if (!isRelationEdge(e, entityById)) continue;
@@ -26,7 +25,7 @@ export function buildActorRelations(
     if (!other) continue;
     relations.push({
       edge: e,
-      sourceDocs: relationSourceDocs(e.s, lookup),
+      sourceDocs: relationSourceDocs(e.s, idByDocNo),
       direction: dir,
       otherLabel: other.name,
       otherId,

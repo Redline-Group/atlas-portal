@@ -79,15 +79,13 @@ export function invokeTool<T extends { name?: string; emptyArgsAbsent?: boolean;
 /**
  * Stamps what the result draws on besides Atlas text (provenance/toolSources.ts),
  * appended last so a leading `source_class` marker (preview-evidence.ts) stays
- * first. A result that already names its own `source_classes` keeps it, and a
- * preview tool's result says `"source_class":"preview"` instead: a preview is
- * not Atlas text and not a source class.
+ * first. A preview tool's result says `"source_class":"preview"` instead: a
+ * preview is not Atlas text and not a source class.
  */
 function withSourceClasses(name: string, result: ToolResult | Promise<ToolResult>): ToolResult | Promise<ToolResult> {
   const stamp = (r: ToolResult): ToolResult => {
-    if (PREVIEW_TOOL_NAMES.has(name)) return r;
-    const classes = toolSources(name);
-    return classes && r.source_classes === undefined ? { ...r, source_classes: [...classes] } : r;
+    const classes = PREVIEW_TOOL_NAMES.has(name) ? undefined : toolSources(name);
+    return classes ? { ...r, source_classes: [...classes] } : r;
   };
   return result instanceof Promise ? result.then(stamp) : stamp(result);
 }

@@ -10,7 +10,7 @@ interface RelatedDocListProps {
   /** One-line explanation under the heading. */
   blurb?: string;
   /** The list is not Atlas text: its class, with what it means here, beside the heading. */
-  source?: { class: SourceClass; detail: string };
+  source?: { class: SourceClass; hint: string };
   /** Analytics kind for navigation from these cards. */
   kind: string;
   items: { node: AtlasNode; eyebrow?: ReactNode }[];
@@ -29,7 +29,7 @@ export function RelatedDocList({ label, blurb, source, kind, items, onNav, selec
     <section className={className}>
       <p className={`${SECTION_HEAD} ${blurb ? "mb-2" : "mb-4"} flex items-center gap-2`}>
         {label} · {items.length}
-        {source && <SourceMark source={source.class} bare hint={source.detail} />}
+        {source && <SourceMark source={source.class} bare hint={source.hint} />}
       </p>
       {blurb && <p className="text-xs leading-relaxed mb-4 text-tan-3">{blurb}</p>}
       <div className={listClassName}>

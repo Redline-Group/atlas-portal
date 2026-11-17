@@ -7,6 +7,8 @@
 // how many lines the note takes, for a reader that skips them by count (pandas
 // `skiprows=N`); a comment option such as `comment="#"` would also cut a data
 // row at the first "#" in one of its cells, so the count is the safe way.
+import { escapeCell } from "../csv";
+import { formatReadTime } from "./asOf";
 import { SOURCE_CLASSES, normalizeSources, type SourceClass } from "./sources";
 
 export interface CsvPreambleInput {
@@ -17,13 +19,11 @@ export interface CsvPreambleInput {
   exportedAt: Date;
 }
 
-const field = (line: string): string => `"${line.replace(/"/g, '""')}"`;
-
 export function csvPreamble({ title, sources, sha, exportedAt }: CsvPreambleInput): string {
   const classes = normalizeSources(sources);
   const lines = [
     "",
-    `# Atlas commit: ${sha ? sha.slice(0, 8) : "unknown"}. Exported ${exportedAt.toISOString().slice(0, 16)}Z.`,
+    `# Atlas commit: ${sha ? sha.slice(0, 8) : "unknown"}. Exported ${formatReadTime(exportedAt.toISOString()) ?? "at an unknown time"}.`,
   ];
   if (classes.length === 0) {
     lines.push("# Source: Atlas text only.");
@@ -35,5 +35,5 @@ export function csvPreamble({ title, sources, sha, exportedAt }: CsvPreambleInpu
     }
   }
   lines[0] = `# Redline Portal: ${title} (${lines.length} note lines, then the column headings)`;
-  return `${lines.map(field).join("\n")}\n`;
+  return `${lines.map(escapeCell).join("\n")}\n`;
 }

@@ -7,10 +7,6 @@ import { TipRow } from "./AddressTooltipRow";
  * balances (and a Safe's setup) were read, and when the prices valuing them
  * were quoted. Nothing when no reading time is known.
  */
-// The glyphs in a hover card are links to their explanation in the legend, and
-// open in a new tab so reading the card is not interrupted.
-const NEW_TAB = { target: "_blank", rel: "noopener noreferrer" } as const;
-
 export function AddressTooltipAsOf({ readAt, priceAt }: { readAt: string | null; priceAt: string | null }) {
   const read = formatReadTime(readAt);
   if (!read) return null;
@@ -18,11 +14,11 @@ export function AddressTooltipAsOf({ readAt, priceAt }: { readAt: string | null;
   return (
     <TipRow label="as of">
       <div>
-        <SourceMark source="onchain" bare {...NEW_TAB} /> read {read}
+        <SourceMark source="onchain" bare /> read {read}
       </div>
       {quoted && (
         <div>
-          <SourceMark source="external" bare {...NEW_TAB} /> prices DefiLlama {quoted}
+          <SourceMark source="external" bare /> prices DefiLlama {quoted}
         </div>
       )}
     </TipRow>

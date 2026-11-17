@@ -18,7 +18,7 @@ function AddressCardHoldings({ address, info }: { address: string; info: Address
   return (
     <dl className="mb-2 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-0.5 mono text-[11px]">
       <AddressTooltipBalances held={held} value={value} loading={false} />
-      <AddressTooltipAsOf readAt={readAt} priceAt={held.some((h) => h.usd) ? priceAt : null} />
+      <AddressTooltipAsOf readAt={readAt} priceAt={priceAt} />
     </dl>
   );
 }

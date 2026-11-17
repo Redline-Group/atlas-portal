@@ -6,14 +6,14 @@ export function Section({
   title,
   id,
   source,
-  sourceDetail,
+  sourceHint,
   children,
 }: {
   title: string;
   id?: string;
   /** The section is not Atlas text: names its class beside the heading. */
   source?: SourceClass;
-  sourceDetail?: string;
+  sourceHint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -22,7 +22,7 @@ export function Section({
         <h2 className="mono text-[10px] uppercase tracking-wider" style={{ color: "var(--tan-3)" }}>
           {title}
         </h2>
-        {source && <SourceMark source={source} bare hint={sourceDetail} />}
+        {source && <SourceMark source={source} bare hint={sourceHint} />}
       </div>
       {children}
     </section>

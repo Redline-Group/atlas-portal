@@ -6,16 +6,12 @@ export interface RelationSourceDoc {
   id: string | null;
 }
 
-/** Document ids by doc number. Built once per profile, and only when some edge names a source. */
+/** Document ids by doc number. */
 export function docIdByDocNo(docs: Record<string, AtlasNode>): Map<string, string> {
-  const out = new Map<string, string>();
-  for (const d of Object.values(docs)) out.set(d.doc_no, d.id);
-  return out;
+  return new Map(Object.values(docs).map((d) => [d.doc_no, d.id]));
 }
 
 /** An edge's source doc numbers as documents, in the order the edge lists them. */
-export function relationSourceDocs(docNos: readonly string[] | undefined, idByDocNo: () => ReadonlyMap<string, string>): RelationSourceDoc[] {
-  if (!docNos?.length) return [];
-  const ids = idByDocNo();
-  return docNos.map((docNo) => ({ docNo, id: ids.get(docNo) ?? null }));
+export function relationSourceDocs(docNos: readonly string[] | undefined, idByDocNo: ReadonlyMap<string, string>): RelationSourceDoc[] {
+  return (docNos ?? []).map((docNo) => ({ docNo, id: idByDocNo.get(docNo) ?? null }));
 }
