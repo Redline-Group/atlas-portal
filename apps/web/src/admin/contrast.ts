@@ -80,6 +80,7 @@ export const AUDIT_PAIRS: readonly AuditPair[] = [
   { fg: "lilac",         bg: "bg",               label: "lilac (preview renumbered note) / bg" },
   { fg: "source-mark",   bg: "bg",               label: "source mark (provenance chips) / bg" },
   { fg: "source-mark",   bg: "surface",          label: "source mark (provenance chips) / surface" },
+  { fg: "source-mark",   bg: "bg-deep",          label: "source mark (provenance chips) / bg-deep" },
   { fg: "preview-add",   bg: "bg",               label: "preview-add (redline new/changed) / bg" },
   { fg: "lily-green",    bg: "bg",               label: "lily-green / bg" },
   { fg: "diff-added-fg", bg: "diff-added-bg",    label: "diff added text" },

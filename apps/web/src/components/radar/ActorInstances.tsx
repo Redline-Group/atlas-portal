@@ -154,17 +154,6 @@ function ActorItemsSection({ groups, level, prime, marks }: SectionProps) {
   );
 }
 
-/** The page's one note on what the cards are: our reading of each instance's text, and the chain where a mark compares a value with it. */
-function InstanceSources({ checked }: { checked: boolean }) {
-  return (
-    <p className="mb-3 flex flex-wrap items-center gap-2 mono text-[11px]" style={{ color: "var(--tan-3)" }}>
-      <SourceMark source="derived" hint="Each parameter is our extraction from the instance's Atlas text." />
-      {checked && <SourceMark source="onchain" hint="A ✓ ✗ ? mark beside a value compares it with what the contract holds; its hover shows the read time." />}
-      <span>values are our reading of each instance{checked ? "; a mark beside one checks it against the chain" : ""}</span>
-    </p>
-  );
-}
-
 /** A Prime's primitives by category, under the page's h1. Each primitive lists
  *  its invocations and instances together, each labelled by its own status. */
 export function ActorInstances({ primitives, prime }: Props) {
@@ -173,7 +162,12 @@ export function ActorInstances({ primitives, prime }: Props) {
 
   return (
     <section id={RADAR_SECTION.primitives} aria-label="Primitives" style={{ scrollMarginTop: HEADER_OFFSET }}>
-      <InstanceSources checked={!!marks} />
+      {/* The page's one note on what the cards are: our reading of each instance's text, and the chain where a mark compares a value with it. */}
+      <p className="mb-3 flex flex-wrap items-center gap-2 mono text-[11px]" style={{ color: "var(--tan-3)" }}>
+        <SourceMark source="derived" hint="Each parameter is our extraction from the instance's Atlas text." />
+        {marks && <SourceMark source="onchain" hint="A ✓ ✗ ? mark beside a value compares it with what the contract holds; its hover shows the read time." />}
+        <span>values are our reading of each instance{marks ? "; a mark beside one checks it against the chain" : ""}</span>
+      </p>
       <ActorItemsSection groups={groups} level={2} prime={prime} marks={marks} />
     </section>
   );

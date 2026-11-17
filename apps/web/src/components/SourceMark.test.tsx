@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { SOURCE_CLASS_IDS, SOURCE_CLASSES, sourceHref } from "@/lib/provenance/sources";
 import { SourceMark, SourceMarks } from "./SourceMark";
@@ -38,6 +38,35 @@ describe("SourceMark", () => {
   it("uses the dotted border that marks non-Atlas content", () => {
     render(<SourceMark source="curated" />);
     expect(screen.getByRole("link").className).toContain("border-dotted");
+  });
+});
+
+describe("SourceMark props", () => {
+  it("passes the caller's own props to an unlinked span, with the chip's identity winning", () => {
+    let clicked = false;
+    const { container } = render(
+      <SourceMark source="ai" unlinked id="m1" aria-label="written by a model" data-extra="x" onClick={() => (clicked = true)} />,
+    );
+    const mark = container.querySelector("span[data-source='ai']")!;
+    expect(mark).toHaveAttribute("id", "m1");
+    expect(mark).toHaveAttribute("aria-label", "written by a model");
+    expect(mark).toHaveAttribute("data-extra", "x");
+    fireEvent.click(mark);
+    expect(clicked).toBe(true);
+  });
+
+  it("merges a caller's style with the chip colour instead of replacing it", () => {
+    render(<SourceMark source="derived" style={{ marginLeft: 6 }} target="_blank" rel="noopener noreferrer" />);
+    const mark = screen.getByRole("link");
+    expect(mark).toHaveStyle({ marginLeft: "6px", color: "var(--source-mark)" });
+    expect(mark).toHaveAttribute("target", "_blank");
+  });
+
+  it("navigates inside the app on a plain click, and leaves a modified click to the browser", () => {
+    render(<SourceMark source="onchain" />);
+    const mark = screen.getByRole("link");
+    expect(fireEvent.click(mark)).toBe(false);
+    expect(fireEvent.click(mark, { ctrlKey: true })).toBe(true);
   });
 });
 

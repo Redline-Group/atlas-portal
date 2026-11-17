@@ -1,4 +1,6 @@
+import type { ComponentProps, CSSProperties } from "react";
 import { SOURCE_CLASSES, normalizeSources, sourceHref, type SourceClass } from "@/lib/provenance/sources";
+import { Link } from "./Link";
 
 // The one mark for "this is not verbatim Atlas text". Atlas text is never
 // marked; every other class (src/lib/provenance/sources.ts) gets this chip.
@@ -6,7 +8,7 @@ import { SOURCE_CLASSES, normalizeSources, sourceHref, type SourceClass } from "
 // and the dotted border is the rule that a solid edge is reserved for Atlas
 // text. Both carry the meaning, so it survives a monochrome theme.
 
-export type SourceMarkProps = Omit<React.ComponentProps<"a">, "href" | "title" | "children"> & {
+interface SourceMarkShape {
   source: SourceClass;
   /** A glyph alone, for a lone value in a container that already explains it. */
   bare?: boolean;
@@ -14,41 +16,71 @@ export type SourceMarkProps = Omit<React.ComponentProps<"a">, "href" | "title" |
   detail?: string;
   /** Extra detail in the tooltip only, for what is too long or too technical to sit on the page. */
   hint?: string;
-  /** Render a plain span. Needed inside another link, where a nested anchor is invalid. */
-  unlinked?: boolean;
-};
+}
+
+type LinkedMarkProps = SourceMarkShape & { unlinked?: false } & Omit<ComponentProps<"a">, "href" | "title" | "children">;
+
+/** A plain span, needed inside another link, where a nested anchor is invalid; it takes span props, not anchor props. */
+type UnlinkedMarkProps = SourceMarkShape & { unlinked: true } & Omit<ComponentProps<"span">, "title" | "children">;
+
+export type SourceMarkProps = LinkedMarkProps | UnlinkedMarkProps;
 
 const CHIP = "mono text-[11px] leading-none whitespace-nowrap no-underline";
 const CHIP_BOX = "px-1.5 py-0.5 rounded border border-dotted";
 
-export function SourceMark({ source, bare = false, detail, hint, unlinked = false, className = "", ...props }: SourceMarkProps) {
-  const def = SOURCE_CLASSES[source];
-  const common = {
+/** What the element is made of, whichever tag it takes: the caller's own props go first and these win, except `style`, which is merged. */
+function markAttrs({ source, bare = false, detail, hint, className = "", style }: SourceMarkShape & { className?: string; style?: CSSProperties }) {
+  return {
     "data-source": source,
-    title: [def.meaning, detail, hint].filter(Boolean).join(" "),
+    title: [SOURCE_CLASSES[source].meaning, detail, hint].filter(Boolean).join(" "),
     className: `${CHIP} ${bare ? "" : CHIP_BOX} ${className}`.trim(),
-    style: { color: "var(--source-mark)", borderColor: "var(--source-mark)" },
+    style: { color: "var(--source-mark)", borderColor: "var(--source-mark)", ...style },
   };
-  const body = bare ? (
-    <>
-      <span aria-hidden="true">{def.glyph}</span>
-      <span className="sr-only">{def.word}</span>
-    </>
-  ) : (
+}
+
+function MarkBody({ source, bare = false, detail }: SourceMarkShape) {
+  const def = SOURCE_CLASSES[source];
+  if (bare) {
+    return (
+      <>
+        <span aria-hidden="true">{def.glyph}</span>
+        <span className="sr-only">{def.word}</span>
+      </>
+    );
+  }
+  return (
     <>
       <span aria-hidden="true">{def.glyph}</span> {def.word}
       {detail ? ` · ${detail}` : ""}
     </>
   );
-  if (unlinked) return <span {...common}>{body}</span>;
+}
+
+/** The caller's own props, without the ones this component reads. */
+function passThrough<P extends SourceMarkShape & { unlinked?: boolean }>(props: P) {
+  const rest = { ...props } as Record<string, unknown>;
+  for (const k of ["source", "bare", "detail", "hint", "unlinked"]) delete rest[k];
+  return rest;
+}
+
+export function SourceMark(props: SourceMarkProps) {
+  const attrs = markAttrs(props);
+  const body = <MarkBody source={props.source} bare={props.bare} detail={props.detail} />;
+  if (props.unlinked) {
+    return (
+      <span {...(passThrough(props) as ComponentProps<"span">)} {...attrs}>
+        {body}
+      </span>
+    );
+  }
   return (
-    <a {...props} {...common} href={sourceHref(source)}>
+    <Link {...(passThrough(props) as Omit<ComponentProps<"a">, "href">)} {...attrs} to={sourceHref(props.source)}>
       {body}
-    </a>
+    </Link>
   );
 }
 
-export type SourceMarksProps = Omit<React.ComponentProps<"span">, "children"> & {
+export type SourceMarksProps = Omit<ComponentProps<"span">, "children"> & {
   sources: readonly SourceClass[];
   unlinked?: boolean;
 };
@@ -59,9 +91,7 @@ export function SourceMarks({ sources, unlinked, className = "", ...props }: Sou
   if (classes.length === 0) return null;
   return (
     <span className={`inline-flex items-center gap-1.5 flex-wrap ${className}`.trim()} {...props}>
-      {classes.map((id) => (
-        <SourceMark key={id} source={id} unlinked={unlinked} />
-      ))}
+      {classes.map((id) => (unlinked ? <SourceMark key={id} source={id} unlinked /> : <SourceMark key={id} source={id} />))}
     </span>
   );
 }
