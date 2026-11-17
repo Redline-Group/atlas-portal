@@ -11,6 +11,7 @@ import userEvent from "@testing-library/user-event";
 import { RightPanel } from "./RightPanel";
 import { makeNode, makeEdgeResult, makeGlossaryEntry, makeAddressInfo, makeEdge } from "../../test/fixtures";
 import { DataSourceContext } from "../../lib/dataSource";
+import { AtlasActionsContext } from "./AtlasActionsContext";
 import type { AtlasTab } from "../../lib/atlasTab";
 import { buildVoteIndex } from "@/lib/votes/vote-index";
 
@@ -174,7 +175,7 @@ describe("RightPanel tab content", () => {
 
   it("groups glossary terms on the glossary tab", () => {
     setup({ tab: "glossary", glossaryTerms: [[makeGlossaryEntry({ term: "Accord" })]] });
-    expect(screen.getByRole("button", { name: "Accord" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Accord" })).toBeInTheDocument();
   });
 
   it("renders live NodeHistory on the history tab when not in preview", () => {
@@ -251,7 +252,7 @@ describe("RightPanel glossary grouping", () => {
     expect(screen.getByText("First definition.")).toBeInTheDocument();
     expect(screen.getByText("Second definition.")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Accord" }));
+    await user.click(screen.getByRole("link", { name: "Accord" }));
     expect(onNavigate).toHaveBeenCalledWith(nodeId);
 
     await user.click(screen.getByText("Article B"));
@@ -277,8 +278,42 @@ describe("RightPanel graph relations", () => {
       }),
     });
     expect(screen.getByText(/cited by · 1/)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "A.9.9" }));
+    await user.click(screen.getByRole("link", { name: "A.9.9" }));
     expect(onNavigate).toHaveBeenCalledWith("citer-1");
+  });
+
+  it("opens cited-by, relation, defined-in and glossary entries in the comparison pane on shift-click", () => {
+    const actions = { navigate: vi.fn(), toggle: vi.fn(), splitNavigate: vi.fn(), docNoToId: new Map([["A.2.2", "source-doc"]]) };
+    const onNavigate = vi.fn();
+    const onNavigateByDocNo = vi.fn();
+    const props = {
+      id: "node-1", annotationDocs: [], linkedNodes: [], cousinDocs: [], targetAddresses: {}, chainValues: {},
+      glossaryTerms: [[makeGlossaryEntry({ term: "Accord", nodeId: "term-node" })]],
+      graphEdges: makeEdgeResult({
+        inbound: [makeEdge({ e: "cites", f: "citer-1", s: ["A.9.9"] })],
+        outbound: [makeEdge({ e: "depends_on", f: "node-1", t: "target-doc", tt: "doc", to_label: "Target Doc", s: ["A.2.2"] })],
+      }),
+      onNavigate, onNavigateByDocNo, onTabChange: vi.fn(), tab: "notes" as AtlasTab,
+      docs: { "node-1": makeNode({ id: "node-1", content: "No dates here." }) },
+    };
+    const { rerender } = render(
+      <AtlasActionsContext.Provider value={actions}><RightPanel {...props} /></AtlasActionsContext.Provider>,
+    );
+    fireEvent.click(screen.getByRole("link", { name: "A.9.9" }), { shiftKey: true });
+    fireEvent.click(screen.getByRole("link", { name: "Target Doc" }), { shiftKey: true });
+    fireEvent.click(screen.getByRole("link", { name: "A.2.2" }), { shiftKey: true });
+    rerender(
+      <AtlasActionsContext.Provider value={actions}><RightPanel {...props} tab="glossary" /></AtlasActionsContext.Provider>,
+    );
+    fireEvent.click(screen.getByRole("link", { name: "Accord" }), { shiftKey: true });
+    expect(actions.splitNavigate.mock.calls).toEqual([
+      ["citer-1", "link"],
+      ["target-doc", "link"],
+      ["source-doc", "link"],
+      ["term-node", "link"],
+    ]);
+    expect(onNavigate).not.toHaveBeenCalled();
+    expect(onNavigateByDocNo).not.toHaveBeenCalled();
   });
 
   it("falls back to a truncated id when a cited-by edge has no source doc_no", async () => {
@@ -310,7 +345,7 @@ describe("RightPanel graph relations", () => {
       }),
     });
     expect(screen.getByText(/relations · 1/)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Target Doc" }));
+    await user.click(screen.getByRole("link", { name: "Target Doc" }));
     expect(onNavigate).toHaveBeenCalledWith("target-doc");
     await user.click(screen.getByRole("button", { name: "A.2.2" }));
     expect(onNavigateByDocNo).toHaveBeenCalledWith("A.2.2");
@@ -350,7 +385,7 @@ describe("RightPanel graph relations", () => {
     });
     expect(screen.getByText(/relations · 1/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /notes.*1/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Other Doc" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Other Doc" })).toBeInTheDocument();
   });
 
   it("hides the notes section when its only relations are self-nav", () => {

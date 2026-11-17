@@ -3,6 +3,7 @@ import type { CousinDoc } from "../../lib/cousins";
 import type { EdgeResult } from "../../lib/graph";
 import { RelatedDocList } from "./RelatedDocList";
 import { RelationsList } from "./RelationsList";
+import { PanelDocLink } from "./PanelDocLink";
 import { SECTION_HEAD, type Nav, type PanelRelation } from "./panelSections";
 
 interface PanelNotesProps {
@@ -55,13 +56,14 @@ function CitedByList({ citedBy, onNav }: { citedBy: EdgeResult["inbound"]; onNav
       <p className={`${SECTION_HEAD} mb-3`}>cited by · {citedBy.length}</p>
       <div className="space-y-1">
         {citedBy.map((e, i) => (
-          <button
+          <PanelDocLink
             key={i}
-            className="w-full text-left px-2 py-1.5 rounded text-xs mono hover:bg-hover transition-colors text-accent hover:underline"
-            onClick={() => onNav("cited_by", e.f)}
+            docId={e.f}
+            onOpen={() => onNav("cited_by", e.f)}
+            className="block w-full px-2 py-1.5 rounded text-xs mono hover:bg-hover transition-colors text-accent hover:underline"
           >
             {e.s?.[0] ?? e.f.slice(0, 8)}
-          </button>
+          </PanelDocLink>
         ))}
       </div>
     </div>
