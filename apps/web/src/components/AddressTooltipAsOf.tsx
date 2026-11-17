@@ -17,12 +17,13 @@ export function AddressTooltipAsOf({ readAt, priceAt }: { readAt: string | null;
   const quoted = formatReadTime(priceAt);
   return (
     <TipRow label="as of">
-      <SourceMark source="onchain" bare {...NEW_TAB} /> read {read}
+      <div>
+        <SourceMark source="onchain" bare {...NEW_TAB} /> read {read}
+      </div>
       {quoted && (
-        <>
-          {" · prices "}
-          <SourceMark source="external" bare {...NEW_TAB} /> DefiLlama {quoted}
-        </>
+        <div>
+          prices <SourceMark source="external" bare {...NEW_TAB} /> DefiLlama {quoted}
+        </div>
       )}
     </TipRow>
   );

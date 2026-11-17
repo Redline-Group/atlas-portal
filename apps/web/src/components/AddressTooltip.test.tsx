@@ -113,7 +113,9 @@ describe("AddressTooltip", () => {
     await hover(EVM);
     const row = [...screen.getByRole("tooltip").querySelectorAll("dt")].filter((dt) => dt.textContent === "as of");
     expect(row).toHaveLength(1);
-    expect(row[0].nextElementSibling).toHaveTextContent(/read 2026-11-16 14:02 UTC · prices.*DefiLlama \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
+    expect(row[0].nextElementSibling).toHaveTextContent(/read 2026-11-16 14:02 UTC.*prices.*DefiLlama \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
+    // The prices clause starts its own line.
+    expect([...row[0].nextElementSibling!.querySelectorAll(":scope > div")].map((d) => d.textContent?.includes("prices"))).toEqual([false, true]);
   });
 
   it("shows the holdings' total and each priced token's USD value", async () => {
