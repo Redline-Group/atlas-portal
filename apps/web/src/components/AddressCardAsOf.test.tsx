@@ -51,11 +51,12 @@ describe("AddressCard as-of", () => {
     expect(row.nextElementSibling!.querySelectorAll(":scope > div")).toHaveLength(2);
     expect(row.nextElementSibling).toHaveTextContent("DefiLlama");
     // Glyphs only, each a link to its legend entry that opens in a new tab: a word chip does not fit a hover card.
-    for (const [cls, glyph] of [["onchain", "\u2b21"], ["external", "\u29c9"]] as const) {
+    for (const [cls, glyph] of [["onchain", ""], ["external", "\u29c9"]] as const) {
       const mark = row.nextElementSibling!.querySelector(`[data-source='${cls}']`)!;
       expect(mark).toHaveAttribute("href", `/provenance#source-${cls}`);
       expect(mark).toHaveAttribute("target", "_blank");
-      expect(mark.querySelector("[aria-hidden]")?.textContent).toBe(glyph);
+      if (cls === "onchain") expect(mark.querySelector("[data-slot=chain-glyph]")).not.toBeNull();
+      else expect(mark.querySelector("[aria-hidden]")?.textContent).toBe(glyph);
       expect(mark.className).not.toContain("border");
     }
   });

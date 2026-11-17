@@ -52,7 +52,8 @@ describe("RateLimitKeyCard headings", () => {
     const mark = container.querySelector("[data-source='onchain']")!;
     expect(mark).toHaveAttribute("href", "/provenance#source-onchain");
     expect(mark).toHaveAttribute("target", "_blank");
-    expect(mark.textContent).toBe("⬡on-chain");
+    expect(mark.textContent).toBe("on-chain");
+    expect(mark.querySelector("[data-slot=chain-glyph]")).not.toBeNull();
     expect(container.firstElementChild?.firstElementChild?.contains(mark)).toBe(true);
     expect(container).toHaveTextContent("read 2026-10-29");
   });

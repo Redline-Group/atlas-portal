@@ -11,7 +11,7 @@ export const SOURCE_CLASS_IDS = ["onchain", "external", "derived", "ai", "curate
 export type SourceClass = (typeof SOURCE_CLASS_IDS)[number];
 
 export interface SourceClassDef {
-  /** One glyph per class; the word carries the meaning where space allows. */
+  /** One glyph per class as plain text (the CSV preamble); the word carries the meaning where space allows. */
   glyph: string;
   /** The word shown beside the glyph. */
   word: string;
@@ -23,7 +23,7 @@ export interface SourceClassDef {
 
 export const SOURCE_CLASSES: Record<SourceClass, SourceClassDef> = {
   onchain: {
-    glyph: "⬡",
+    glyph: "□—□", // the web renders this as two linked blocks (ChainGlyph.tsx)
     word: "on-chain",
     meaning: "Read from a contract or event log. Always carries a read time.",
     caveat: "As of the read time, not the Atlas commit.",
@@ -35,7 +35,7 @@ export const SOURCE_CLASSES: Record<SourceClass, SourceClassDef> = {
     caveat: "Not Atlas text, and only as current as its last fetch.",
   },
   derived: {
-    glyph: "∴",
+    glyph: "⊢",
     word: "derived",
     meaning: "Redline's reading of the Atlas: extraction, graph edges, classification or computed values.",
     caveat: "Our reading of the Atlas, not what the Atlas says.",

@@ -213,7 +213,7 @@ describe("ActorPau", () => {
     await waitFor(() => expect(table.querySelectorAll("[data-atlas-match]").length).toBeGreaterThan(0));
     const row = table.querySelector("[data-atlas-match=match]")!.closest("tr") as HTMLElement;
     expect(within(row).getByRole("link", { name: "SparkLend USDC · Inflow" })).toBeInTheDocument();
-    expect(within(row).getByRole("link", { name: /^matches the atlas/ })).toHaveTextContent("✓");
+    expect(within(row).getByRole("link", { name: /^matches the atlas/ }).querySelector("[data-verdict=match]")).not.toBeNull();
     expect(table.querySelectorAll("[data-atlas-match=match]")).toHaveLength(1);
   });
 
@@ -232,7 +232,7 @@ describe("ActorPau", () => {
     await screen.findByText("Roles");
     const statuses = [...document.querySelectorAll("li[data-status]")].map((li) => li.getAttribute("data-status"));
     expect(statuses).toEqual(["holds", "holds", "holds", "denied", "unread", "unread"]);
-    expect(screen.getByRole("img", { name: /chain says it does not hold the role/ })).toHaveTextContent("✗");
+    expect(screen.getByRole("img", { name: /chain says it does not hold the role/ }).querySelector("[data-verdict=mismatch]")).not.toBeNull();
     expect(screen.getAllByLabelText("the AdministeredAgent lists it")).toHaveLength(2);
     expect(screen.getByLabelText("membership could not be read")).toBeInTheDocument();
     expect(screen.getByText("not in the stored history")).toBeInTheDocument();

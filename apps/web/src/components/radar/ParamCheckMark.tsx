@@ -3,33 +3,24 @@ import { explorerTxUrl } from "@/lib/explorer";
 import { atlasOnchainHref } from "@/lib/routes";
 import { AtlasLink } from "../AtlasLink";
 import { Tooltip } from "../Tooltip";
-import { ClockGlyph } from "../ClockGlyph";
+import { ChainVerdict } from "../ChainGlyph";
 import type { ParamMark } from "../../lib/paramChecks";
 import type { RowMark, TipLine } from "../../lib/rowMark";
 import { SourceMark } from "../SourceMark";
 import { formatReadTime } from "@/lib/provenance/asOf";
-
-/** An exclamation mark in a circle, at the text's size and colour. */
-const CIRCLED_BANG = (
-  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true" style={{ display: "inline", verticalAlign: "-1px" }}>
-    <circle cx="8" cy="8" r="6.8" />
-    <path d="M8 4.4v4.4" />
-    <path d="M8 11.4v.2" strokeWidth="2.2" />
-  </svg>
-);
 
 // Red is kept for "the atlas is probably wrong" (the chain holds what the atlas
 // leaves unstated), because the reader updates the atlas. A disagreement could
 // be either side's, so it is amber; a key the contract never set is grey, and
 // so is a difference the chain is still expected to catch up on (a clock).
 const LOOK: Record<ParamMark, { glyph: React.ReactNode; color: string }> = {
-  match: { glyph: "✓", color: "var(--terminal-green)" },
-  mismatch: { glyph: "✗", color: "var(--warn)" },
-  pending: { glyph: <ClockGlyph />, color: "var(--tan-3)" },
-  "not-set": { glyph: "!", color: "var(--tan-3)" },
-  "not-stated": { glyph: "–", color: "var(--tan-3)" },
-  candidate: { glyph: CIRCLED_BANG, color: "var(--error-text)" },
-  unsure: { glyph: "?", color: "var(--tan-3)" },
+  match: { glyph: <ChainVerdict kind="match" />, color: "var(--terminal-green)" },
+  mismatch: { glyph: <ChainVerdict kind="mismatch" />, color: "var(--warn)" },
+  pending: { glyph: <ChainVerdict kind="pending" />, color: "var(--tan-3)" },
+  "not-set": { glyph: <ChainVerdict kind="not-set" />, color: "var(--tan-3)" },
+  "not-stated": { glyph: <ChainVerdict kind="not-stated" />, color: "var(--tan-3)" },
+  candidate: { glyph: <ChainVerdict kind="candidate" />, color: "var(--error-text)" },
+  unsure: { glyph: <ChainVerdict kind="unsure" />, color: "var(--tan-3)" },
 };
 
 const dim = { color: "var(--tan-3)" };

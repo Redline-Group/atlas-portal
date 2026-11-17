@@ -57,14 +57,14 @@ describe("PauRateLimits", () => {
     expect(names).toEqual(["Linked param", "LIMIT_4626_DEPOSIT · a", "LIMIT_4626_DEPOSIT · b", "LIMIT_4626_DEPOSIT · c", "LIMIT_USDS_MINT"]);
   });
 
-  it("links each verdict's mark to the document's Onchain tab: ✓ match, ✗ mismatch, ? unsure, and nothing without a verdict", () => {
+  it("links each verdict's mark to the document's Onchain tab: match, mismatch, unsure, and nothing without a verdict", () => {
     const verdicts = new Map([
       [matchId(RL1, KEY), { mark: "mismatch" as const, docId: "doc-1" }],
       [matchId(RL2, KEY), { mark: "unsure" as const, docId: "doc-2" }],
     ]);
     const { container } = render(<PauRateLimits chain="ethereum" limits={[limit(RL1), limit(RL2), limit("0x" + "3".repeat(40))]} keyIndex={new Map()} verdicts={verdicts} anchor={{ id: "ethereum", aliases: [] }} />);
     const cells = within(container).getAllByRole("row").slice(1).map((r) => within(r).getAllByRole("cell")[3]);
-    expect(cells.map((c) => c.textContent)).toEqual(["✗", "?", ""]);
+    expect(cells.map((c) => c.querySelector("[data-verdict]")?.getAttribute("data-verdict") ?? "")).toEqual(["mismatch", "unsure", ""]);
     expect(within(cells[0]).getByRole("link")).toHaveAttribute("href", "/atlas?id=doc-1&view=onchain");
     expect(within(cells[1]).getByRole("link")).toHaveAttribute("href", "/atlas?id=doc-2&view=onchain");
     expect(within(cells[2]).queryByRole("link")).toBeNull();
@@ -78,7 +78,7 @@ describe("PauRateLimits", () => {
       return within(container).getAllByRole("row")[1].querySelectorAll("td")[3];
     };
     const sameChain = cell("arbitrum");
-    expect([sameChain.textContent, within(sameChain).getByRole("link").getAttribute("href")]).toEqual(["?", "/atlas?id=value-doc&view=onchain"]);
+    expect([sameChain.querySelector("[data-verdict]")?.getAttribute("data-verdict"), within(sameChain).getByRole("link").getAttribute("href")]).toEqual(["unsure", "/atlas?id=value-doc&view=onchain"]);
     expect(within(cell("ethereum")).queryByRole("link")).toBeNull();
   });
 

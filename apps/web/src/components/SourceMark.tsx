@@ -2,6 +2,7 @@ import type { ComponentProps, CSSProperties } from "react";
 import { SOURCE_CLASSES, normalizeSources, sourceHref, type SourceClass } from "@/lib/provenance/sources";
 import { Link } from "./Link";
 import { MARK_COLOR, MARK_TEXT } from "./markStyle";
+import { ChainGlyph } from "./ChainGlyph";
 
 // The one mark for "this is not verbatim Atlas text". Atlas text is never
 // marked; every other class (src/lib/provenance/sources.ts) gets this chip.
@@ -40,19 +41,22 @@ function markAttrs({ source, bare = false, plain = false, detail, hint, classNam
   };
 }
 
+/** The class's glyph; on-chain draws as two linked blocks, the rest are text. */
+const SourceGlyph = ({ source }: { source: SourceClass }) => (source === "onchain" ? <ChainGlyph /> : <>{SOURCE_CLASSES[source].glyph}</>);
+
 function MarkBody({ source, bare = false, detail }: SourceMarkShape) {
   const def = SOURCE_CLASSES[source];
   if (bare) {
     return (
       <>
-        <span aria-hidden="true">{def.glyph}</span>
+        <span aria-hidden="true"><SourceGlyph source={source} /></span>
         <span className="sr-only">{def.word}</span>
       </>
     );
   }
   return (
     <>
-      <span aria-hidden="true">{def.glyph}</span> {def.word}
+      <span aria-hidden="true"><SourceGlyph source={source} /></span> {def.word}
       {detail ? ` · ${detail}` : ""}
     </>
   );
