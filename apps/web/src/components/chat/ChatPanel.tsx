@@ -10,7 +10,6 @@ import { useStickToBottom } from "./useStickToBottom";
 import type { PageContextView } from "./pageContext";
 import type { Placement } from "./types";
 import type { ChatSession } from "./useChatSession";
-import type { OnAtlas } from "./chatTypes";
 
 export interface ChatPanelProps {
   /** The conversation state, owned by ChatWidget so it survives the panel closing. */
@@ -18,7 +17,7 @@ export interface ChatPanelProps {
   onClose: () => void;
   context: PageContextView;
   /** Opens an atlas document behind a citation link. */
-  onAtlas: OnAtlas;
+  onAtlas: (uuid: string) => void;
   placement: Placement;
   onTogglePlacement: () => void;
 }

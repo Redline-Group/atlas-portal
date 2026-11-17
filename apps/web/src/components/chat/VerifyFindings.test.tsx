@@ -67,7 +67,7 @@ describe("VerifyFindings", () => {
     const links = screen.getAllByRole("link", { name: "open the source" });
     expect(links).toHaveLength(1);
     fireEvent.click(links[0]);
-    expect(onAtlas).toHaveBeenCalledWith("u-1", { split: false });
+    expect(onAtlas).toHaveBeenCalledWith("u-1");
   });
 
   it("renders a ruling row when rulingIssued is set", () => {

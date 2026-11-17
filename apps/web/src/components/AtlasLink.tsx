@@ -5,7 +5,6 @@ import { ROUTES } from "@/lib/routes";
 import { track } from "../lib/analytics";
 import { hiddenTargetHref, useFilterHides } from "../lib/atlasFilter";
 import { docIdFromPath } from "../lib/visitHistory";
-import { isPlainClick } from "../lib/clickKind";
 import { useDocLinkShiftClick } from "./atlas/AtlasActionsContext";
 
 // Like <Link>, but when the destination is /atlas, folds ?split=, ?subset=
@@ -18,6 +17,10 @@ import { useDocLinkShiftClick } from "./atlas/AtlasActionsContext";
 // reader a shift-click on a doc link follows the row gesture (useDocLinkShiftClick).
 interface Props extends Omit<ComponentPropsWithoutRef<"a">, "href"> {
   to: string;
+  /** A plain click runs this instead of following the href: the caller's own
+   *  navigation (a panel's tracked nav, a reader action that keeps ?view=). The
+   *  href still serves middle-click, open-in-new-tab and copy. */
+  onOpen?: () => void;
 }
 
 type Folded = { href: string; splitId: string | null };
@@ -58,7 +61,7 @@ function foldParams(to: string, live: URLSearchParams, filterHides: (id: string)
 }
 
 export const AtlasLink = forwardRef<HTMLAnchorElement, Props>(function AtlasLink(
-  { to, onClick, onClickCapture, ...rest },
+  { to, onOpen, onClick, onClickCapture, ...rest },
   ref,
 ) {
   const [params] = useSearchParams();
@@ -73,11 +76,17 @@ export const AtlasLink = forwardRef<HTMLAnchorElement, Props>(function AtlasLink
     const docId = docIdFromPath(to);
     if (docId) shiftClick(e, docId);
   };
+  // Only a plain click reaches this: wouter's Link filters the rest out first.
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
     // A caller that handled the click itself (preventDefault) tracks its own navigation.
-    if (!splitId || e.defaultPrevented || !isPlainClick(e)) return;
-    track("atlas_split_open", { node_id: params.get("id"), split_id: splitId, via: "filtered" });
+    if (e.defaultPrevented) return;
+    if (onOpen) {
+      e.preventDefault();
+      onOpen();
+    } else if (splitId) {
+      track("atlas_split_open", { node_id: params.get("id"), split_id: splitId, via: "filtered" });
+    }
   };
   return <Link ref={ref} to={href} onClick={handleClick} onClickCapture={handleClickCapture} {...rest} />;
 });

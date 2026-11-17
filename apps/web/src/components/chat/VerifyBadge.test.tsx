@@ -173,7 +173,7 @@ describe("VerifyBadge", () => {
     render(<VerifyBadge verify={verify} onAtlas={onAtlas} />);
     fireEvent.click(screen.getByRole("button"));
     fireEvent.click(screen.getByRole("link"));
-    expect(onAtlas).toHaveBeenCalledWith("u-1", { split: false });
+    expect(onAtlas).toHaveBeenCalledWith("u-1");
   });
 
   it("invokes onAtlas instead of navigating when a contradiction's source link is clicked", () => {
@@ -186,7 +186,7 @@ describe("VerifyBadge", () => {
     render(<VerifyBadge verify={verify} onAtlas={onAtlas} />);
     fireEvent.click(screen.getByRole("button"));
     fireEvent.click(screen.getByRole("link", { name: "open the source" }));
-    expect(onAtlas).toHaveBeenCalledWith("u-2", { split: false });
+    expect(onAtlas).toHaveBeenCalledWith("u-2");
   });
 
   it("points the chip at the findings list it reveals, and claims no target while unexpandable", () => {

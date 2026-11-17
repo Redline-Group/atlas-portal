@@ -1,11 +1,10 @@
-import { useMemo, type MouseEvent } from "react";
+import { useMemo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
-import { atlasHref } from "@/lib/routes";
+import { DocLink } from "../DocLink";
 import { extractCitedDocs, type CitedDoc } from "@/lib/citationScan";
 import { unwrapCodeCitations } from "./citations";
 import { useDataSource } from "../../lib/dataSource";
 import { useMathPlugins, closeOpenMathFence } from "./chatMath";
-import type { OnAtlas } from "./chatTypes";
 
 // Agent citations are markdown links of the form [Title](/atlas/<uuid>)
 // (system-prompt.ts forces UUID hrefs). We intercept those, SPA-navigate via
@@ -45,7 +44,7 @@ export function balanceFences(text: string): string {
 
 // Atlas citation links (and links into the preview being viewed) SPA-navigate
 // through `onAtlas`; every other href opens in a new tab.
-function markdownComponents(onAtlas: OnAtlas, previewSha: string | undefined): Components {
+function markdownComponents(onAtlas: (uuid: string) => void, previewSha: string | undefined): Components {
   return {
     a({ href, children, ...props }) {
       const uuid = inAppUuid(href, previewSha);
@@ -56,20 +55,16 @@ function markdownComponents(onAtlas: OnAtlas, previewSha: string | undefined): C
           </a>
         );
       }
-      const open = (e: MouseEvent) => {
-        e.preventDefault();
-        onAtlas(uuid, { split: e.shiftKey });
-      };
       return (
-        <a href={atlasHref(uuid)} onClick={open}>
+        <DocLink docId={uuid} onOpen={() => onAtlas(uuid)}>
           {children}
-        </a>
+        </DocLink>
       );
     },
   };
 }
 
-export function AtlasMarkdown({ content, onAtlas }: { content: string; onAtlas: OnAtlas }) {
+export function AtlasMarkdown({ content, onAtlas }: { content: string; onAtlas: (uuid: string) => void }) {
   const previewSha = useDataSource().preview?.sha;
   const components = useMemo(() => markdownComponents(onAtlas, previewSha), [onAtlas, previewSha]);
   const { remarkPlugins, rehypePlugins } = useMathPlugins(content);

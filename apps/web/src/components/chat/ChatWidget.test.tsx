@@ -7,7 +7,6 @@ import { memoryLocation } from "wouter/memory-location";
 import type { PageContextView } from "./pageContext";
 import type { ChatEvent } from "./api";
 import type { ChatSession } from "./useChatSession";
-import type { OnAtlas } from "./chatTypes";
 
 const context: PageContextView = {
   short: "Ask the Sky Atlas",
@@ -44,7 +43,7 @@ vi.mock("./ChatPanel", () => ({
   }: {
     session: ChatSession;
     onClose: () => void;
-    onAtlas: OnAtlas;
+    onAtlas: (uuid: string) => void;
     placement: string;
     onTogglePlacement: () => void;
   }) => (
@@ -59,13 +58,17 @@ vi.mock("./ChatPanel", () => ({
       <button onClick={() => void session.send("hello")}>send</button>
       <button onClick={onClose}>close-panel</button>
       <button onClick={() => onAtlas("11111111-1111-1111-1111-111111111111")}>cite</button>
-      <button onClick={() => onAtlas("11111111-1111-1111-1111-111111111111", { split: true })}>cite-split</button>
+      <DocLink docId="11111111-1111-1111-1111-111111111111" onOpen={() => onAtlas("11111111-1111-1111-1111-111111111111")}>
+        cite-link
+      </DocLink>
       <button onClick={onTogglePlacement}>toggle-placement</button>
     </div>
   ),
 }));
 
 import { ChatWidget } from "./ChatWidget";
+import { DocLink } from "../DocLink";
+import { cancelledBefore } from "../../test/readerLinks";
 import { ChatOpenProvider, useChatOpen } from "../../lib/chatOpen";
 
 function LocationProbe() {
@@ -227,19 +230,18 @@ describe("ChatWidget citation navigation", () => {
   it("opens a shift-clicked citation in the reader's comparison pane", () => {
     renderWidget("/atlas?id=22222222-2222-2222-2222-222222222222");
     fireEvent.click(screen.getByLabelText("Open Redline Portal Chat"));
-    fireEvent.click(screen.getByText("cite-split"));
+    fireEvent.click(screen.getByText("cite-link"), { shiftKey: true });
     const params = new URLSearchParams(screen.getByTestId("search").textContent ?? "");
     expect(params.get("id")).toBe("22222222-2222-2222-2222-222222222222");
     expect(params.get("split")).toBe("11111111-1111-1111-1111-111111111111");
     expect(track).toHaveBeenCalledWith("atlas_split_open", expect.objectContaining({ via: "link" }));
   });
 
-  it("navigates normally on a shift-clicked citation away from the reader", () => {
+  it("leaves a shift-clicked citation to the browser away from the reader", () => {
     renderWidget("/radar");
     fireEvent.click(screen.getByLabelText("Open Redline Portal Chat"));
-    fireEvent.click(screen.getByText("cite-split"));
-    expect(screen.getByTestId("loc")).toHaveTextContent("/atlas");
-    expect(screen.getByTestId("search")).toHaveTextContent("id=11111111-1111-1111-1111-111111111111");
+    expect(cancelledBefore(screen.getByText("cite-link"), { shiftKey: true })).toBe(false);
+    expect(screen.getByTestId("loc")).toHaveTextContent("/radar");
   });
 });
 

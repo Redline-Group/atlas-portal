@@ -5,7 +5,8 @@ import type { StageSlotContent } from "./stageSlotContent";
 import { SupersededAnswer } from "./SupersededAnswer";
 import { TraceRowView } from "./TraceRow";
 import { VerifyFindings } from "./VerifyFindings";
-import type { OnAtlas } from "./chatTypes";
+
+type OnAtlas = (uuid: string) => void;
 
 export interface StageSlotProps {
   /** What this stage row discloses — pick it with `stageSlotContent(msg, entry)`. */

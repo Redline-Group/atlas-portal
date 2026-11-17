@@ -12,6 +12,8 @@ import { RightPanel } from "./RightPanel";
 import { makeNode, makeEdgeResult, makeGlossaryEntry, makeAddressInfo, makeEdge } from "../../test/fixtures";
 import { DataSourceContext } from "../../lib/dataSource";
 import { AtlasActionsContext } from "./AtlasActionsContext";
+import { makeAtlasActions } from "../../test/readerLinks";
+import { docIdFromPath } from "../../lib/visitHistory";
 import type { AtlasTab } from "../../lib/atlasTab";
 import { buildVoteIndex } from "@/lib/votes/vote-index";
 
@@ -36,11 +38,9 @@ afterEach(() => {
 });
 
 
-type ReaderActions = React.ComponentProps<typeof AtlasActionsContext.Provider>["value"];
-
 // Renders the panel, inside the reader's actions context when `actions` is given
 // (as AtlasView renders it), standalone otherwise.
-function setup(overrides: Partial<Parameters<typeof RightPanel>[0]> = {}, actions?: ReaderActions) {
+function setup(overrides: Partial<Parameters<typeof RightPanel>[0]> = {}, actions?: ReturnType<typeof makeAtlasActions>) {
   const onTabChange = vi.fn();
   const onNavigate = vi.fn();
   const props = {
@@ -58,17 +58,9 @@ function setup(overrides: Partial<Parameters<typeof RightPanel>[0]> = {}, action
     docs: { "node-1": makeNode({ id: "node-1", content: "No dates here." }) },
     ...overrides,
   };
-  const wrapper = actions
-    ? ({ children }: { children: React.ReactNode }) => (
-        <AtlasActionsContext.Provider value={actions}>{children}</AtlasActionsContext.Provider>
-      )
-    : undefined;
-  render(<RightPanel {...props} />, { wrapper });
+  const panel = <RightPanel {...props} />;
+  render(actions ? <AtlasActionsContext.Provider value={actions}>{panel}</AtlasActionsContext.Provider> : panel);
   return { onTabChange, onNavigate };
-}
-
-function readerActions(docNoToId: [string, string][] = []) {
-  return { navigate: vi.fn(), toggle: vi.fn(), splitNavigate: vi.fn(), docNoToId: new Map(docNoToId) };
 }
 
 describe("RightPanel section pills", () => {
@@ -235,7 +227,7 @@ describe("RightPanel tab content", () => {
 });
 
 describe("RightPanel glossary grouping", () => {
-  it("shows source-context buttons and content for multi-entry groups, and navigates on click", async () => {
+  it("shows source-context links and content for multi-entry groups, and navigates on click", async () => {
     const user = userEvent.setup();
     const nodeId = "term-node";
     const { onNavigate } = setup({
@@ -269,7 +261,7 @@ describe("RightPanel glossary grouping", () => {
     expect(onNavigate).toHaveBeenCalledWith("term-node-2");
   });
 
-  it("omits the source-context button for a single-entry group", () => {
+  it("omits the source-context link for a single-entry group", () => {
     setup({
       tab: "glossary",
       glossaryTerms: [[makeGlossaryEntry({ term: "Solo", sourceContext: "Should not show" })]],
@@ -296,9 +288,10 @@ describe("RightPanel graph relations", () => {
   // each doc link opens the comparison pane on shift-click, and no button
   // navigates (a navigating button is how cited-by once missed the gesture).
   it("routes every doc link's shift-click to the comparison pane, and has no navigating buttons", () => {
-    const actions = readerActions([["A.2.2", "source-doc"]]);
+    const actions = makeAtlasActions();
     const { onNavigate } = setup(
       {
+        docNoToId: new Map([["A.2.2", "source-doc"]]),
         annotationDocs: [makeNode({ id: "annot-1", doc_no: "A.1.0.3.1", title: "Annotation Doc" })],
         linkedNodes: [makeNode({ id: "linked-1", title: "Linked Doc" })],
         cousinDocs: [{ node: makeNode({ id: "cousin-1", title: "Cousin Doc" }), agent: "Spark" }],
@@ -313,8 +306,8 @@ describe("RightPanel graph relations", () => {
       },
       actions,
     );
-    const docLinks = screen.getAllByRole("link").filter((a) => a.getAttribute("href")?.startsWith("/atlas?id="));
-    const ids = docLinks.map((a) => new URLSearchParams(a.getAttribute("href")!.split("?")[1]).get("id"));
+    const docLinks = screen.getAllByRole("link").filter((a) => docIdFromPath(a.getAttribute("href") ?? ""));
+    const ids = docLinks.map((a) => docIdFromPath(a.getAttribute("href")!));
     expect(ids).toEqual(expect.arrayContaining(["annot-1", "linked-1", "cousin-1", "citer-1", "target-doc", "source-doc", "term-node", "term-node-2"]));
     for (const a of docLinks) fireEvent.click(a, { shiftKey: true });
     expect(actions.splitNavigate.mock.calls).toEqual(ids.map((id) => [id, "link"]));
@@ -332,7 +325,7 @@ describe("RightPanel graph relations", () => {
     expect(screen.getByText("12345678")).toBeInTheDocument();
   });
 
-  it("renders outbound relations with a navigable doc target, and a defining doc_no as text outside the reader", async () => {
+  it("renders outbound relations with a navigable doc target, and an unmatched defining doc_no as text", async () => {
     const user = userEvent.setup();
     const { onNavigate } = setup({
       id: "self-id",
@@ -359,14 +352,12 @@ describe("RightPanel graph relations", () => {
 
   it("links a relation's defining doc_no once it resolves to a document", async () => {
     const user = userEvent.setup();
-    const { onNavigate } = setup(
-      {
-        graphEdges: makeEdgeResult({
-          outbound: [makeEdge({ e: "depends_on", f: "node-1", t: "target-doc", tt: "doc", to_label: "Target Doc", s: ["A.2.2"] })],
-        }),
-      },
-      readerActions([["A.2.2", "source-doc"]]),
-    );
+    const { onNavigate } = setup({
+      docNoToId: new Map([["A.2.2", "source-doc"]]),
+      graphEdges: makeEdgeResult({
+        outbound: [makeEdge({ e: "depends_on", f: "node-1", t: "target-doc", tt: "doc", to_label: "Target Doc", s: ["A.2.2"] })],
+      }),
+    });
     await user.click(screen.getByRole("link", { name: "A.2.2" }));
     expect(onNavigate).toHaveBeenCalledWith("source-doc");
   });

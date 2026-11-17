@@ -1,10 +1,17 @@
 // @vitest-environment jsdom
-import { describe, it, expect, afterEach } from "vitest";
-import { render, cleanup } from "@testing-library/react";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
+import { createPortal } from "react-dom";
+import type { ReactNode } from "react";
 import { AtlasLink } from "./AtlasLink";
+import { AtlasActionsContext } from "./atlas/AtlasActionsContext";
 import { atlasHref } from "@/lib/routes";
+import { cancelledBefore, makeAtlasActions } from "../test/readerLinks";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.history.replaceState(null, "", "/");
+});
 
 describe("AtlasLink", () => {
   it("carries split and subset from the current URL into the target", () => {
@@ -55,5 +62,49 @@ describe("AtlasLink", () => {
     window.history.replaceState(null, "", "/atlas?id=old&split=cmp&subset=changed");
     const { container } = render(<AtlasLink to="/collections">go</AtlasLink>);
     expect(container.querySelector("a")!.getAttribute("href")).toBe("/collections");
+  });
+});
+
+// Inside the reader a shift-click follows the row gesture: the provider's
+// splitNavigate, tagged via "link". The direction comes from whichever provider
+// the link renders under, so a link in a portal (an address tooltip) follows
+// the pane it was opened from. Outside the reader there is no provider and the
+// browser keeps its own shift-click.
+describe("AtlasLink in the reader", () => {
+  function inReader(children: ReactNode) {
+    const actions = makeAtlasActions();
+    render(<AtlasActionsContext.Provider value={actions}>{children}</AtlasActionsContext.Provider>);
+    return actions;
+  }
+
+  it("routes a shift-click to splitNavigate", () => {
+    const actions = inReader(<AtlasLink to={atlasHref("doc-a")}>go</AtlasLink>);
+    expect(cancelledBefore(screen.getByText("go"), { shiftKey: true })).toBe(true);
+    expect(actions.splitNavigate).toHaveBeenCalledWith("doc-a", "link");
+  });
+
+  it("follows the provider through a portal", () => {
+    const actions = inReader(createPortal(<AtlasLink to={atlasHref("doc-a")}>tip</AtlasLink>, document.body));
+    fireEvent.click(screen.getByText("tip"), { shiftKey: true });
+    expect(actions.splitNavigate).toHaveBeenCalledWith("doc-a", "link");
+  });
+
+  it("leaves other modifier combinations to the browser", () => {
+    const actions = inReader(<AtlasLink to={atlasHref("doc-a")}>go</AtlasLink>);
+    expect(cancelledBefore(screen.getByText("go"), { shiftKey: true, metaKey: true })).toBe(false);
+    expect(actions.splitNavigate).not.toHaveBeenCalled();
+  });
+
+  it("keeps the browser's shift-click outside the reader", () => {
+    render(<AtlasLink to={atlasHref("doc-a")}>go</AtlasLink>);
+    expect(cancelledBefore(screen.getByText("go"), { shiftKey: true })).toBe(false);
+  });
+
+  it("hands a plain click to onOpen instead of following the href", () => {
+    const onOpen = vi.fn();
+    render(<AtlasLink to={atlasHref("doc-a")} onOpen={onOpen}>go</AtlasLink>);
+    expect(cancelledBefore(screen.getByText("go"))).toBe(true);
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    expect(window.location.search).toBe("");
   });
 });

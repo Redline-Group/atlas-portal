@@ -1,40 +1,27 @@
 // @vitest-environment jsdom
-// DocLink is the one hand-built doc link: a plain click is the caller's
-// navigation, a shift-click inside the reader opens the comparison pane, and
-// every other click is the browser's. The source scan at the bottom keeps it
-// the only one, so a new doc link cannot miss those gestures.
+// DocLink: a plain click is the caller's navigation, a shift-click inside the
+// reader opens the comparison pane, and every other click is the browser's.
+// The source scan at the bottom keeps every doc link on DocLink or AtlasLink,
+// so a new one cannot miss those gestures.
 
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DocLink } from "./DocLink";
 import { AtlasActionsContext } from "./atlas/AtlasActionsContext";
+import { cancelledBefore, makeAtlasActions } from "../test/readerLinks";
 
 afterEach(cleanup);
 
 function renderLink(inReader: boolean) {
   const onOpen = vi.fn();
-  const actions = { navigate: vi.fn(), toggle: vi.fn(), splitNavigate: vi.fn() };
+  const actions = makeAtlasActions();
   const link = <DocLink docId="doc-a" onOpen={onOpen}>go</DocLink>;
   render(inReader ? <AtlasActionsContext.Provider value={actions}>{link}</AtlasActionsContext.Provider> : link);
   return { onOpen, splitNavigate: actions.splitNavigate, a: screen.getByText("go") };
-}
-
-// Whether anything before the document cancelled the click; cancels it after,
-// so jsdom does not try to follow the link.
-function cancelledBefore(a: HTMLElement, init: MouseEventInit): boolean {
-  let cancelled = false;
-  const watch = (e: MouseEvent) => {
-    cancelled = e.defaultPrevented;
-    e.preventDefault();
-  };
-  document.addEventListener("click", watch);
-  fireEvent.click(a, init);
-  document.removeEventListener("click", watch);
-  return cancelled;
 }
 
 describe("DocLink", () => {
@@ -44,7 +31,7 @@ describe("DocLink", () => {
 
   it("hands a plain click to onOpen", () => {
     const { onOpen, a } = renderLink(true);
-    expect(cancelledBefore(a, {})).toBe(true);
+    expect(cancelledBefore(a)).toBe(true);
     expect(onOpen).toHaveBeenCalledTimes(1);
   });
 
@@ -69,30 +56,33 @@ describe("DocLink", () => {
 
 const SRC = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-function sourceFiles(dir: string): string[] {
-  return readdirSync(dir).flatMap((name) => {
-    const full = path.join(dir, name);
-    if (statSync(full).isDirectory()) return sourceFiles(full);
-    return /\.tsx$/.test(name) && !/\.test\.tsx$/.test(name) ? [full] : [];
-  });
-}
+const sourceFiles = (): string[] =>
+  readdirSync(SRC, { recursive: true, encoding: "utf8" })
+    .filter((f) => f.endsWith(".tsx") && !f.endsWith(".test.tsx"))
+    .map((f) => f.split(path.sep).join("/"));
 
-// Files allowed to write a doc link by hand, and why.
+// A doc link written by hand: an anchor or a bare wouter Link pointed at
+// atlasHref. Either one skips the reader's shift-click.
+const HAND_BUILT = [/<a\b[^>]*?\bhref=\{\s*atlasHref\(/, /<Link\b[^>]*?\bto=\{\s*atlasHref\(/];
+
+// Paths (a file, or a folder ending in "/") allowed to, and why.
 const ALLOWED: Record<string, string> = {
   "components/DocLink.tsx": "the primitive itself",
-  "components/chat/markdown.tsx": "chat sits outside the reader; shift-click goes through onAtlas({ split })",
-  "components/chat/Sources.tsx": "chat sits outside the reader; shift-click goes through onAtlas({ split })",
-  "components/chat/FindingCite.tsx": "chat sits outside the reader; shift-click goes through onAtlas({ split })",
+  "components/crossview/": "the CrossView report, off the reader: no comparison pane to open",
+  "components/visits/": "the visits page, off the reader: no comparison pane to open",
 };
 
+const allowed = (f: string) => Object.keys(ALLOWED).some((a) => (a.endsWith("/") ? f.startsWith(a) : f === a));
+
 describe("doc links in source", () => {
-  it("are built by hand only in DocLink (or a listed exception)", () => {
-    const offenders = sourceFiles(SRC)
-      .filter((f) => readFileSync(f, "utf8").includes("href={atlasHref("))
-      .map((f) => path.relative(SRC, f).split(path.sep).join("/"))
-      .filter((f) => !(f in ALLOWED));
-    // A doc link: <DocLink> for a link with its own click handler, <AtlasLink>
-    // for one whose href navigates.
+  it("go through DocLink or AtlasLink (or a listed exception)", () => {
+    const offenders = sourceFiles().filter((f) => {
+      const text = readFileSync(path.join(SRC, f), "utf8");
+      return HAND_BUILT.some((re) => re.test(text)) && !allowed(f);
+    });
+    // <DocLink> for a link that runs its own navigation and reads no URL state;
+    // <AtlasLink> (with onOpen for its own navigation) for one whose href
+    // should carry the reader's split and filter.
     expect(offenders).toEqual([]);
   });
 });

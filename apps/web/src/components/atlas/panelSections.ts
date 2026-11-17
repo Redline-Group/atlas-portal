@@ -33,6 +33,8 @@ export interface RightPanelProps {
    *  re-render this panel (or the sibling reader) — only the checkbox itself. */
   selectable?: boolean;
   byParent?: Map<string | null, AtlasNode[]>;
+  /** doc_no → uuid, so a relation's "defined in" doc_no can link to its document. */
+  docNoToId?: Map<string, string>;
   /** Every document, for matching the onchain section's Executive Votes to this one's dated claims. */
   docs: Record<string, AtlasNode>;
   /** The prime's rate-limit params when this document states one of its instances' values, for the onchain section's atlas-vs-contract table. */

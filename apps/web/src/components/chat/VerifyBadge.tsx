@@ -1,7 +1,6 @@
 import { useId, useState } from "react";
 import type { VerifyState } from "./useChatStream";
 import { VerifyFindings, hasFindings } from "./VerifyFindings";
-import type { OnAtlas } from "./chatTypes";
 
 // Verification chip for an assistant answer (chat reliability harness,
 // refutation-only design — the verifier only ever reports what the evidence
@@ -25,7 +24,7 @@ function chipLabel(verify: VerifyState): string {
 }
 
 
-export function VerifyBadge({ verify, onAtlas }: { verify: VerifyState; onAtlas: OnAtlas }) {
+export function VerifyBadge({ verify, onAtlas }: { verify: VerifyState; onAtlas: (uuid: string) => void }) {
   const [open, setOpen] = useState(false);
   const findingsId = useId();
   if (verify.status === "unverified") return null;

@@ -1,7 +1,6 @@
 import { Fragment, type ComponentProps } from "react";
 import type { VerifyState } from "./useChatStream";
 import { FINDING_ROWS } from "./findingRows";
-import type { OnAtlas } from "./chatTypes";
 
 // The expanded findings list behind VerifyBadge's chip — the "why" half; the
 // chip is the "what". Refutation-only: a candidate the confirm judge did not
@@ -18,7 +17,7 @@ export type VerifyFindingsProps = ComponentProps<"ul"> & {
   /** The verdict whose findings to list. Renders nothing for a clean one. */
   verify: VerifyState;
   /** Opens an atlas document behind a citation link in a finding. */
-  onAtlas: OnAtlas;
+  onAtlas: (uuid: string) => void;
 };
 
 export function VerifyFindings({ verify, onAtlas, className, ...props }: VerifyFindingsProps) {

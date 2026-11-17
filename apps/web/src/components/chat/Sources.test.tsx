@@ -94,14 +94,7 @@ describe("Sources", () => {
       product: "chat",
       node_id: "11111111-1111-1111-1111-111111111111",
     });
-    expect(onAtlas).toHaveBeenCalledWith("11111111-1111-1111-1111-111111111111", { split: false });
-  });
-
-  it("asks for the comparison pane on a shift-click", () => {
-    const onAtlas = vi.fn();
-    render(<Sources sources={[{ uuid: "11111111-1111-1111-1111-111111111111", title: "Some Doc" }]} onAtlas={onAtlas} />);
-    fireEvent.click(screen.getByText("Some Doc").closest("a")!, { shiftKey: true });
-    expect(onAtlas).toHaveBeenCalledWith("11111111-1111-1111-1111-111111111111", { split: true });
+    expect(onAtlas).toHaveBeenCalledWith("11111111-1111-1111-1111-111111111111");
   });
 
   it("offers 'view all docs from this conversation' next to the count only when a collection link is given", () => {

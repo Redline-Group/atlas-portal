@@ -407,15 +407,7 @@ export const CollapsibleNode = memo(function CollapsibleNode({
                 selection); AtlasLink's href is for middle-click / copy —
                 AtlasLink only folds split/subset, not the active tab. */}
             {annotatesId ? (
-              <AtlasLink
-                to={atlasHref(annotatesId)}
-                className="atlas-annotates"
-                onClick={(e) => {
-                  if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.button !== 0) return;
-                  e.preventDefault();
-                  navigate(annotatesId);
-                }}
-              >
+              <AtlasLink to={atlasHref(annotatesId)} className="atlas-annotates" onOpen={() => navigate(annotatesId)}>
                 Annotates {annotates}
               </AtlasLink>
             ) : (

@@ -1,11 +1,10 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocation } from "wouter";
-import { atlasHref, ROUTES } from "@/lib/routes";
-import { useAtlasNodeId } from "../../hooks/useAtlasNodeId";
-import { useSplitPane } from "../../hooks/useSplitPane";
-import type { OnAtlas } from "./chatTypes";
+import { atlasHref } from "@/lib/routes";
 import { ChatLauncher } from "./ChatLauncher";
 import { ChatPanel } from "./ChatPanel";
+import { useCitationReaderActions } from "./useCitationReaderActions";
+import { AtlasActionsContext } from "../atlas/AtlasActionsContext";
 import { useChatSession } from "./useChatSession";
 import { usePageContext } from "./pageContext";
 import { readFreshResume } from "./resume";
@@ -30,8 +29,7 @@ export function ChatWidget() {
   const [resume] = useState(readFreshResume);
   const { open, setOpen, openChat, closeChat } = useOpenState(resume !== null);
   const [placement, togglePlacement] = usePlacement();
-  const [location, navigate] = useLocation();
-  const { handleSplitChange } = useSplitPane(useAtlasNodeId());
+  const [, navigate] = useLocation();
   const context = usePageContext();
   const session = useChatSession(open);
   useResumeConversation(resume, session.openConversation);
@@ -39,29 +37,20 @@ export function ChatWidget() {
   useChatOpenChannel(session, setOpen);
   useChatHotkeys(openChat, closeChat);
   useAnchoredLayout(open, placement);
-  // Atlas citation click → SPA-navigate to the reader, keep the panel open. A
-  // shift-click on the reader opens the doc in its comparison pane instead,
-  // like shift-clicking any other doc link there.
-  // The route is read through a ref so onAtlas keeps one identity: every
-  // answer's markdown renderer is memoized on it.
-  const route = useRef(location);
-  route.current = location;
-  const onAtlas = useCallback<OnAtlas>(
-    (uuid, opts) => {
-      if (opts?.split && route.current === ROUTES.ATLAS) handleSplitChange(uuid, "link");
-      else navigate(atlasHref(uuid));
-    },
-    [navigate, handleSplitChange],
-  );
+  // Atlas citation click → SPA-navigate to the reader, keep the panel open.
+  const onAtlas = useCallback((uuid: string) => navigate(atlasHref(uuid)), [navigate]);
+  const readerActions = useCitationReaderActions(onAtlas);
   if (!open) return <ChatLauncher onOpen={openChat} context={context} />;
   return (
-    <ChatPanel
-      session={session}
-      onClose={closeChat}
-      context={context}
-      onAtlas={onAtlas}
-      placement={placement}
-      onTogglePlacement={togglePlacement}
-    />
+    <AtlasActionsContext.Provider value={readerActions}>
+      <ChatPanel
+        session={session}
+        onClose={closeChat}
+        context={context}
+        onAtlas={onAtlas}
+        placement={placement}
+        onTogglePlacement={togglePlacement}
+      />
+    </AtlasActionsContext.Provider>
   );
 }

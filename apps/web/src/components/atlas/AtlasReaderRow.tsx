@@ -37,6 +37,7 @@ export function AtlasReaderRow(props: AtlasReaderRowProps) {
           onNavigate={onNavigate}
           selectable={selectable}
           byParent={data.atlas.byParent}
+          docNoToId={data.atlas.docNoToId}
           docs={data.atlas.docs}
         />
       )}

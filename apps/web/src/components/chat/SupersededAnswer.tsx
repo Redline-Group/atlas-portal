@@ -2,12 +2,11 @@ import type { ComponentProps } from "react";
 import { AtlasMarkdown, balanceFences } from "./markdown";
 import { ParagraphChecks } from "./ParagraphChecks";
 import type { SupersededDraft } from "./useChatStream";
-import type { OnAtlas } from "./chatTypes";
 
 export type SupersededAnswerProps = ComponentProps<"div"> & {
   /** Drafts this turn showed the reader and moved on from, in arrival order. */
   drafts: SupersededDraft[];
-  onAtlas: OnAtlas;
+  onAtlas: (uuid: string) => void;
 };
 
 // Why each block stopped being the answer. Every one ends by pointing DOWN:

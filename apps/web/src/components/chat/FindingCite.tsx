@@ -1,13 +1,12 @@
 import type { ReactNode } from "react";
-import { atlasHref } from "@/lib/routes";
+import { DocLink } from "../DocLink";
 import { track } from "../../lib/analytics";
-import type { OnAtlas } from "./chatTypes";
 
 export interface FindingCiteProps {
   /** The atlas document the finding points at. */
   uuid: string;
   /** Opens that document in the reader. */
-  onAtlas: OnAtlas;
+  onAtlas: (uuid: string) => void;
   children: ReactNode;
 }
 
@@ -15,16 +14,15 @@ export interface FindingCiteProps {
 // records the same `chat_citation_click` as an answer citation.
 export function FindingCite({ uuid, onAtlas, children }: FindingCiteProps) {
   return (
-    <a
+    <DocLink
       className="rlc-cite"
-      href={atlasHref(uuid)}
-      onClick={(e) => {
-        e.preventDefault();
+      docId={uuid}
+      onOpen={() => {
         track("chat_citation_click", { product: "chat", node_id: uuid });
-        onAtlas(uuid, { split: e.shiftKey });
+        onAtlas(uuid);
       }}
     >
       {children}
-    </a>
+    </DocLink>
   );
 }

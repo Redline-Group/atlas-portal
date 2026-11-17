@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import type { ParamMismatch, VerifyContradiction } from "./api";
-import type { OnAtlas, VerifyState } from "./chatTypes";
+import type { VerifyState } from "./chatTypes";
 import { FindingCite } from "./FindingCite";
+
+type OnAtlas = (uuid: string) => void;
 
 /** One kind of verify finding: whether a verdict has any, and its `<li>` rows. */
 export interface FindingRow {

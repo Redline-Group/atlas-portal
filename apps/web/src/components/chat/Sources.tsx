@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { atlasHref } from "@/lib/routes";
+import { DocLink } from "../DocLink";
 import { track } from "../../lib/analytics";
 import { Tooltip } from "../Tooltip";
 import type { Source } from "./markdown";
@@ -7,7 +7,6 @@ import type { CitationMark } from "./api";
 import { showClaimInAnswer } from "./claimHighlight";
 import { SourceMark, sourceTooltipContent } from "./SourceMark";
 import { useResolvedDocs, type ResolvedDoc } from "./useResolvedDocs";
-import type { OnAtlas } from "./chatTypes";
 
 export interface SourceChipProps {
   source: Source;
@@ -19,7 +18,7 @@ export interface SourceChipProps {
   anchorRef: (node: HTMLAnchorElement | null) => void;
   /** Scrolls the quoted claim into view in the answer and flashes it. */
   onShowClaim: (claim: string) => void;
-  onAtlas: OnAtlas;
+  onAtlas: (uuid: string) => void;
 }
 
 // One cited doc. The whole pill is the hover target, not the glyph; Tooltip
@@ -27,20 +26,19 @@ export interface SourceChipProps {
 function SourceChip({ source: s, resolved: r, mark, anchorRef, onShowClaim, onAtlas }: SourceChipProps) {
   return (
     <Tooltip content={sourceTooltipContent(mark, onShowClaim)}>
-      <a
+      <DocLink
         className="rlc-cite"
         ref={anchorRef}
-        href={atlasHref(s.uuid)}
-        onClick={(e) => {
-          e.preventDefault();
+        docId={s.uuid}
+        onOpen={() => {
           track("chat_citation_click", { product: "chat", node_id: s.uuid });
-          onAtlas(s.uuid, { split: e.shiftKey });
+          onAtlas(s.uuid);
         }}
       >
         {r?.docNo && <span className="rlc-cite-doc">{r.docNo}</span>}
         <span className="rlc-cite-title">{r?.title ?? s.title}</span>
         <SourceMark mark={mark} />
-      </a>
+      </DocLink>
     </Tooltip>
   );
 }
@@ -80,7 +78,7 @@ export interface SourcesProps {
   marks?: Record<string, CitationMark>;
   /** Present once the conversation has an id to read its collection from. */
   collection?: CollectionLink;
-  onAtlas: OnAtlas;
+  onAtlas: (uuid: string) => void;
 }
 
 // Sources cluster: one chip per cited atlas doc. Link text is not trustworthy
