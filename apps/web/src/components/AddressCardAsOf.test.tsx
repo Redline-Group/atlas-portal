@@ -2,7 +2,7 @@
 // What an address card says about when its chain values were read: the "as of"
 // row under the holdings, and the read time and block on the view-function heading.
 import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
-import { render, screen, cleanup, waitFor } from "@testing-library/react";
+import { render, cleanup, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { AddressCard } from "./AddressCard";
 import { makeAddressInfo } from "../test/fixtures";
@@ -70,12 +70,12 @@ describe("AddressCard as-of", () => {
     expect(text()).toBeUndefined();
   });
 
-  it("puts the snapshot's read time and block on the view-function heading", async () => {
+  it("puts a symbol on the view-function heading, with the snapshot's read time and block as plain text beside it", async () => {
     const { container } = render(<AddressCard address={ADDR} info={makeAddressInfo()} chainValues={{ live: true }} />);
-    await waitFor(() => {
-      const mark = container.querySelector("[data-source='onchain']")!;
-      expect(mark).toHaveTextContent("read 2026-11-16 14:02 UTC · block 21,000,000");
-    });
-    expect(screen.getByText("view functions")).toBeInTheDocument();
+    await waitFor(() => expect(container).toHaveTextContent("view functions · read 2026-11-16 14:02 UTC · block 21,000,000"));
+    const mark = container.querySelector("[data-source='onchain']")!;
+    expect(mark.className).not.toContain("border");
+    expect(mark).toHaveTextContent("on-chain");
+    expect(mark.parentElement).toHaveTextContent("view functions");
   });
 });

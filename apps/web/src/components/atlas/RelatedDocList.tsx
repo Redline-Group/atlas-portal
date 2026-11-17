@@ -29,7 +29,7 @@ export function RelatedDocList({ label, blurb, source, kind, items, onNav, selec
     <section className={className}>
       <p className={`${SECTION_HEAD} ${blurb ? "mb-2" : "mb-4"} flex items-center gap-2`}>
         {label} · {items.length}
-        {source && <SourceMark source={source.class} hint={source.detail} />}
+        {source && <SourceMark source={source.class} bare hint={source.detail} />}
       </p>
       {blurb && <p className="text-xs leading-relaxed mb-4 text-tan-3">{blurb}</p>}
       <div className={listClassName}>

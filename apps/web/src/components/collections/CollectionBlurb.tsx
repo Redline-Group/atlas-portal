@@ -27,7 +27,7 @@ export function CollectionBlurb({ id, updatedAt }: { id: string; updatedAt: stri
   if (!summary?.label || !summary.summary) return null;
   return (
     <p className="text-xs text-tan-3 mb-2">
-      <SourceMark source="ai" unlinked hint="The label and summary were written by a model from the documents." className="mr-1.5" />
+      <SourceMark source="ai" bare unlinked hint="The label and summary were written by a model from the documents." className="mr-1.5" />
       <span className="mono" style={{ color: "var(--tan)" }}>
         {summary.label}
       </span>

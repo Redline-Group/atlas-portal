@@ -37,11 +37,12 @@ export function AddressCardChainValues({ chainValues, chain }: { chainValues: Re
   if (rows.length === 0) return null;
   const read = formatReadTime(snapshot?.fetchedAt);
   const block = snapshot?.block ? `block ${Number(snapshot.block).toLocaleString()}` : null;
+  const when = [read && `read ${read}`, block].filter(Boolean).join(" · ");
   return (
     <div className="mt-2">
       <p className="text-[10px] mono mb-1 text-tan-3 flex flex-wrap items-center gap-x-2 gap-y-1">
-        <SourceMark source="onchain" detail={[read && `read ${read}`, block].filter(Boolean).join(" · ") || undefined} />
-        view functions
+        <SourceMark source="onchain" bare />
+        view functions{when && ` · ${when}`}
       </p>
       <div className="space-y-0.5">
         {rows.map(({ key, display, isAddress }) => (

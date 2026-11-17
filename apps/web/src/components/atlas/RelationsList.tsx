@@ -13,7 +13,7 @@ export function RelationsList({ relations, onNav, onNavDoc }: RelationsListProps
     <div className="mt-8">
       <p className={`${SECTION_HEAD} mb-3 flex items-center gap-2`}>
         relations · {relations.length}
-        <SourceMark source="derived" hint="Edges the app extracted from Atlas text. Each lists the documents it was defined in." />
+        <SourceMark source="derived" bare hint="Edges the app extracted from Atlas text. Each lists the documents it was defined in." />
       </p>
       <div className="space-y-2">
         {relations.map((rel, i) => (

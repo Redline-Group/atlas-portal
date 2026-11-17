@@ -50,7 +50,8 @@ export function PauDeployment({ snap, keyIndex, namedIn, verdicts, anchor }: Pro
           <PauWiring snap={snap} />
           <span className="text-[11px]" style={dim} title={hidden ? `${hidden} more, switched off and derived from an address the Atlas no longer lists, are not shown` : undefined}>{limits.length} rate limits</span>
           {loading && <span className="text-[11px]" style={{ color: "var(--accent)" }}>history still being read</span>}
-          <SourceMark source="onchain" unlinked detail={`read ${formatReadTime(snap.fetchedAt) ?? "at an unknown time"}`} />
+          <SourceMark source="onchain" bare unlinked />
+          <span className="text-[11px]" style={dim}>read {formatReadTime(snap.fetchedAt) ?? "at an unknown time"}</span>
         </summary>
         <style>{entityLinkCss([...snap.contracts.map((c) => c.address), ...holderRows(snap).map((r) => r.account)])}</style>
         <PauContracts snap={snap} />

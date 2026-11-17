@@ -46,7 +46,7 @@ export function SettlementBars({
         <span><span className="msc-bar-sky inline-block w-2 h-2 mr-1 align-middle" /> to Sky</span>
         <span><span className="msc-bar-prime inline-block w-2 h-2 mr-1 align-middle" /> supply kept</span>
         <span><span className="msc-bar-demand inline-block w-2 h-2 mr-1 align-middle" /> demand-side</span>
-        <SourceMark source="derived" hint="Supply kept and demand-side are our arithmetic over the workbook rows, not figures the workbooks state." />
+        <SourceMark source="derived" bare hint="Supply kept and demand-side are our arithmetic over the workbook rows, not figures the workbooks state." />
       </p>
     </div>
   );

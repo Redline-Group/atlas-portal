@@ -63,7 +63,7 @@ function SourcesLabel({ count, collection, checked }: { count: number; collectio
       {checked && (
         <>
           {" "}
-          <ProvenanceMark source="ai" unlinked hint={CHECK_MEANING} />
+          <ProvenanceMark source="ai" bare unlinked hint={CHECK_MEANING} />
         </>
       )}
       {collection && (

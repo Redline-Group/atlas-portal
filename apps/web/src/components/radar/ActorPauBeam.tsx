@@ -25,7 +25,7 @@ function DefaultRow({ d, chain, keyIndex }: { d: BeamDefault; chain: string; key
   );
 }
 
-const BeamMark = () => <SourceMark source="derived" unlinked hint="BeamState's live values, put into a sentence by the app; the Atlas's rule for the Operator is linked from each key." />;
+const BeamMark = () => <SourceMark source="derived" bare unlinked hint="BeamState's live values, put into a sentence by the app; the Atlas's rule for the Operator is linked from each key." />;
 
 /** What BeamState lets the Configurator do to this RateLimits without a spell, and the default ("init") limits it may set keys up to. */
 export function PauBeam({ beam, chain, keyIndex, anchor }: { beam: BeamLimits; chain: string; keyIndex: Map<string, AtlasKeyRef[]>; anchor?: Anchor }) {

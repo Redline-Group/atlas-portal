@@ -33,7 +33,7 @@ export function ActorChain({ chain, currentSlug }: Props) {
         <h2 className="mono text-[10px] uppercase tracking-wider" style={{ color: "var(--tan-3)" }}>
           Related Parties
         </h2>
-        <SourceMark source="derived" hint="Found by following role edges across several hops; the Atlas does not list them in one place." />
+        <SourceMark source="derived" bare hint="Found by following role edges across several hops; the Atlas does not list them in one place." />
       </div>
       <table className="w-full text-sm border-collapse">
         <tbody>

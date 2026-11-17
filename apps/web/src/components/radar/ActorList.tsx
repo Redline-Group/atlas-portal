@@ -60,9 +60,6 @@ export function ActorList({ groups, selectedSlug, page, subpages }: ActorListPro
         >
           <span className="flex-1 truncate">Overview</span>
         </Link>
-        <p className="px-3 mt-1">
-          <SourceMark source="derived" hint="The groups and badges are our classification of the parties the Atlas names." />
-        </p>
       </div>
       {groups.map((g) => (
         <div key={g.label} className="mb-4">
@@ -70,7 +67,7 @@ export function ActorList({ groups, selectedSlug, page, subpages }: ActorListPro
             className="px-3 pb-1 mono text-[10px] uppercase tracking-wider"
             style={{ color: "var(--tan-3)" }}
           >
-            {g.label}
+            {g.label} <SourceMark source="derived" bare hint="This grouping is our classification of the parties the Atlas names." />
           </div>
           {g.actors.map((a) => {
             const pages = subpages?.get(a.slug);

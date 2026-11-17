@@ -8,7 +8,7 @@ export function PanelGlossary({ glossaryTerms, onNav }: { glossaryTerms: Glossar
   return (
     <div className="space-y-4">
       <p className="mono text-[10px] text-tan-3 flex flex-wrap items-center gap-2">
-        <SourceMark source="derived" hint="Each definition is the Atlas's own. The app attaches it to a term by matching this document's text, so a term may be matched loosely." />
+        <SourceMark source="derived" bare hint="Each definition is the Atlas's own. The app attaches it to a term by matching this document's text, so a term may be matched loosely." />
         terms matched in this document
       </p>
       {glossaryTerms.map((entries) => (

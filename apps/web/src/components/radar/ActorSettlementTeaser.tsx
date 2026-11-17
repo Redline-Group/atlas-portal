@@ -30,7 +30,7 @@ export function ActorSettlementTeaser({ slug }: Props) {
       <h2 className="mono text-[10px] uppercase tracking-wider" style={{ color: "var(--tan-3)" }}>
         Monthly settlement
       </h2>
-      <SourceMark source="external" detail="Soter Labs" className="mt-1 inline-block" />
+      <SourceMark source="external" bare hint="From Soter Labs' workbooks." className="mt-1 inline-block" />
       <p className="mono text-[10px] mt-2" style={{ color: "var(--tan-3)" }}>
         {formatMonth(latest.month)}
       </p>

@@ -82,8 +82,10 @@ export function SourceMark(props: SourceMarkProps) {
       </span>
     );
   }
+  // An inline symbol sits next to data the reader is reading: its legend entry opens beside the page, not over it.
+  const away = props.bare ? { target: "_blank", rel: "noopener noreferrer" } : {};
   return (
-    <Link {...(passThrough(props) as Omit<ComponentProps<"a">, "href">)} {...attrs} to={sourceHref(props.source)}>
+    <Link {...away} {...(passThrough(props) as Omit<ComponentProps<"a">, "href">)} {...attrs} to={sourceHref(props.source)}>
       {body}
     </Link>
   );

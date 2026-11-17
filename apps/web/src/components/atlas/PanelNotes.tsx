@@ -56,7 +56,7 @@ function CitedByList({ citedBy, onNav }: { citedBy: EdgeResult["inbound"]; onNav
     <div className="mt-8">
       <p className={`${SECTION_HEAD} mb-3 flex items-center gap-2`}>
         cited by · {citedBy.length}
-        <SourceMark source="derived" hint="Found by our scan of each document's links; the Atlas does not list what cites it." />
+        <SourceMark source="derived" bare hint="Found by our scan of each document's links; the Atlas does not list what cites it." />
       </p>
       <div className="space-y-1">
         {citedBy.map((e, i) => (

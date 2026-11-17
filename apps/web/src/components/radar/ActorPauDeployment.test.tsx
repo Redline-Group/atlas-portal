@@ -20,7 +20,9 @@ describe("PauDeployment read time", () => {
   it("shows the snapshot's read time beside the deployment name, not at the foot of the section", () => {
     const { container } = render(<PauDeployment snap={snap} keyIndex={new Map()} verdicts={new Map()} anchor={{ id: "ethereum", aliases: [] }} />);
     const summary = container.querySelector("summary")!;
-    expect(summary.querySelector("[data-source='onchain']")).toHaveTextContent("on-chain · read 2026-11-16 14:02 UTC");
+    // A symbol, then the date as plain text: the full label belongs at the top of the page.
+    expect(summary.querySelector("[data-source='onchain']")!.className).not.toContain("border");
+    expect(summary).toHaveTextContent("read 2026-11-16 14:02 UTC");
     expect(container.querySelector("details > p")).toBeNull();
   });
 });

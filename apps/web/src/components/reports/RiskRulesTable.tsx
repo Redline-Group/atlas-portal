@@ -23,7 +23,7 @@ function RiskTableHead() {
       <tr className="text-xs mono text-tan-3">
         <th className="py-1 px-3 font-normal w-40">Doc</th>
         <th className="py-1 px-3 font-normal">Rule</th>
-        <th className="py-1 px-3 font-normal w-40">Risk Type <SourceMark source="ai" /></th>
+        <th className="py-1 px-3 font-normal w-40">Risk Type <SourceMark source="ai" bare /></th>
         <th className="py-1 px-3 font-normal w-28">Precision</th>
         <th className="py-1 px-3 font-normal w-28">Incentives</th>
       </tr>
