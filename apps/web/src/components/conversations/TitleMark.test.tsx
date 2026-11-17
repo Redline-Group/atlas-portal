@@ -22,8 +22,10 @@ describe("TitleMark", () => {
     }
   });
 
-  it("shows on the conversation collection card too, not only the conversations list", () => {
+  it("shows on the conversation collection card too, beside the title and not inside its ellipsis", () => {
     const { container } = render(<ConversationCollectionCard conversation={conv()} onOpen={() => {}} />);
-    expect(container.querySelector("h2 [data-source='ai']")).not.toBeNull();
+    expect(container.querySelector("[data-source='ai']")).not.toBeNull();
+    expect(container.querySelector("h2 [data-source]")).toBeNull();
+    expect(container.querySelector("h2")?.nextElementSibling).toHaveAttribute("data-source", "ai");
   });
 });

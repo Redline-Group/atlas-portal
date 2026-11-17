@@ -31,6 +31,14 @@ describe("ConversationCard", () => {
     return container.querySelector("[data-source='ai']");
   };
 
+  it("puts the mark after the title, outside the element that truncates it", () => {
+    const { container } = render(
+      <ConversationCard conversation={conversation({ title: "A very long model written title that will not fit", titleSource: "auto" })} onOpen={() => {}} onViewCollection={() => {}} onRename={() => {}} onDelete={() => {}} />,
+    );
+    expect(container.querySelector(".truncate [data-source]")).toBeNull();
+    expect(container.querySelector(".truncate")?.nextElementSibling).toHaveAttribute("data-source", "ai");
+  });
+
   it("marks a model-written title, and only that", () => {
     expect(mark(conversation({ titleSource: "auto" }))).not.toBeNull();
     cleanup();

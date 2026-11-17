@@ -4,7 +4,7 @@ import { edgeLabel } from "../../lib/entityGraph";
 import { actorHref, atlasHref } from "@/lib/routes";
 import { AtlasLink } from "../AtlasLink";
 
-export function RelationRow({ r, docNoToId }: { r: ActorRelation; docNoToId?: ReadonlyMap<string, string> }) {
+export function RelationRow({ r }: { r: ActorRelation }) {
   const label = edgeLabel(r.edge.e, r.direction);
   const arrow = r.direction === "outbound" ? "→" : "←";
   return (
@@ -19,31 +19,28 @@ export function RelationRow({ r, docNoToId }: { r: ActorRelation; docNoToId?: Re
       ) : (
         <span style={{ color: "var(--tan-2)" }}>{r.otherLabel}</span>
       )}
-      <SourceDocs docNos={r.edge.s} docNoToId={docNoToId} />
+      <SourceDocs docs={r.sourceDocs} />
     </div>
   );
 }
 
 // "from A.1.2, A.1.3": the documents the edge was extracted from, linked when
-// the atlas has loaded.
-function SourceDocs({ docNos, docNoToId }: { docNos?: string[]; docNoToId?: ReadonlyMap<string, string> }) {
-  if (!docNos?.length) return null;
+// the profile resolved them.
+function SourceDocs({ docs }: { docs: ActorRelation["sourceDocs"] }) {
+  if (docs.length === 0) return null;
   return (
     <span className="mono text-[10px] ml-auto" style={{ color: "var(--tan-3)" }}>
       from{" "}
-      {docNos.map((docNo, i) => {
-        const id = docNoToId?.get(docNo);
-        return (
-          <span key={docNo}>
-            {i > 0 && ", "}
-            {id ? (
-              <AtlasLink to={atlasHref(id)} className="text-accent hover:underline">{docNo}</AtlasLink>
-            ) : (
-              docNo
-            )}
-          </span>
-        );
-      })}
+      {docs.map(({ docNo, id }, i) => (
+        <span key={docNo}>
+          {i > 0 && ", "}
+          {id ? (
+            <AtlasLink to={atlasHref(id)} className="text-accent hover:underline">{docNo}</AtlasLink>
+          ) : (
+            docNo
+          )}
+        </span>
+      ))}
     </span>
   );
 }

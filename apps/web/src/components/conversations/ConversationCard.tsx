@@ -22,10 +22,12 @@ function ConversationStats({ conversation }: { conversation: ConversationSummary
 
 function ConversationTitle({ conversation }: { conversation: ConversationSummary }) {
   return (
-    <p className="text-sm font-medium truncate" style={{ color: "var(--tan)" }}>
-      {conversation.title ?? UNTITLED}
-      <TitleMark conversation={conversation} className="ml-1.5" />
-    </p>
+    <div className="flex items-baseline gap-1.5 min-w-0">
+      <p className="text-sm font-medium truncate" style={{ color: "var(--tan)" }}>
+        {conversation.title ?? UNTITLED}
+      </p>
+      <TitleMark conversation={conversation} className="shrink-0" />
+    </div>
   );
 }
 

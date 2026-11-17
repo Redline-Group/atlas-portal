@@ -4,6 +4,8 @@ import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { SOURCE_CLASS_IDS, SOURCE_CLASSES, sourceHref } from "@/lib/provenance/sources";
 import { SourceMark, SourceMarks } from "./SourceMark";
+import { LinkMark } from "./chat/LinkMark";
+import { MARK_COLOR, MARK_TEXT } from "./markStyle";
 
 afterEach(cleanup);
 
@@ -67,6 +69,21 @@ describe("SourceMark props", () => {
     const mark = screen.getByRole("link");
     expect(fireEvent.click(mark)).toBe(false);
     expect(fireEvent.click(mark, { ctrlKey: true })).toBe(true);
+  });
+});
+
+describe("shared mark style", () => {
+  it("gives the chip and the preview's Δ the same text style and colour", () => {
+    const { container } = render(
+      <>
+        <SourceMark source="derived" unlinked />
+        <LinkMark cls="preview" />
+      </>,
+    );
+    for (const mark of container.querySelectorAll("[data-source]")) {
+      for (const cls of MARK_TEXT.split(" ")) expect(mark).toHaveClass(cls);
+      expect((mark as HTMLElement).style.color).toBe(MARK_COLOR);
+    }
   });
 });
 

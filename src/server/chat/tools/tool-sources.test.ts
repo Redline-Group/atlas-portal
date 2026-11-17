@@ -3,7 +3,9 @@
 import { expect, test } from "bun:test";
 import { z } from "zod";
 import { ATLAS_TOOLS, invokeTool } from "./tool-registry.ts";
-import { EXTERNAL_TOOLS } from "./external-tools.ts";
+import { ASK_EXTERNAL_MSC, EXTERNAL_TOOLS } from "./external-tools.ts";
+import { CHAT_TOOLS } from "./llm-tools.ts";
+import { EXPORT_TOOL_NAME } from "./export-tool.ts";
 import { PREVIEW_TOOLS } from "./tools-preview.ts";
 import { PREVIEW_TOOL_NAMES, toolSources } from "../../../lib/provenance/toolSources.ts";
 import { REPORTS } from "../../../lib/reports/registry.ts";
@@ -16,6 +18,14 @@ test("every chat and MCP tool declares what it draws on, in the shared vocabular
     expect(classes, `${t.name} has no entry in toolSources.ts`).toBeDefined();
     for (const c of classes!) expect(SOURCE_CLASS_IDS as readonly string[]).toContain(c);
   }
+});
+
+test("every tool chat sends the model, chat-only ones included, is declared", () => {
+  const names = CHAT_TOOLS.map((t) => (t.type === "function" ? t.function.name : ""));
+  expect(names).toContain(ASK_EXTERNAL_MSC);
+  expect(names).toContain(EXPORT_TOOL_NAME);
+  for (const name of names) expect(toolSources(name), `${name} has no entry in toolSources.ts`).toBeDefined();
+  expect(toolSources(ASK_EXTERNAL_MSC)).toEqual(["external"]);
 });
 
 test("a report tool takes its classes from the report's own declaration", () => {

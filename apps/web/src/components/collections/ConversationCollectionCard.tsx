@@ -8,10 +8,12 @@ const UNTITLED = "Untitled chat";
 function CardHead({ conversation }: { conversation: ConversationSummary }) {
   return (
     <div className="flex items-start justify-between gap-3 mb-1 min-w-0">
-      <h2 className="text-sm font-medium truncate min-w-0" style={{ color: "var(--tan)" }}>
-        {conversation.title ?? UNTITLED}
-        <TitleMark conversation={conversation} className="ml-1.5" />
-      </h2>
+      <div className="flex items-baseline gap-1.5 min-w-0">
+        <h2 className="text-sm font-medium truncate min-w-0" style={{ color: "var(--tan)" }}>
+          {conversation.title ?? UNTITLED}
+        </h2>
+        <TitleMark conversation={conversation} className="shrink-0" />
+      </div>
       <p className="mono text-[11px] text-tan-3 whitespace-nowrap shrink-0">
         {formatCardDate(conversation.updatedAt)}
       </p>

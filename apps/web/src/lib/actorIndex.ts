@@ -11,11 +11,12 @@ import {
   EXCLUDED_INSTANCE_TYPES,
   buildInstanceOfMap,
   buildStatusDocMap,
-  isRelationEdge,
   type InstanceParam,
 } from "@/lib/radarRules";
 
 import { toRadarInstance, type RadarInstance } from "./radarInstance";
+import { buildActorRelations } from "./actorRelations";
+import type { RelationSourceDoc } from "./relationSources";
 
 export type { InstanceParam, RadarInstance };
 
@@ -35,6 +36,8 @@ export interface ActorChain {
 }
 export interface ActorRelation {
   edge: RelationEdge;
+  /** The documents the edge was read from, resolved from the profile's docs. */
+  sourceDocs: RelationSourceDoc[];
   direction: "outbound" | "inbound";
   otherLabel: string;
   otherId: string;
@@ -246,23 +249,7 @@ export function buildActorProfile(
     ? { name: compositeParty.name, slug: compositeParty.slug ?? null }
     : null;
 
-  const relations: ActorRelation[] = [];
-  for (const e of graph.edges) {
-    if (!isRelationEdge(e, entityById)) continue;
-    if (e.f !== entity.id && e.t !== entity.id) continue;
-    const dir = e.f === entity.id ? ("outbound" as const) : ("inbound" as const);
-    const otherId = dir === "outbound" ? e.t : e.f;
-    const other = entityById.get(otherId);
-    if (!other) continue;
-    relations.push({
-      edge: e,
-      direction: dir,
-      otherLabel: other.name,
-      otherId,
-      otherSlug: other.slug ?? null,
-      otherEt: other.et ?? null,
-    });
-  }
+  const relations = buildActorRelations(graph.edges, entity.id, entityById, docs);
 
   // ICD doc ID → primitive doc ID. Both instance_of (operational instances)
   // and invocation_of (in-progress invocations) resolve to the parent primitive.

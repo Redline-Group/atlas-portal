@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { AddressBalances } from "@/lib/balances";
-import { resolveAddressLabel, resolveAddressHoldings, addressHeadlineBalance } from "./addressTooltip";
+import { resolveAddressLabel, resolveAddressHoldings, addressHeadlineBalance, resolveAddressAsOf } from "./addressTooltip";
 import { makeAddressInfo } from "../test/fixtures";
 
 const EVM = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84";
@@ -210,5 +210,23 @@ describe("addressHeadlineBalance", () => {
   it("returns null when nothing is held", () => {
     expect(addressHeadlineBalance(EVM, map, {})).toBe(null);
     expect(addressHeadlineBalance(EVM, map, { [`${EVM}|ethereum`]: bal({ ETH: { raw: "0", decimals: 18 } }) })).toBe(null);
+  });
+});
+
+describe("resolveAddressAsOf", () => {
+  const balances = (symbol: string): Record<string, AddressBalances> => ({
+    [`${EVM}|ethereum`]: { chain: "ethereum", checkedAt: "2026-11-16T14:02:10Z", hasCode: null, balances: { [symbol]: { raw: "2000000000000000000", decimals: 18 } } },
+  });
+  const quoted = new Date().toISOString();
+
+  it("dates the price of a mixed-case symbol: balances say sUSDS, the price map is keyed SUSDS", () => {
+    const at = resolveAddressAsOf(EVM, { [EVM]: makeAddressInfo({ chains: ["ethereum"] }) }, balances("sUSDS"), { SUSDS: { usd: 1.05, asOf: quoted } });
+    expect(at).toEqual({ readAt: "2026-11-16T14:02:10Z", priceAt: quoted });
+  });
+
+  it("has no price time when nothing held has a quote, and no read time for an address with no reading", () => {
+    const info = { [EVM]: makeAddressInfo({ chains: ["ethereum"] }) };
+    expect(resolveAddressAsOf(EVM, info, balances("MKR"), {}).priceAt).toBeNull();
+    expect(resolveAddressAsOf(EVM, info, {}, {})).toEqual({ readAt: null, priceAt: null });
   });
 });

@@ -42,8 +42,12 @@ const TOOL_SOURCES: Record<string, readonly SourceClass[]> = {
   // Chain reads the atlas worker stored.
   redline_onchain: ["onchain"],
   redline_liquidity_changes: ["onchain", "derived"],
-  // Soter Labs workbooks and Sky Forum permalinks.
+  // Soter Labs workbooks and Sky Forum permalinks: `external_msc` over MCP, and
+  // chat's own `ask_external_msc`, a sub-agent over the same views.
   external_msc: ["external"],
+  ask_external_msc: ["external"],
+  // Chat-only: writes a file from what the answer already holds.
+  export_findings: NONE,
   // Report tools with no page in the reports registry.
   atlas_report_multisigs: ["derived"],
   atlas_report_primitive_matrix: ["derived"],

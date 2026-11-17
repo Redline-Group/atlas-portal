@@ -21,8 +21,6 @@ vi.mock("./ActorRewards", () => ({ ActorRewards: () => <div data-testid="rewards
 vi.mock("./ActorHistory", () => ({ ActorHistory: () => <div data-testid="history" /> }));
 vi.mock("./ActorSettlementTeaser", () => ({ ActorSettlementTeaser: () => <div data-testid="settlements" /> }));
 
-vi.mock("../../lib/docs", async (importOriginal) => ({ ...(await importOriginal<typeof import("../../lib/docs")>()), loadAtlas: () => new Promise(() => {}) }));
-
 import { ActorDashboard } from "./ActorDashboard";
 
 afterEach(cleanup);
@@ -133,6 +131,7 @@ describe("ActorDashboard sections", () => {
           relations: [
             {
               edge: { f: "e1", ft: "entity", t: "e2", tt: "entity", e: "delegates_to" } as never,
+              sourceDocs: [],
               direction: "outbound",
               otherLabel: "Grove",
               otherId: "e2",
@@ -141,6 +140,7 @@ describe("ActorDashboard sections", () => {
             },
             {
               edge: { f: "e3", ft: "entity", t: "e1", tt: "entity", e: "delegates_to" } as never,
+              sourceDocs: [],
               direction: "inbound",
               otherLabel: "Orphan",
               otherId: "e3",
@@ -197,6 +197,7 @@ describe("ActorDashboard link targets", () => {
   it("gives each populated section its search anchor id", () => {
     const rel = {
       edge: { f: "e1", ft: "entity", t: "e2", tt: "entity", e: "delegates_to" } as never,
+      sourceDocs: [],
       direction: "outbound" as const,
       otherLabel: "Grove",
       otherId: "e2",
@@ -251,6 +252,7 @@ describe("ActorDashboard for a Prime Agent (Info page)", () => {
   it("leaves primitives and history to their subpages and keeps relationships", () => {
     const rel = {
       edge: { f: "e1", ft: "entity", t: "e2", tt: "entity", e: "delegates_to" } as never,
+      sourceDocs: [],
       direction: "outbound" as const,
       otherLabel: "Grove",
       otherId: "e2",

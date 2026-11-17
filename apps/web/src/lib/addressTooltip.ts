@@ -5,7 +5,7 @@ import type { AddressInfo } from "@/types";
 import type { BalanceMap, AddressBalances } from "@/lib/balances";
 import { freshPrice, type PriceMap } from "@/lib/tokenPrices";
 import { oldestTime } from "@/lib/provenance/asOf";
-import { compactAmount } from "@/lib/tokens";
+import { compactAmount, normalizeSymbol } from "@/lib/tokens";
 import { hasResolvedName, resolveAddressName, resolveOwner } from "./addressName";
 import { PRIMARY_BALANCE_SYMBOLS } from "@/lib/onchainAddressesIndex";
 import { compactUsd, holdingUsd, holdingsTotal, isPegged } from "./addressValue";
@@ -160,6 +160,6 @@ export function resolveAddressAsOf(
   const quoted = heldAcross(key, info.chains, balancesByAddress).filter((h) => freshPrice(h.symbol, prices) != null);
   return {
     readAt: oldestTime(rows.map((r) => r.checkedAt)),
-    priceAt: oldestTime(quoted.map((h) => prices[h.symbol]?.asOf)),
+    priceAt: oldestTime(quoted.map((h) => prices[normalizeSymbol(h.symbol)]?.asOf)),
   };
 }

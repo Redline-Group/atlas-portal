@@ -1,5 +1,6 @@
 import type { LinkClass } from "@/lib/provenance/linkClass";
 import { SourceMark } from "../SourceMark";
+import { MARK_COLOR, MARK_TEXT } from "../markStyle";
 
 /**
  * The mark beside a link that is not an Atlas citation. A preview keeps its own
@@ -9,7 +10,7 @@ import { SourceMark } from "../SourceMark";
 export function LinkMark({ cls, className = "" }: { cls: LinkClass; className?: string }) {
   if (cls === "preview") {
     return (
-      <span className={`mono text-[11px] ${className}`} data-source="preview" title="A proposed change in a PR preview, not the live Atlas." style={{ color: "var(--source-mark)" }}>
+      <span className={`${MARK_TEXT} ${className}`} data-source="preview" title="A proposed change in a PR preview, not the live Atlas." style={{ color: MARK_COLOR }}>
         <span aria-hidden="true">Δ</span>
         <span className="sr-only">preview</span>
       </span>

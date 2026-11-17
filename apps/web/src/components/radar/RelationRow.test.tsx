@@ -7,8 +7,9 @@ import { RelationRow } from "./RelationRow";
 
 afterEach(cleanup);
 
-const relation = (s?: string[]): ActorRelation => ({
-  edge: { f: "a", ft: "entity", t: "b", tt: "entity", e: "facilitates", ...(s ? { s } : {}) },
+const relation = (sourceDocs: ActorRelation["sourceDocs"] = []): ActorRelation => ({
+  edge: { f: "a", ft: "entity", t: "b", tt: "entity", e: "facilitates" },
+  sourceDocs,
   direction: "outbound",
   otherLabel: "Other Party",
   otherId: "b",
@@ -18,14 +19,14 @@ const relation = (s?: string[]): ActorRelation => ({
 
 describe("RelationRow source documents", () => {
   it("links each doc the edge was read from, and leaves an unresolved one as text", () => {
-    render(<RelationRow r={relation(["A.1.2", "A.9.9"])} docNoToId={new Map([["A.1.2", "uuid-12"]])} />);
+    render(<RelationRow r={relation([{ docNo: "A.1.2", id: "uuid-12" }, { docNo: "A.9.9", id: null }])} />);
     expect(screen.getByRole("link", { name: "A.1.2" })).toHaveAttribute("href", "/atlas?id=uuid-12");
     expect(screen.queryByRole("link", { name: "A.9.9" })).toBeNull();
     expect(screen.getByText(/A\.9\.9/)).toBeInTheDocument();
   });
 
-  it("lists the doc numbers as text before the atlas has loaded", () => {
-    render(<RelationRow r={relation(["A.1.2"])} />);
+  it("lists a doc number as text when no document resolved for it", () => {
+    render(<RelationRow r={relation([{ docNo: "A.1.2", id: null }])} />);
     expect(screen.queryByRole("link", { name: "A.1.2" })).toBeNull();
     expect(screen.getByText(/from/)).toHaveTextContent("A.1.2");
   });

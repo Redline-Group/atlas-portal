@@ -1,6 +1,7 @@
 import type { ComponentProps, CSSProperties } from "react";
 import { SOURCE_CLASSES, normalizeSources, sourceHref, type SourceClass } from "@/lib/provenance/sources";
 import { Link } from "./Link";
+import { MARK_COLOR, MARK_TEXT } from "./markStyle";
 
 // The one mark for "this is not verbatim Atlas text". Atlas text is never
 // marked; every other class (src/lib/provenance/sources.ts) gets this chip.
@@ -25,7 +26,6 @@ type UnlinkedMarkProps = SourceMarkShape & { unlinked: true } & Omit<ComponentPr
 
 export type SourceMarkProps = LinkedMarkProps | UnlinkedMarkProps;
 
-const CHIP = "mono text-[11px] leading-none whitespace-nowrap no-underline";
 const CHIP_BOX = "px-1.5 py-0.5 rounded border border-dotted";
 
 /** What the element is made of, whichever tag it takes: the caller's own props go first and these win, except `style`, which is merged. */
@@ -33,8 +33,8 @@ function markAttrs({ source, bare = false, detail, hint, className = "", style }
   return {
     "data-source": source,
     title: [SOURCE_CLASSES[source].meaning, detail, hint].filter(Boolean).join(" "),
-    className: `${CHIP} ${bare ? "" : CHIP_BOX} ${className}`.trim(),
-    style: { color: "var(--source-mark)", borderColor: "var(--source-mark)", ...style },
+    className: `${MARK_TEXT} ${bare ? "" : CHIP_BOX} ${className}`.trim(),
+    style: { color: MARK_COLOR, borderColor: MARK_COLOR, ...style },
   };
 }
 
