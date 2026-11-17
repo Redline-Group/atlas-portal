@@ -456,11 +456,11 @@ export const CollapsibleNode = memo(function CollapsibleNode({
             the body text as well — near-constantly. The title is where the
             gesture is worth offering.
 
-            Not inside the split pane: it already IS the split view, so "open in
-            Splitview" is the wrong promise. Same call the CSS hint makes for
-            these rows (--split-hint: none on .junior-pane, index.css). */}
+            Inside the split pane a shift-click highlights the doc in the main
+            reader instead, so the hint says that — as does the CSS hint for
+            these rows (--split-hint on .junior-pane, index.css). */}
         <div
-          data-mod-hint={idPrefix === "junior" ? undefined : "split"}
+          data-mod-hint={idPrefix === "junior" ? "split-main" : "split"}
           className="atlas-node-title flex items-center gap-2 py-1.5 flex-1 min-w-0"
         >
           <HeadingTag className={TITLE_CLASS}>

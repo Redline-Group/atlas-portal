@@ -3,7 +3,7 @@ import { buildAncestors, type FlatEntry, type LoadedData } from "@/lib/atlasHelp
 import { CollapsibleNode } from "./CollapsibleNode";
 import { AtlasActionsContext } from "./AtlasActionsContext";
 import { useSplitHeight } from "./useSplitHeight";
-import { depthColor, realDepth } from "@/lib/depth";
+import { JuniorPaneHeader } from "./JuniorPaneHeader";
 import { descendantIds } from "../../lib/instanceDescendants";
 
 const ViewChildrenFill = ({ docNo, onExpand }: { docNo: string; onExpand: () => void }) => (
@@ -23,7 +23,8 @@ const TopNote = () => (
     className="mono text-[10px] py-1 text-tan-3"
     style={{ opacity: 0.55, borderBottom: "1px solid var(--border)" }}
   >
-    SplitView only renders selected doc and its children — Shift-Click a doc to view it here.
+    SplitView only renders selected doc and its children — Shift-Click a doc or link to view it here.
+    Shift-Click inside SplitView to highlight it in the main view.
   </div>
 );
 
@@ -40,11 +41,16 @@ export function JuniorPane({
   splitId,
   data,
   onShiftNavigate,
+  onShowInMain,
   onClose,
 }: {
   splitId: string;
   data: LoadedData;
+  /** Re-roots the pane: a plain click on a row or breadcrumb in it. */
   onShiftNavigate: (id: string) => void;
+  /** Shift-click on a row: selects that doc in the main reader. Doc links in
+   *  the pane do the same through useShiftClickDocLinks. */
+  onShowInMain: (id: string) => void;
   onClose: () => void;
 }) {
   const [userToggles, setUserToggles] = useState<Set<string>>(new Set());
@@ -104,10 +110,10 @@ export function JuniorPane({
     () => ({
       navigate: onShiftNavigate,
       toggle: handleToggle,
-      splitNavigate: onShiftNavigate,
+      splitNavigate: onShowInMain,
       docNoToId: data.atlas.docNoToId,
     }),
-    [onShiftNavigate, handleToggle, data.atlas.docNoToId],
+    [onShiftNavigate, onShowInMain, handleToggle, data.atlas.docNoToId],
   );
 
   const items = useMemo(() => {
@@ -161,8 +167,8 @@ export function JuniorPane({
   ]);
 
   return (
-    // junior-pane: index.css suppresses the shift-click split hint in here —
-    // this pane already is the split view.
+    // junior-pane: index.css swaps the shift-click hint in here for "highlight
+    // in main view", and useShiftClickDocLinks keys on the class.
     <div
       ref={paneRef}
       className="junior-pane flex flex-col"
@@ -185,47 +191,7 @@ export function JuniorPane({
         title="Drag to resize"
         style={{ position: "absolute", left: 0, right: 0, top: 0, height: 6, cursor: "row-resize", zIndex: 10 }}
       />
-      <div
-        className="flex items-center gap-1 px-3 py-1 shrink-0 mono text-xs overflow-hidden"
-        style={{
-          borderTop: "2px solid var(--border)",
-          borderBottom: "1px solid var(--border)",
-          background: "var(--bg)",
-        }}
-      >
-        <span className="truncate flex-1 text-tan-3">
-          {ancestors.map((a, i) => (
-            <span key={a.id}>
-              {i > 0 && <span> / </span>}
-              <a
-                href={`${import.meta.env.BASE_URL}atlas?id=${a.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onShiftNavigate(a.id);
-                }}
-                className="hover:text-tan"
-                style={{ color: "var(--tan-3)" }}
-              >
-                {a.title}
-              </a>
-            </span>
-          ))}
-          {node && (
-            <span>
-              {ancestors.length > 0 && <span> / </span>}
-              {/* Brighten-toward-white is a dark-theme idiom; mixing toward --tan
-                  instead brightens on dark and darkens on light (--tan flips
-                  role between the two themes), keeping contrast either way.
-                  --node-title overrides the whole mix for a theme that opts out
-                  of depth-coloured titles (giedi) — see the token in index.css. */}
-              <span style={{ color: `var(--node-title, color-mix(in srgb,${depthColor(realDepth(node.doc_no))} 75%, var(--tan)))` }}>{node.title}</span>
-            </span>
-          )}
-        </span>
-        <button type="button" onClick={onClose} className="shrink-0 px-1 text-tan-3 hover:text-tan">
-          ✕
-        </button>
-      </div>
+      <JuniorPaneHeader ancestors={ancestors} node={node} onShiftNavigate={onShiftNavigate} onClose={onClose} />
       <div ref={scrollerRef} className="junior-scroll overflow-y-auto flex-1">
         <div ref={contentRef} className="mx-auto px-3 py-2">
           <AtlasActionsContext.Provider value={ctxValue}>{items}</AtlasActionsContext.Provider>
