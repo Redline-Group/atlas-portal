@@ -5,6 +5,7 @@ import { extractCitedDocs, type CitedDoc } from "@/lib/citationScan";
 import { unwrapCodeCitations } from "./citations";
 import { useDataSource } from "../../lib/dataSource";
 import { useMathPlugins, closeOpenMathFence } from "./chatMath";
+import type { OnAtlas } from "./chatTypes";
 
 // Agent citations are markdown links of the form [Title](/atlas/<uuid>)
 // (system-prompt.ts forces UUID hrefs). We intercept those, SPA-navigate via
@@ -44,7 +45,7 @@ export function balanceFences(text: string): string {
 
 // Atlas citation links (and links into the preview being viewed) SPA-navigate
 // through `onAtlas`; every other href opens in a new tab.
-function markdownComponents(onAtlas: (uuid: string) => void, previewSha: string | undefined): Components {
+function markdownComponents(onAtlas: OnAtlas, previewSha: string | undefined): Components {
   return {
     a({ href, children, ...props }) {
       const uuid = inAppUuid(href, previewSha);
@@ -57,7 +58,7 @@ function markdownComponents(onAtlas: (uuid: string) => void, previewSha: string 
       }
       const open = (e: MouseEvent) => {
         e.preventDefault();
-        onAtlas(uuid);
+        onAtlas(uuid, { split: e.shiftKey });
       };
       return (
         <a href={atlasHref(uuid)} onClick={open}>
@@ -68,7 +69,7 @@ function markdownComponents(onAtlas: (uuid: string) => void, previewSha: string 
   };
 }
 
-export function AtlasMarkdown({ content, onAtlas }: { content: string; onAtlas: (uuid: string) => void }) {
+export function AtlasMarkdown({ content, onAtlas }: { content: string; onAtlas: OnAtlas }) {
   const previewSha = useDataSource().preview?.sha;
   const components = useMemo(() => markdownComponents(onAtlas, previewSha), [onAtlas, previewSha]);
   const { remarkPlugins, rehypePlugins } = useMathPlugins(content);

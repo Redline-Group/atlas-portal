@@ -1611,8 +1611,7 @@ button.atlas-node-toggle:not([data-settling]):hover {
    row carries an extra box at all.
 
    Read through a variable rather than hardcoding the string: a subtree can
-   reword it, or opt out with none, by inheriting --split-hint (see .junior-pane
-   below). That is
+   reword it by inheriting --split-hint (see .junior-pane below). That is
    inheritance, not cascade competition — a plain `content: none` override would
    lose to this selector, whose :not(:has(…)) makes it very specific.
 

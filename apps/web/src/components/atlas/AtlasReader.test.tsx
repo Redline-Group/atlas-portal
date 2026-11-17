@@ -52,20 +52,17 @@ vi.mock("../../hooks/useExpandingAttr", () => ({
 vi.mock("./useAtlasScroll", () => ({
   useAtlasScroll: () => {},
 }));
-// The stub carries the real pane class, a doc link and a row stand-in, so the
-// shift-click wiring (useShiftClickDocLinks + onShowInMain) is exercised here.
-vi.mock("./JuniorPane", async () => {
-  const { SPLIT_PANE_CLASS } = await import("./useShiftClickDocLinks");
-  return {
-    JuniorPane: (props: { splitId: string; onClose: () => void; onShowInMain: (id: string) => void }) => (
-      <div data-testid="junior-pane" data-split-id={props.splitId} className={SPLIT_PANE_CLASS}>
-        <button onClick={props.onClose}>close-junior</button>
-        <a href="/atlas?id=a1">pane-link</a>
-        <button onClick={() => props.onShowInMain("a2")}>pane-row-shift</button>
-      </div>
-    ),
-  };
-});
+// The stub exposes the pane's two callbacks, so the reader's wiring (re-root
+// vs show-in-main) is exercised here.
+vi.mock("./JuniorPane", () => ({
+  JuniorPane: (props: { splitId: string; onClose: () => void; onReroot: (id: string) => void; onShowInMain: (id: string) => void }) => (
+    <div data-testid="junior-pane" data-split-id={props.splitId}>
+      <button onClick={props.onClose}>close-junior</button>
+      <button onClick={() => props.onReroot("a1")}>pane-row-click</button>
+      <button onClick={() => props.onShowInMain("a2")}>pane-row-shift</button>
+    </div>
+  ),
+}));
 
 // A minimal stand-in for CollapsibleNode that surfaces the props docList
 // computes (isSelected, cradle, gatedCount, hasChildren, rung) as
@@ -1060,26 +1057,15 @@ describe("AtlasReader edge cases", () => {
     expect(screen.getByTestId(`node-${a.id}`)).toBeInTheDocument();
   });
 
-  it("shift-clicking a doc link in the reader opens it in the comparison pane", () => {
-    const { atlas, flatNodes } = makeCradleTree();
-    const data = makeLoadedData({ atlas, flatNodes, complete: true });
-    const { onSplitChange, actions } = renderReader({ id: "a", selectedId: "a", splitId: null, data });
-    const link = document.body.appendChild(Object.assign(document.createElement("a"), { href: "/atlas?id=b", textContent: "doc-link" }));
-    fireEvent.click(link, { shiftKey: true });
-    link.remove();
-    expect(onSplitChange).toHaveBeenCalledWith("b", "link");
-    expect(actions.navigate).not.toHaveBeenCalled();
-  });
-
-  it("shift-click inside the comparison pane selects the doc in the main reader", () => {
+  it("wires the pane: a plain click re-roots it, a shift-click selects in the main reader", () => {
     const { atlas, flatNodes } = makeCradleTree();
     const data = makeLoadedData({ atlas, flatNodes, complete: true });
     const { onSplitChange, actions } = renderReader({ id: "a", selectedId: "a", splitId: "b", data });
-    fireEvent.click(screen.getByText("pane-link"), { shiftKey: true });
-    expect(actions.navigate).toHaveBeenCalledWith("a1");
     fireEvent.click(screen.getByText("pane-row-shift"));
     expect(actions.navigate).toHaveBeenCalledWith("a2");
     expect(onSplitChange).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText("pane-row-click"));
+    expect(onSplitChange).toHaveBeenCalledWith("a1");
   });
 
   it("closing JuniorPane calls onSplitChange(null)", () => {

@@ -15,7 +15,7 @@ import { useExpandingAttr } from "../../hooks/useExpandingAttr";
 import { CollapsibleNode } from "./CollapsibleNode";
 import { JuniorPane } from "./JuniorPane";
 import { SplitOpenButton } from "./SplitOpenButton";
-import { useShiftClickDocLinks } from "./useShiftClickDocLinks";
+import { useShowInMain } from "./useShowInMain";
 import { DEFAULT_RUNG, nextRung, reverseRung, flatRung, flatNextRung, flatReverseRung, type Rung } from "./subtreeState";
 import { revealStore } from "../../lib/revealStore";
 import { usePreviewChangedSet } from "../../lib/previewFilter";
@@ -654,10 +654,8 @@ export const AtlasReader = memo(function AtlasReader({
     return items;
   }, [data, selectedId, expandedSet, userToggles, filterSet, changedSet, selectionSet, filteredParentIds, agentByDoc, rung, visualSpanCount, visualChildren, hiddenNodeIds, handleExpandParent, exitingIds]);
 
-  // Doc links follow the rows: shift-click opens one in the comparison pane, or,
-  // from inside the pane, shows it in the reader (see useShiftClickDocLinks).
-  // The pane's rows share the same tracked showInMain.
-  const showInMain = useShiftClickDocLinks({ hasDoc: (d) => !!data.atlas.docs[d], openInSplit: onSplitChange, navigate });
+  // The pane's shift-click (rows and doc links alike) selects in the reader.
+  const showInMain = useShowInMain(navigate);
 
   // Stable actions-context value: rebuilding it every render forced every
   // memo'd CollapsibleNode to re-render on any parent render (e.g. a selection
@@ -682,7 +680,7 @@ export const AtlasReader = memo(function AtlasReader({
         className="relative flex flex-col overflow-hidden flex-1 min-w-0"
         style={{ ...ATLAS_LEFT_PANE_STYLE, minHeight: 0 }}
       >
-        {id && !splitId && <SplitOpenButton onOpen={() => onSplitChange(id)} />}
+        {id && !splitId && <SplitOpenButton onClick={() => onSplitChange(id)} />}
         <div ref={scrollContainerRef} className="atlas-scroll overflow-y-auto flex-1" style={{ minHeight: 0 }}>
           <div className="mx-auto py-2">
             <ErrorBoundary resetKey={id} fallback={(error) => <PanelError error={error} />}>
@@ -693,8 +691,9 @@ export const AtlasReader = memo(function AtlasReader({
         {splitId && (
           <ErrorBoundary resetKey={splitId} fallback={(error) => <PanelError error={error} />}>
             <JuniorPane
-              splitId={splitId} data={data}
-              onShiftNavigate={onSplitChange}
+              splitId={splitId}
+              data={data}
+              onReroot={onSplitChange}
               onShowInMain={showInMain}
               onClose={() => onSplitChange(null)}
             />

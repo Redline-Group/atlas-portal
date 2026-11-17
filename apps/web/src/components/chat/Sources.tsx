@@ -7,6 +7,7 @@ import type { CitationMark } from "./api";
 import { showClaimInAnswer } from "./claimHighlight";
 import { SourceMark, sourceTooltipContent } from "./SourceMark";
 import { useResolvedDocs, type ResolvedDoc } from "./useResolvedDocs";
+import type { OnAtlas } from "./chatTypes";
 
 export interface SourceChipProps {
   source: Source;
@@ -18,7 +19,7 @@ export interface SourceChipProps {
   anchorRef: (node: HTMLAnchorElement | null) => void;
   /** Scrolls the quoted claim into view in the answer and flashes it. */
   onShowClaim: (claim: string) => void;
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
 }
 
 // One cited doc. The whole pill is the hover target, not the glyph; Tooltip
@@ -33,7 +34,7 @@ function SourceChip({ source: s, resolved: r, mark, anchorRef, onShowClaim, onAt
         onClick={(e) => {
           e.preventDefault();
           track("chat_citation_click", { product: "chat", node_id: s.uuid });
-          onAtlas(s.uuid);
+          onAtlas(s.uuid, { split: e.shiftKey });
         }}
       >
         {r?.docNo && <span className="rlc-cite-doc">{r.docNo}</span>}
@@ -79,7 +80,7 @@ export interface SourcesProps {
   marks?: Record<string, CitationMark>;
   /** Present once the conversation has an id to read its collection from. */
   collection?: CollectionLink;
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
 }
 
 // Sources cluster: one chip per cited atlas doc. Link text is not trustworthy

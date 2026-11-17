@@ -96,6 +96,6 @@ describe("SupersededAnswer", () => {
       />,
     );
     await userEvent.click(screen.getByRole("link", { name: "Threshold Requirements" }));
-    expect(onAtlas).toHaveBeenCalledWith("3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607");
+    expect(onAtlas).toHaveBeenCalledWith("3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607", { split: false });
   });
 });

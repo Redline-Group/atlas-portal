@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { track } from "../lib/analytics";
 import { useUrlState, urlString } from "./useUrlState";
 
@@ -16,14 +16,21 @@ export type SplitChange = (id: string | null, via?: SplitOpenVia) => void;
 export function useSplitPane(nodeId: string | null) {
   const [splitId, setSplitId] = useUrlState("split", splitCodec);
 
+  // Read through a ref so the callback keeps one identity across navigation:
+  // it feeds the pane's actions context and chat's citation handler, whose
+  // consumers would otherwise all re-render on every doc click.
+  const live = useRef({ splitId, nodeId });
+  live.current = { splitId, nodeId };
+
   // Opening and closing are tracked on the null ↔ uuid transitions only.
-  const handleSplitChange: SplitChange = useCallback(
-    (sid: string | null, via?: SplitOpenVia) => {
-      if (sid && sid !== splitId) track("atlas_split_open", { node_id: nodeId, split_id: sid, ...(via && { via }) });
-      else if (!sid && splitId) track("reader_split_close", { node_id: nodeId, split_id: splitId });
+  const handleSplitChange = useCallback<SplitChange>(
+    (sid, via) => {
+      const { splitId: open, nodeId: node } = live.current;
+      if (sid && sid !== open) track("atlas_split_open", { node_id: node, split_id: sid, ...(via && { via }) });
+      else if (!sid && open) track("reader_split_close", { node_id: node, split_id: open });
       setSplitId(sid);
     },
-    [setSplitId, splitId, nodeId],
+    [setSplitId],
   );
 
   return { splitId, handleSplitChange };

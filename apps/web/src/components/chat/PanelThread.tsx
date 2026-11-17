@@ -7,6 +7,7 @@ import { ratioPct } from "../../lib/formatTokens";
 import { useChatPanel } from "./chatPanelContext";
 import { useOpenConversationCollection } from "../../hooks/useOpenConversationCollection";
 import type { useStickToBottom } from "./useStickToBottom";
+import type { OnAtlas } from "./chatTypes";
 
 function SignedOutIntro() {
   return (
@@ -31,7 +32,7 @@ function SignedOutIntro() {
 }
 
 interface ThreadBodyProps {
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
   onAnswerReveal: (el: HTMLElement) => void;
 }
 
@@ -62,7 +63,7 @@ function ThreadBody({ onAtlas, onAnswerReveal }: ThreadBodyProps) {
 export interface PanelThreadProps {
   /** The thread's follow-the-bottom handle (useStickToBottom). */
   scroll: ReturnType<typeof useStickToBottom>;
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
 }
 
 // The wrap (not the scrollable thread itself) hosts the context line:

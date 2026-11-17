@@ -184,7 +184,7 @@ describe("AtlasMarkdown", () => {
     const link = screen.getByText("Some Doc");
     expect(link).toHaveAttribute("href", "/atlas?id=11111111-1111-1111-1111-111111111111");
     fireEvent.click(link);
-    expect(onAtlas).toHaveBeenCalledWith("11111111-1111-1111-1111-111111111111");
+    expect(onAtlas).toHaveBeenCalledWith("11111111-1111-1111-1111-111111111111", { split: false });
   });
 
   it("renders non-atlas links as normal new-tab external links", () => {
@@ -236,7 +236,7 @@ describe("AtlasMarkdown — math rendering", () => {
     const link = screen.getByText("Risk Doc");
     expect(link).toHaveAttribute("href", "/atlas?id=11111111-1111-1111-1111-111111111111");
     fireEvent.click(link);
-    expect(onAtlas).toHaveBeenCalledWith("11111111-1111-1111-1111-111111111111");
+    expect(onAtlas).toHaveBeenCalledWith("11111111-1111-1111-1111-111111111111", { split: false });
   });
 
   it("extractSources is unaffected by math content in the same answer", () => {
@@ -326,7 +326,7 @@ describe("AtlasMarkdown — PR preview citations", () => {
       </DataSourceContext.Provider>,
     );
     fireEvent.click(screen.getByText("New rule"));
-    expect(onAtlas).toHaveBeenCalledWith(UUID);
+    expect(onAtlas).toHaveBeenCalledWith(UUID, { split: false });
   });
 
   it("is an ordinary new-tab link anywhere else", () => {

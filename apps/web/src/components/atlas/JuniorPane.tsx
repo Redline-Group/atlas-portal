@@ -4,7 +4,7 @@ import { CollapsibleNode } from "./CollapsibleNode";
 import { AtlasActionsContext } from "./AtlasActionsContext";
 import { useSplitHeight } from "./useSplitHeight";
 import { JuniorPaneHeader } from "./JuniorPaneHeader";
-import { SPLIT_PANE_CLASS } from "./useShiftClickDocLinks";
+import type { SplitOpenVia } from "../../hooks/useSplitPane";
 import { descendantIds } from "../../lib/instanceDescendants";
 
 const ViewChildrenFill = ({ docNo, onExpand }: { docNo: string; onExpand: () => void }) => (
@@ -41,17 +41,17 @@ const NoMoreNote = ({ docNo }: { docNo: string }) => (
 export function JuniorPane({
   splitId,
   data,
-  onShiftNavigate,
+  onReroot,
   onShowInMain,
   onClose,
 }: {
   splitId: string;
   data: LoadedData;
   /** Re-roots the pane: a plain click on a row or breadcrumb in it. */
-  onShiftNavigate: (id: string) => void;
-  /** Shift-click on a row: selects that doc in the main reader. Doc links in
-   *  the pane do the same through useShiftClickDocLinks. */
-  onShowInMain: (id: string) => void;
+  onReroot: (id: string) => void;
+  /** Shift-click on a row or doc link in the pane: selects that doc in the
+   *  main reader (the pane's splitNavigate). */
+  onShowInMain: (id: string, via?: SplitOpenVia) => void;
   onClose: () => void;
 }) {
   const [userToggles, setUserToggles] = useState<Set<string>>(new Set());
@@ -108,12 +108,12 @@ export function JuniorPane({
 
   const ctxValue = useMemo(
     () => ({
-      navigate: onShiftNavigate,
+      navigate: onReroot,
       toggle: handleToggle,
       splitNavigate: onShowInMain,
       docNoToId: data.atlas.docNoToId,
     }),
-    [onShiftNavigate, onShowInMain, handleToggle, data.atlas.docNoToId],
+    [onReroot, onShowInMain, handleToggle, data.atlas.docNoToId],
   );
 
   const items = useMemo(() => {
@@ -167,11 +167,11 @@ export function JuniorPane({
   ]);
 
   return (
-    // SPLIT_PANE_CLASS: index.css swaps the shift-click hint in here for
-    // "highlight in main view", and useShiftClickDocLinks keys on the class.
+    // junior-pane: index.css swaps the shift-click hint in here for
+    // "highlight in main view".
     <div
       ref={paneRef}
-      className={`${SPLIT_PANE_CLASS} flex flex-col`}
+      className="junior-pane flex flex-col"
       style={{
         // Falls back to the 45% default until the column has been measured.
         flex: height == null ? "0 0 45%" : `0 0 ${height}px`,
@@ -191,12 +191,16 @@ export function JuniorPane({
         title="Drag to resize"
         style={{ position: "absolute", left: 0, right: 0, top: 0, height: 6, cursor: "row-resize", zIndex: 10 }}
       />
-      <JuniorPaneHeader ancestors={ancestors} node={node} onReroot={onShiftNavigate} onClose={onClose} />
-      <div ref={scrollerRef} className="junior-scroll overflow-y-auto flex-1">
-        <div ref={contentRef} className="mx-auto px-3 py-2">
-          <AtlasActionsContext.Provider value={ctxValue}>{items}</AtlasActionsContext.Provider>
+      {/* The provider spans the header too, so a breadcrumb's shift-click is the
+          pane's (show in main), not the reader's around it. */}
+      <AtlasActionsContext.Provider value={ctxValue}>
+        <JuniorPaneHeader ancestors={ancestors} node={node} onReroot={onReroot} onClose={onClose} />
+        <div ref={scrollerRef} className="junior-scroll overflow-y-auto flex-1">
+          <div ref={contentRef} className="mx-auto px-3 py-2">
+            {items}
+          </div>
         </div>
-      </div>
+      </AtlasActionsContext.Provider>
     </div>
   );
 }

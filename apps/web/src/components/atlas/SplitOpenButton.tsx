@@ -1,18 +1,14 @@
 import type { ComponentProps } from "react";
 
-export interface SplitOpenButtonProps extends Omit<ComponentProps<"button">, "onClick"> {
-  /** Opens the comparison pane on the reader's current doc. */
-  onOpen: () => void;
-}
+export type SplitOpenButtonProps = ComponentProps<"button">;
 
-/** Opens the comparison pane on the reader's current doc. Shift-clicking any
- *  row or doc link opens one too; the title says so. */
-export function SplitOpenButton({ onOpen, ...props }: SplitOpenButtonProps) {
+/** Opens the comparison pane on the reader's current doc (the caller's
+ *  onClick). Shift-clicking any row or doc link opens one too; the title says so. */
+export function SplitOpenButton(props: SplitOpenButtonProps) {
   return (
     <button
       type="button"
       title="Open comparison pane (or shift-click any node)"
-      onClick={onOpen}
       aria-label="Open comparison pane"
       className="absolute top-2 right-[38px] z-10 mono text-[10px] px-1.5 py-0.5 rounded text-tan-3 hover:text-tan"
       style={{ background: "var(--surface)", border: "1px solid var(--border)" }}

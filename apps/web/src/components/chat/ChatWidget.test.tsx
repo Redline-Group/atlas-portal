@@ -2,11 +2,12 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
-import { Router, useLocation } from "wouter";
+import { Router, useLocation, useSearch } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
 import type { PageContextView } from "./pageContext";
 import type { ChatEvent } from "./api";
 import type { ChatSession } from "./useChatSession";
+import type { OnAtlas } from "./chatTypes";
 
 const context: PageContextView = {
   short: "Ask the Sky Atlas",
@@ -43,7 +44,7 @@ vi.mock("./ChatPanel", () => ({
   }: {
     session: ChatSession;
     onClose: () => void;
-    onAtlas: (uuid: string) => void;
+    onAtlas: OnAtlas;
     placement: string;
     onTogglePlacement: () => void;
   }) => (
@@ -58,6 +59,7 @@ vi.mock("./ChatPanel", () => ({
       <button onClick={() => void session.send("hello")}>send</button>
       <button onClick={onClose}>close-panel</button>
       <button onClick={() => onAtlas("11111111-1111-1111-1111-111111111111")}>cite</button>
+      <button onClick={() => onAtlas("11111111-1111-1111-1111-111111111111", { split: true })}>cite-split</button>
       <button onClick={onTogglePlacement}>toggle-placement</button>
     </div>
   ),
@@ -68,7 +70,13 @@ import { ChatOpenProvider, useChatOpen } from "../../lib/chatOpen";
 
 function LocationProbe() {
   const [loc] = useLocation();
-  return <p data-testid="loc">{loc}</p>;
+  const search = useSearch();
+  return (
+    <>
+      <p data-testid="loc">{loc}</p>
+      <p data-testid="search">{search}</p>
+    </>
+  );
 }
 
 // Test-only sibling that drives the real ChatOpenProvider, standing in for a
@@ -84,9 +92,9 @@ function DeleteTrigger({ id }: { id: string }) {
 }
 
 function renderWidget(path = "/") {
-  const { hook } = memoryLocation({ path, record: true });
+  const { hook, searchHook } = memoryLocation({ path, record: true });
   return render(
-    <Router hook={hook}>
+    <Router hook={hook} searchHook={searchHook}>
       <ChatWidget />
       <LocationProbe />
     </Router>,
@@ -214,6 +222,24 @@ describe("ChatWidget citation navigation", () => {
     fireEvent.click(screen.getByText("cite"));
     expect(screen.getByTestId("loc")).toHaveTextContent("/atlas");
     expect(screen.getByTestId("chat-panel")).toBeInTheDocument();
+  });
+
+  it("opens a shift-clicked citation in the reader's comparison pane", () => {
+    renderWidget("/atlas?id=22222222-2222-2222-2222-222222222222");
+    fireEvent.click(screen.getByLabelText("Open Redline Portal Chat"));
+    fireEvent.click(screen.getByText("cite-split"));
+    const params = new URLSearchParams(screen.getByTestId("search").textContent ?? "");
+    expect(params.get("id")).toBe("22222222-2222-2222-2222-222222222222");
+    expect(params.get("split")).toBe("11111111-1111-1111-1111-111111111111");
+    expect(track).toHaveBeenCalledWith("atlas_split_open", expect.objectContaining({ via: "link" }));
+  });
+
+  it("navigates normally on a shift-clicked citation away from the reader", () => {
+    renderWidget("/radar");
+    fireEvent.click(screen.getByLabelText("Open Redline Portal Chat"));
+    fireEvent.click(screen.getByText("cite-split"));
+    expect(screen.getByTestId("loc")).toHaveTextContent("/atlas");
+    expect(screen.getByTestId("search")).toHaveTextContent("id=11111111-1111-1111-1111-111111111111");
   });
 });
 

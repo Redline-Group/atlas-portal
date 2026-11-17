@@ -2,6 +2,7 @@ import { StageList } from "./StageList";
 import { StageSlot } from "./StageSlot";
 import { stageSlotContent } from "./stageSlotContent";
 import type { ChatMsg, StageLogEntry } from "./chatTypes";
+import type { OnAtlas } from "./chatTypes";
 
 export function UserTurn({ text }: { text: string }) {
   return (
@@ -25,7 +26,7 @@ export interface TurnStagesProps {
   label?: string;
   /** `at` of the stage the whole turn is currently in. */
   activeAt?: number;
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
 }
 
 // One of a turn's stage checklists, or nothing when it has no rows. A row's

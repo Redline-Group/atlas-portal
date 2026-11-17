@@ -1,6 +1,9 @@
 import { useCallback, useState } from "react";
 import { useLocation } from "wouter";
-import { atlasHref } from "@/lib/routes";
+import { atlasHref, ROUTES } from "@/lib/routes";
+import { useAtlasNodeId } from "../../hooks/useAtlasNodeId";
+import { useSplitPane } from "../../hooks/useSplitPane";
+import type { OnAtlas } from "./chatTypes";
 import { ChatLauncher } from "./ChatLauncher";
 import { ChatPanel } from "./ChatPanel";
 import { useChatSession } from "./useChatSession";
@@ -27,7 +30,8 @@ export function ChatWidget() {
   const [resume] = useState(readFreshResume);
   const { open, setOpen, openChat, closeChat } = useOpenState(resume !== null);
   const [placement, togglePlacement] = usePlacement();
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
+  const { handleSplitChange } = useSplitPane(useAtlasNodeId());
   const context = usePageContext();
   const session = useChatSession(open);
   useResumeConversation(resume, session.openConversation);
@@ -35,8 +39,16 @@ export function ChatWidget() {
   useChatOpenChannel(session, setOpen);
   useChatHotkeys(openChat, closeChat);
   useAnchoredLayout(open, placement);
-  // Atlas citation click → SPA-navigate to the reader, keep the panel open.
-  const onAtlas = useCallback((uuid: string) => navigate(atlasHref(uuid)), [navigate]);
+  // Atlas citation click → SPA-navigate to the reader, keep the panel open. A
+  // shift-click on the reader opens the doc in its comparison pane instead,
+  // like shift-clicking any other doc link there.
+  const onAtlas = useCallback<OnAtlas>(
+    (uuid, opts) => {
+      if (opts?.split && location === ROUTES.ATLAS) handleSplitChange(uuid, "link");
+      else navigate(atlasHref(uuid));
+    },
+    [navigate, location, handleSplitChange],
+  );
   if (!open) return <ChatLauncher onOpen={openChat} context={context} />;
   return (
     <ChatPanel

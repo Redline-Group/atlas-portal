@@ -5,6 +5,7 @@ import { ExportChips } from "./ExportChips";
 import { VerifyBadge } from "./VerifyBadge";
 import { AnswerFacts } from "./AnswerFacts";
 import type { ChatMsg } from "./chatTypes";
+import type { OnAtlas } from "./chatTypes";
 
 /** What the answer slot of a finished-or-running turn shows. */
 export type TurnOutcome = "failed" | "stopped" | "answer" | "pending";
@@ -21,7 +22,7 @@ interface AnswerBodyProps {
   msg: ChatMsg;
   outcome: TurnOutcome;
   answerRef: RefObject<HTMLDivElement | null>;
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
 }
 
 // The failed note bypasses AtlasMarkdown so it can't pass for a terse reply.
@@ -53,7 +54,7 @@ export function AnswerFooter({
   collection,
 }: {
   msg: ChatMsg;
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
   collection?: CollectionLink;
 }) {
   return (

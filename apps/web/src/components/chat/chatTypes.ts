@@ -184,3 +184,7 @@ export interface ChatMsg {
   // { text, p } judged parts the wire has never carried (see hydrate.ts).
   answerCoverage?: AnswerCoverage;
 }
+
+/** Opens a cited document. `split` asks for the reader's comparison pane (a
+ *  shift-click on the citation); ChatWidget honours it only on the reader. */
+export type OnAtlas = (uuid: string, opts?: { split?: boolean }) => void;

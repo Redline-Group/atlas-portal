@@ -5,6 +5,7 @@ import type { CollectionLink } from "./Sources";
 import { TurnStages, UserTurn } from "./TurnParts";
 import { useAnswerReveal } from "./useAnswerReveal";
 import type { ChatMsg } from "./useChatStream";
+import type { OnAtlas } from "./chatTypes";
 
 // The stages that run on the answer once it exists. Their rows render AFTER
 // the answer, so the answer sits directly under the Synthesizing row — the
@@ -20,7 +21,7 @@ export interface MessageProps {
   /** This is the turn currently streaming. */
   streaming: boolean;
   /** Opens an atlas document behind a citation link anywhere in the turn. */
-  onAtlas: (uuid: string) => void;
+  onAtlas: OnAtlas;
   /** Called once, with the answer element, when this turn's answer is revealed. */
   onAnswerReveal?: (el: HTMLElement) => void;
   /** Opens the conversation's cited docs as a collection; absent before the conversation has an id. */
