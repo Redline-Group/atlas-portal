@@ -653,15 +653,15 @@ export const AtlasReader = memo(function AtlasReader({
     return items;
   }, [data, selectedId, expandedSet, userToggles, filterSet, changedSet, selectionSet, filteredParentIds, agentByDoc, rung, visualSpanCount, visualChildren, hiddenNodeIds, handleExpandParent, exitingIds]);
 
+  // Doc links follow the rows: shift-click opens one in the comparison pane, or,
+  // from inside the pane, shows it in the reader (see useShiftClickDocLinks).
+  useShiftClickDocLinks({ hasDoc: (d) => !!data.atlas.docs[d], openInSplit: onSplitChange, showInMain: navigate });
+
   // Stable actions-context value: rebuilding it every render forced every
   // memo'd CollapsibleNode to re-render on any parent render (e.g. a selection
   // change or an ordinary body toggle). All members are referentially stable
   // across those renders — handlePendulum reads rung/selection state through
   // refs rather than closing over it — so memoize the object too.
-  // Doc links follow the rows: shift-click opens one in the comparison pane, or,
-  // from inside the pane, shows it in the reader (see useShiftClickDocLinks).
-  useShiftClickDocLinks({ hasDoc: (d) => !!data.atlas.docs[d], openInSplit: onSplitChange, showInMain: navigate });
-
   const actions = useMemo(
     () => ({
       navigate,
