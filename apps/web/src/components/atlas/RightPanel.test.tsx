@@ -11,6 +11,9 @@ import userEvent from "@testing-library/user-event";
 import { RightPanel } from "./RightPanel";
 import { makeNode, makeEdgeResult, makeGlossaryEntry, makeAddressInfo, makeEdge } from "../../test/fixtures";
 import { DataSourceContext } from "../../lib/dataSource";
+import { AtlasActionsContext } from "./AtlasActionsContext";
+import { makeAtlasActions } from "../../test/readerLinks";
+import { docIdFromPath } from "../../lib/visitHistory";
 import type { AtlasTab } from "../../lib/atlasTab";
 import { buildVoteIndex } from "@/lib/votes/vote-index";
 
@@ -35,10 +38,11 @@ afterEach(() => {
 });
 
 
-function setup(overrides: Partial<Parameters<typeof RightPanel>[0]> = {}) {
+// Renders the panel, inside the reader's actions context when `actions` is given
+// (as AtlasView renders it), standalone otherwise.
+function setup(overrides: Partial<Parameters<typeof RightPanel>[0]> = {}, actions?: ReturnType<typeof makeAtlasActions>) {
   const onTabChange = vi.fn();
   const onNavigate = vi.fn();
-  const onNavigateByDocNo = vi.fn();
   const props = {
     id: "node-1",
     annotationDocs: [],
@@ -49,14 +53,14 @@ function setup(overrides: Partial<Parameters<typeof RightPanel>[0]> = {}) {
     graphEdges: makeEdgeResult(),
     glossaryTerms: [],
     onNavigate,
-    onNavigateByDocNo,
     tab: "notes" as AtlasTab,
     onTabChange,
     docs: { "node-1": makeNode({ id: "node-1", content: "No dates here." }) },
     ...overrides,
   };
-  render(<RightPanel {...props} />);
-  return { onTabChange, onNavigate, onNavigateByDocNo };
+  const panel = <RightPanel {...props} />;
+  render(actions ? <AtlasActionsContext.Provider value={actions}>{panel}</AtlasActionsContext.Provider> : panel);
+  return { onTabChange, onNavigate };
 }
 
 describe("RightPanel section pills", () => {
@@ -174,7 +178,7 @@ describe("RightPanel tab content", () => {
 
   it("groups glossary terms on the glossary tab", () => {
     setup({ tab: "glossary", glossaryTerms: [[makeGlossaryEntry({ term: "Accord" })]] });
-    expect(screen.getByRole("button", { name: "Accord" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Accord" })).toBeInTheDocument();
   });
 
   it("renders live NodeHistory on the history tab when not in preview", () => {
@@ -196,7 +200,6 @@ describe("RightPanel tab content", () => {
           graphEdges={makeEdgeResult()}
           glossaryTerms={[]}
           onNavigate={vi.fn()}
-          onNavigateByDocNo={vi.fn()}
           tab="history"
           onTabChange={onTabChange}
           docs={{}}
@@ -224,7 +227,7 @@ describe("RightPanel tab content", () => {
 });
 
 describe("RightPanel glossary grouping", () => {
-  it("shows source-context buttons and content for multi-entry groups, and navigates on click", async () => {
+  it("shows source-context links and content for multi-entry groups, and navigates on click", async () => {
     const user = userEvent.setup();
     const nodeId = "term-node";
     const { onNavigate } = setup({
@@ -251,14 +254,14 @@ describe("RightPanel glossary grouping", () => {
     expect(screen.getByText("First definition.")).toBeInTheDocument();
     expect(screen.getByText("Second definition.")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Accord" }));
+    await user.click(screen.getByRole("link", { name: "Accord" }));
     expect(onNavigate).toHaveBeenCalledWith(nodeId);
 
     await user.click(screen.getByText("Article B"));
     expect(onNavigate).toHaveBeenCalledWith("term-node-2");
   });
 
-  it("omits the source-context button for a single-entry group", () => {
+  it("omits the source-context link for a single-entry group", () => {
     setup({
       tab: "glossary",
       glossaryTerms: [[makeGlossaryEntry({ term: "Solo", sourceContext: "Should not show" })]],
@@ -277,8 +280,39 @@ describe("RightPanel graph relations", () => {
       }),
     });
     expect(screen.getByText(/cited by · 1/)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "A.9.9" }));
+    await user.click(screen.getByRole("link", { name: "A.9.9" }));
     expect(onNavigate).toHaveBeenCalledWith("citer-1");
+  });
+
+  // Every section filled, so a new kind of entry is covered without naming it:
+  // each doc link opens the comparison pane on shift-click, and no button
+  // navigates (a navigating button is how cited-by once missed the gesture).
+  it("routes every doc link's shift-click to the comparison pane, and has no navigating buttons", () => {
+    const actions = makeAtlasActions();
+    const { onNavigate } = setup(
+      {
+        docNoToId: new Map([["A.2.2", "source-doc"]]),
+        annotationDocs: [makeNode({ id: "annot-1", doc_no: "A.1.0.3.1", title: "Annotation Doc" })],
+        linkedNodes: [makeNode({ id: "linked-1", title: "Linked Doc" })],
+        cousinDocs: [{ node: makeNode({ id: "cousin-1", title: "Cousin Doc" }), agent: "Spark" }],
+        glossaryTerms: [[
+          makeGlossaryEntry({ term: "Accord", nodeId: "term-node", sourceContext: "Article A" }),
+          makeGlossaryEntry({ term: "Accord", nodeId: "term-node-2", sourceContext: "Article B" }),
+        ]],
+        graphEdges: makeEdgeResult({
+          inbound: [makeEdge({ e: "cites", f: "citer-1", s: ["A.9.9"] })],
+          outbound: [makeEdge({ e: "depends_on", f: "node-1", t: "target-doc", tt: "doc", to_label: "Target Doc", s: ["A.2.2"] })],
+        }),
+      },
+      actions,
+    );
+    const docLinks = screen.getAllByRole("link").filter((a) => docIdFromPath(a.getAttribute("href") ?? ""));
+    const ids = docLinks.map((a) => docIdFromPath(a.getAttribute("href")!));
+    expect(ids).toEqual(expect.arrayContaining(["annot-1", "linked-1", "cousin-1", "citer-1", "target-doc", "source-doc", "term-node", "term-node-2"]));
+    for (const a of docLinks) fireEvent.click(a, { shiftKey: true });
+    expect(actions.splitNavigate.mock.calls).toEqual(ids.map((id) => [id, "link"]));
+    for (const b of screen.getAllByRole("button")) fireEvent.click(b);
+    expect(onNavigate).not.toHaveBeenCalled();
   });
 
   it("falls back to a truncated id when a cited-by edge has no source doc_no", async () => {
@@ -291,9 +325,9 @@ describe("RightPanel graph relations", () => {
     expect(screen.getByText("12345678")).toBeInTheDocument();
   });
 
-  it("renders outbound relations with a navigable doc target and defined-in doc_no links", async () => {
+  it("renders outbound relations with a navigable doc target, and an unmatched defining doc_no as text", async () => {
     const user = userEvent.setup();
-    const { onNavigate, onNavigateByDocNo } = setup({
+    const { onNavigate } = setup({
       id: "self-id",
       tab: "notes",
       graphEdges: makeEdgeResult({
@@ -310,10 +344,22 @@ describe("RightPanel graph relations", () => {
       }),
     });
     expect(screen.getByText(/relations · 1/)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Target Doc" }));
+    await user.click(screen.getByRole("link", { name: "Target Doc" }));
     expect(onNavigate).toHaveBeenCalledWith("target-doc");
-    await user.click(screen.getByRole("button", { name: "A.2.2" }));
-    expect(onNavigateByDocNo).toHaveBeenCalledWith("A.2.2");
+    expect(screen.queryByRole("link", { name: "A.2.2" })).toBeNull();
+    expect(screen.getByText("A.2.2")).toBeInTheDocument();
+  });
+
+  it("links a relation's defining doc_no once it resolves to a document", async () => {
+    const user = userEvent.setup();
+    const { onNavigate } = setup({
+      docNoToId: new Map([["A.2.2", "source-doc"]]),
+      graphEdges: makeEdgeResult({
+        outbound: [makeEdge({ e: "depends_on", f: "node-1", t: "target-doc", tt: "doc", to_label: "Target Doc", s: ["A.2.2"] })],
+      }),
+    });
+    await user.click(screen.getByRole("link", { name: "A.2.2" }));
+    expect(onNavigate).toHaveBeenCalledWith("source-doc");
   });
 
   it("renders inbound entity relations as non-navigable labels with the inbound arrow", () => {
@@ -350,7 +396,7 @@ describe("RightPanel graph relations", () => {
     });
     expect(screen.getByText(/relations · 1/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /notes.*1/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Other Doc" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Other Doc" })).toBeInTheDocument();
   });
 
   it("hides the notes section when its only relations are self-nav", () => {

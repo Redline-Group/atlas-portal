@@ -1,15 +1,17 @@
 import { relationEnd, type Nav, type PanelRelation } from "./panelSections";
+import { AtlasLink } from "../AtlasLink";
+import { atlasHref } from "@/lib/routes";
 import { SourceMark } from "../SourceMark";
 import { PanelHeading } from "./PanelHeading";
 
 interface RelationsListProps {
   relations: PanelRelation[];
   onNav: Nav;
-  onNavDoc: Nav;
+  docNoToId?: Map<string, string>;
 }
 
 // The notes section's extracted relations, both directions.
-export function RelationsList({ relations, onNav, onNavDoc }: RelationsListProps) {
+export function RelationsList({ relations, onNav, docNoToId }: RelationsListProps) {
   return (
     <div className="mt-8">
       <PanelHeading mark={<SourceMark source="derived" bare hint="Edges the app extracted from Atlas text. Each lists the documents it was defined in." />}>
@@ -17,7 +19,7 @@ export function RelationsList({ relations, onNav, onNavDoc }: RelationsListProps
       </PanelHeading>
       <div className="space-y-2">
         {relations.map((rel, i) => (
-          <RelationRow key={i} rel={rel} onNav={onNav} onNavDoc={onNavDoc} />
+          <RelationRow key={i} rel={rel} onNav={onNav} docNoToId={docNoToId} />
         ))}
       </div>
     </div>
@@ -26,7 +28,7 @@ export function RelationsList({ relations, onNav, onNavDoc }: RelationsListProps
 
 // One relation: its kind, an inbound arrow, the far end (a link when it has a doc),
 // and the doc_nos that define it.
-function RelationRow({ rel, onNav, onNavDoc }: { rel: PanelRelation; onNav: Nav; onNavDoc: Nav }) {
+function RelationRow({ rel, onNav, docNoToId }: { rel: PanelRelation; onNav: Nav; docNoToId?: Map<string, string> }) {
   const { edge: e, isOut } = rel;
   const { label, navId } = relationEnd(rel);
   return (
@@ -35,7 +37,7 @@ function RelationRow({ rel, onNav, onNavDoc }: { rel: PanelRelation; onNav: Nav;
         <span className="mono px-1.5 py-0.5 rounded text-[10px] bg-surface text-accent">{e.e}</span>
         {!isOut && <span className="text-[10px] mono text-gray">←</span>}
         {navId ? (
-          <button className="mono hover:underline text-left text-tan-2" onClick={() => onNav("relation", navId)}>{label}</button>
+          <AtlasLink to={atlasHref(navId)} onOpen={() => onNav("relation", navId)} className="mono hover:underline text-tan-2">{label}</AtlasLink>
         ) : (
           <span className="font-medium text-tan">{label}</span>
         )}
@@ -46,11 +48,22 @@ function RelationRow({ rel, onNav, onNavDoc }: { rel: PanelRelation; onNav: Nav;
           {e.s.map((docNo, j) => (
             <span key={docNo}>
               {j > 0 && ", "}
-              <button onClick={() => onNavDoc("relation_source", docNo)} className="hover:underline text-accent">{docNo}</button>
+              <SourceDocLink docNo={docNo} docId={docNoToId?.get(docNo)} onNav={onNav} />
             </span>
           ))}
         </p>
       )}
     </div>
+  );
+}
+
+// A relation's defining document, named by doc_no: a link to it when the doc_no
+// names a document in this atlas, plain text when it does not.
+function SourceDocLink({ docNo, docId, onNav }: { docNo: string; docId?: string; onNav: Nav }) {
+  if (!docId) return <span>{docNo}</span>;
+  return (
+    <AtlasLink to={atlasHref(docId)} onOpen={() => onNav("relation_source", docId)} className="hover:underline text-accent">
+      {docNo}
+    </AtlasLink>
   );
 }

@@ -1614,8 +1614,8 @@ button.atlas-node-toggle:not([data-settling]):hover {
    click does. The label is generated ONLY in that state, so at rest no reader
    row carries an extra box at all.
 
-   Read through a variable rather than hardcoding the string: a subtree can opt
-   out by inheriting --split-hint: none (see .junior-pane below). That is
+   Read through a variable rather than hardcoding the string: a subtree can
+   reword it by inheriting --split-hint (see .junior-pane below). That is
    inheritance, not cascade competition — a plain `content: none` override would
    lose to this selector, whose :not(:has(…)) makes it very specific.
 
@@ -1666,11 +1666,11 @@ button.atlas-node-toggle:not([data-settling]):hover {
 .tree-row:hover {
   z-index: 30;
 }
-/* The split pane already IS the split view: re-targeting it works, but "open
-   split view" is the wrong promise, so junior rows get no hint. Inherited by
-   every row inside the pane; `none` suppresses the pseudo-element outright. */
+/* The split pane already IS the split view: shift-click there highlights the
+   doc in the main reader instead, so its rows say that. Inherited by every row
+   inside the pane. */
 .junior-pane {
-  --split-hint: none;
+  --split-hint: "shift click to highlight in main view";
 }
 /* Reduced motion: the drift is the whole point of the hover rules above, so
    they have to be neutralised HERE rather than in the main reduced-motion block

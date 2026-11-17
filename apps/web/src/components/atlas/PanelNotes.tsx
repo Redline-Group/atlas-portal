@@ -3,6 +3,8 @@ import type { CousinDoc } from "../../lib/cousins";
 import type { EdgeResult } from "../../lib/graph";
 import { RelatedDocList } from "./RelatedDocList";
 import { RelationsList } from "./RelationsList";
+import { AtlasLink } from "../AtlasLink";
+import { atlasHref } from "@/lib/routes";
 import type { Nav, PanelRelation } from "./panelSections";
 import { SourceMark } from "../SourceMark";
 import { PanelHeading } from "./PanelHeading";
@@ -15,9 +17,9 @@ interface PanelNotesProps {
   citedBy: EdgeResult["inbound"];
   relations: PanelRelation[];
   onNav: Nav;
-  onNavDoc: Nav;
   selectable?: boolean;
   byParent?: Map<string | null, AtlasNode[]>;
+  docNoToId?: Map<string, string>;
 }
 
 const CARD_STACK = "flex flex-col gap-[10px]";
@@ -60,13 +62,14 @@ function CitedByList({ citedBy, onNav }: { citedBy: EdgeResult["inbound"]; onNav
       </PanelHeading>
       <div className="space-y-1">
         {citedBy.map((e, i) => (
-          <button
+          <AtlasLink
             key={i}
-            className="w-full text-left px-2 py-1.5 rounded text-xs mono hover:bg-hover transition-colors text-accent hover:underline"
-            onClick={() => onNav("cited_by", e.f)}
+            to={atlasHref(e.f)}
+            onOpen={() => onNav("cited_by", e.f)}
+            className="block w-full px-2 py-1.5 rounded text-xs mono hover:bg-hover transition-colors text-accent hover:underline"
           >
             {e.s?.[0] ?? e.f.slice(0, 8)}
-          </button>
+          </AtlasLink>
         ))}
       </div>
     </div>

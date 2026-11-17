@@ -15,7 +15,7 @@ import { splitPanelEdges, usePanelNav, type RightPanelProps } from "./panelSecti
 // always shows), and the count its pill carries.
 export function usePanelBodies(props: RightPanelProps) {
   const { id, annotationDocs, linkedNodes, cousinDocs, targetAddresses, graphEdges, glossaryTerms } = props;
-  const { nav, navDoc } = usePanelNav(props.onNavigate, props.onNavigateByDocNo);
+  const nav = usePanelNav(props.onNavigate);
   const { citedBy, relations } = useMemo(() => splitPanelEdges(graphEdges, id), [graphEdges, id]);
   const executives = useDocExecutives(id, props.docs);
   const limits = useAtlasVsContract(id, props.rateLimitSources);
@@ -23,7 +23,7 @@ export function usePanelBodies(props: RightPanelProps) {
   const onchainCount = addressCount + executives.length + limits.length;
   const noteCount = annotationDocs.length + linkedNodes.length + cousinDocs.length + citedBy.length + relations.length;
   const bodies: Record<AtlasTab, ReactNode> = {
-    notes: noteCount > 0 ? <PanelNotes {...props} citedBy={citedBy} relations={relations} onNav={nav} onNavDoc={navDoc} /> : null,
+    notes: noteCount > 0 ? <PanelNotes {...props} citedBy={citedBy} relations={relations} onNav={nav} /> : null,
     onchain: onchainCount > 0 ? <PanelOnchain {...props} executives={executives} limits={limits} /> : null,
     history: <PanelHistory id={id} />,
     glossary: glossaryTerms.length > 0 ? <PanelGlossary glossaryTerms={glossaryTerms} onNav={nav} /> : null,

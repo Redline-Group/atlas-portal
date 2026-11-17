@@ -655,6 +655,174 @@
       "title": "ALLOCATOR-SPARK-A Parameters"
     },
     {
+      "taskKey": "u:c02294b9-1938-40b5-af8c-57b82c7b1f51",
+      "uuid": "c02294b9-1938-40b5-af8c-57b82c7b1f51",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.4.1",
+      "title": "Unichain USDC Deposit Maximum"
+    },
+    {
+      "taskKey": "u:cb146c46-207d-4a52-be6d-9a4623f2d921",
+      "uuid": "cb146c46-207d-4a52-be6d-9a4623f2d921",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.4.2",
+      "title": "Unichain USDC Withdrawal Maximum"
+    },
+    {
+      "taskKey": "u:f998ce83-747f-4c60-95ba-26f1f2facdb8",
+      "uuid": "f998ce83-747f-4c60-95ba-26f1f2facdb8",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.4.3",
+      "title": "Unichain USDS Deposit Maximum"
+    },
+    {
+      "taskKey": "u:3a6e6efd-314a-4f21-b238-0ffa148fb8e3",
+      "uuid": "3a6e6efd-314a-4f21-b238-0ffa148fb8e3",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.4.4",
+      "title": "Unichain USDS Withdrawal Maximum"
+    },
+    {
+      "taskKey": "u:1741e5ba-e45a-4960-b193-f8bee9d595c9",
+      "uuid": "1741e5ba-e45a-4960-b193-f8bee9d595c9",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.4.5",
+      "title": "Unichain sUSDS Deposit Maximum"
+    },
+    {
+      "taskKey": "u:16004284-de05-4ee4-a9db-762de1270de9",
+      "uuid": "16004284-de05-4ee4-a9db-762de1270de9",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.4.6",
+      "title": "Unichain sUSDS Withdrawal Maximum"
+    },
+    {
+      "taskKey": "u:3f08e295-8edc-489a-8d46-9b4b7ca83d01",
+      "uuid": "3f08e295-8edc-489a-8d46-9b4b7ca83d01",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.5.1",
+      "title": "Optimism USDC Deposit Maximum"
+    },
+    {
+      "taskKey": "u:90c809f2-3f2c-4a76-beb8-06140822e2cd",
+      "uuid": "90c809f2-3f2c-4a76-beb8-06140822e2cd",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.5.2",
+      "title": "Optimism USDC Withdrawal Maximum"
+    },
+    {
+      "taskKey": "u:f162baa7-9400-4368-adf8-5793415de5b3",
+      "uuid": "f162baa7-9400-4368-adf8-5793415de5b3",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.5.3",
+      "title": "Optimism USDS Deposit Maximum"
+    },
+    {
+      "taskKey": "u:f04f600b-3cc0-4c10-8540-1dce56d130e2",
+      "uuid": "f04f600b-3cc0-4c10-8540-1dce56d130e2",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.5.4",
+      "title": "Optimism USDS Withdrawal Maximum"
+    },
+    {
+      "taskKey": "u:ae241843-1492-42b4-8a66-687701ba4dc0",
+      "uuid": "ae241843-1492-42b4-8a66-687701ba4dc0",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.5.5",
+      "title": "Optimism sUSDS Deposit Maximum"
+    },
+    {
+      "taskKey": "u:a9d4793d-da6a-440e-9435-993070700b60",
+      "uuid": "a9d4793d-da6a-440e-9435-993070700b60",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.5.6",
+      "title": "Optimism sUSDS Withdrawal Maximum"
+    },
+    {
+      "taskKey": "u:d4628bb9-978c-4e4a-884c-7e0b3b7e1daf",
+      "uuid": "d4628bb9-978c-4e4a-884c-7e0b3b7e1daf",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.2.2.1",
+      "title": "Prime Relayer Multisig"
+    },
+    {
+      "taskKey": "u:d800ab5e-4efa-45db-8d31-435f090a9678",
+      "uuid": "d800ab5e-4efa-45db-8d31-435f090a9678",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.2.2.1.4",
+      "title": "Usage Standards"
+    },
+    {
+      "taskKey": "u:8286092a-69f2-46af-a989-c694a1756753",
+      "uuid": "8286092a-69f2-46af-a989-c694a1756753",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.2.2.2",
+      "title": "Core Operator Relayer Multisig"
+    },
+    {
+      "taskKey": "u:846f23a1-eca3-4d55-8ed7-2c14c618d722",
+      "uuid": "846f23a1-eca3-4d55-8ed7-2c14c618d722",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.2.2.2.4",
+      "title": "Usage Standards"
+    },
+    {
+      "taskKey": "u:c805c872-05df-4157-a869-dff28535bf81",
+      "uuid": "c805c872-05df-4157-a869-dff28535bf81",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.2.2.3",
+      "title": "Freezer Multisig"
+    },
+    {
+      "taskKey": "u:f6b656c2-dc00-4c07-9452-34b01ef2e1ea",
+      "uuid": "f6b656c2-dc00-4c07-9452-34b01ef2e1ea",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.1.2.1.2.4.1",
+      "title": "Swap USDS to USDC"
+    },
+    {
+      "taskKey": "u:8b7c4526-ea6a-488d-925a-884704a7bc80",
+      "uuid": "8b7c4526-ea6a-488d-925a-884704a7bc80",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.1.2.1.2.4.2",
+      "title": "Swap USDC to USDS"
+    },
+    {
+      "taskKey": "u:7bd4a4cc-315b-4365-a793-923cd4aaacff",
+      "uuid": "7bd4a4cc-315b-4365-a793-923cd4aaacff",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.3.1",
+      "title": "Remove Compromised Relayer As Freezer"
+    },
+    {
+      "taskKey": "u:3bd03154-f7f0-408e-b3bf-654aaaf7e8cf",
+      "uuid": "3bd03154-f7f0-408e-b3bf-654aaaf7e8cf",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.3.2.5",
+      "title": "All PSM Assets Withdrawal Action"
+    },
+    {
+      "taskKey": "u:66799887-71fc-478f-b6a3-83df779bf405",
+      "uuid": "66799887-71fc-478f-b6a3-83df779bf405",
+      "docNo": "A.6.1.1.1.2.6.1.3.5.2.1.4.1.1",
+      "title": "Curator Role Address"
+    },
+    {
+      "taskKey": "u:b93cbb1b-486d-4129-8973-8af04ef00207",
+      "uuid": "b93cbb1b-486d-4129-8973-8af04ef00207",
+      "docNo": "A.6.1.1.1.2.6.1.3.5.2.1.4.2",
+      "title": "Timelocks"
+    },
+    {
+      "taskKey": "u:88c33ba7-ed86-4d4a-8286-d1efb0a2d823",
+      "uuid": "88c33ba7-ed86-4d4a-8286-d1efb0a2d823",
+      "docNo": "A.6.1.1.1.2.6.1.3.5.2.1.4.2.1",
+      "title": "Seven-Day Timelocks"
+    },
+    {
+      "taskKey": "u:c9648097-4bb9-4eec-9c2b-2b03c31c3f93",
+      "uuid": "c9648097-4bb9-4eec-9c2b-2b03c31c3f93",
+      "docNo": "A.6.1.1.1.2.6.1.3.5.2.1.4.2.2",
+      "title": "Three-Day Timelocks"
+    },
+    {
+      "taskKey": "u:4b9d124f-0bce-46db-9943-7c7ddf3a8ad1",
+      "uuid": "4b9d124f-0bce-46db-9943-7c7ddf3a8ad1",
+      "docNo": "A.6.1.1.1.2.6.1.3.5.2.1.4.2.3",
+      "title": "Functions Without A Timelock"
+    },
+    {
+      "taskKey": "u:3c72575c-ce4e-4379-ba45-080f335851a1",
+      "uuid": "3c72575c-ce4e-4379-ba45-080f335851a1",
+      "docNo": "A.6.1.1.1.2.6.1.4.1.4.2.3",
+      "title": "Instance-specific Operational Processes"
+    },
+    {
+      "taskKey": "u:3d6a3fd3-4f36-45eb-9399-4eedfdc1c30d",
+      "uuid": "3d6a3fd3-4f36-45eb-9399-4eedfdc1c30d",
+      "docNo": "A.6.1.1.1.2.6.1.4.4.2.1.4.2.1",
+      "title": "Spark Savings USDC Risk Parameters"
+    },
+    {
       "taskKey": "u:d79aed30-65e9-4eae-858c-1a1a63caa6d9",
       "uuid": "d79aed30-65e9-4eae-858c-1a1a63caa6d9",
       "docNo": "A.6.1.1.2.3.7.2",
@@ -751,24 +919,6 @@
       "title": "Role Hierarchies And Permissions"
     },
     {
-      "taskKey": "t:seven-day timelocks|risk",
-      "uuid": "4c4b9e64-7733-4982-b6f0-fda89c61526b",
-      "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.4.3.1",
-      "title": "Seven-Day Timelocks"
-    },
-    {
-      "taskKey": "t:three-day timelocks|risk",
-      "uuid": "beba0d1e-2d47-4578-ac76-307d959724ef",
-      "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.4.3.2",
-      "title": "Three-Day Timelocks"
-    },
-    {
-      "taskKey": "t:functions without a timelock|risk",
-      "uuid": "7ebf0b52-130b-461c-a07c-84ad794f6835",
-      "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.4.3.3",
-      "title": "Functions Without A Timelock"
-    },
-    {
       "taskKey": "t:abdicated functions|risk",
       "uuid": "789e37c6-e8b9-44c2-9b7e-05269aa1e2ab",
       "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.4.3.4",
@@ -785,6 +935,24 @@
       "uuid": "2e1ab72b-bbd1-4b39-aa6f-f56bc89c32ff",
       "docNo": "A.6.1.1.7.2.6.1.3.2.1.1.4.3",
       "title": "Timelocks"
+    },
+    {
+      "taskKey": "u:e922490d-e0d5-4685-a48c-7b7dbe5423d6",
+      "uuid": "e922490d-e0d5-4685-a48c-7b7dbe5423d6",
+      "docNo": "A.6.1.1.7.2.6.1.3.2.1.1.4.3.1",
+      "title": "Seven-Day Timelocks"
+    },
+    {
+      "taskKey": "u:00aa02b7-dfe8-4ea8-8023-dec0c3c7bec3",
+      "uuid": "00aa02b7-dfe8-4ea8-8023-dec0c3c7bec3",
+      "docNo": "A.6.1.1.7.2.6.1.3.2.1.1.4.3.2",
+      "title": "Three-Day Timelocks"
+    },
+    {
+      "taskKey": "u:b561f87d-c756-4d71-bc7a-dd14fa7d74f5",
+      "uuid": "b561f87d-c756-4d71-bc7a-dd14fa7d74f5",
+      "docNo": "A.6.1.1.7.2.6.1.3.2.1.1.4.3.3",
+      "title": "Functions Without A Timelock"
     }
   ]
 }

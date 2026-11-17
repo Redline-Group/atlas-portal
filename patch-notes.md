@@ -33,8 +33,9 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
-## 2026-11-16
+## 2026-11-17
 
+- Shift-clicking a document link now opens it in Splitview, and shift-clicking inside Splitview highlights that document in the main reader.
 - Made it clear when non-Atlas info is shown in the portal
 
 ## 2026-11-13

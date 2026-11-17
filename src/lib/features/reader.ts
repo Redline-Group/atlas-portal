@@ -33,7 +33,8 @@ export const reader: FeatureGroup = {
         name: "Splitview",
         what: "Open a second document in a side pane to compare two areas at once.",
         how: [
-          "Shift-click a document — a row in the tree, or its title in the reader — to open it in a second pane.",
+          "Shift-click a document — a row in the tree, or its title in the reader — to open it in a second pane. Shift-clicking a link to a document does the same, whether the link is in the reader, its right-hand panel or a chat answer.",
+          "Inside the pane, shift-click a document or a link to one to highlight it in the main reader instead.",
           "The pane shows that document with its children; close it to return to single view. While the reader is narrowed to your selected documents, an open collection, or a preview's changed documents, a link to a document outside that set opens it in the pane, and the reader stays where it was.",
           "The pane lives in the URL (?split=…), so back/forward and a shared link both restore it.",
         ],

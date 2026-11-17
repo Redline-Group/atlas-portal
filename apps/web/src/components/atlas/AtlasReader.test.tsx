@@ -52,10 +52,14 @@ vi.mock("../../hooks/useExpandingAttr", () => ({
 vi.mock("./useAtlasScroll", () => ({
   useAtlasScroll: () => {},
 }));
+// The stub exposes the pane's two callbacks, so the reader's wiring (re-root
+// vs show-in-main) is exercised here.
 vi.mock("./JuniorPane", () => ({
-  JuniorPane: (props: { splitId: string; onClose: () => void }) => (
+  JuniorPane: (props: { splitId: string; onClose: () => void; onReroot: (id: string) => void; onShowInMain: (id: string) => void }) => (
     <div data-testid="junior-pane" data-split-id={props.splitId}>
       <button onClick={props.onClose}>close-junior</button>
+      <button onClick={() => props.onReroot("a1")}>pane-row-click</button>
+      <button onClick={() => props.onShowInMain("a2")}>pane-row-shift</button>
     </div>
   ),
 }));
@@ -1051,6 +1055,17 @@ describe("AtlasReader edge cases", () => {
     const { container } = renderReader({ id: "b", selectedId: b.id, data });
     expect(container.querySelector(".selection-group")).toBeNull();
     expect(screen.getByTestId(`node-${a.id}`)).toBeInTheDocument();
+  });
+
+  it("wires the pane: a plain click re-roots it, a shift-click selects in the main reader", () => {
+    const { atlas, flatNodes } = makeCradleTree();
+    const data = makeLoadedData({ atlas, flatNodes, complete: true });
+    const { onSplitChange, actions } = renderReader({ id: "a", selectedId: "a", splitId: "b", data });
+    fireEvent.click(screen.getByText("pane-row-shift"));
+    expect(actions.navigate).toHaveBeenCalledWith("a2");
+    expect(onSplitChange).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText("pane-row-click"));
+    expect(onSplitChange).toHaveBeenCalledWith("a1");
   });
 
   it("closing JuniorPane calls onSplitChange(null)", () => {

@@ -1,6 +1,6 @@
-import { useMemo, type MouseEvent } from "react";
+import { useMemo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
-import { atlasHref } from "@/lib/routes";
+import { DocLink } from "../DocLink";
 import { extractCitedDocs, type CitedDoc } from "@/lib/citationScan";
 import { unwrapCodeCitations } from "./citations";
 import { useDataSource } from "../../lib/dataSource";
@@ -61,14 +61,10 @@ function markdownComponents(onAtlas: (uuid: string) => void, previewSha: string 
           </>
         );
       }
-      const open = (e: MouseEvent) => {
-        e.preventDefault();
-        onAtlas(uuid);
-      };
       return (
-        <a href={atlasHref(uuid)} onClick={open}>
+        <DocLink docId={uuid} onOpen={() => onAtlas(uuid)}>
           {children}
-        </a>
+        </DocLink>
       );
     },
   };

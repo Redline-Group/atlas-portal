@@ -34,6 +34,7 @@ export const plainHint = (hint: string): string => hint.replace(/[[\]]/g, "");
 /** Hover tier: the pointer is over something a modifier-click changes. */
 export const HOVER_HINTS: Readonly<Record<string, string>> = {
   split: "[Shift]-click → open in Splitview",
+  "split-main": "[Shift]-click → highlight in main view",
   cascade: `[Shift]-click → expand ${CASCADE_LEVELS} levels`,
   "cascade-collapse": "[Shift]-click → collapse all below",
   pendulum: `[${ALT_KEY}]-click → reverse direction`,

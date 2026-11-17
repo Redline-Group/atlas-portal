@@ -14,6 +14,8 @@ import { useAtlasScroll } from "./useAtlasScroll";
 import { useExpandingAttr } from "../../hooks/useExpandingAttr";
 import { CollapsibleNode } from "./CollapsibleNode";
 import { JuniorPane } from "./JuniorPane";
+import { SplitOpenButton } from "./SplitOpenButton";
+import { useShowInMain } from "./useShowInMain";
 import { DEFAULT_RUNG, nextRung, reverseRung, flatRung, flatNextRung, flatReverseRung, type Rung } from "./subtreeState";
 import { revealStore } from "../../lib/revealStore";
 import { usePreviewChangedSet } from "../../lib/previewFilter";
@@ -21,6 +23,7 @@ import { useSelectionSet } from "../../lib/selectionFilter";
 import { useAtlasFilterSet } from "../../lib/atlasFilter";
 import { useSelection } from "../../lib/selection";
 import { ErrorBoundary, PanelError } from "../ErrorBoundary";
+import type { SplitChange } from "../../hooks/useSplitPane";
 import {
   ATLAS_EMPTY_SET,
   collectSubtree,
@@ -78,7 +81,7 @@ export const AtlasReader = memo(function AtlasReader({
   id: string;
   selectedId: string | null;
   splitId: string | null;
-  onSplitChange: (id: string | null) => void;
+  onSplitChange: SplitChange;
   data: LoadedData;
   agentByDoc?: Map<string, string> | null;
 }) {
@@ -651,6 +654,9 @@ export const AtlasReader = memo(function AtlasReader({
     return items;
   }, [data, selectedId, expandedSet, userToggles, filterSet, changedSet, selectionSet, filteredParentIds, agentByDoc, rung, visualSpanCount, visualChildren, hiddenNodeIds, handleExpandParent, exitingIds]);
 
+  // The pane's shift-click (rows and doc links alike) selects in the reader.
+  const showInMain = useShowInMain(navigate);
+
   // Stable actions-context value: rebuilding it every render forced every
   // memo'd CollapsibleNode to re-render on any parent render (e.g. a selection
   // change or an ordinary body toggle). All members are referentially stable
@@ -674,29 +680,7 @@ export const AtlasReader = memo(function AtlasReader({
         className="relative flex flex-col overflow-hidden flex-1 min-w-0"
         style={{ ...ATLAS_LEFT_PANE_STYLE, minHeight: 0 }}
       >
-        {id && !splitId && (
-          <button
-            type="button"
-            title="Open comparison pane (or shift-click any node)"
-            onClick={() => onSplitChange(id)}
-            aria-label="Open comparison pane"
-            className="absolute top-2 right-[38px] z-10 mono text-[10px] px-1.5 py-0.5 rounded text-tan-3 hover:text-tan"
-            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-          >
-            <svg
-              width="12"
-              height="10"
-              viewBox="0 0 12 10"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              aria-hidden="true"
-            >
-              <rect x="0.5" y="0.5" width="11" height="3.5" rx="0.5" />
-              <rect x="0.5" y="6" width="11" height="3.5" rx="0.5" />
-            </svg>
-          </button>
-        )}
+        {id && !splitId && <SplitOpenButton onClick={() => onSplitChange(id)} />}
         <div ref={scrollContainerRef} className="atlas-scroll overflow-y-auto flex-1" style={{ minHeight: 0 }}>
           <div className="mx-auto py-2">
             <ErrorBoundary resetKey={id} fallback={(error) => <PanelError error={error} />}>
@@ -709,7 +693,8 @@ export const AtlasReader = memo(function AtlasReader({
             <JuniorPane
               splitId={splitId}
               data={data}
-              onShiftNavigate={onSplitChange}
+              onReroot={onSplitChange}
+              onShowInMain={showInMain}
               onClose={() => onSplitChange(null)}
             />
           </ErrorBoundary>

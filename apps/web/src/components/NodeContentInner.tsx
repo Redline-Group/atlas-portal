@@ -8,7 +8,6 @@ import { ethAddressesPlugin, rehypeEthAddresses } from "../lib/rehypeEthAddresse
 import { hashCodesPlugin } from "../lib/rehypeHashCodes";
 import { MATH_RE, loadMathPlugins, mathRemarkPlugins, mathRehypePlugin } from "../lib/markdownMath";
 import { UUID_RE } from "@/lib/patterns";
-import { atlasHref } from "@/lib/routes";
 import { resolveAtlasRef } from "../lib/docs";
 import { useDataSource } from "../lib/dataSource";
 import { track } from "../lib/analytics";
@@ -16,6 +15,7 @@ import { rehypeHighlightMarks } from "../lib/rehypeHighlightMarks";
 import { Address } from "./Address";
 import { MarkdownCode } from "./RateLimitKey";
 import { useFilterHides } from "../lib/atlasFilter";
+import { DocLink } from "./DocLink";
 import type { ReportQuery } from "@/lib/reportFilter";
 
 interface Props {
@@ -67,10 +67,9 @@ function MarkdownLink({
   const targetId = href ? internalTargetId(base, href) : null;
   if (targetId && onNavigate) {
     return (
-      <a
-        href={atlasHref(targetId)}
-        onClick={(e) => {
-          e.preventDefault();
+      <DocLink
+        docId={targetId}
+        onOpen={() => {
           // A filter-hidden target opens beside the reader; the navigator tracks that as a split open.
           if (!filterHides(targetId)) track("reader_content_link", { target_id: targetId });
           onNavigate(targetId);
@@ -78,7 +77,7 @@ function MarkdownLink({
         {...props}
       >
         {children}
-      </a>
+      </DocLink>
     );
   }
   // rehypeEthAddresses tags on-chain address links with data-address — the
