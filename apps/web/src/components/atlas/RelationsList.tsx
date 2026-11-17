@@ -1,5 +1,6 @@
-import { SECTION_HEAD, relationEnd, type Nav, type PanelRelation } from "./panelSections";
+import { relationEnd, type Nav, type PanelRelation } from "./panelSections";
 import { SourceMark } from "../SourceMark";
+import { PanelHeading } from "./PanelHeading";
 
 interface RelationsListProps {
   relations: PanelRelation[];
@@ -11,10 +12,9 @@ interface RelationsListProps {
 export function RelationsList({ relations, onNav, onNavDoc }: RelationsListProps) {
   return (
     <div className="mt-8">
-      <p className={`${SECTION_HEAD} mb-3 flex items-center gap-2`}>
+      <PanelHeading mark={<SourceMark source="derived" bare hint="Edges the app extracted from Atlas text. Each lists the documents it was defined in." />}>
         relations · {relations.length}
-        <SourceMark source="derived" bare hint="Edges the app extracted from Atlas text. Each lists the documents it was defined in." />
-      </p>
+      </PanelHeading>
       <div className="space-y-2">
         {relations.map((rel, i) => (
           <RelationRow key={i} rel={rel} onNav={onNav} onNavDoc={onNavDoc} />

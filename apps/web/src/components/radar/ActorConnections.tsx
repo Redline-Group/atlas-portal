@@ -3,6 +3,7 @@ import { RADAR_SECTION } from "@/lib/radarAnchors";
 import { Section } from "./RadarSection";
 import { RelationRow } from "./RelationRow";
 import { RecRow } from "./RecRow";
+import { SourceMark } from "../SourceMark";
 
 export interface ActorConnectionsProps {
   profile: Pick<ActorProfile, "relations" | "recommendations">;
@@ -16,8 +17,7 @@ export function ActorConnections({ profile: { relations, recommendations } }: Ac
         <Section
           title="Relationships"
           id={RADAR_SECTION.relationships}
-          source="derived"
-          sourceHint="Edges the app extracted from Atlas text. Each row lists the documents it was read from."
+          mark={<SourceMark source="derived" bare hint="Edges the app extracted from Atlas text. Each row lists the documents it was read from." />}
         >
           {relations.map((r, i) => (
             <RelationRow key={i} r={r} />
@@ -28,8 +28,7 @@ export function ActorConnections({ profile: { relations, recommendations } }: Ac
         <Section
           title="Notable"
           id={RADAR_SECTION.notable}
-          source="derived"
-          sourceHint="Judgements the app computed from the relationships and documents."
+          mark={<SourceMark source="derived" bare hint="Judgements the app computed from the relationships and documents." />}
         >
           {recommendations.map((rec, i) => (
             <RecRow key={i} rec={rec} />

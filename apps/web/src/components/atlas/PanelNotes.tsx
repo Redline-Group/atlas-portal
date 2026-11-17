@@ -3,8 +3,9 @@ import type { CousinDoc } from "../../lib/cousins";
 import type { EdgeResult } from "../../lib/graph";
 import { RelatedDocList } from "./RelatedDocList";
 import { RelationsList } from "./RelationsList";
-import { SECTION_HEAD, type Nav, type PanelRelation } from "./panelSections";
+import type { Nav, PanelRelation } from "./panelSections";
 import { SourceMark } from "../SourceMark";
+import { PanelHeading } from "./PanelHeading";
 
 interface PanelNotesProps {
   id: string;
@@ -40,7 +41,7 @@ export function PanelNotes(props: PanelNotesProps) {
       )}
       {cousinDocs.length > 0 && (
         <RelatedDocList {...list} label="cousin documents" kind="cousin_doc" blurb="Likely counterparts under the other Prime Agents."
-          source={{ class: "derived", hint: "Matched by title and by parallel structure across Prime Agents." }}
+          mark={<SourceMark source="derived" bare hint="Matched by title and by parallel structure across Prime Agents." />}
           items={cousinDocs.map(({ node, agent }) => ({ node, eyebrow: <span className="atlas-agent-pill">{agent}</span> }))}
           className="mt-8 pt-5 border-t border-border" listClassName={CARD_STACK} />
       )}
@@ -54,10 +55,9 @@ export function PanelNotes(props: PanelNotesProps) {
 function CitedByList({ citedBy, onNav }: { citedBy: EdgeResult["inbound"]; onNav: Nav }) {
   return (
     <div className="mt-8">
-      <p className={`${SECTION_HEAD} mb-3 flex items-center gap-2`}>
+      <PanelHeading mark={<SourceMark source="derived" bare hint="Found by our scan of each document's links; the Atlas does not list what cites it." />}>
         cited by · {citedBy.length}
-        <SourceMark source="derived" bare hint="Found by our scan of each document's links; the Atlas does not list what cites it." />
-      </p>
+      </PanelHeading>
       <div className="space-y-1">
         {citedBy.map((e, i) => (
           <button
