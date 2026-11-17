@@ -81,16 +81,13 @@ vi.mock("./AtlasAnnotations", () => ({
     linkedNodes: unknown[];
     targetAddresses: Record<string, unknown>;
     tab: string;
-    onNavigateByDocNo: (docNo: string) => void;
   }) => (
     <div
       data-testid="atlas-annotations"
       data-linked={props.linkedNodes.length}
       data-addresses={Object.keys(props.targetAddresses).length}
       data-tab={props.tab}
-    >
-      <button onClick={() => props.onNavigateByDocNo("A.1")}>navigate-by-doc-no</button>
-    </div>
+    />
   ),
 }));
 
@@ -271,28 +268,6 @@ describe("AtlasView normal render", () => {
     setupMocks({ data });
     render(<AtlasView {...baseProps({ splitId: "node-2" })} />);
     expect(screen.getByTestId("atlas-reader")).toHaveAttribute("data-split", "node-2");
-  });
-
-  it("resolves onNavigateByDocNo through docNoToId and calls onNavigate with the uuid", () => {
-    const node = makeNode({ id: "node-1", doc_no: "A.1" });
-    const atlas = makeAtlasBundle([node]);
-    const data = makeLoadedData({ atlas, complete: true });
-    setupMocks({ data });
-    const onNavigate = vi.fn();
-    render(<AtlasView {...baseProps({ onNavigate })} />);
-    fireEvent.click(screen.getByText("navigate-by-doc-no"));
-    expect(onNavigate).toHaveBeenCalledWith("node-1");
-  });
-
-  it("does nothing when onNavigateByDocNo is given an unknown doc_no", () => {
-    const node = makeNode({ id: "node-1", doc_no: "Z.9" });
-    const atlas = makeAtlasBundle([node]);
-    const data = makeLoadedData({ atlas, complete: true });
-    setupMocks({ data });
-    const onNavigate = vi.fn();
-    render(<AtlasView {...baseProps({ onNavigate })} />);
-    fireEvent.click(screen.getByText("navigate-by-doc-no"));
-    expect(onNavigate).not.toHaveBeenCalled();
   });
 
   it("loads the graph from the data-source base and passes it through in preview (cousins + owning agents)", async () => {

@@ -1,9 +1,14 @@
-import { createContext, useContext } from "react";
+import { createContext, useCallback, useContext, type MouseEvent } from "react";
+import type { SplitOpenVia } from "../../hooks/useSplitPane";
+import { isShiftClick } from "../../lib/clickKind";
 
 interface AtlasActions {
   navigate: (id: string) => void;
   toggle: (id: string) => void;
-  splitNavigate: (id: string) => void;
+  /** What shift-clicking a doc does here: the main reader opens it in the
+   *  comparison pane, the pane shows it in the main reader. Doc links pass
+   *  via "link" (see useDocLinkShiftClick); rows pass nothing. */
+  splitNavigate: (id: string, via?: SplitOpenVia) => void;
   /** The » click: advances a node's rung to the next pendulum position, or to
    *  the reversed one when alt is held (see subtreeState.ts). Only the main
    *  reader provides this; rows hide the affordance when it's absent. */
@@ -25,4 +30,24 @@ export function useAtlasActions(): AtlasActions {
   const ctx = useContext(AtlasActionsContext);
   if (!ctx) throw new Error("useAtlasActions must be used within AtlasActionsContext.Provider");
   return ctx;
+}
+
+/**
+ * A doc link's shift-click inside the reader does what shift-clicking that
+ * doc's row does — splitNavigate, so the direction follows whichever pane the
+ * link renders in, portalled tooltips included. Outside the reader there is no
+ * context and the browser keeps its own shift-click. Returns whether it took
+ * the click; the caller skips its plain-click behaviour when it did.
+ */
+export function useDocLinkShiftClick(): (e: MouseEvent, id: string) => boolean {
+  const splitNavigate = useContext(AtlasActionsContext)?.splitNavigate;
+  return useCallback(
+    (e: MouseEvent, id: string) => {
+      if (!splitNavigate || !isShiftClick(e)) return false;
+      e.preventDefault();
+      splitNavigate(id, "link");
+      return true;
+    },
+    [splitNavigate],
+  );
 }

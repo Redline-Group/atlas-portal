@@ -24,7 +24,6 @@ export interface RightPanelProps {
   graphEdges: EdgeResult;
   glossaryTerms: GlossaryEntry[][];
   onNavigate: (id: string) => void;
-  onNavigateByDocNo: (docNo: string) => void;
   /** The section the pill bar highlights and the scroll area jumps to, driven by
    *  the URL's ?view=. A hidden (empty) section falls back to the first shown one. */
   tab: AtlasTab;
@@ -34,6 +33,8 @@ export interface RightPanelProps {
    *  re-render this panel (or the sibling reader) — only the checkbox itself. */
   selectable?: boolean;
   byParent?: Map<string | null, AtlasNode[]>;
+  /** doc_no → uuid, so a relation's "defined in" doc_no can link to its document. */
+  docNoToId?: Map<string, string>;
   /** Every document, for matching the onchain section's Executive Votes to this one's dated claims. */
   docs: Record<string, AtlasNode>;
   /** The prime's rate-limit params when this document states one of its instances' values, for the onchain section's atlas-vs-contract table. */
@@ -43,18 +44,13 @@ export interface RightPanelProps {
 /** Navigation from the panel, tagged with what was clicked. */
 export type Nav = (kind: string, target: string) => void;
 
-export function usePanelNav(onNavigate: (id: string) => void, onNavigateByDocNo: (docNo: string) => void) {
+export function usePanelNav(onNavigate: (id: string) => void): Nav {
   const filterHides = useFilterHides();
-  const nav = useCallback<Nav>((kind, nid) => {
+  return useCallback<Nav>((kind, nid) => {
     // A filter-hidden target opens beside the reader; the navigator tracks that as a split open.
     if (!filterHides(nid)) track("reader_annotation_nav", { kind, node_id: nid });
     onNavigate(nid);
   }, [onNavigate, filterHides]);
-  const navDoc = useCallback<Nav>((kind, docNo) => {
-    track("reader_annotation_nav", { kind, doc_no: docNo });
-    onNavigateByDocNo(docNo);
-  }, [onNavigateByDocNo]);
-  return { nav, navDoc };
 }
 
 type Edge = EdgeResult["outbound"][number];

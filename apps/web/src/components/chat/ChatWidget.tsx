@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { atlasHref } from "@/lib/routes";
 import { ChatLauncher } from "./ChatLauncher";
 import { ChatPanel } from "./ChatPanel";
+import { useCitationReaderActions } from "./useCitationReaderActions";
+import { AtlasActionsContext } from "../atlas/AtlasActionsContext";
 import { useChatSession } from "./useChatSession";
 import { usePageContext } from "./pageContext";
 import { readFreshResume } from "./resume";
@@ -37,15 +39,18 @@ export function ChatWidget() {
   useAnchoredLayout(open, placement);
   // Atlas citation click → SPA-navigate to the reader, keep the panel open.
   const onAtlas = useCallback((uuid: string) => navigate(atlasHref(uuid)), [navigate]);
+  const readerActions = useCitationReaderActions(onAtlas);
   if (!open) return <ChatLauncher onOpen={openChat} context={context} />;
   return (
-    <ChatPanel
-      session={session}
-      onClose={closeChat}
-      context={context}
-      onAtlas={onAtlas}
-      placement={placement}
-      onTogglePlacement={togglePlacement}
-    />
+    <AtlasActionsContext.Provider value={readerActions}>
+      <ChatPanel
+        session={session}
+        onClose={closeChat}
+        context={context}
+        onAtlas={onAtlas}
+        placement={placement}
+        onTogglePlacement={togglePlacement}
+      />
+    </AtlasActionsContext.Provider>
   );
 }

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { atlasHref } from "@/lib/routes";
+import { DocLink } from "../DocLink";
 import { track } from "../../lib/analytics";
 import { Tooltip } from "../Tooltip";
 import type { Source } from "./markdown";
@@ -26,12 +26,11 @@ export interface SourceChipProps {
 function SourceChip({ source: s, resolved: r, mark, anchorRef, onShowClaim, onAtlas }: SourceChipProps) {
   return (
     <Tooltip content={sourceTooltipContent(mark, onShowClaim)}>
-      <a
+      <DocLink
         className="rlc-cite"
         ref={anchorRef}
-        href={atlasHref(s.uuid)}
-        onClick={(e) => {
-          e.preventDefault();
+        docId={s.uuid}
+        onOpen={() => {
           track("chat_citation_click", { product: "chat", node_id: s.uuid });
           onAtlas(s.uuid);
         }}
@@ -39,7 +38,7 @@ function SourceChip({ source: s, resolved: r, mark, anchorRef, onShowClaim, onAt
         {r?.docNo && <span className="rlc-cite-doc">{r.docNo}</span>}
         <span className="rlc-cite-title">{r?.title ?? s.title}</span>
         <SourceMark mark={mark} />
-      </a>
+      </DocLink>
     </Tooltip>
   );
 }

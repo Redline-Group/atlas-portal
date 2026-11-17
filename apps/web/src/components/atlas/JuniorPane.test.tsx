@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 // JuniorPane is the split/comparison pane: an ancestor breadcrumb, the selected
 // doc, and its descendant slice. We assert the breadcrumb links, the close
-// button, descendant rendering, and that Shift-clicking a row re-targets the pane.
+// button, descendant rendering, that a plain click on a row re-targets the pane,
+// and that Shift-clicking a row highlights it in the main reader instead.
 
 import { describe, it, expect, afterEach, beforeAll, vi } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
@@ -34,13 +35,20 @@ function data() {
   });
 }
 
-function setup() {
-  const onShiftNavigate = vi.fn();
+function setup(splitId = "split", loaded = data()) {
+  const onReroot = vi.fn();
+  const onShowInMain = vi.fn();
   const onClose = vi.fn();
   const utils = render(
-    <JuniorPane splitId="split" data={data()} onShiftNavigate={onShiftNavigate} onClose={onClose} />,
+    <JuniorPane splitId={splitId} data={loaded} onReroot={onReroot} onShowInMain={onShowInMain} onClose={onClose} />,
   );
-  return { ...utils, onShiftNavigate, onClose };
+  return { ...utils, onReroot, onShowInMain, onClose };
+}
+
+// A single childless top-level doc.
+function leafData() {
+  const leaf = makeNode({ id: "leaf", doc_no: "A.9", title: "Leaf Title", depth: 1, parentId: null });
+  return makeLoadedData({ atlas: makeAtlasBundle([leaf]), flatNodes: [makeFlatEntry({ node: leaf, depth: 1 })] });
 }
 
 afterEach(cleanup);
@@ -53,15 +61,28 @@ describe("JuniorPane breadcrumb", () => {
   });
 
   it("navigates to an ancestor on breadcrumb click", () => {
-    const { onShiftNavigate } = setup();
+    const { onReroot } = setup();
     fireEvent.click(screen.getByRole("link", { name: "Mid Title" }));
-    expect(onShiftNavigate).toHaveBeenCalledWith("mid");
+    expect(onReroot).toHaveBeenCalledWith("mid");
   });
 
   it("calls onClose when the close button is clicked", () => {
     const { onClose } = setup();
-    fireEvent.click(screen.getByText("✕"));
+    fireEvent.click(screen.getByRole("button", { name: "Close comparison pane" }));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("highlights an ancestor in the main reader when its breadcrumb is Shift-clicked", () => {
+    const { onReroot, onShowInMain } = setup();
+    fireEvent.click(screen.getByRole("link", { name: "Mid Title" }), { shiftKey: true });
+    expect(onShowInMain).toHaveBeenCalledWith("mid", "link");
+    expect(onReroot).not.toHaveBeenCalled();
+  });
+
+  it("puts the ancestor links in a labelled breadcrumb nav", () => {
+    setup();
+    const nav = screen.getByRole("navigation", { name: "Comparison pane breadcrumb" });
+    expect(nav).toContainElement(screen.getByRole("link", { name: "Mid Title" }));
   });
 });
 
@@ -74,10 +95,18 @@ describe("JuniorPane descendant slice", () => {
     expect(screen.getByRole("heading", { name: "Child Title" })).toBeInTheDocument();
   });
 
-  it("re-targets the pane when a descendant row is Shift-clicked", () => {
-    const { onShiftNavigate } = setup();
+  it("re-targets the pane when a descendant row is clicked", () => {
+    const { onReroot, onShowInMain } = setup();
+    fireEvent.click(screen.getByRole("heading", { name: "Child Title" }));
+    expect(onReroot).toHaveBeenCalledWith("child");
+    expect(onShowInMain).not.toHaveBeenCalled();
+  });
+
+  it("highlights a row in the main reader when it is Shift-clicked", () => {
+    const { onReroot, onShowInMain } = setup();
     fireEvent.click(screen.getByRole("heading", { name: "Child Title" }), { shiftKey: true });
-    expect(onShiftNavigate).toHaveBeenCalledWith("child");
+    expect(onShowInMain).toHaveBeenCalledWith("child");
+    expect(onReroot).not.toHaveBeenCalled();
   });
 
   it("toggles the split node's own body collapsed/expanded on title click", () => {
@@ -140,44 +169,30 @@ describe("JuniorPane selection-group wrapper (R2)", () => {
       atlas: makeAtlasBundle([split, child, grand]),
       flatNodes: [split, child, grand].map((node) => makeFlatEntry({ node, depth: node.depth })),
     });
-    const { container } = render(
-      <JuniorPane splitId="split" data={loaded} onShiftNavigate={vi.fn()} onClose={() => {}} />,
-    );
+    const { container } = setup("split", loaded);
     expect(container.querySelector("#junior-split")?.getAttribute("data-has-children")).toBe("true");
     expect(container.querySelector("#junior-child")?.getAttribute("data-has-children")).toBeNull();
     expect(container.querySelector("#junior-grand")?.getAttribute("data-has-children")).toBeNull();
   });
 
   it("does not mark a childless split root — nothing for the clamp to protect", () => {
-    const leaf = makeNode({ id: "leaf", doc_no: "A.9", title: "Leaf Title", depth: 1, parentId: null });
-    const loaded = makeLoadedData({
-      atlas: makeAtlasBundle([leaf]),
-      flatNodes: [makeFlatEntry({ node: leaf, depth: 1 })],
-    });
-    const { container } = render(
-      <JuniorPane splitId="leaf" data={loaded} onShiftNavigate={vi.fn()} onClose={() => {}} />,
-    );
+    const { container } = setup("leaf", leafData());
     const selected = container.querySelector(".atlas-node.is-selected");
     expect(selected).not.toBeNull();
     expect(selected?.getAttribute("data-has-children")).toBeNull();
+    // The shift-click note shows for a top-level doc too.
+    expect(container.textContent).toContain("Shift-Click inside SplitView to highlight it in the main view.");
   });
 
   it("renders no selection-group for an unknown splitId (nothing to bound)", () => {
-    const onShiftNavigate = vi.fn();
-    const { container } = render(
-      <JuniorPane splitId="missing" data={data()} onShiftNavigate={onShiftNavigate} onClose={() => {}} />,
-    );
+    const { container } = setup("missing");
     expect(container.querySelector(".selection-group")).toBeNull();
   });
 });
 
 describe("JuniorPane with an unknown splitId", () => {
   it("renders nothing above and a bare 'no more descendants' note, without crashing", () => {
-    const onShiftNavigate = vi.fn();
-    const onClose = vi.fn();
-    render(
-      <JuniorPane splitId="missing" data={data()} onShiftNavigate={onShiftNavigate} onClose={onClose} />,
-    );
+    setup("missing");
     expect(screen.queryByRole("link")).toBeNull();
     expect(document.body.textContent).toContain("no more descendants of");
   });
@@ -199,8 +214,7 @@ describe("JuniorPane 'view all descendants' affordance", () => {
       atlas: makeAtlasBundle(chain),
       flatNodes: chain.map((node) => makeFlatEntry({ node, depth: node.depth })),
     });
-    const onShiftNavigate = vi.fn();
-    render(<JuniorPane splitId="split" data={loaded} onShiftNavigate={onShiftNavigate} onClose={() => {}} />);
+    setup("split", loaded);
 
     expect(screen.getByRole("heading", { name: "D7 Title" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "D8 Title" })).toBeNull();
