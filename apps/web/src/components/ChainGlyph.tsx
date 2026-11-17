@@ -4,7 +4,8 @@ import type { ChainVerdictKind } from "../lib/chainVerdict";
 // The on-chain mark is two blocks joined by a line. A verdict against the chain
 // keeps the first block and the line and replaces the second block with the
 // result, so "on-chain, and this is what it says" reads left to right. The box
-// is 16 × 10, which at a 10px text size fills the 16px mark column exactly.
+// is 16 × 10, drawn at 0.75em tall so its blocks match the text glyphs' ink height,
+// and 1.2em wide: 12px in the 16px mark column at a 10px text size.
 
 const HEAVY = { strokeWidth: 1.4 };
 
@@ -44,24 +45,33 @@ const SECOND: Record<"block" | ChainVerdictKind, ReactNode> = {
 
 type ChainSvgProps = Omit<ComponentProps<"svg">, "children"> & { second: ReactNode };
 
-/** The first block and the line, then whatever stands in the second block's place. */
+/**
+ * The first block and the line, then whatever stands in the second block's place.
+ * The wrapper is exactly one line tall, aligned to the top of the line box, and
+ * centres the svg inside it. That puts the mark at the middle of the line in any
+ * font (a baseline offset would drift with the font's metrics), without lengthening
+ * the line, so a chip stays as tall as its neighbours. A small lift sits it
+ * with the ink of the words and glyphs beside it, which is above the line's centre.
+ */
 function ChainSvg({ second, style, ...props }: ChainSvgProps) {
   return (
-    <svg
-      viewBox="0 0 16 10"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.1"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      style={{ display: "inline", height: "1em", width: "1.6em", verticalAlign: "-0.1em", ...style }}
-      {...props}
-    >
-      <rect x=".8" y="2.25" width="5.5" height="5.5" rx=".7" />
-      <path d="M6.3 5h3.4" />
-      {second}
-    </svg>
+    <span style={{ display: "inline-flex", alignItems: "center", width: "1.2em", height: "1lh", verticalAlign: "top" }}>
+      <svg
+        viewBox="0 0 16 10"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        style={{ display: "block", width: "100%", height: "0.75em", transform: "translateY(-0.15em)", ...style }}
+        {...props}
+      >
+        <rect x=".8" y="2.25" width="5.5" height="5.5" rx=".7" />
+        <path d="M6.3 5h3.4" />
+        {second}
+      </svg>
+    </span>
   );
 }
 
