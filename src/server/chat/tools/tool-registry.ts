@@ -18,6 +18,7 @@ import { HISTORY_TOOLS } from "./registry-history.ts";
 import { QUERY_TOOLS } from "./registry-query.ts";
 import { ONCHAIN_TOOLS } from "./registry-onchain.ts";
 import { REPORT_TOOLS } from "../../reports/index.ts";
+import { PREVIEW_TOOL_NAMES, toolSources } from "../../../lib/provenance/toolSources.ts";
 
 export type { AtlasHandler, AtlasTool, DescribedTool } from "./tool-types.ts";
 
@@ -66,13 +67,27 @@ export function omitEmptyArgs(args: Record<string, unknown>): Record<string, unk
  * `resultChars` becomes the handler's result budget (output-budget.ts), so every
  * fitToBudget inside drops whole rows to the cut this call faces.
  */
-export function invokeTool<T extends { emptyArgsAbsent?: boolean; shape: z.ZodRawShape; handler: AtlasHandler }>(
+export function invokeTool<T extends { name?: string; emptyArgsAbsent?: boolean; shape: z.ZodRawShape; handler: AtlasHandler }>(
   ix: Indexes,
   tool: T,
   args: Record<string, unknown>,
   ctx: ToolCallContext = ANON_MCP_CTX,
 ): ToolResult | Promise<ToolResult> {
-  return withResultBudget(ctx.resultChars, () => runHandler(ix, tool, args, ctx));
+  return withResultBudget(ctx.resultChars, () => withSourceClasses(tool.name ?? "", runHandler(ix, tool, args, ctx)));
+}
+
+/**
+ * Stamps what the result draws on besides Atlas text (provenance/toolSources.ts),
+ * appended last so a leading `source_class` marker (preview-evidence.ts) stays
+ * first. A preview tool's result says `"source_class":"preview"` instead: a
+ * preview is not Atlas text and not a source class.
+ */
+function withSourceClasses(name: string, result: ToolResult | Promise<ToolResult>): ToolResult | Promise<ToolResult> {
+  const stamp = (r: ToolResult): ToolResult => {
+    const classes = PREVIEW_TOOL_NAMES.has(name) ? undefined : toolSources(name);
+    return classes ? { ...r, source_classes: [...classes] } : r;
+  };
+  return result instanceof Promise ? result.then(stamp) : stamp(result);
 }
 
 function runHandler<T extends { emptyArgsAbsent?: boolean; shape: z.ZodRawShape; handler: AtlasHandler }>(

@@ -74,4 +74,9 @@ describe("ActorChain", () => {
     const { container } = render(<ActorChain chain={chain} currentSlug="self-slug" />);
     expect(container).toBeEmptyDOMElement();
   });
+
+  it("marks the Related Parties heading as derived", () => {
+    const { container } = render(<ActorChain chain={{ ...emptyChain(), primes: [node({ slug: "other" })] }} currentSlug="me" />);
+    expect(container.querySelector("[data-source='derived']")).toHaveAttribute("href", "/provenance#source-derived");
+  });
 });

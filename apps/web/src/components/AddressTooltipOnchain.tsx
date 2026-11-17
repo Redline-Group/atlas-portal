@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import type { MultisigFact } from "@/lib/addressGraphFacts";
 import type { AddressInfo } from "@/types";
 import { useSharedBalances } from "../lib/sharedBalances";
-import { resolveAddressHoldings } from "../lib/addressTooltip";
+import { resolveAddressAsOf, resolveAddressHoldings } from "../lib/addressTooltip";
 import { resolveSafes } from "../lib/addressSafe";
 import { AddressTooltipSafe } from "./AddressTooltipSafe";
 import { AddressTooltipBalances } from "./AddressTooltipBalances";
+import { AddressTooltipAsOf } from "./AddressTooltipAsOf";
 
 /**
  * The hover card's rows read from /api/balances: the Safe setup when the
@@ -32,12 +33,15 @@ export function AddressTooltipOnchain({
     if (ready) onSettled();
   }, [ready, map, onSettled]);
   const { held, value } = resolveAddressHoldings(address, map, addresses, prices);
+  const safes = resolveSafes(address, map, addresses, multisigs);
+  const { readAt, priceAt } = resolveAddressAsOf(address, map, addresses, prices);
   return (
     <>
-      {resolveSafes(address, map, addresses, multisigs).map((safe) => (
+      {safes.map((safe) => (
         <AddressTooltipSafe key={safe.chains.join()} safe={safe} />
       ))}
       <AddressTooltipBalances held={held} value={value} loading={!ready} />
+      {ready && (safes.length > 0 || held.length > 0) && <AddressTooltipAsOf readAt={readAt} priceAt={priceAt} />}
     </>
   );
 }

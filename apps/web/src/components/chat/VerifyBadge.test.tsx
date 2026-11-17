@@ -42,8 +42,16 @@ describe("VerifyBadge", () => {
   it("shows the pass label with no issues and stays unexpandable", () => {
     render(<VerifyBadge verify={{ ...base, status: "pass" }} onAtlas={noop} />);
     const btn = screen.getByRole("button");
-    expect(btn).toHaveTextContent("no contradictions found");
+    expect(btn).toHaveTextContent("no contradictions found by an AI check");
+    expect(btn.querySelector("[data-source='ai']")).not.toBeNull();
     expect(btn).toBeDisabled();
+  });
+
+  it("marks a ruling as AI too, but not the in-progress check", () => {
+    const { rerender } = render(<VerifyBadge verify={{ ...base, status: "checking" }} onAtlas={noop} />);
+    expect(screen.getByRole("button").querySelector("[data-source]")).toBeNull();
+    rerender(<VerifyBadge verify={{ ...base, status: "warn" }} onAtlas={noop} />);
+    expect(screen.getByRole("button").querySelector("[data-source='ai']")).not.toBeNull();
   });
 
   it("shows a pluralized disputed-statement count for fail status and expands rows on click", () => {
@@ -62,7 +70,7 @@ describe("VerifyBadge", () => {
     };
     render(<VerifyBadge verify={verify} onAtlas={noop} />);
     const btn = screen.getByRole("button");
-    expect(btn).toHaveTextContent("2 statements disputed by the atlas");
+    expect(btn).toHaveTextContent("2 statements disputed by an AI check");
     expect(btn).not.toBeDisabled();
     expect(btn).toHaveAttribute("aria-expanded", "false");
 

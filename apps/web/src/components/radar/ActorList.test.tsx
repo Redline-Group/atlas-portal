@@ -23,6 +23,17 @@ describe("ActorList", () => {
     expect(screen.getByText("Agent One")).toBeInTheDocument();
   });
 
+  it("puts a derived symbol beside each group label, since the grouping is our classification", () => {
+    const actor = (id: string, slug: string) => ({ id, slug, name: slug, et: "agent", st: null, docId: null });
+    const { container } = render(
+      <ActorList groups={[{ label: "Prime Agents", actors: [actor("a", "one")] }, { label: "Facilitators", actors: [actor("b", "two")] }]} selectedSlug={null} />,
+    );
+    const marks = [...container.querySelectorAll("[data-source='derived']")];
+    expect(marks).toHaveLength(2);
+    expect(marks[0].parentElement).toHaveTextContent("Prime Agents");
+    expect(marks[1].parentElement).toHaveTextContent("Facilitators");
+  });
+
   it("marks the selected actor's link with data-active=true", () => {
     const groups: SidebarGroup[] = [
       {

@@ -44,8 +44,11 @@ describe("OFCategoryTable", () => {
     render(<OFCategoryTable cat="op-duty" label="Operational Facilitator Duties" rows={rows} chains={chains} />);
     expect(screen.getByRole("heading", { name: /Operational Facilitator Duties \(1\)/ })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Section" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Duty" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Facilitator" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^Duty/ })).toBeInTheDocument();
+    // The duty choice and the holders are the app's reading; Section and Prime are not marked here.
+    expect(screen.getByRole("columnheader", { name: /^Duty/ }).querySelector("[data-source='derived']")).not.toBeNull();
+    expect(screen.getByRole("columnheader", { name: /^Section/ }).querySelector("[data-source]")).toBeNull();
+    expect(screen.getByRole("columnheader", { name: /^Facilitator/ })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Prime" })).toBeInTheDocument();
     expect(screen.getByText("Duty Title")).toBeInTheDocument();
     expect(screen.getByText("Duty body text")).toBeInTheDocument();
@@ -98,7 +101,7 @@ describe("OFCategoryTable", () => {
       },
     ];
     render(<OFCategoryTable cat="universal" label="Universal" rows={rows} chains={chains} />);
-    expect(screen.queryByRole("columnheader", { name: "Facilitator" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: /^Facilitator/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("columnheader", { name: "Prime" })).not.toBeInTheDocument();
   });
 
@@ -115,7 +118,7 @@ describe("OFCategoryTable", () => {
       },
     ];
     render(<OFCategoryTable cat="active-data" label="Active Data" rows={rows} chains={chains} />);
-    expect(screen.getByRole("columnheader", { name: "Facilitator" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^Facilitator/ })).toBeInTheDocument();
     expect(screen.getByText("Facilitator Org")).toBeInTheDocument();
   });
 

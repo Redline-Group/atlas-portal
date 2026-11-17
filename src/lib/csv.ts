@@ -18,7 +18,7 @@ function neutralizeFormula(s: string): string {
   return /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
 }
 
-function escapeCell(v: CsvCell): string {
+export function escapeCell(v: CsvCell): string {
   const s = v == null ? "" : typeof v === "number" ? String(v) : neutralizeFormula(v);
   return `"${s.replace(/"/g, '""')}"`;
 }

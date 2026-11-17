@@ -12,6 +12,9 @@ import { AgentChips, DocCell } from "./OGReportParts";
 import { EMPTY_QUERY, hiddenMatches, type ReportQuery, type SearchField } from "@/lib/reportFilter";
 import { Highlight, MatchAside } from "./Highlight";
 import type { MergedSource } from "@/lib/dutyCollapse";
+import { SourceMark } from "../SourceMark";
+
+const HOLDER_DETAIL = "Holders found by following graph edges from the duty's document.";
 
 export interface RoleRow {
   uuid: string;
@@ -66,16 +69,25 @@ export function RoleCategoryTable<R extends RoleRow>({
             {cat === "assignment" ? (
               <>
                 <th className="py-1 px-3 font-normal">Executor Agent</th>
-                <th className="py-1 px-3 font-normal w-40">{config.roleColumnHeader}</th>
+                <th className="py-1 px-3 font-normal w-40">
+                  {config.roleColumnHeader} <SourceMark source="derived" bare hint={HOLDER_DETAIL} />
+                </th>
                 <th className="py-1 px-3 font-normal">Prime Agents</th>
               </>
             ) : (
               <>
                 <th className="py-1 px-3 font-normal">Section</th>
-                <th className="py-1 px-3 font-normal">Duty</th>
+                <th className="py-1 px-3 font-normal">
+                  Duty{" "}
+                  <SourceMark
+                    source="derived"
+                    bare
+                    hint="Sentences the app matched by pattern as a duty. The text is the Atlas's; the choice of sentence is ours."
+                  />
+                </th>
                 {showRole && (
                   <th className={`py-1 px-3 font-normal ${config.dutyRoleColWidthClass}`}>
-                    {config.roleColumnHeader}
+                    {config.roleColumnHeader} <SourceMark source="derived" bare hint={HOLDER_DETAIL} />
                   </th>
                 )}
                 {showPrime && <th className="py-1 px-3 font-normal w-36">Prime</th>}

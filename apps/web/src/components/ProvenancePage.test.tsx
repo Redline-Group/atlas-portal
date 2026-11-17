@@ -2,6 +2,8 @@
 import { it, expect, describe, afterEach, vi } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import { SOURCE_CLASS_IDS, SOURCE_CLASSES, sourceAnchor } from "@/lib/provenance/sources";
+import { SOURCE_SURFACES } from "@/lib/provenance/surfaces";
 import { ProvenancePage } from "./ProvenancePage";
 
 afterEach(() => {
@@ -10,6 +12,27 @@ afterEach(() => {
 });
 
 describe("ProvenancePage", () => {
+  it("has a legend entry for every source class, at the anchor the marks link to", () => {
+    const { container } = render(<ProvenancePage />);
+    for (const id of SOURCE_CLASS_IDS) {
+      const entry = container.querySelector(`#${sourceAnchor(id)}`);
+      expect(entry).not.toBeNull();
+      expect(entry).toHaveTextContent(SOURCE_CLASSES[id].meaning);
+    }
+  });
+
+  it("lists the surfaces that carry each mark under its legend entry", () => {
+    const { container } = render(<ProvenancePage />);
+    for (const id of SOURCE_CLASS_IDS) {
+      const entry = container.querySelector(`#${sourceAnchor(id)}`)!;
+      expect(entry.querySelectorAll("li")).toHaveLength(SOURCE_SURFACES[id].length);
+      for (const s of SOURCE_SURFACES[id]) expect(entry).toHaveTextContent(s.name);
+    }
+    expect(screen.getByText("Settlement workbooks")).toBeInTheDocument();
+    expect(screen.getByText("Sky vote record")).toBeInTheDocument();
+    expect(screen.getByText("Liquidity Layer (PAU) contracts")).toBeInTheDocument();
+  });
+
   it("sets the document title", () => {
     render(<ProvenancePage />);
     expect(document.title).toBe("Provenance: Redline Portal");

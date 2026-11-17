@@ -1,9 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   REPORT_GROUPS,
-  REPORT_PROVENANCE,
-  PROVENANCE_LABELS,
-  PROVENANCE_TITLES,
+  REPORT_SOURCES,
   REPORT_INDEX_CARDS,
   REPORT_INDEX_GROUPS,
   buildReportCatalog,
@@ -11,6 +9,7 @@ import {
   reportEmbedText,
   reportEmbedFields,
 } from "./reportCatalog";
+import { SOURCE_CLASS_IDS } from "./provenance/sources";
 import { REPORT_TITLES, REPORT_DESCRIPTIONS } from "./routes";
 
 describe("catalog completeness", () => {
@@ -22,15 +21,15 @@ describe("catalog completeness", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("assigns a provenance to every grouped report", () => {
-    for (const id of catalogReportIds()) expect(REPORT_PROVENANCE[id]).toBeTruthy();
+  it("declares a source set for every grouped report, each class a known one", () => {
+    for (const id of catalogReportIds()) {
+      expect(Array.isArray(REPORT_SOURCES[id])).toBe(true);
+      for (const s of REPORT_SOURCES[id]) expect(SOURCE_CLASS_IDS).toContain(s);
+    }
   });
 
-  it("gives every non-live provenance both a label and a tooltip", () => {
-    for (const p of ["ai-assessed", "curated"] as const) {
-      expect(PROVENANCE_LABELS[p]).toBeTruthy();
-      expect(PROVENANCE_TITLES[p]).toBeTruthy();
-    }
+  it("stamps each card with its report's sources", () => {
+    for (const card of REPORT_INDEX_CARDS) expect(card.sources).toEqual(REPORT_SOURCES[card.id]);
   });
 
   it("has a title and a hint on every group", () => {

@@ -16,6 +16,8 @@ import type { Anchor } from "@/lib/pauAnchors";
 import type { AtlasVerdict } from "@/lib/pauAtlasMatch";
 import type { NamedIn } from "@/lib/pauConstantDocs";
 import { isRetiredOff } from "@/lib/pauLimitOrder";
+import { formatReadTime } from "@/lib/provenance/asOf";
+import { SourceMark } from "../SourceMark";
 
 const chainLabel = (chain: string) => chain.charAt(0).toUpperCase() + chain.slice(1);
 const dim = { color: "var(--tan-3)" };
@@ -48,6 +50,8 @@ export function PauDeployment({ snap, keyIndex, namedIn, verdicts, anchor }: Pro
           <PauWiring snap={snap} />
           <span className="text-[11px]" style={dim} title={hidden ? `${hidden} more, switched off and derived from an address the Atlas no longer lists, are not shown` : undefined}>{limits.length} rate limits</span>
           {loading && <span className="text-[11px]" style={{ color: "var(--accent)" }}>history still being read</span>}
+          <SourceMark source="onchain" bare unlinked />
+          <span className="text-[11px]" style={dim}>read {formatReadTime(snap.fetchedAt) ?? "at an unknown time"}</span>
         </summary>
         <style>{entityLinkCss([...snap.contracts.map((c) => c.address), ...holderRows(snap).map((r) => r.account)])}</style>
         <PauContracts snap={snap} />
@@ -60,7 +64,6 @@ export function PauDeployment({ snap, keyIndex, namedIn, verdicts, anchor }: Pro
         />
         {snap.contracts.map((c) => c.beam && <PauBeam key={c.address} beam={c.beam} chain={snap.chain} keyIndex={keyIndex} anchor={c.address === firstBeam ? anchor : undefined} />)}
         <PauParams snap={snap} anchor={anchor} />
-        <p className="mono text-[11px] mt-2" style={dim}>read {snap.fetchedAt.slice(0, 16).replace("T", " ")} UTC</p>
       </details>
     </div>
   );

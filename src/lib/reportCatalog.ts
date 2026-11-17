@@ -1,6 +1,5 @@
 // The /reports index catalog: the report registry (src/lib/reports/) arranged
-// into the index's subject groups, plus the provenance badge copy and the
-// per-card text search embeds.
+// into the index's subject groups, plus the per-card text search embeds.
 //
 // A pure module (no React), so the grouping is testable without rendering.
 // Filtering lives in reportIndexSearch.ts; this file must not import it, or the
@@ -9,27 +8,11 @@
 import type { ReportId } from "../types";
 import { REPORT_GROUP_DEFS } from "./reports/groups";
 import { REPORTS } from "./reports/registry";
-import type { ReportProvenance } from "./reports/types";
+import { normalizeSources, type SourceClass } from "./provenance/sources";
 
-export type { ReportProvenance };
-
-export const REPORT_PROVENANCE: Record<ReportId, ReportProvenance> = Object.fromEntries(
-  REPORTS.map((r) => [r.id, r.provenance]),
-) as Record<ReportId, ReportProvenance>;
-
-/** Badge text. `live` has no badge, so no label. */
-export const PROVENANCE_LABELS: Record<Exclude<ReportProvenance, "live">, string> = {
-  "ai-assessed": "AI-assessed",
-  curated: "curated",
-};
-
-/** Badge tooltip — says what the label means for the reader. */
-export const PROVENANCE_TITLES: Record<Exclude<ReportProvenance, "live">, string> = {
-  "ai-assessed":
-    "AI-drafted and human-reviewed rather than recomputed from the Atlas — a starting point, not a verdict.",
-  curated:
-    "Hand-maintained rather than recomputed from the Atlas, so it can lag until someone refreshes it.",
-};
+export const REPORT_SOURCES: Record<ReportId, readonly SourceClass[]> = Object.fromEntries(
+  REPORTS.map((r) => [r.id, normalizeSources(r.sources)]),
+) as unknown as Record<ReportId, readonly SourceClass[]>;
 
 export interface ReportGroup {
   title: string;
@@ -49,7 +32,8 @@ export interface ReportCard {
   id: ReportId;
   title: string;
   description: string;
-  provenance: ReportProvenance;
+  /** What the report draws on besides Atlas text. */
+  sources: readonly SourceClass[];
   /** Subject-group title — stamped so search can score the category per card. */
   category: string;
   /** Subject-group hint — same for every card in the group; cached on embed. */
@@ -66,7 +50,7 @@ const BY_ID = new Map(REPORTS.map((r) => [r.id as ReportId, r]));
 
 function toCard(id: ReportId, category: string, hint: string): ReportCard {
   const r = BY_ID.get(id)!;
-  return { id, title: r.title, description: r.description, provenance: r.provenance, category, hint };
+  return { id, title: r.title, description: r.description, sources: REPORT_SOURCES[id], category, hint };
 }
 
 /** Every report id the index renders — the completeness check's input. */

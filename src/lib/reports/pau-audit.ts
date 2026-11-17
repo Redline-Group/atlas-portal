@@ -6,6 +6,6 @@ export const pauAudit = {
   description:
     "Every Prime Agent PAU value, controller and role claim where the Atlas and the chain disagree or cannot be compared, grouped by why: the Atlas is probably out of date, a spell or the Operator may not have acted yet, a spell executed without the change, the Atlas lacks the detail to check, a registry conflict, or ambiguous. With CSV export.",
   group: "onchain",
-  provenance: "live",
+  sources: ["onchain", "external", "derived", "curated"],
   scope: { label: "pau", placeholder: "Filter PAU values — prime, chain, instance, value, reason, doc" },
 } as const satisfies ReportMeta;

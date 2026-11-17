@@ -4,22 +4,23 @@
 // so a mark means the same thing wherever it appears.
 import type { ValueCheck, ValueStatus } from "@/lib/pauAtlasValues";
 import type { LiveRateLimit } from "@/lib/pau";
+import type { ChainVerdictKind } from "./chainVerdict";
 import { NOT_INDEXED } from "@/lib/plainCheck";
 import { formatAmount, formatPerDay, limitDecimals, slopeText } from "./pau";
 
-export const VALUE_STATUS: Record<ValueStatus, { mark: string; text: string }> = {
-  match: { mark: "✓", text: "matches the atlas" },
-  mismatch: { mark: "✗", text: "differs from the atlas" },
-  "units-unknown": { mark: "?", text: "token units not confirmed" },
-  ambiguous: { mark: "?", text: "more than one key could be this one" },
-  "not-set": { mark: "!", text: "not set on the contract" },
-  unread: { mark: "…", text: "contract not read yet" },
-  "no-deployment": { mark: "–", text: NOT_INDEXED },
-  "unknown-chain": { mark: "–", text: "chain not recognised" },
-  "no-key": { mark: "–", text: "no rate-limit key found" },
-  "not-stated": { mark: "–", text: "the atlas sets no value yet" },
-  unparsed: { mark: "?", text: "atlas value not read" },
-  "no-limit": { mark: "✓", text: "unlimited on both sides: the program sets no limit here" },
+export const VALUE_STATUS: Record<ValueStatus, { verdict: ChainVerdictKind; text: string }> = {
+  match: { verdict: "match", text: "matches the atlas" },
+  mismatch: { verdict: "mismatch", text: "differs from the atlas" },
+  "units-unknown": { verdict: "unsure", text: "token units not confirmed" },
+  ambiguous: { verdict: "unsure", text: "more than one key could be this one" },
+  "not-set": { verdict: "not-set", text: "not set on the contract" },
+  unread: { verdict: "unread", text: "contract not read yet" },
+  "no-deployment": { verdict: "not-stated", text: NOT_INDEXED },
+  "unknown-chain": { verdict: "not-stated", text: "chain not recognised" },
+  "no-key": { verdict: "not-stated", text: "no rate-limit key found" },
+  "not-stated": { verdict: "not-stated", text: "the atlas sets no value yet" },
+  unparsed: { verdict: "unsure", text: "atlas value not read" },
+  "no-limit": { verdict: "match", text: "unlimited on both sides: the program sets no limit here" },
 };
 
 /** A check the contract was certainly compared on: its `limit.data` is read. */

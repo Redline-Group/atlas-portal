@@ -202,7 +202,7 @@ describe("prepareTurn", () => {
     it("inserts the review round right after history and before facts, when a row carries a note", async () => {
       const message = "are you sure about that dispute? i think the question is who is \"they\"";
       const review = {
-        badge: "1 statement disputed by the atlas",
+        badge: "1 statement disputed by an AI check",
         findings: [],
         disputes: [contradiction],
         coverage: null,

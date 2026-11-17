@@ -44,8 +44,8 @@ const storedDispute = (uuid: string | null = null) => ({
 
 describe("badgeLabel mirrors VerifyBadge.tsx chipLabel", () => {
   test("a fail with contradictions is counted and pluralised, exactly as the chip is", () => {
-    expect(badgeLabel(verify({ status: "fail", contradictions: [dispute()] }))).toBe("1 statement disputed by the atlas");
-    expect(badgeLabel(verify({ status: "fail", contradictions: [dispute(), dispute()] }))).toBe("2 statements disputed by the atlas");
+    expect(badgeLabel(verify({ status: "fail", contradictions: [dispute()] }))).toBe("1 statement disputed by an AI check");
+    expect(badgeLabel(verify({ status: "fail", contradictions: [dispute(), dispute()] }))).toBe("2 statements disputed by an AI check");
   });
 
   test("a fail with no contradictions is the deterministic-only wording", () => {
@@ -221,6 +221,6 @@ describe("reviewNoteFromChecks", () => {
       { kind: "verify", verdict: { contradictions: [storedDispute(uuid)] }, overall: "fail" },
     ])!;
     expect(withDispute.marks).toEqual([]);
-    expect(withDispute.badge).toBe("1 statement disputed by the atlas");
+    expect(withDispute.badge).toBe("1 statement disputed by an AI check");
   });
 });

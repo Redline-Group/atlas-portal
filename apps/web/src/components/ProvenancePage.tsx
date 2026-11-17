@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { HistoryProvenance } from "./provenance/HistoryProvenance";
+import { SourceLegend } from "./provenance/SourceLegend";
 
 type Stage = { label: string; description: string; powers: string[] };
 
@@ -113,8 +114,12 @@ export function ProvenancePage() {
             The current Atlas text comes from the sky-ecosystem/next-gen-atlas
             git repository. We also use clearly separated supporting
             sources: its git and GitHub pull-request history, Sky Chainlog,
-            Etherscan verified-contract metadata, a public Ethereum RPC, and the
-            historical sources documented below.
+            Etherscan verified-contract metadata, public Ethereum RPC
+            endpoints, Soter Labs settlement workbooks, the Sky vote record,
+            DefiLlama prices, models, lists we maintain by hand, and the
+            historical sources documented below. Each kind is marked where it
+            appears; “Reading the marks” explains the marks and lists where
+            each one is used.
           </p>
           <p className="text-sm mb-8" style={{ color: "var(--tan-2)" }}>
             Our derived graphs, labels, reports, search indexes, and
@@ -132,6 +137,7 @@ export function ProvenancePage() {
         {STAGES.map((stage, index) => (
           <PipelineStage key={stage.label} stage={stage} index={index} />
         ))}
+        <SourceLegend />
         <HistoryProvenance />
       </article>
     </div>

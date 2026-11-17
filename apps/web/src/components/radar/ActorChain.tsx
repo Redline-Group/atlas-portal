@@ -2,6 +2,8 @@ import { Link } from "../Link";
 import { ENTITY_TYPE_COLOR } from "../../lib/entityGraph";
 import { actorHref } from "@/lib/routes";
 import type { ActorChain, ChainNode } from "../../lib/actorIndex";
+import { SourceMark } from "../SourceMark";
+import { SectionTitle } from "./RadarSection";
 
 interface Props {
   chain: ActorChain;
@@ -28,12 +30,10 @@ export function ActorChain({ chain, currentSlug }: Props) {
 
   return (
     <section className="mb-6">
-      <h2
-        className="mono text-[10px] uppercase tracking-wider mb-3"
-        style={{ color: "var(--tan-3)" }}
-      >
-        Related Parties
-      </h2>
+      <SectionTitle
+        title="Related Parties"
+        mark={<SourceMark source="derived" bare hint="Found by following role edges across several hops; the Atlas does not list them in one place." />}
+      />
       <table className="w-full text-sm border-collapse">
         <tbody>
           {groups.map(({ role, nodes }) => (

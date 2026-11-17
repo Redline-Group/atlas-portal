@@ -10,6 +10,7 @@
 import type { ReactNode } from "react";
 import type { ReportId } from "@/types";
 import { REPORT_TITLES } from "@/lib/routes";
+import { REPORT_SOURCES } from "@/lib/reportCatalog";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { FilterSummary } from "./FilterSummary";
 import { ReportBody } from "./ReportBody";
@@ -71,7 +72,7 @@ export function ReportShell(props: ReportShellProps) {
   return (
     <div className="px-6 py-6">
       <div className={`${maxWidth} mx-auto`}>
-        <ReportHeader title={title} description={props.description} note={props.note} noteTitle={props.noteTitle} />
+        <ReportHeader title={title} description={props.description} note={props.note} noteTitle={props.noteTitle} sources={REPORT_SOURCES[report]} />
         {props.controls}
         <FilterSummary query={query} filters={props.filters} searches={props.searches} />
         {showCountRow && <ReportCountRow count={count} actions={actions} />}

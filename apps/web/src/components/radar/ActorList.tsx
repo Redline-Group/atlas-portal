@@ -4,6 +4,7 @@ import { ROUTES, actorHref } from "@/lib/routes";
 import type { ActorPageKey } from "@/lib/radarPages";
 import type { SidebarGroup } from "../../lib/actorIndex";
 import { ActorSubNav } from "./ActorSubNav";
+import { SourceMark } from "../SourceMark";
 
 export interface ActorListProps {
   groups: SidebarGroup[];
@@ -66,7 +67,7 @@ export function ActorList({ groups, selectedSlug, page, subpages }: ActorListPro
             className="px-3 pb-1 mono text-[10px] uppercase tracking-wider"
             style={{ color: "var(--tan-3)" }}
           >
-            {g.label}
+            {g.label} <SourceMark source="derived" bare hint="This grouping is our classification of the parties the Atlas names." />
           </div>
           {g.actors.map((a) => {
             const pages = subpages?.get(a.slug);

@@ -135,8 +135,9 @@ describe("AddressCard", () => {
 
   it("omits the on-chain section when chainValues is not provided", () => {
     const info = makeAddressInfo();
-    render(<AddressCard address={ADDR} info={info} />);
-    expect(screen.queryByText("on-chain · view functions")).toBeNull();
+    const { container } = render(<AddressCard address={ADDR} info={info} />);
+    expect(container.querySelector("[data-source='onchain']")).toBeNull();
+    expect(screen.queryByText("view functions")).toBeNull();
   });
 
   it("renders visible chain values and skips null/zero-address/empty/DOMAIN_SEPARATOR/PERMIT_TYPEHASH", () => {
@@ -157,7 +158,7 @@ describe("AddressCard", () => {
         }}
       />,
     );
-    expect(screen.getByText("on-chain · view functions")).toBeInTheDocument();
+    expect(screen.getByText("view functions")).toBeInTheDocument();
     expect(screen.getByText("owner")).toBeInTheDocument();
     expect(screen.getByText("live")).toBeInTheDocument();
     expect(screen.getByText("decimals")).toBeInTheDocument();

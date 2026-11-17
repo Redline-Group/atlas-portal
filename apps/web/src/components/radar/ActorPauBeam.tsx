@@ -7,6 +7,7 @@ import { PauAmount } from "./PauAmount";
 import type { Anchor } from "@/lib/pauAnchors";
 import { PauSectionHeading } from "./PauSectionHeading";
 import { nodeLink } from "@/lib/pauPlumbingLinks";
+import { SourceMark } from "../SourceMark";
 
 const dim = { color: "var(--tan-3)" };
 const hours = (seconds: string | null) => (seconds === null ? "?" : `${Math.round((Number(seconds) / 3600) * 100) / 100} h`);
@@ -24,11 +25,13 @@ function DefaultRow({ d, chain, keyIndex }: { d: BeamDefault; chain: string; key
   );
 }
 
+const BeamMark = () => <SourceMark source="derived" bare unlinked hint="BeamState's live values, put into a sentence by the app; the Atlas's rule for the Operator is linked from each key." />;
+
 /** What BeamState lets the Configurator do to this RateLimits without a spell, and the default ("init") limits it may set keys up to. */
 export function PauBeam({ beam, chain, keyIndex, anchor }: { beam: BeamLimits; chain: string; keyIndex: Map<string, AtlasKeyRef[]>; anchor?: Anchor }) {
   return (
     <div className="mt-3 pau-beam">
-      {anchor ? <PauSectionHeading deployment={anchor} section="configurator-limits" link={nodeLink("rateLimits")}>Configurator limits</PauSectionHeading> : <h4 className="mono text-[11px] uppercase tracking-wider mb-1" style={dim}>Configurator limits</h4>}
+      {anchor ? <PauSectionHeading deployment={anchor} section="configurator-limits" link={nodeLink("rateLimits")}>Configurator limits <BeamMark /></PauSectionHeading> : <h4 className="mono text-[11px] uppercase tracking-wider mb-1" style={dim}>Configurator limits <BeamMark /></h4>}
       <Callout>
         <span className="mono text-[11px]" style={dim}>BeamState <Address address={beam.beamState} chain={chain} noBalance /> · </span>
         Without a spell the Configurator may raise a limit to its default or by up to {factor(beam.maxChange)}, once every {hours(beam.hop)} per key, and lower one at any time.{" "}

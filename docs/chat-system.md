@@ -488,6 +488,18 @@ In `hybrid` mode one Jev Choice over the first 30 fused results then moves the
 best answer up (`src/server/retrieval/rerank.ts`, `SEARCH_RERANK_MODEL`); a
 failed or slow call leaves the fused order.
 
+Every tool result also says what it draws on besides Atlas text: `invokeTool`
+appends `source_classes` (a list drawn from `onchain`, `external`, `derived`, `ai`,
+`curated`; empty means Atlas text) from the one table in
+`src/lib/provenance/toolSources.ts`, which takes a report tool's list from the
+report's own `sources`. It goes last so a leading `source_class` marker
+(`"preview"`, `"external"`, the verifier's key) stays first. The client reads the
+same table by tool name to build the "other sources" row under an answer
+(`chat/OtherSources.tsx`), and picks the mark beside each link in the prose from
+where the link points (`src/lib/provenance/linkClass.ts`), so neither depends on
+the model labelling its own sources. A new tool needs an entry in that table;
+`tool-sources.test.ts` fails without one.
+
 Every tool result is budget-capped. Two budgets exist deliberately
 (`output-budget.ts`): `MCP_MAX_RESULT_CHARS` is the larger client-facing budget
 for external MCP clients, and `CHAT_TOOL_RESULT_MAX_CHARS` (default **30k**) is

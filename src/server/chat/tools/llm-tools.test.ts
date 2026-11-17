@@ -128,7 +128,7 @@ test("execToolDetailed still runs a call carrying an unrecognized arg key (never
   );
   // Unknown keys are dropped by zod's safeParse, not rejected — the call still runs.
   expect(typeof result.content).toBe("string");
-  expect(JSON.parse(result.content)).toEqual({ error: "Not found" });
+  expect(JSON.parse(result.content)).toEqual({ error: "Not found", source_classes: [] });
 
   const stripped = events.find((e) => e.event === "chat_tool_arg_stripped");
   expect(stripped?.properties).toMatchObject({ tool: "atlas_get", keys: ["bogus_extra_key"] });

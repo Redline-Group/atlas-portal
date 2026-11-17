@@ -8,6 +8,8 @@ export interface ConversationSummary {
   id: string;
   // Null until an auto-title lands (turn 1/4/10) or a manual rename sets one.
   title: string | null;
+  // 'auto' is a model-written title; 'seed' is the user's own first message and 'user' a rename.
+  titleSource?: "seed" | "auto" | "user";
   updatedAt: string;
   messageCount: number;
   // Newest assistant turn's context size (last llm round's prompt_tokens).

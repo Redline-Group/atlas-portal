@@ -5,6 +5,7 @@ import type { RiskRow } from "@/lib/riskAssessmentIndex";
 import { usePagedRows } from "../../hooks/usePagedRows";
 import { EMPTY_QUERY, type ReportQuery } from "@/lib/reportFilter";
 import { RiskTableRow } from "./RiskTableRow";
+import { SourceMark } from "../SourceMark";
 
 export { ScorePill } from "./ScorePill";
 
@@ -22,7 +23,7 @@ function RiskTableHead() {
       <tr className="text-xs mono text-tan-3">
         <th className="py-1 px-3 font-normal w-40">Doc</th>
         <th className="py-1 px-3 font-normal">Rule</th>
-        <th className="py-1 px-3 font-normal w-40">Risk Type</th>
+        <th className="py-1 px-3 font-normal w-40">Risk Type <SourceMark source="ai" bare /></th>
         <th className="py-1 px-3 font-normal w-28">Precision</th>
         <th className="py-1 px-3 font-normal w-28">Incentives</th>
       </tr>

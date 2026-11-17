@@ -51,6 +51,16 @@ describe("ParamCheckMark", () => {
     expect(screen.getByText(/read 2026-11-06 09:12 UTC/)).toBeInTheDocument();
   });
 
+  it("puts the on-chain mark, symbol and word without an outline, in the tooltip's top right corner", async () => {
+    render(<ParamCheckMark mark={mark} />);
+    await hover(screen.getByRole("link", { name: "Differs from the atlas" }));
+    const onchain = screen.getByRole("tooltip").querySelector("[data-source='onchain']")!;
+    expect(onchain).toHaveTextContent("on-chain");
+    expect(onchain.className).not.toContain("border");
+    expect(onchain.parentElement).toHaveClass("justify-between");
+    expect(onchain.previousElementSibling).toHaveTextContent("Differs from the atlas");
+  });
+
   it("leaves out the read time when the check has none", async () => {
     render(<ParamCheckMark mark={{ ...mark, lines: [{ set: { block: 1, time: "2026-10-14T09:00:00Z", tx: "0xabc" }, chain: "ethereum", readAt: null }] }} />);
     await hover(screen.getByRole("link", { name: "Differs from the atlas" }));

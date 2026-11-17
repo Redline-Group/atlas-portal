@@ -79,6 +79,12 @@ describe("ActorInstances sections", () => {
     expect(screen.getByText("Suspended Instance")).toBeInTheDocument();
   });
 
+  it("says once at the top that values are our reading, and adds no chain mark while no check has loaded", () => {
+    const { container } = render(<ActorInstances primitives={[prim({ instances: [inst({}), inst({})] })]} />);
+    expect([...container.querySelectorAll("[data-source]")].map((e) => e.getAttribute("data-source"))).toEqual(["derived"]);
+    expect(container).toHaveTextContent("values are our reading of each instance");
+  });
+
   it("heads the list with its categories, primitives and cards one rank apart", () => {
     render(<ActorInstances primitives={[prim({ instances: [inst({ displayName: "Solo" })] })]} />);
     expect(screen.getByRole("heading", { level: 2, name: "Genesis Primitives" })).toBeInTheDocument();

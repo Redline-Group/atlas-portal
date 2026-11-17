@@ -102,7 +102,7 @@ uncited normative claims. See CLAUDE.md "Citation dictate".
 
 5. **Register the report** in two places:
    - `src/lib/reports/<slug>.ts` — a new entry (`id`, `title`, `description`,
-     `group`, `provenance`, optional search-pill `scope` and `chatTool`), plus one
+     `group`, `sources` (every non-Atlas class the report draws on; `[]` only if it is Atlas text alone), optional search-pill `scope` and `chatTool`), plus one
      line appending it to `REPORTS` in `src/lib/reports/registry.ts`. `ReportId`,
      the routes tables, the /reports index and its search, chat page context, OG
      cards and the page's `<ReportShell>` h1 all derive from it.

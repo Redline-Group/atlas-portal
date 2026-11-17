@@ -6,6 +6,7 @@ import { ReportShell } from "./ReportShell";
 import { RiskRulesControls, RiskSummaryStrip } from "./RiskRulesControls";
 import { RiskRulesCsvButton } from "./RiskRulesCsvButton";
 import { REPORT, domainLabels, riskViewProps, useRiskExpandedRow, useRiskFilters, useRiskRows } from "./useRiskRules";
+import { SourceMark } from "../SourceMark";
 
 // Header-box text filter over the fields declared in RiskRulesTable (which
 // also tracks their visibility for the hidden-match aside). Domain/precision/
@@ -16,7 +17,7 @@ const SEARCHES = "doc no · title · summary · source paragraph · owning prime
 function RiskRulesNote({ model, rubric }: { model: string | undefined; rubric: string | undefined }) {
   return (
     <>
-      ✳ assessed by {model ?? "—"} · human-reviewed ·{" "}
+      <SourceMark source="ai" bare /> assessed by {model ?? "—"} · human-reviewed ·{" "}
       <Link to={ROUTES.REPORTS_RISK_RUBRIC} className="text-accent hover:underline">
         rubric {rubric ?? "—"}
       </Link>

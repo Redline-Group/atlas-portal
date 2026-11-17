@@ -1,0 +1,57 @@
+import { describe, expect, it } from "vitest";
+import type { ToolCallRecord } from "./api";
+import { extractOtherLinks, toolClassesUsed } from "./otherSources";
+
+const call = (name: string, ok = true): ToolCallRecord => ({ name, args: {}, ok, bytes: 10 });
+
+describe("extractOtherLinks", () => {
+  it("lists chain and outside links once each, in order, and skips Atlas citations and unknown hosts", () => {
+    const text = [
+      "The limit is [50M](/atlas/" + "a".repeat(36) + ") and it holds [45M](https://etherscan.io/address/0xabc).",
+      "See [the tx](https://etherscan.io/tx/0x9f) and again [that tx](https://etherscan.io/tx/0x9f),",
+      "[Soter workbook](https://github.com/soterlabs/settlement-reports/x) and [a blog](https://example.com/b).",
+    ].join("\n");
+    expect(extractOtherLinks(text).map((l) => [l.text, l.class])).toEqual([
+      ["45M", "onchain"],
+      ["the tx", "onchain"],
+      ["Soter workbook", "external"],
+    ]);
+  });
+});
+
+describe("extractOtherLinks and code", () => {
+  it("skips a link written inside inline code or a fenced block, since it renders as code", () => {
+    const text = ["Use `[x](https://etherscan.io/tx/0x1)` literally.", "```", "[y](https://etherscan.io/tx/0x2)", "```", "Real: [z](https://etherscan.io/tx/0x3)."].join("\n");
+    expect(extractOtherLinks(text).map((l) => l.text)).toEqual(["z"]);
+  });
+
+  it("keeps a link that carries a title, and an unterminated fence swallows the rest", () => {
+    expect(extractOtherLinks('[tx](https://etherscan.io/tx/0x1 "first transfer")').map((l) => [l.text, l.href])).toEqual([["tx", "https://etherscan.io/tx/0x1"]]);
+    expect(extractOtherLinks("[a](https://etherscan.io/tx/0x1)\n```\n[b](https://etherscan.io/tx/0x2)")).toHaveLength(1);
+  });
+});
+
+describe("extractOtherLinks in a preview", () => {
+  const sha = "a".repeat(40);
+  const text = `[this](/preview/${sha}/atlas?id=${"b".repeat(36)}) and [that](/preview/${"c".repeat(40)}/atlas?id=${"b".repeat(36)})`;
+  it("lists a link to another preview but not one into the preview being viewed", () => {
+    expect(extractOtherLinks(text).map((l) => l.text)).toEqual(["this", "that"]);
+    expect(extractOtherLinks(text, sha).map((l) => l.text)).toEqual(["that"]);
+  });
+});
+
+describe("toolClassesUsed", () => {
+  it("unions the classes of successful calls, in registry order with the tools behind each", () => {
+    const used = toolClassesUsed([call("atlas_entity"), call("redline_onchain"), call("atlas_get"), call("atlas_traverse"), call("external_msc", false)]);
+    expect(used).toEqual([
+      { class: "onchain", tools: ["redline_onchain"] },
+      { class: "derived", tools: ["atlas_entity", "atlas_traverse"] },
+    ]);
+  });
+
+  it("is empty for an answer that used only Atlas text, and puts a preview last", () => {
+    expect(toolClassesUsed([call("atlas_get"), call("atlas_search")])).toEqual([]);
+    expect(toolClassesUsed([call("atlas_preview_get"), call("atlas_entity")]).map((u) => u.class)).toEqual(["derived", "preview"]);
+    expect(toolClassesUsed(undefined)).toEqual([]);
+  });
+});

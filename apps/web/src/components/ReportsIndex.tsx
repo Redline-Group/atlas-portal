@@ -6,12 +6,13 @@ import { track } from "../lib/analytics";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useReportIndexSearch } from "../hooks/useReportIndexSearch";
 import { Highlight } from "./reports/Highlight";
-import { ProvenanceBadge } from "./ProvenanceBadge";
+import { SourceMarks } from "./SourceMark";
 
-// Thin renderer over src/lib/reportCatalog.ts (grouping + provenance) and
+// Thin renderer over src/lib/reportCatalog.ts (grouping + sources) and
 // useReportIndexSearch (lexical filter + server paraphrases). Groups are by
-// SUBJECT (what a report is about, which is how people browse); provenance
-// rides along as a per-card badge so neither axis has to distort the other.
+// SUBJECT (what a report is about, which is how people browse); the sources a
+// report draws on ride along as per-card chips so neither axis has to distort
+// the other.
 // Meaning-only extras render in their own block so a vector hit is visible
 // instead of looking like a name match.
 
@@ -25,7 +26,7 @@ function Card({ card, rq }: { card: ReportCard; rq: ReturnType<typeof parseRepor
     >
       <p className="text-sm font-medium mb-1 flex items-center gap-2 flex-wrap" style={{ color: "var(--tan)" }}>
         <Highlight text={card.title} rq={rq} punct />
-        <ProvenanceBadge provenance={card.provenance} />
+        <SourceMarks sources={card.sources} unlinked />
       </p>
       <p className="text-xs" style={{ color: "var(--tan-3)" }}>
         <Highlight text={card.description} rq={rq} punct />
@@ -63,8 +64,9 @@ export function ReportsIndex({ query }: { query: string }) {
           Reports
         </h1>
         <p className="text-xs mb-6" style={{ color: "var(--tan-3)" }}>
-          Unlabelled reports are rebuilt from the Atlas every time you open them. A badge marks the
-          ones that are not.
+          Reports are rebuilt every time you open them. A chip beside a title names what the report
+          draws on besides Atlas text: chain reads, outside records, our own derivations, a model or
+          lists we keep by hand. No chip means Atlas text only.
         </p>
         {sections(wording, "")}
         {byMeaning && (

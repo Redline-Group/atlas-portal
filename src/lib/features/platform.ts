@@ -61,7 +61,7 @@ export const platform: FeatureGroup = {
         name: "Reference pages",
         what: "Supporting pages for provenance, changes, search help, and privacy.",
         how: [
-          "Provenance (/provenance) — how the data is built.",
+          "Provenance (/provenance) — how the data is built, what each source mark means, and for each mark where the app uses it, where the data comes from and how current it is. A page with data that is not Atlas text names its sources once at the top; around the page a small symbol (⊢ □—□ ⧉ ✳ ✎) sits next to the data it describes, and clicking it opens its entry here.",
           "Recent improvements (/updates) — the changelog.",
           "Search help (/search-hints) — the full query syntax.",
           "Privacy (/privacy).",

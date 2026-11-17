@@ -3,6 +3,7 @@ import { isOff } from "@/lib/pauLimitOrder";
 import { formatAmount, formatPerDay, limitDecimals, PAU_KIND_LABEL, unitNote, type LiveRateLimit } from "../lib/pau";
 import { shortAddr } from "../lib/format";
 import { chainLabel, readAt } from "../lib/pauPlaces";
+import { SourceMark } from "./SourceMark";
 
 const dim = { color: "var(--tan-3)" };
 
@@ -50,12 +51,14 @@ export function RateLimitKeyCard({ holders }: { holders: KeyHolder[] }) {
   const read = readAt(holders);
   return (
     <div className="min-w-[10rem] max-w-[18rem]">
-      <div className="font-medium text-tan">On-chain rate limit</div>
+      <div className="font-medium text-tan">
+        Rate limit <SourceMark source="onchain" bare />
+      </div>
       {name && <div className="mono text-[10px] truncate" style={dim}>{name}</div>}
       <div className="mt-1">
         {holders.map((h) => <HolderLimit key={`${h.snap.deployment}:${h.contract}`} h={h} where={heading(h, holders)} />)}
       </div>
-      {read && <div className="mono text-[10px] mt-1.5" style={dim}>read {read} UTC</div>}
+      {read && <div className="mono text-[10px] mt-1.5" style={dim}>read {read}</div>}
     </div>
   );
 }

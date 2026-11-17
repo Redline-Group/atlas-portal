@@ -24,13 +24,13 @@ describe("PauAtlasMark", () => {
   it("shows a ? linked to the document naming the key where none states a value, never the flag", () => {
     const { container } = render(<PauAtlasMark flag={spell} keyDocId="key-doc" />);
     const link = within(container).getByRole("link", { name: /names this limit's key/ });
-    expect([link.textContent, link.getAttribute("href")]).toEqual(["?", "/atlas?id=key-doc&view=onchain"]);
+    expect([link.querySelector("[data-verdict]")?.getAttribute("data-verdict"), link.getAttribute("href")]).toEqual(["unsure", "/atlas?id=key-doc&view=onchain"]);
     expect(container.querySelector("[data-atlas-flag]")).toBeNull();
   });
   it("says where the Atlas does state a value for a key it states nothing for on this contract", () => {
     const { container } = render(<PauAtlasMark keyDocId="key-doc" verdict={{ mark: "elsewhere", docId: "value-doc", on: ["arbitrum diamond"] }} />);
     const link = within(container).getByRole("link", { name: /only for the Arbitrum Diamond PAU, not for this contract/ });
-    expect([link.textContent, link.getAttribute("href")]).toEqual(["?", "/atlas?id=value-doc&view=onchain"]);
+    expect([link.querySelector("[data-verdict]")?.getAttribute("data-verdict"), link.getAttribute("href")]).toEqual(["unsure", "/atlas?id=value-doc&view=onchain"]);
   });
   it("opens the mark's tooltip only once the pointer has rested on it for 600ms", () => {
     vi.useFakeTimers();

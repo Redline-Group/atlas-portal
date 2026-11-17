@@ -23,7 +23,7 @@ const HEADERS: [label: string, className: string][] = [
   ["Name", "w-32"],
   ["Type", "w-40"],
   ["Implementation", "w-32"],
-  ["Owner", "w-44"],
+  ["Named near", "w-44"],
   ["Docs Mentioned In", ""],
   ["ETH", "text-right"],
   ["USDS", "text-right"],

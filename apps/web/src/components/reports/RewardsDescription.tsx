@@ -6,7 +6,8 @@ export function RewardsDescription({ summary }: { summary: RewardsSummary | null
   return (
     <>
       Every Distribution Reward and Integration Boost instance each Prime Agent has invoked, with reward
-      codes, partner names, and on-chain reward addresses — sourced from the Atlas.
+      codes, partner names, and on-chain reward addresses. Instances and parameters come from the Atlas;
+      address names, balances and roles are our reading of it plus chain reads.
       {summary && (
         <span className="mono text-[11px] ml-2">
           {summary.dr} DR · {summary.ib} IB ·{" "}

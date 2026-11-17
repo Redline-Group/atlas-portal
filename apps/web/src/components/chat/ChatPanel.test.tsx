@@ -361,14 +361,14 @@ describe("ChatPanel citations collection link", () => {
   it("opens the conversation's collection from 'view all docs from this conversation' under the citations", async () => {
     getConversationCollection.mockResolvedValue({ id: "conv-1", name: "Spark", ids: [DOC], auto: true });
     renderPanel({ session: { conversationId: "conv-1", messages: [cited] } });
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "view all docs from this conversation" }));
     await waitFor(() => expect(getConversationCollection).toHaveBeenCalledWith("conv-1"));
   });
 
   it("offers no collection link before the conversation has an id", () => {
     renderPanel({ session: { conversationId: null, messages: [cited] } });
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "view all docs from this conversation" })).toBeNull();
   });
 });

@@ -12,13 +12,15 @@ type FooterInfoProps = {
   atlasRepo: string;
   nodeCount: number;
   buildDate: string;
+  /** The commit is a fork or PR build, not the live atlas. */
+  preview?: boolean;
 };
 
 // The build-info row: chain state → atlas commit + doc count → build date →
 // provenance/privacy → src (this build's commit). Always centered — the status
 // pills and the contextual hint overlay the footer's left corner (see Footer /
 // FooterHint) rather than sharing the flow, so nothing ever shoves this row.
-export function FooterInfo({ block, atlasCommit, atlasRepo, nodeCount, buildDate }: FooterInfoProps) {
+export function FooterInfo({ block, atlasCommit, atlasRepo, nodeCount, buildDate, preview = false }: FooterInfoProps) {
   return (
     <div className="flex items-center overflow-hidden mx-auto">
       {block && (
@@ -47,7 +49,7 @@ export function FooterInfo({ block, atlasCommit, atlasRepo, nodeCount, buildDate
             className="hover:underline"
             style={{ color: "var(--tan-3)" }}
           >
-            <span className="hidden sm:inline">atlas&nbsp;</span>
+            <span className="hidden sm:inline">{preview ? "preview" : "atlas"}&nbsp;</span>
             {atlasCommit.slice(0, 7)}
           </a>
           {nodeCount > 0 && (
@@ -59,12 +61,12 @@ export function FooterInfo({ block, atlasCommit, atlasRepo, nodeCount, buildDate
         </FooterItem>
       )}
       {atlasCommit && <Sep />}
-      <FooterItem>
-        <span className="hidden sm:inline">updated </span>
+      <FooterItem title="when this version of the app was built, not when its data was last refreshed">
+        <span className="hidden sm:inline">app built </span>
         {buildDate}
       </FooterItem>
       <Sep />
-      <FooterItem title="data flow, scripts, outputs — how each claim is traced back to Sky Atlas.md">
+      <FooterItem title="where each kind of data comes from, and what the marks mean">
         <a href={PROVENANCE_HREF} className="hover:underline" style={{ color: "var(--tan-3)" }}>
           provenance
         </a>

@@ -9,8 +9,8 @@ export interface ReportGroupDef {
 
 /**
  * The /reports index sections, in display order. Grouped by subject — what each
- * report is about — because that is how people browse; provenance rides along
- * as a per-card badge so neither axis distorts the other.
+ * report is about — because that is how people browse; the sources a report
+ * draws on ride along as per-card chips so neither axis distorts the other.
  */
 export const REPORT_GROUP_DEFS: ReportGroupDef[] = [
   { key: "roles", title: "Roles & duties", hint: "Who the Atlas obliges to do what." },

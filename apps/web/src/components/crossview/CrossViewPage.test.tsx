@@ -83,6 +83,12 @@ describe("CrossViewPage", () => {
     expect(document.title).toBe("Atlas CrossView: Redline Portal");
   });
 
+  it("shows the sources the report declares as chips under the heading", () => {
+    const { container } = render(<CrossViewPage tab="shape" />, { wrapper: wrap() });
+    const marks = [...container.querySelectorAll("[data-source]")].map((e) => e.getAttribute("data-source"));
+    expect(marks).toEqual(["derived", "ai", "curated"]);
+  });
+
   it("fires report_view analytics once on mount with the crossview report id", () => {
     render(<CrossViewPage tab="shape" />, { wrapper: wrap() });
     expect(trackMock).toHaveBeenCalledTimes(1);

@@ -5,6 +5,7 @@ import { Address } from "../Address";
 import { EVM_ADDRESS_EXACT_RE, SOL_ADDRESS_EXACT_RE } from "@/lib/patterns";
 import type { RowMark } from "../../lib/rowMark";
 import { ParamCheckMark } from "./ParamCheckMark";
+import { SourceMark } from "../SourceMark";
 
 // Whole-string address shape tests — sourced from patterns.ts (the src-side
 // home for these forms) so this doesn't drift into its own copy.
@@ -82,14 +83,15 @@ function ParamDocLink({ docId, name }: { docId: string; name: string }) {
   );
 }
 
+/** Every row is our extraction from the Atlas text: the ∴ takes the mark column's slot on a row the chain does not check. */
+const DERIVED = <SourceMark source="derived" bare unlinked hint="This row is our extraction from the Atlas text." />;
+
 interface ParamLineProps {
   p: InstanceParam;
   colWidth: number;
   instanceHint: string;
-  /** The row's verdict against the chain (rowMark.ts), shown in the mark column. */
+  /** The row's verdict against the chain (rowMark.ts), shown in the mark column in place of the derived symbol. */
   mark?: RowMark | null;
-  /** Whether the card keeps a mark column, so its marks line up even on rows with none. */
-  markCol?: boolean;
   /** A sub-row of a param that lists several holders (ParamTableLine.tsx), set in under its param. */
   indent?: boolean;
   /** Hover text for the key: the sentence a param's holder table follows. */
@@ -98,7 +100,7 @@ interface ParamLineProps {
   valueTitle?: string;
 }
 
-export function ParamLine({ p, colWidth, instanceHint, mark = null, markCol = false, indent = false, keyTitle, valueTitle }: ParamLineProps) {
+export function ParamLine({ p, colWidth, instanceHint, mark = null, indent = false, keyTitle, valueTitle }: ParamLineProps) {
   return (
     <div className="group relative flex py-0.5 px-1 -mx-1 items-baseline rounded hover:bg-[var(--row-hover)]">
       <span className={`mono text-[10px] shrink-0${indent ? " pl-4" : ""}`} style={{ color: "var(--tan-3)" }} title={keyTitle}>
@@ -117,7 +119,7 @@ export function ParamLine({ p, colWidth, instanceHint, mark = null, markCol = fa
             back to the instance name when the key carries no chain hint. */}
         {renderValue(p.value, [p.key, instanceHint])}
       </span>
-      {markCol && <ParamCheckMark mark={mark} />}
+      <ParamCheckMark mark={mark}>{DERIVED}</ParamCheckMark>
     </div>
   );
 }

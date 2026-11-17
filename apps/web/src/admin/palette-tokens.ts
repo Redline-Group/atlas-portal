@@ -59,6 +59,7 @@ export const PALETTE_TOKENS: readonly PaletteToken[] = [
   { name: "magenta", label: "Magenta", group: "brand", alpha: false },
   { name: "terminal-green", label: "Terminal Green", group: "brand", alpha: false },
   { name: "lily-green", label: "Lily Green", group: "brand", alpha: false },
+  { name: "source-mark", label: "Source Mark", group: "brand", alpha: false },
 
   // ─── Text ───
   { name: "gray", label: "Gray", group: "text", alpha: false },

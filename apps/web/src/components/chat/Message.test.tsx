@@ -53,7 +53,7 @@ describe("Message", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
   });
 
   it("shows a distinct failed-turn notice for a done, empty, failed assistant message", () => {
@@ -128,7 +128,7 @@ describe("Message", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("no contradictions found")).toBeInTheDocument();
+    expect(screen.getByText(/no contradictions found by an AI check/)).toBeInTheDocument();
   });
 
   it("puts the answer-confidence facts right after the verify badge, as one unit", () => {
@@ -265,7 +265,7 @@ describe("Message stage checklist", () => {
     // now reads in the simple past.
     expect(screen.getByText("Looked for evidence")).toBeInTheDocument();
     expect(screen.getByText("Synthesized")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /atlas lookups and reasoning/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /lookups and reasoning/ })).toBeNull();
   });
 
   it("collapses to a one-line summary when a finished turn mounts (reopened panel / loaded thread)", () => {
@@ -283,7 +283,7 @@ describe("Message stage checklist", () => {
       />,
     );
     expect(screen.queryByText("Looking for evidence")).toBeNull();
-    expect(screen.getByRole("button", { name: /atlas lookups and reasoning/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /lookups and reasoning/ })).toBeInTheDocument();
   });
 
   it("shows a muted stopped row for a turn that ended with no content, no failure, and stages that ran", () => {

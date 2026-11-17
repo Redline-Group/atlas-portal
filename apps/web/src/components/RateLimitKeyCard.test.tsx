@@ -46,4 +46,15 @@ describe("RateLimitKeyCard headings", () => {
       "Grove · Ethereum · 0x2222…2222",
     ]);
   });
+
+  it("marks the card on-chain with a glyph beside the heading that opens its legend entry in a new tab, and keeps the read time as plain text", () => {
+    const { container } = render(<RateLimitKeyCard holders={[holder("diamond", RL1)]} />);
+    const mark = container.querySelector("[data-source='onchain']")!;
+    expect(mark).toHaveAttribute("href", "/provenance#source-onchain");
+    expect(mark).toHaveAttribute("target", "_blank");
+    expect(mark.textContent).toBe("on-chain");
+    expect(mark.querySelector("[data-slot=chain-glyph]")).not.toBeNull();
+    expect(container.firstElementChild?.firstElementChild?.contains(mark)).toBe(true);
+    expect(container).toHaveTextContent("read 2026-10-29");
+  });
 });

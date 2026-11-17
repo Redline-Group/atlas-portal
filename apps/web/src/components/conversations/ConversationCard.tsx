@@ -3,6 +3,7 @@ import { type ConversationSummary, MAX_CONVERSATION_TITLE_LEN } from "../../lib/
 import { formatTokens } from "../../lib/formatTokens";
 import { ConversationActions } from "./ConversationActions";
 import { InlineRenameInput } from "../InlineRenameInput";
+import { TitleMark } from "./TitleMark";
 import { formatCardDate } from "../../lib/timeAgo";
 
 const UNTITLED = "Untitled chat";
@@ -16,6 +17,17 @@ function ConversationStats({ conversation }: { conversation: ConversationSummary
         ` · ${conversation.contextEstimated ? "~" : ""}${formatTokens(conversation.contextTokens)} context`}
       {` · ${conversation.citationCount} ${conversation.citationCount === 1 ? "citation" : "citations"}`}
     </p>
+  );
+}
+
+function ConversationTitle({ conversation }: { conversation: ConversationSummary }) {
+  return (
+    <div className="flex items-baseline gap-1.5 min-w-0">
+      <p className="text-sm font-medium truncate" style={{ color: "var(--tan)" }}>
+        {conversation.title ?? UNTITLED}
+      </p>
+      <TitleMark conversation={conversation} className="shrink-0" />
+    </div>
   );
 }
 
@@ -101,9 +113,7 @@ export function ConversationCard({
             }}
           />
         ) : (
-          <p className="text-sm font-medium truncate" style={{ color: "var(--tan)" }}>
-            {conversation.title ?? UNTITLED}
-          </p>
+          <ConversationTitle conversation={conversation} />
         )}
         <p className="mono text-[11px] text-tan-3 whitespace-nowrap">
           {formatCardDate(conversation.updatedAt)}

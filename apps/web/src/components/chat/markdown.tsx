@@ -5,6 +5,8 @@ import { extractCitedDocs, type CitedDoc } from "@/lib/citationScan";
 import { unwrapCodeCitations } from "./citations";
 import { useDataSource } from "../../lib/dataSource";
 import { useMathPlugins, closeOpenMathFence } from "./chatMath";
+import { classifyLink } from "@/lib/provenance/linkClass";
+import { LinkMark } from "./LinkMark";
 
 // Agent citations are markdown links of the form [Title](/atlas/<uuid>)
 // (system-prompt.ts forces UUID hrefs). We intercept those, SPA-navigate via
@@ -49,10 +51,14 @@ function markdownComponents(onAtlas: (uuid: string) => void, previewSha: string 
     a({ href, children, ...props }) {
       const uuid = inAppUuid(href, previewSha);
       if (!uuid) {
+        const cls = classifyLink(href);
         return (
-          <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-            {children}
-          </a>
+          <>
+            <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+              {children}
+            </a>
+            {cls && <LinkMark cls={cls} className="ml-0.5 align-super" />}
+          </>
         );
       }
       return (

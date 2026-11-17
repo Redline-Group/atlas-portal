@@ -1,5 +1,6 @@
 import type { Rating } from "@/lib/oeaAssessment";
 import type { OeaRow } from "@/lib/oeaReport";
+import { SourceMark } from "../SourceMark";
 
 const RATING_STYLE: Record<Rating, string> = {
   weak: "bg-[color-mix(in_srgb,var(--red)_30%,transparent)] text-tan",
@@ -20,7 +21,7 @@ export function OeaRatingCells({ row }: { row: OeaRow }) {
       <td className="py-2 px-3 align-top"><RatingPill r={e?.precision.rating ?? null} /></td>
       <td className="py-2 px-3 align-top">
         <RatingPill r={e?.incentives.rating ?? null} />
-        {e && <span className="text-tan-3 text-[10px] ml-1 cursor-help" title={`assessed by ${e.model}`}>✳</span>}
+        {e && <SourceMark source="ai" bare unlinked hint={`Assessed by ${e.model}.`} className="ml-1" />}
       </td>
       <td className="py-2 px-3 align-top">
         {row.status !== "fresh" && (

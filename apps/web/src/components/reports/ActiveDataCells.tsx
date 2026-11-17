@@ -7,7 +7,7 @@ import type { ActiveDataRow, EvidenceStep } from "@/lib/activeDataIndex";
 import type { ReportQuery } from "@/lib/reportFilter";
 import { Highlight } from "./Highlight";
 
-function EvidenceChain({ title, steps }: { title: string; steps: EvidenceStep[] }) {
+export function EvidenceChain({ title, steps }: { title: string; steps: EvidenceStep[] }) {
   if (!steps.length) return null;
   return (
     <div className="mb-1 last:mb-0">

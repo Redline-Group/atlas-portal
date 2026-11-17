@@ -1,6 +1,8 @@
-import { SECTION_HEAD, relationEnd, type Nav, type PanelRelation } from "./panelSections";
+import { relationEnd, type Nav, type PanelRelation } from "./panelSections";
 import { AtlasLink } from "../AtlasLink";
 import { atlasHref } from "@/lib/routes";
+import { SourceMark } from "../SourceMark";
+import { PanelHeading } from "./PanelHeading";
 
 interface RelationsListProps {
   relations: PanelRelation[];
@@ -12,7 +14,9 @@ interface RelationsListProps {
 export function RelationsList({ relations, onNav, docNoToId }: RelationsListProps) {
   return (
     <div className="mt-8">
-      <p className={`${SECTION_HEAD} mb-3`}>relations · {relations.length}</p>
+      <PanelHeading mark={<SourceMark source="derived" bare hint="Edges the app extracted from Atlas text. Each lists the documents it was defined in." />}>
+        relations · {relations.length}
+      </PanelHeading>
       <div className="space-y-2">
         {relations.map((rel, i) => (
           <RelationRow key={i} rel={rel} onNav={onNav} docNoToId={docNoToId} />

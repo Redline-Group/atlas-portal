@@ -88,4 +88,21 @@ describe("DownloadCsvButton", () => {
     fireEvent.click(screen.getByRole("button", { name: "Download full report" }));
     expect(downloadCSV).toHaveBeenCalledWith("test-report.aaaaaaaa.csv", "full,csv");
   });
+
+  it("puts the report's source preamble ahead of the CSV, and leaves an unregistered id alone", () => {
+    const { unmount } = render(
+      <DownloadCsvButton {...baseProps} report="stale-dates" rowCount={5} fullRowCount={5} query="" />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Download full report" }));
+    const [, text] = downloadCSV.mock.calls[0] as [string, string];
+    expect(text).toMatch(/^"# Redline Portal: Stale Dates \(\d+ note lines/);
+    expect(text).toContain("# This report is not only Atlas text");
+    expect(text.endsWith("\nfull,csv")).toBe(true);
+    unmount();
+
+    downloadCSV.mockClear();
+    render(<DownloadCsvButton {...baseProps} rowCount={5} fullRowCount={5} query="" />);
+    fireEvent.click(screen.getByRole("button", { name: "Download full report" }));
+    expect(downloadCSV.mock.calls[0]![1]).toBe("full,csv");
+  });
 });

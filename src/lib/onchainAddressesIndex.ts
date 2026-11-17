@@ -151,7 +151,7 @@ export interface OnchainAddressRow {
   chain: string;
   type: AddressType;
   chainlogId: string | null; // CHAIN_LOG name, mainnet only
-  owner: string | null; // Associated Owner — atlas-derived entityLabel
+  owner: string | null; // The entity named near the address — atlas-derived entityLabel, our reading
   etherscanName: string | null; // verified on-chain contract name
   // Display name for the "Chainlog / On-Chain Name" column: the chainlog key if
   // the address is in the Sky chainlog, else the verified Etherscan name.

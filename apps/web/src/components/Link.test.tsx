@@ -52,6 +52,18 @@ describe("Link", () => {
     expect(screen.getByText("current: /")).toBeInTheDocument();
   });
 
+  it("leaves a target=_blank link to the browser instead of navigating in the SPA", () => {
+    const Wrapper = wrap("/");
+    render(
+      <Wrapper>
+        <Link to="/provenance" target="_blank">Legend</Link>
+        <LocationProbe />
+      </Wrapper>,
+    );
+    expect(fireEvent.click(screen.getByRole("link", { name: "Legend" }))).toBe(true);
+    expect(screen.getByText("current: /")).toBeInTheDocument();
+  });
+
   it("does not navigate on a non-primary mouse button", () => {
     const Wrapper = wrap("/");
     render(

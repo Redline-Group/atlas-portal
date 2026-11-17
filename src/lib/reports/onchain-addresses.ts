@@ -4,9 +4,9 @@ export const onchainAddresses = {
   id: "onchain-addresses",
   title: "On-Chain Addresses",
   description:
-    "Every on-chain address the Atlas mentions — with its CHAIN_LOG name, associated owner, chain, type (EOA, Multisig, Token, Sky internal contract, other), and the docs it appears in, with CSV export.",
+    "Every on-chain address the Atlas mentions — with its CHAIN_LOG name, the entity named near it (our reading of the text around the address), chain, type (EOA, Multisig, Token, Sky internal contract, other), and the docs it appears in, with CSV export.",
   group: "onchain",
-  provenance: "live",
-  scope: { label: "addrs", placeholder: "Filter addresses — address, owner, chainlog, chain, doc" },
+  sources: ["onchain", "external", "derived"],
+  scope: { label: "addrs", placeholder: "Filter addresses — address, named near, chainlog, chain, doc" },
   chatTool: "atlas_report_addresses",
 } as const satisfies ReportMeta;

@@ -6,7 +6,7 @@ export const govOpsResponsibilities = {
   description:
     "Every Atlas section mandating action from an Operational or Core GovOps — role definitions, per-executor assignments, scattered duties, and Active Data they maintain as Responsible Party.",
   group: "roles",
-  provenance: "live",
+  sources: ["derived"],
   scope: { label: "govops", placeholder: "Filter duties — govops, agent, text" },
   chatTool: "atlas_report_govops_responsibilities",
 } as const satisfies ReportMeta;

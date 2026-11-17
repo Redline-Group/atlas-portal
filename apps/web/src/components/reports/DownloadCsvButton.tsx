@@ -3,6 +3,10 @@ import { downloadCSV } from "../../lib/csvDownload";
 import { filteredExportName, hasActiveFilter, insertBeforeExt } from "@/lib/reportFilter";
 import { liveAtlasSha } from "../../lib/atlasBase";
 import { useDataSource } from "../../lib/dataSource";
+import { csvPreamble } from "@/lib/provenance/csvPreamble";
+import { REPORT_SOURCES } from "@/lib/reportCatalog";
+import { REPORT_TITLES } from "@/lib/routes";
+import type { ReportId } from "@/types";
 
 type FilterVal = string | false | null | undefined;
 
@@ -20,6 +24,14 @@ export function useAtlasSha(): string | null {
   return preview?.sha ?? liveAtlasSha();
 }
 
+// The comment lines naming what the report draws on, ahead of the CSV text.
+// An id that is not a registered report gets none.
+function withPreamble(report: string, sha: string | null, csv: string): string {
+  const sources = REPORT_SOURCES[report as ReportId];
+  if (!sources) return csv;
+  return csvPreamble({ title: REPORT_TITLES[report], sources, sha, exportedAt: new Date() }) + csv;
+}
+
 // Fires the export analytics event, stamps the sha onto the filename, and
 // triggers the download. Shared by SingleDownloadButton.tsx.
 export function exportReportCsv(opts: {
@@ -32,7 +44,7 @@ export function exportReportCsv(opts: {
 }) {
   track("report_export", { report: opts.report, format: "csv", row_count: opts.rowCount, scope: opts.scope });
   const name = insertBeforeExt(opts.filename, opts.sha ? opts.sha.slice(0, 8) : "");
-  downloadCSV(name, opts.build());
+  downloadCSV(name, withPreamble(opts.report, opts.sha, opts.build()));
 }
 
 // CSV downloads for the /reports/* pages. Two controls:

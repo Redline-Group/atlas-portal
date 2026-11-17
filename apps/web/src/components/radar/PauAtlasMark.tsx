@@ -1,22 +1,22 @@
 import { AtlasLink } from "../AtlasLink";
 import { Tooltip } from "../Tooltip";
-import { ClockGlyph } from "../ClockGlyph";
+import { ChainVerdict } from "../ChainGlyph";
 import type { AtlasFlag } from "@/lib/pauAtlasFlag";
 import type { AtlasVerdict } from "@/lib/pauAtlasMatch";
 import { atlasOnchainHref } from "@/lib/routes";
 import { PAU_KIND_LABEL } from "@/lib/pau";
 
-/** How long the pointer rests on a mark (✓ ✗ clock ? ⚑) before its tooltip opens. */
+/** How long the pointer rests on a mark (a chain verdict or ⚑) before its tooltip opens. */
 export const MARK_TIP_MS = 600;
 
 const MARK: Record<Exclude<AtlasVerdict["mark"], "elsewhere">, { mark: React.ReactNode; text: string }> = {
-  match: { mark: "✓", text: "matches the atlas: every value the atlas states for this key matches the chain" },
-  mismatch: { mark: "✗", text: "differs from the atlas: a value the atlas states for this key is not what the chain holds" },
+  match: { mark: <ChainVerdict kind="match" />, text: "matches the atlas: every value the atlas states for this key matches the chain" },
+  mismatch: { mark: <ChainVerdict kind="mismatch" />, text: "differs from the atlas: a value the atlas states for this key is not what the chain holds" },
   pending: {
-    mark: <ClockGlyph />,
+    mark: <ChainVerdict kind="pending" />,
     text: "update pending: the atlas and the chain differ only by a step still coming, a spell the atlas change names or an atlas pull request recording a spell; open the document for which",
   },
-  unsure: { mark: "?", text: "the atlas states a value for this key, but it cannot be told whether it matches" },
+  unsure: { mark: <ChainVerdict kind="unsure" />, text: "the atlas states a value for this key, but it cannot be told whether it matches" },
 };
 
 /** "arbitrum diamond" → "the Arbitrum Diamond PAU". */
@@ -45,7 +45,7 @@ export function PauAtlasMark({ verdict, keyDocId, flag }: { verdict?: AtlasVerdi
       </Tooltip>
     ) : null;
   }
-  const { mark, text } = verdict?.mark === "elsewhere" ? { mark: "?", text: elsewhereText(verdict.on ?? []) } : verdict ? MARK[verdict.mark] : { mark: "?", text: KEY_ONLY };
+  const { mark, text } = verdict?.mark === "elsewhere" ? { mark: <ChainVerdict kind="unsure" />, text: elsewhereText(verdict.on ?? []) } : verdict ? MARK[verdict.mark] : { mark: <ChainVerdict kind="unsure" />, text: KEY_ONLY };
   return (
     <Tooltip content={text} delay={MARK_TIP_MS}>
       <AtlasLink to={atlasOnchainHref(verdict?.docId ?? keyDocId!)} className="hover:underline" aria-label={text} style={verdict?.mark === "pending" ? { color: "var(--tan-3)" } : undefined}>

@@ -53,7 +53,7 @@ export function badgeLabel(verify: VerifyOut): string | null {
   if (verify.status === "pass") return "verified";
   if (verify.status === "fail") {
     const n = verify.contradictions.length;
-    return n > 0 ? `${n} statement${n === 1 ? "" : "s"} disputed by the atlas` : "failed verification";
+    return n > 0 ? `${n} statement${n === 1 ? "" : "s"} disputed by an AI check` : "failed verification";
   }
   if (verify.status === "warn") return "caution: the answer issues a ruling";
   return null;

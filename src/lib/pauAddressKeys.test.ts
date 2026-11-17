@@ -32,6 +32,10 @@ describe("keysFromAddress / addressKeyIndex", () => {
     expect(keysFromAddress([snap], DEPOSIT).map((m) => m.key)).toEqual([KEY]);
     expect(keysFromAddress([snap], USDC).map((m) => m.key)).toEqual([KEY, OTHER]);
   });
+  it("dates each key by the snapshot that holds it", () => {
+    const dated = { ...snap, fetchedAt: "2026-11-16T14:02:45Z" } as StoredPauSnapshot;
+    expect(keysFromAddress([dated], DEPOSIT).map((m) => m.readAt)).toEqual(["2026-11-16T14:02:45Z"]);
+  });
   it("labels each key by the param that lists the address, marked with it; a token address is not a listing", () => {
     expect(addressKeyIndex([blackrock], [snap]).get(KEY)).toEqual([{ docId: "d1", label: "Blackrock USDC · BUIDLI_DEPOSIT", via: DEPOSIT.toLowerCase() }]);
     expect(addressKeyIndex([blackrock], [snap]).has(OTHER)).toBe(false);

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { it, expect, describe, afterEach, beforeEach, vi } from "vitest";
-import { render, screen, cleanup, waitFor, within } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { Router } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
@@ -43,29 +43,25 @@ describe("ReportsIndex", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("explains that unbadged reports are rebuilt from the Atlas", () => {
+  it("explains that reports are rebuilt on open and that some use more than the Atlas", () => {
     render(<ReportsIndex query="" />, { wrapper: wrap() });
-    expect(screen.getByText(/Unlabelled reports are rebuilt from the Atlas/)).toBeInTheDocument();
+    expect(screen.getByText(/No chip means Atlas text only/)).toBeInTheDocument();
   });
 
-  it("badges only the reports that are not rebuilt live", () => {
+  it("marks each card with the sources it draws on besides the Atlas", () => {
     render(<ReportsIndex query="" />, { wrapper: wrap() });
+    const chips = (title: string) =>
+      [...screen.getByText(title).closest("a")!.querySelectorAll("[data-source]")].map((e) => e.getAttribute("data-source"));
 
-    // Curated: hand-maintained, can lag the atlas.
-    for (const title of ["Atlas Processes"]) {
-      const card = screen.getByText(title).closest("a")!;
-      expect(within(card).getByText("curated")).toBeInTheDocument();
-    }
-    // AI-assessed: model output, human-reviewed — a rubric score for the two
-    // assessments, an LLM defect sweep for Potential Mistakes.
+    expect(chips("Atlas Processes")).toEqual(["curated"]);
     for (const title of ["OEA Task Assessment", "Risk Rules Assessment", "Potential Mistakes"]) {
-      const card = screen.getByText(title).closest("a")!;
-      expect(within(card).getByText("AI-assessed")).toBeInTheDocument();
+      expect(chips(title)).toEqual(["ai"]);
     }
-    // Live reports carry no badge at all — that is what keeps a badge meaningful.
-    const live = screen.getByText("Active Data Index").closest("a")!;
-    expect(within(live).queryByText("curated")).toBeNull();
-    expect(within(live).queryByText("AI-assessed")).toBeNull();
+    // A report can draw on several classes at once, listed in registry order.
+    expect(chips("Stale Dates")).toEqual(["external", "derived", "ai"]);
+    expect(chips("Active Data Index")).toEqual(["derived"]);
+    // Chips on a card are plain spans: the card is itself a link.
+    expect(screen.getByText("Atlas Processes").closest("a")!.querySelector("a")).toBeNull();
   });
 
   it("filters cards by title match, dropping emptied groups", () => {
@@ -84,7 +80,7 @@ describe("ReportsIndex", () => {
     expect(screen.queryByRole("link", { name: /Integrator Reward Relationships/ })).toBeNull();
   });
 
-  it("filters by the badge label, so 'curated' narrows to the hand-maintained reports", () => {
+  it("filters by source word, so 'curated' narrows to the reports that use hand-maintained lists", () => {
     render(<ReportsIndex query="curated" />, { wrapper: wrap() });
 
     expect(screen.getByText("Atlas Processes")).toBeInTheDocument();

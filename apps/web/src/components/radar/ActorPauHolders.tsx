@@ -11,11 +11,14 @@ import { PauOriginChip } from "./PauOriginChip";
 import { PauSectionHeading } from "./PauSectionHeading";
 import { MARK_TIP_MS } from "./PauAtlasMark";
 import { Tooltip } from "../Tooltip";
+import { SourceMark } from "../SourceMark";
+import { ChainVerdict } from "../ChainGlyph";
+import type { ChainVerdictKind } from "../../lib/chainVerdict";
 
-const STATUS: Record<HolderStatus, { mark: string; color: string; role: string; member: string }> = {
-  holds: { mark: "✓", color: "var(--tan-2)", role: "holds the role", member: "the AdministeredAgent lists it" },
-  denied: { mark: "✗", color: "var(--accent)", role: "granted in the history but the chain says it does not hold the role", member: "added in the history but the AdministeredAgent no longer lists it" },
-  unread: { mark: "?", color: "var(--tan-3)", role: "hasRole could not be read", member: "membership could not be read" },
+const STATUS: Record<HolderStatus, { mark: ChainVerdictKind; color: string; role: string; member: string }> = {
+  holds: { mark: "match", color: "var(--tan-2)", role: "holds the role", member: "the AdministeredAgent lists it" },
+  denied: { mark: "mismatch", color: "var(--accent)", role: "granted in the history but the chain says it does not hold the role", member: "added in the history but the AdministeredAgent no longer lists it" },
+  unread: { mark: "unsure", color: "var(--tan-3)", role: "hasRole could not be read", member: "membership could not be read" },
 };
 
 /** The atlas document defining the Diamond PAU's access-control roles (A.2.2.10.1.1.1.2.2). */
@@ -24,6 +27,7 @@ const ROLE_DEFINITIONS_DOC = "2ae4b91a-6900-41e8-9718-32805b956550";
 /** What a role is, with the main ones and the atlas's role definitions. */
 const RolesNote = () => (
   <Callout className="mb-2">
+    <SourceMark source="ai" unlinked detail="summary" className="mr-1.5" />
     A role is a permission built into a contract: only an address holding it can call the functions it guards. The admin, Sky governance, grants and
     removes every other role. The relayer, an off-chain bot, moves funds through the controller within its rate limits, and the freezer can cut a
     relayer off in an emergency. More in the atlas&apos;s{" "}
@@ -64,7 +68,7 @@ export function PauHolders({ snap, anchor }: { snap: PauSnapshot; anchor: Anchor
           return (
             <li key={`${r.contract}:${r.name}:${r.account}`} className="mono text-[11px] flex flex-wrap items-baseline gap-x-2" data-status={r.status}>
               <Tooltip content={text} delay={MARK_TIP_MS}>
-                <span role="img" style={{ color: s.color }} aria-label={text}>{s.mark}</span>
+                <span role="img" style={{ color: s.color }} aria-label={text}><ChainVerdict kind={s.mark} /></span>
               </Tooltip>
               <HolderName name={names.get(r.account.toLowerCase())} link={l.holder} account={r.account} chain={snap.chain} />
               <span className="rounded" style={lit} data-link={l.grant} data-part="grant">

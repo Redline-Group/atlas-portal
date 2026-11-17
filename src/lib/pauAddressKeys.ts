@@ -18,6 +18,8 @@ export interface AddressKeyMatch {
   derived: DerivedKey;
   maxAmount: string;
   unit?: AmountUnit;
+  /** When the snapshot holding this key was read. */
+  readAt: string;
 }
 
 /** The address a RateLimitID param lists instead of a hash, or null. */
@@ -33,7 +35,7 @@ export function keysFromAddress(snaps: StoredPauSnapshot[], address: string): Ad
     s.contracts.flatMap((c) =>
       (c.rateLimits ?? [])
         .filter((r) => r.derived?.args.some((x) => x.toLowerCase() === a))
-        .map((r) => ({ chain: s.chain, key: r.key, derived: r.derived!, maxAmount: r.data?.maxAmount ?? r.configured.maxAmount, ...(r.unit ? { unit: r.unit } : {}) })),
+        .map((r) => ({ chain: s.chain, key: r.key, derived: r.derived!, maxAmount: r.data?.maxAmount ?? r.configured.maxAmount, ...(r.unit ? { unit: r.unit } : {}), readAt: s.fetchedAt })),
     ),
   );
 }

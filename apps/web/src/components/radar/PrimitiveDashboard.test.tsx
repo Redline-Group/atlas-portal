@@ -29,7 +29,7 @@ function makeAgent(overrides: Partial<AgentPrimitiveStat> = {}): AgentPrimitiveS
 describe("PrimitiveDashboard", () => {
   it("renders the heading", () => {
     render(<PrimitiveDashboard agents={[makeAgent()]} />);
-    expect(screen.getByRole("heading", { name: "Prime Agent Primitive Stats" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /^Prime Agent Primitive Stats/ })).toBeInTheDocument();
   });
 
   it("renders an All button plus one filter button per distinct executor", () => {

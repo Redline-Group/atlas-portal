@@ -3,6 +3,10 @@ import type { ChainValue } from "../lib/chainstate";
 import { chainValueRows } from "../lib/chainValueRows";
 import { shortAddr } from "../lib/format";
 import { Address } from "./Address";
+import { useLoaded } from "../hooks/useAtlasData";
+import { loadChainState } from "../lib/chainstate";
+import { formatReadTime } from "@/lib/provenance/asOf";
+import { SourceMark } from "./SourceMark";
 
 const BADGE = "badge mono text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide";
 
@@ -29,10 +33,16 @@ export function AddressCardBadges({ info }: { info: AddressInfo }) {
 /** The contract's view-function values read on chain, an address-valued one as an explorer link; nothing when none is worth showing. */
 export function AddressCardChainValues({ chainValues, chain }: { chainValues: Record<string, ChainValue>; chain: string }) {
   const rows = chainValueRows(chainValues);
+  const snapshot = useLoaded(loadChainState, { soft: true });
   if (rows.length === 0) return null;
+  const read = formatReadTime(snapshot?.fetchedAt);
+  const block = snapshot?.block ? `block ${Number(snapshot.block).toLocaleString()}` : null;
   return (
     <div className="mt-2">
-      <p className="text-[10px] mono mb-1 text-tan-3">on-chain · view functions</p>
+      <p className="text-[10px] mono mb-1 text-tan-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+        <SourceMark source="onchain" bare />
+        {["view functions", read && `read ${read}`, block].filter(Boolean).join(" · ")}
+      </p>
       <div className="space-y-0.5">
         {rows.map(({ key, display, isAddress }) => (
           <div key={key} className="flex gap-2 items-baseline">

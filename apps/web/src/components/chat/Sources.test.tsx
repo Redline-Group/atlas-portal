@@ -37,7 +37,7 @@ describe("Sources", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
     expect(screen.getByText("Some Doc")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("A.1.1")).toBeInTheDocument());
   });
@@ -109,7 +109,7 @@ describe("Sources", () => {
         onAtlas={vi.fn()}
       />,
     );
-    expect(screen.getByText("citations · 1")).toBeInTheDocument();
+    expect(screen.getByText("atlas citations · 1")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "view all docs from this conversation" }));
     expect(onView).toHaveBeenCalledTimes(1);
   });
@@ -127,6 +127,16 @@ describe("Sources", () => {
 
   const UUID = "11111111-1111-1111-1111-111111111111";
   const sourceFor = (uuid: string) => [{ uuid, title: "Some Doc" }];
+
+  it("labels the citations row as an AI check only when a mark is drawn", () => {
+    const { container, rerender } = render(<Sources sources={sourceFor(UUID)} onAtlas={vi.fn()} />);
+    expect(container.querySelector("[data-source='ai']")).toBeNull();
+    rerender(<Sources sources={sourceFor(UUID)} marks={{ [UUID]: { status: "backed", claims: [] } }} onAtlas={vi.fn()} />);
+    expect(container.querySelector("[data-source='ai']")?.getAttribute("title")).toContain("AI check");
+    // A status that is never drawn (weak confidence) does not earn the label.
+    rerender(<Sources sources={sourceFor(UUID)} marks={{ [UUID]: { status: "backed_weak", claims: [] } }} onAtlas={vi.fn()} />);
+    expect(container.querySelector("[data-source='ai']")).toBeNull();
+  });
 
   it("renders no mark when no marks prop is passed", () => {
     render(<Sources sources={sourceFor(UUID)} onAtlas={vi.fn()} />);
