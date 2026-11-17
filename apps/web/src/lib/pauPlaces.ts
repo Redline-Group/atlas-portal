@@ -2,12 +2,12 @@
 // and when the contracts were read.
 import type { KeyPlace } from "@/lib/pauKeyHolders";
 import { PAU_KIND_LABEL } from "./pau";
+import { formatReadTime, oldestTime } from "@/lib/provenance/asOf";
 
 export const chainLabel = (chain: string) => chain.charAt(0).toUpperCase() + chain.slice(1);
 
-/** The oldest snapshot read among the places, as "YYYY-MM-DD HH:MM". */
-export const readAt = (places: KeyPlace[]) =>
-  places.map((p) => p.snap.fetchedAt).sort()[0]?.slice(0, 16).replace("T", " ");
+/** The oldest snapshot read among the places, as "YYYY-MM-DD HH:MM UTC" (provenance/asOf.ts). */
+export const readAt = (places: KeyPlace[]) => formatReadTime(oldestTime(places.map((p) => p.snap.fetchedAt)));
 
 /** A place's chain, with its controller kind when the prime has two deployments there among `places`. */
 function chainOf(p: KeyPlace, places: KeyPlace[]): string {

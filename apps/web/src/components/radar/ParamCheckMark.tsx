@@ -6,6 +6,7 @@ import { ClockGlyph } from "../ClockGlyph";
 import type { ParamMark } from "../../lib/paramChecks";
 import type { RowMark, TipLine } from "../../lib/rowMark";
 import { SourceMark } from "../SourceMark";
+import { formatReadTime } from "@/lib/provenance/asOf";
 
 /** An exclamation mark in a circle, at the text's size and colour. */
 const CIRCLED_BANG = (
@@ -45,7 +46,8 @@ function Line({ line }: { line: TipLine }) {
       </p>
     );
   }
-  const read = line.readAt && `read ${line.readAt.slice(0, 16).replace("T", " ")} UTC`;
+  const when = formatReadTime(line.readAt);
+  const read = when && `read ${when}`;
   // A limit read live with no history (a Solana account) has no set time.
   if (!line.set.time) return read ? <p style={dim}>{read}</p> : null;
   return (

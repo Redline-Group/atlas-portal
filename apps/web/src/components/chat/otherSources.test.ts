@@ -19,6 +19,18 @@ describe("extractOtherLinks", () => {
   });
 });
 
+describe("extractOtherLinks and code", () => {
+  it("skips a link written inside inline code or a fenced block, since it renders as code", () => {
+    const text = ["Use `[x](https://etherscan.io/tx/0x1)` literally.", "```", "[y](https://etherscan.io/tx/0x2)", "```", "Real: [z](https://etherscan.io/tx/0x3)."].join("\n");
+    expect(extractOtherLinks(text).map((l) => l.text)).toEqual(["z"]);
+  });
+
+  it("keeps a link that carries a title, and an unterminated fence swallows the rest", () => {
+    expect(extractOtherLinks('[tx](https://etherscan.io/tx/0x1 "first transfer")').map((l) => [l.text, l.href])).toEqual([["tx", "https://etherscan.io/tx/0x1"]]);
+    expect(extractOtherLinks("[a](https://etherscan.io/tx/0x1)\n```\n[b](https://etherscan.io/tx/0x2)")).toHaveLength(1);
+  });
+});
+
 describe("extractOtherLinks in a preview", () => {
   const sha = "a".repeat(40);
   const text = `[this](/preview/${sha}/atlas?id=${"b".repeat(36)}) and [that](/preview/${"c".repeat(40)}/atlas?id=${"b".repeat(36)})`;

@@ -56,10 +56,17 @@ function MarkBody({ source, bare = false, detail }: SourceMarkShape) {
   );
 }
 
+/**
+ * Every prop this component reads itself. Typed as a Record over the shape's
+ * keys, so a prop added to SourceMarkShape without an entry here fails to
+ * compile instead of leaking onto the DOM element.
+ */
+const OWN_PROPS: Record<keyof SourceMarkShape | "unlinked", true> = { source: true, bare: true, detail: true, hint: true, unlinked: true };
+
 /** The caller's own props, without the ones this component reads. */
-function passThrough<P extends SourceMarkShape & { unlinked?: boolean }>(props: P) {
+function passThrough(props: object): Record<string, unknown> {
   const rest = { ...props } as Record<string, unknown>;
-  for (const k of ["source", "bare", "detail", "hint", "unlinked"]) delete rest[k];
+  for (const k of Object.keys(OWN_PROPS)) delete rest[k];
   return rest;
 }
 

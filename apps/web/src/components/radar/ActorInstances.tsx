@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { AtlasLink } from "../AtlasLink";
 import type { RadarInstance, RadarPrimitive } from "../../lib/actorIndex";
 import { toAnchorId } from "../../lib/anchorId";
@@ -12,6 +13,7 @@ import { RadarHeading } from "./RadarHeading";
 import { usePrimeCardMarks } from "../../hooks/usePrimeAtlasChecks";
 import type { CardMarks } from "../../lib/rowMark";
 import { SourceMark } from "../SourceMark";
+import { anyRowMarked } from "../../lib/cardMarkUse";
 
 
 interface Props {
@@ -159,14 +161,15 @@ function ActorItemsSection({ groups, level, prime, marks }: SectionProps) {
 export function ActorInstances({ primitives, prime }: Props) {
   const groups = buildCategoryGroups(primitives);
   const marks = usePrimeCardMarks(prime?.id);
+  const checked = useMemo(() => anyRowMarked(marks, primitives), [marks, primitives]);
 
   return (
     <section id={RADAR_SECTION.primitives} aria-label="Primitives" style={{ scrollMarginTop: HEADER_OFFSET }}>
       {/* The page's one note on what the cards are: our reading of each instance's text, and the chain where a mark compares a value with it. */}
       <p className="mb-3 flex flex-wrap items-center gap-2 mono text-[11px]" style={{ color: "var(--tan-3)" }}>
         <SourceMark source="derived" hint="Each parameter is our extraction from the instance's Atlas text." />
-        {marks && <SourceMark source="onchain" hint="A ✓ ✗ ? mark beside a value compares it with what the contract holds; its hover shows the read time." />}
-        <span>values are our reading of each instance{marks ? "; a mark beside one checks it against the chain" : ""}</span>
+        {checked && <SourceMark source="onchain" hint="A ✓ ✗ ? mark beside a value compares it with what the contract holds; its hover shows the read time." />}
+        <span>values are our reading of each instance{checked ? "; a mark beside one checks it against the chain" : ""}</span>
       </p>
       <ActorItemsSection groups={groups} level={2} prime={prime} marks={marks} />
     </section>

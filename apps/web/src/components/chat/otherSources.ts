@@ -14,9 +14,14 @@ export interface OtherLink {
   class: LinkClass;
 }
 
-// An inline link to a web address or a preview path; atlas citations are the
-// Sources row's, and reference-style definitions only ever name atlas documents.
-const OTHER_LINK_RE = /\[([^\]\n]+)\]\(((?:https?:\/\/|\/preview\/)[^\s)]+)\)/gi;
+// An inline link to a web address or a preview path, with an optional title
+// (`[text](url "title")`); atlas citations are the Sources row's, and
+// reference-style definitions only ever name atlas documents.
+const OTHER_LINK_RE = /\[([^\]\n]+)\]\(((?:https?:\/\/|\/preview\/)[^\s)]+)(?:\s+"[^"\n]*")?\)/gi;
+
+// Fenced blocks and inline code render as code, so a link written inside one is
+// not a link and is not a source.
+const CODE_RE = /(```|~~~)[\s\S]*?(?:\1|$)|`[^`\n]+`/g;
 
 const PREVIEW_SHA_RE = /^\/preview\/([0-9a-f]{40})\//i;
 
@@ -28,7 +33,7 @@ const PREVIEW_SHA_RE = /^\/preview\/([0-9a-f]{40})\//i;
 export function extractOtherLinks(content: string, previewSha?: string): OtherLink[] {
   const seen = new Set<string>();
   const out: OtherLink[] = [];
-  for (const m of content.matchAll(OTHER_LINK_RE)) {
+  for (const m of content.replace(CODE_RE, " ").matchAll(OTHER_LINK_RE)) {
     const [, text, href] = m;
     const cls = classifyLink(href);
     if (!cls || seen.has(href)) continue;

@@ -57,6 +57,12 @@ describe("SourceMark props", () => {
     expect(clicked).toBe(true);
   });
 
+  it("keeps its own props off the element: none of them becomes an attribute", () => {
+    const { container } = render(<SourceMark source="ai" bare detail="d" hint="h" unlinked />);
+    const mark = container.querySelector("[data-source='ai']")!;
+    for (const own of ["source", "bare", "detail", "hint", "unlinked"]) expect(mark.hasAttribute(own)).toBe(false);
+  });
+
   it("merges a caller's style with the chip colour instead of replacing it", () => {
     render(<SourceMark source="derived" style={{ marginLeft: 6 }} target="_blank" rel="noopener noreferrer" />);
     const mark = screen.getByRole("link");

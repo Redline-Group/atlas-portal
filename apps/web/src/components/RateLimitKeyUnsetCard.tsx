@@ -15,7 +15,7 @@ export function RateLimitKeyUnsetCard({ absence: { unset, unread } }: { absence:
       <div className="font-medium text-tan">{unread.length ? "Not set where read" : "Not set on any chain"}</div>
       <div className="mt-1 text-tan-2 break-words">No PAU contract holds this rate limit. Read live, it has never been set on {placesText(unset)}.</div>
       {unread.length > 0 && <div className="mt-1 break-words" style={dim}>Not read yet on {placesText(unread)}.</div>}
-      {read && <div className="mono text-[10px] mt-1.5" style={dim}>read {read} UTC</div>}
+      {read && <div className="mono text-[10px] mt-1.5" style={dim}>read {read}</div>}
     </div>
   );
 }
