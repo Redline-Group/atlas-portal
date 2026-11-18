@@ -1,54 +1,64 @@
 // removed.json: every document the preview dropped, in full, with where it
 // stood, so the reader can show it in place. The head never had it, so its
 // position is stated against what the reader does have: its parent's UUID and
-// the sibling it followed. That sibling is one the reader will place under the
-// same parent (another removed document, or one the head kept there), never a
-// sibling that moved elsewhere, so inserting each entry after its `after` in
-// list order rebuilds the base's order.
+// the sibling it followed.
+//
+// Both are read off docTree (src/lib/atlasTree.ts), the tree the reader itself
+// renders, never the parser's stored parentId: below the heading-depth cap the
+// two disagree, and a removed document placed by parentId lands under a distant
+// ancestor. The parent is the one the base's tree gives it. The anchor is the
+// nearest earlier sibling in the base's tree that the reader will also show
+// under that parent (another removed document, or one the head's tree keeps
+// there), so inserting each entry after its anchor, in list order, rebuilds
+// the base's order among the siblings that remain.
 
+import { docTree } from "../../lib/atlasTree.ts";
 import type { RemovedDoc } from "../../lib/previewPatch.ts";
-import type { Snapshot, SnapshotDoc } from "./snapshot.ts";
+import type { AtlasNode } from "../../types.ts";
+import type { Snapshot } from "./snapshot.ts";
 
-const byOrder = (a: SnapshotDoc, b: SnapshotDoc) => (a.order ?? 0) - (b.order ?? 0);
-
-/** Base siblings of each parent that holds a removed document, in base order. */
-function siblingsOf(ids: string[], base: Snapshot): Map<string | null, SnapshotDoc[]> {
-  const parents = new Set(ids.map((id) => base.get(id)?.parentId ?? null));
-  const out = new Map<string | null, SnapshotDoc[]>();
-  for (const node of base.values()) {
-    const p = node.parentId ?? null;
-    if (!parents.has(p)) continue;
-    const list = out.get(p) ?? [];
-    list.push(node);
-    out.set(p, list);
+function asDocs(s: Snapshot): Record<string, AtlasNode> {
+  const out: Record<string, AtlasNode> = {};
+  for (const [id, n] of s) {
+    out[id] = { ...n, title: n.title ?? "", type: n.type ?? "", content: n.content ?? "", depth: n.depth ?? 1, parentId: n.parentId ?? null, order: n.order ?? 0, addressRefs: [] };
   }
-  for (const list of out.values()) list.sort(byOrder);
   return out;
 }
 
-/** The nearest earlier sibling the reader will also place under `parentId`. */
-function anchor(doc: SnapshotDoc, siblings: SnapshotDoc[], removed: Set<string>, head: Snapshot): string | null {
-  const parentId = doc.parentId ?? null;
-  for (let i = siblings.findIndex((s) => s.id === doc.id) - 1; i >= 0; i--) {
-    const s = siblings[i];
-    if (removed.has(s.id) || (head.get(s.id)?.parentId ?? null) === parentId) return s.id;
+/** child id → parent id, as the reader's tree has it, and each parent's children in order. */
+function treeOf(s: Snapshot) {
+  const { byParent } = docTree(asDocs(s));
+  const parentOf = new Map<string, string | null>();
+  for (const [p, kids] of byParent) for (const k of kids) parentOf.set(k.id, p);
+  return { byParent, parentOf };
+}
+
+/** The nearest earlier base sibling the reader will also show under `parentId`. */
+function anchor(id: string, siblings: AtlasNode[], parentId: string | null, removed: Set<string>, headParentOf: Map<string, string | null>): string | null {
+  for (let i = siblings.findIndex((s) => s.id === id) - 1; i >= 0; i--) {
+    const s = siblings[i].id;
+    if (removed.has(s) || (headParentOf.has(s) && headParentOf.get(s) === parentId)) return s;
   }
   return null;
 }
 
-/** The removed documents in base order, each with its placement. */
+/** The removed documents in base tree order (parents before children), each with its placement. */
 export function removedDocs(ids: string[], base: Snapshot, head: Snapshot): RemovedDoc[] {
   const removed = new Set(ids);
-  const siblings = siblingsOf(ids, base);
-  const docs = ids.map((id) => base.get(id)!).sort(byOrder);
-  return docs.map((d) => ({
-    id: d.id,
-    doc_no: d.doc_no,
-    title: d.title,
-    type: d.type,
-    content: d.content ?? "",
-    parentId: d.parentId ?? null,
-    after: anchor(d, siblings.get(d.parentId ?? null) ?? [], removed, head),
-    depth: d.depth ?? 1,
-  }));
+  const baseTree = treeOf(base);
+  const headParentOf = treeOf(head).parentOf;
+  const docs = ids.map((id) => base.get(id)!).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  return docs.map((d) => {
+    const parentId = baseTree.parentOf.get(d.id) ?? null;
+    return {
+      id: d.id,
+      doc_no: d.doc_no,
+      title: d.title,
+      type: d.type,
+      content: d.content ?? "",
+      parentId,
+      after: anchor(d.id, baseTree.byParent.get(parentId) ?? [], parentId, removed, headParentOf),
+      depth: d.depth ?? 1,
+    };
+  });
 }

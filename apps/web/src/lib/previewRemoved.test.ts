@@ -39,6 +39,17 @@ describe("withRemovedDocs", () => {
     expect(out.byParent.get("x")!.map((n) => n.id)).toEqual(["y"]);
   });
 
+  it("places a removed child listed before its removed parent once the parent is in", () => {
+    const out = withRemovedDocs(b, [gone("y", "x", null), gone("x", "p", "a")]);
+    expect(out.byParent.get("p")!.map((n) => n.id)).toEqual(["a", "x", "d"]);
+    expect(out.byParent.get("x")!.map((n) => n.id)).toEqual(["y"]);
+  });
+
+  it("falls back to doc-number order, not the top, when the anchor is missing", () => {
+    const out = withRemovedDocs(b, [{ ...gone("c", "p", "not-loaded"), doc_no: "A.c" }]);
+    expect(out.byParent.get("p")!.map((n) => n.id)).toEqual(["a", "c", "d"]);
+  });
+
   it("leaves out a removed doc whose parent is not loaded, and never touches doc-number lookups", () => {
     const out = withRemovedDocs(b, [gone("z", "deep-parent", null), gone("b", "p", "a")]);
     expect(out.docs.z).toBeUndefined();
