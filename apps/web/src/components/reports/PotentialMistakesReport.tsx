@@ -12,7 +12,12 @@ import { MistakesFilters } from "./MistakesFilters";
 import { MistakesProvenance } from "./MistakesProvenance";
 import { PotentialMistakesTable } from "./PotentialMistakesTable";
 import { ReportShell } from "./ReportShell";
-import { mistakeFilterSummary, usePotentialMistakesState, type MistakeFilterState } from "./usePotentialMistakesState";
+import {
+  FILTER_KEYS,
+  mistakeFilterSummary,
+  usePotentialMistakesState,
+  type MistakeFilterState,
+} from "./usePotentialMistakesState";
 
 const REPORT: ReportId = "potential-mistakes";
 
@@ -36,7 +41,7 @@ function MistakesCsvButton({
       fullRowCount={all.length}
       buildFull={() => mistakesToCSV(all)}
       query={query}
-      filters={[f.severity, f.pass, f.status, f.category, f.scope, f.executor]}
+      filters={FILTER_KEYS.map((k) => f[k])}
     />
   );
 }

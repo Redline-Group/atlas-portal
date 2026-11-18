@@ -31,11 +31,11 @@ export function KindPills({ all, buckets, severity, onSeverity, category, onCate
         showSingle
       />
       <CategoryPills
-        categories={Object.keys(buckets.catLabels)}
+        categories={buckets.categories.keys}
         active={category}
         onToggle={onCategory}
         label="Category"
-        display={buckets.catLabels}
+        display={buckets.categories.labels}
         counts={countBy(all, (r) => r.category)}
       />
       <CategoryPills

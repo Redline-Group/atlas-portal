@@ -45,8 +45,8 @@ const file: MistakesFile = {
 const doc = (id: string, doc_no: string, title: string, parentId: string | null = null): AtlasNode =>
   ({ id, doc_no, title, type: "Core", depth: 3, parentId, content: "", order: 0, addressRefs: [] }) as AtlasNode;
 
-// A.1.1 sits in the Governance Scope; the renumbered doc sits in Spark's
-// artifact, whose operational executor is Amatsu.
+// A.1.1 sits in the Governance Scope; the renumbered doc (A.2.8 at sweep time)
+// now sits in Spark's artifact, whose operational executor is Amatsu.
 vi.mock("../../lib/docs", () => ({
   loadDocs: () =>
     Promise.resolve({
@@ -54,7 +54,7 @@ vi.mock("../../lib/docs", () => ({
       agents: doc("agents", "A.6", "The Agent Scope"),
       spark: doc("spark", "A.6.1.1.1", "Spark", "agents"),
       [UUID_HERE]: doc(UUID_HERE, "A.1.1", "Website And Domain", "gov"),
-      [UUID_MOVED]: doc(UUID_MOVED, "A.2.9", "Renamed Support Doc", "spark"),
+      [UUID_MOVED]: doc(UUID_MOVED, "A.6.1.1.1.2", "Renamed Support Doc", "spark"),
     }),
 }));
 vi.mock("../../lib/graph", () => ({
@@ -124,7 +124,7 @@ describe("PotentialMistakesReport", () => {
     const table = within(screen.getByRole("table"));
     // Renumbered rows name the doc's current number; missing rows say so.
     expect(table.getByText(/Renumbered since sweep/)).toBeInTheDocument();
-    expect(table.getByText(/→ A.2.9/)).toBeInTheDocument();
+    expect(table.getByText(/→ A.6.1.1.1.2/)).toBeInTheDocument();
     expect(table.getByText("Doc no longer in atlas")).toBeInTheDocument();
     // …and the banner totals them, so drift is visible without filtering.
     expect(screen.getByText(/renumbered or removed since the sweep/)).toBeInTheDocument();
@@ -158,7 +158,7 @@ describe("PotentialMistakesReport", () => {
     render(<PotentialMistakesReport query="" mode="broad" />);
     fireEvent.click(await screen.findByRole("button", { name: /^A\.1 Governance/ }));
     expect(screen.getByText("1 of 3 findings")).toBeInTheDocument();
-    expect(window.location.search).toContain("scope=the-governance-scope");
+    expect(window.location.search).toContain("scope=gov");
     fireEvent.click(screen.getByRole("button", { name: /^A\.1 Governance/ }));
 
     fireEvent.click(await screen.findByRole("button", { name: /^Amatsu/ }));

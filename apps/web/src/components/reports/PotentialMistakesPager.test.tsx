@@ -2,6 +2,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import { NO_OWNER } from "@/lib/mistakeOwnership";
 import type { MistakeRow } from "@/lib/potentialMistakesIndex";
 import { EMPTY_QUERY } from "@/lib/reportFilter";
 import { PotentialMistakesPager } from "./PotentialMistakesPager";
@@ -18,11 +19,7 @@ const row = (over: Partial<MistakeRow> & Pick<MistakeRow, "id" | "quote">): Mist
   status: "current",
   currentDocNo: "A.1",
   title: "Example",
-  scope: "",
-  scopeLabel: "",
-  agent: "",
-  executor: "",
-  executorLabel: "",
+  ...NO_OWNER,
   ...over,
 });
 

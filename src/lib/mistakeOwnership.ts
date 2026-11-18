@@ -2,117 +2,83 @@
 // sits in, the Agent Artifact (if any) it sits in, and the Executor Agent
 // accountable for that artifact.
 //
-// Everything is resolved by UUID — a parentId walk to the root for the scope,
-// an ancestor matching an agent entity's defining doc for the artifact, and the
-// graph's {operational,core}_executor_agent_for edge for a Prime's executor —
-// so a renumbering never moves a finding to the wrong bucket. An executor
-// agent's own artifact belongs to that executor. A document outside every
-// agent artifact (the Scopes, the Agent Scope's framework text) has no
-// executor agent, and is bucketed as such rather than guessed.
+// The scope is the doc's top-level ancestor (rootDoc), keyed by its UUID. The
+// artifact is the nearest agent on the doc's ancestor chain (owningAgent.ts),
+// with the doc itself included: a finding on an agent's root doc is about that
+// agent's artifact. The executor is that agent's executor (roleEdges.ts) —
+// a Prime's executor agent, or the executor itself for its own artifact. A
+// doc outside every agent artifact (the Scopes, the Agent Scope's framework
+// text) has no executor agent and is bucketed as such rather than guessed.
 
 import type { AtlasNode, GraphEntity, RelationEdge } from "../types";
-import { EXEC_EDGES } from "./roleEdges";
+import { buildAncestorsWithSelf, rootDoc } from "./atlasHelpers";
+import { agentsByRootDoc, nearestAgentOn } from "./owningAgent";
+import { executorByAgent } from "./roleEdges";
 
 export interface Ownership {
-  /** Slug of the root (Scope) document's title, e.g. "the-governance-scope". */
+  /** UUID of the enclosing Scope document, or "". */
   scope: string;
+  /** "A.1 Governance" — the doc_no is display only. */
   scopeLabel: string;
-  /** Name of the Agent Artifact the document sits in, or "". */
+  /** Name of the agent whose artifact holds the doc, or "". */
   agent: string;
-  /** Executor entity slug, or NO_EXECUTOR when the doc is in no agent artifact. */
+  /** Executor slug; NO_EXECUTOR when no executor is accountable; "" when unknown (no graph). */
   executor: string;
+  /** Executor name, or "" when there is none. */
   executorLabel: string;
+  /** The executor is a different agent from `agent` (the artifact is a Prime's). */
+  viaExecutor: boolean;
 }
 
 /** The unresolvable owner: a corpus-wide finding, or a doc gone from the atlas. */
-export const NO_OWNER: Ownership = { scope: "", scopeLabel: "", agent: "", executor: "", executorLabel: "" };
+export const NO_OWNER: Ownership = {
+  scope: "",
+  scopeLabel: "",
+  agent: "",
+  executor: "",
+  executorLabel: "",
+  viaExecutor: false,
+};
 
 export const NO_EXECUTOR = "none";
 export const NO_EXECUTOR_LABEL = "No executor agent";
 
-const AGENT_SUBTYPES = new Set(["prime", "operational_executor", "core_executor"]);
-const EXECUTOR_SUBTYPES = new Set(["operational_executor", "core_executor"]);
-
-export const slugify = (s: string): string =>
-  s
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-
-/** "A.1 Governance" — the root's doc_no is display-only; the key is the title slug. */
 const scopeLabel = (root: AtlasNode): string =>
   `${root.doc_no} ${root.title.replace(/^the\s+/i, "").replace(/\s+scope$/i, "")}`;
 
 type Graph = { participants: GraphEntity[]; edges: RelationEdge[] } | null;
 
-interface OwnerIndex {
-  agentByDocId: Map<string, GraphEntity>;
-  executorByAgentId: Map<string, GraphEntity>;
-}
-
-function indexAgents(graph: Graph): OwnerIndex {
-  const agentByDocId = new Map<string, GraphEntity>();
-  const executorByAgentId = new Map<string, GraphEntity>();
-  if (!graph) return { agentByDocId, executorByAgentId };
-  const byId = new Map(graph.participants.map((e) => [e.id, e]));
-  for (const e of graph.participants) {
-    if (e.did && e.st && AGENT_SUBTYPES.has(e.st)) agentByDocId.set(e.did, e);
-    if (e.st && EXECUTOR_SUBTYPES.has(e.st)) executorByAgentId.set(e.id, e);
-  }
-  for (const edge of graph.edges) {
-    if (!EXEC_EDGES.has(edge.e)) continue;
-    const exec = byId.get(edge.f);
-    if (exec) executorByAgentId.set(edge.t, exec);
-  }
-  return { agentByDocId, executorByAgentId };
-}
-
-function resolveOne(docs: Record<string, AtlasNode>, graph: Graph, idx: OwnerIndex, uuid: string): Ownership {
-  let cur = docs[uuid];
-  let agent: GraphEntity | undefined;
-  for (let i = 0; i < 64; i++) {
-    agent ??= idx.agentByDocId.get(cur.id);
-    const parent = cur.parentId ? docs[cur.parentId] : undefined;
-    if (!parent) break;
-    cur = parent;
-  }
-  const exec = agent ? idx.executorByAgentId.get(agent.id) : undefined;
-  return {
-    scope: slugify(cur.title),
-    scopeLabel: scopeLabel(cur),
-    agent: agent?.name ?? "",
-    executor: exec ? exec.slug : graph ? NO_EXECUTOR : "",
-    executorLabel: exec ? exec.name : graph ? NO_EXECUTOR_LABEL : "",
-  };
-}
-
 /**
- * Returns a memoising lookup from document UUID to its Ownership, or null when
- * the UUID is not in the served atlas. Without a graph the scope still
- * resolves; agent and executor stay empty ("" — not NO_EXECUTOR, which is a
- * positive finding that the doc is outside every agent artifact).
+ * Lookup from the UUID of a doc in `docs` to its Ownership. Without a graph
+ * the scope still resolves; agent and executor stay "" (unknown, which is not
+ * NO_EXECUTOR — that is a positive finding that no executor is accountable).
  */
-export function ownershipResolver(docs: Record<string, AtlasNode>, graph: Graph): (uuid: string | null) => Ownership | null {
-  const idx = indexAgents(graph);
-  const cache = new Map<string, Ownership>();
+export function ownershipResolver(docs: Record<string, AtlasNode>, graph: Graph): (uuid: string) => Ownership {
+  const docNoToId = new Map(Object.values(docs).map((d) => [d.doc_no, d.id]));
+  const agents = agentsByRootDoc(graph);
+  const executors = graph ? executorByAgent(graph.participants, graph.edges) : new Map<string, GraphEntity>();
   return (uuid) => {
-    if (!uuid || !docs[uuid]) return null;
-    let hit = cache.get(uuid);
-    if (!hit) cache.set(uuid, (hit = resolveOne(docs, graph, idx, uuid)));
-    return hit;
+    const root = rootDoc(docs, uuid);
+    const agent = nearestAgentOn(buildAncestorsWithSelf(docs, docNoToId, uuid), agents);
+    const exec = agent ? executors.get(agent.id) : undefined;
+    return {
+      scope: root?.id ?? "",
+      scopeLabel: root ? scopeLabel(root) : "",
+      agent: agent?.name ?? "",
+      executor: exec?.slug ?? (graph ? NO_EXECUTOR : ""),
+      executorLabel: exec?.name ?? "",
+      viaExecutor: !!exec && exec.id !== agent?.id,
+    };
   };
 }
 
-/** Ownership buckets present in the rows, with pill labels. Scopes keep atlas
- *  order (their labels lead with the root doc_no); executors sort by name with
- *  "no executor agent" last. Unresolvable rows ("" key) get no pill. */
-export function presentOwners(rows: readonly Ownership[], key: "scope" | "executor") {
+/** Pill keys present in `rows` (skipping ""), ordered by label with numeric
+ *  doc_no runs ("A.2" before "A.10") and `last` pinned at the end. */
+export function presentBuckets<R>(rows: readonly R[], key: (r: R) => string, label: (r: R) => string, last?: string) {
   const labels: Record<string, string> = {};
-  for (const r of rows) if (r[key]) labels[r[key]] = key === "scope" ? r.scopeLabel : r.executorLabel;
+  for (const r of rows) if (key(r)) labels[key(r)] = label(r);
   const keys = Object.keys(labels).sort(
-    (a, b) =>
-      Number(a === NO_EXECUTOR) - Number(b === NO_EXECUTOR) ||
-      labels[a].localeCompare(labels[b], undefined, { numeric: true }),
+    (a, b) => Number(a === last) - Number(b === last) || labels[a].localeCompare(labels[b], undefined, { numeric: true }),
   );
   return { keys, labels };
 }

@@ -5,7 +5,7 @@ import { useNodeAnnotations } from "./useNodeAnnotations";
 import { useDocViewTracking } from "./useDocViewTracking";
 import { useDocumentTitle } from "./useDocumentTitle";
 import { loadGraph, type GraphData } from "../lib/graph";
-import { buildOwningAgentMap } from "../lib/owningAgent";
+import { buildOwningAgentMap } from "@/lib/owningAgent";
 import { useDataSource } from "../lib/dataSource";
 import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
 

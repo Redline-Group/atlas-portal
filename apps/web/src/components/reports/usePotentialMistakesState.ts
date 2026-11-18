@@ -9,7 +9,7 @@ import { loadDocs } from "../../lib/docs";
 import { loadGraph } from "../../lib/graph";
 import { useLoaded } from "../../hooks/useAtlasData";
 import { urlString } from "../../hooks/useUrlState";
-import { ownershipResolver, presentOwners } from "@/lib/mistakeOwnership";
+import { NO_EXECUTOR, NO_EXECUTOR_LABEL, ownershipResolver, presentBuckets } from "@/lib/mistakeOwnership";
 import { loadPotentialMistakes } from "../../lib/potentialMistakesLoad";
 import {
   CATEGORY_LABELS,
@@ -57,39 +57,34 @@ function useMistakeFilters() {
 
 export type MistakeFilterState = ReturnType<typeof useMistakeFilters>;
 
+/** Each pill filter's state key, which is also the MistakeRow field it matches. */
+export const FILTER_KEYS = ["severity", "pass", "status", "category", "scope", "executor"] as const;
+
 function useFilteredMistakes(all: MistakeRow[] | null, f: MistakeFilterState, rq: ReportQuery) {
-  const { severity, pass, status, category, scope, executor } = f;
+  const picks = FILTER_KEYS.map((k) => f[k]);
   return useMemo(() => {
     if (!all) return null;
-    const picked = all.filter(
-      (r) =>
-        (!severity || r.severity === severity) &&
-        (!pass || r.pass === pass) &&
-        (!status || r.status === status) &&
-        (!category || r.category === category) &&
-        (!scope || r.scope === scope) &&
-        (!executor || r.executor === executor),
-    );
+    const picked = all.filter((r) => FILTER_KEYS.every((k, i) => !picks[i] || r[k] === picks[i]));
     return filterRows(picked, rq, mistakeSearchFields);
-  }, [all, severity, pass, status, category, scope, executor, rq]);
+    // picks is rebuilt every render; its values are the real dependencies.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [all, rq, ...picks]);
 }
 
-function useCategoryLabels(all: MistakeRow[] | null): Record<string, string> {
-  return useMemo(
-    () => Object.fromEntries((all ? presentCategories(all) : []).map((c) => [c, CATEGORY_LABELS[c] ?? c])),
-    [all],
-  );
+/** Pill keys + labels for every data-derived group, all in one shape. */
+function useMistakeBuckets(all: MistakeRow[] | null) {
+  return useMemo(() => {
+    const rows = all ?? [];
+    const cats = presentCategories(rows);
+    return {
+      categories: { keys: cats, labels: Object.fromEntries(cats.map((c) => [c, CATEGORY_LABELS[c] ?? c])) },
+      scopes: presentBuckets(rows, (r) => r.scope, (r) => r.scopeLabel),
+      executors: presentBuckets(rows, (r) => r.executor, (r) => r.executorLabel || NO_EXECUTOR_LABEL, NO_EXECUTOR),
+    };
+  }, [all]);
 }
 
-/** Pill keys + labels for every data-derived group (category, scope, executor). */
-function useBucketLabels(all: MistakeRow[] | null) {
-  const catLabels = useCategoryLabels(all);
-  const scopes = useMemo(() => presentOwners(all ?? [], "scope"), [all]);
-  const executors = useMemo(() => presentOwners(all ?? [], "executor"), [all]);
-  return { catLabels, scopes, executors };
-}
-
-export type MistakeBuckets = ReturnType<typeof useBucketLabels>;
+export type MistakeBuckets = ReturnType<typeof useMistakeBuckets>;
 
 /** Filter-summary chips for the shell, one per active pill. */
 export function mistakeFilterSummary(f: MistakeFilterState, b: MistakeBuckets) {
@@ -97,7 +92,7 @@ export function mistakeFilterSummary(f: MistakeFilterState, b: MistakeBuckets) {
     f.severity && `severity: ${f.severity}`,
     f.pass && `pass: ${PASS_LABELS[f.pass]}`,
     f.status && `status: ${STATUS_LABELS[f.status]}`,
-    f.category && `category: ${b.catLabels[f.category] ?? f.category}`,
+    f.category && `category: ${b.categories.labels[f.category] ?? f.category}`,
     f.scope && `scope: ${b.scopes.labels[f.scope] ?? f.scope}`,
     f.executor && `executor agent: ${b.executors.labels[f.executor] ?? f.executor}`,
   ];
@@ -121,6 +116,6 @@ export function usePotentialMistakesState(query: string, mode: ReportMode) {
     () => all?.filter((r) => r.status === "renumbered" || r.status === "missing").length ?? 0,
     [all],
   );
-  const buckets = useBucketLabels(all);
+  const buckets = useMistakeBuckets(all);
   return { file, all, filters, rq, rows, drifted, buckets };
 }

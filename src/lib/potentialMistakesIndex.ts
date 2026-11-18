@@ -15,7 +15,7 @@
 // claim is checkable against the source in context.
 
 import type { AtlasNode } from "../types";
-import { NO_OWNER, ownershipResolver, type Ownership } from "./mistakeOwnership";
+import { NO_OWNER, type Ownership } from "./mistakeOwnership";
 import type { SearchField } from "./reportFilter";
 
 export type MistakeSeverity = "high" | "medium" | "low";
@@ -144,7 +144,7 @@ export const STATUS_LABELS: Record<MistakeStatus, string> = {
 export function resolveMistakes(
   file: MistakesFile,
   docs: Record<string, AtlasNode>,
-  owner: (uuid: string | null) => Ownership | null = ownershipResolver(docs, null),
+  owner: (uuid: string) => Ownership = () => NO_OWNER,
 ): MistakeRow[] {
   const rows = file.findings.map((f): MistakeRow => {
     if (!f.uuid) return { ...f, ...NO_OWNER, status: "corpus", currentDocNo: "", title: "" };
@@ -152,7 +152,7 @@ export function resolveMistakes(
     if (!doc) return { ...f, ...NO_OWNER, status: "missing", currentDocNo: "", title: "" };
     return {
       ...f,
-      ...(owner(f.uuid) ?? NO_OWNER),
+      ...owner(f.uuid),
       status: doc.doc_no === f.docNo ? "current" : "renumbered",
       currentDocNo: doc.doc_no,
       title: doc.title,
@@ -210,4 +210,3 @@ export function presentCategories(rows: readonly MistakeRow[]): string[] {
   const extra = [...seen].filter((c) => !CATEGORIES.includes(c as MistakeCategory)).sort();
   return [...known, ...extra];
 }
-

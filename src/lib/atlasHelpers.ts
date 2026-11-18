@@ -33,6 +33,14 @@ export function scopeDocNo(docNo: string): string {
   return docNo.split(".").slice(0, 2).join(".");
 }
 
+/** The top-level doc above `id` by parentId — UUID identity, so it also places
+ *  NR-* docs, whose doc_no names no Scope. parentId always points shallower. */
+export function rootDoc(docs: Record<string, AtlasNode>, id: string): AtlasNode | null {
+  let cur = docs[id];
+  while (cur?.parentId && docs[cur.parentId]) cur = docs[cur.parentId];
+  return cur ?? null;
+}
+
 export function buildAncestors(
   docs: Record<string, AtlasNode>,
   docNoToId: Map<string, string>,

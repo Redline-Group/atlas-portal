@@ -113,7 +113,14 @@ describe("mistakesToCSV", () => {
   });
 
   it("carries the scope, agent and executor agent columns", () => {
-    const owner = () => ({ scope: "s", scopeLabel: "A.6 Agent", agent: "Spark", executor: "amatsu", executorLabel: "Amatsu" });
+    const owner = () => ({
+      scope: "s",
+      scopeLabel: "A.6 Agent",
+      agent: "Spark",
+      executor: "amatsu",
+      executorLabel: "Amatsu",
+      viaExecutor: true,
+    });
     const csv = mistakesToCSV(resolveMistakes(file([mistake()]), DOCS, owner));
     expect(csv.split("\r\n")[0]).toContain('"Status","Scope","Agent","Executor Agent"');
     expect(csv).toContain('"A.6 Agent","Spark","Amatsu"');
