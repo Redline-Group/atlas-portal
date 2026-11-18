@@ -149,7 +149,7 @@ Review calls on top of the reviewers' verdicts:
 | 126 | A.6.1.1.4.2.1.1.4 In Progress Invocations Directory | structural | Real, re-filed | re-filed as `naming` | A.6.1.1.4.2.1.1.4 duplicates the hub title 'In Progress Invocations Directory' (A.6.1.1.4.2.1.1.1.4); the parallel slot A.6.1.1.4.2.1.2.4 is 'In Progress Invocations'. Title-only defect. |
 | 127 | A.6.1.1.4.2.5.2.1.2.3 Morpho Instance Configuration Document Location | markdown | Real | kept | The link text in A.6.1.1.4.2.5.2.1.2.3 has no ' - ' separator; sibling documents A.6.1.1.4.2.5.2.1.2.1 and .2 use it. The links are in sibling documents, not the same one. |
 | 128 | A.6.1.1.4.2.5.2.2.1.2.1 Routine Protocol | xref | Real | kept, severity high | Euler is an Integration Boost Instance (A.6.1.1.4.2.5.2) but cites the Distribution Reward Near-Term Process A.2.2.9.1.2.1.3.3.1; Curve/Morpho siblings cite A.2.2.9.2.2.1.3.2.1. |
-| 129 | A.6.1.1.4.2.5.2.2.3.1.2 Integration Partner Reward Address | entity | Real | kept, severity low | Morpho (A.6.1.1.4.2.5.2.2.3.1.2) and Curve (A.6.1.1.4.2.5.2.2.2.1.2) list the identical partner reward address while every other Integration Partner Reward Address is unique; likely copy-paste, unverifiable from text. |
+| 129 | A.6.1.1.4.2.5.2.2.3.1.2 Integration Partner Reward Address | entity | Real → false positive (see addendum) | rejected | Morpho (A.6.1.1.4.2.5.2.2.3.1.2) and Curve (A.6.1.1.4.2.5.2.2.2.1.2) list the identical partner reward address while every other Integration Partner Reward Address is unique; likely copy-paste, unverifiable from text. |
 | 130 | A.6.1.1.4.2.5.2.4.1.3.1 Routine Protocol | xref | Real | kept, severity high | Compound Integration Boost Invocation cites Distribution Reward Near-Term Process A.2.2.9.1.2.1.3.3.1 instead of Integration Boost's A.2.2.9.2.2.1.3.2.1, as Curve/Morpho do. |
 | 131 | A.6.1.1.5.2.1.1.3 Completed Instances Directory | structural | Real, re-filed | re-filed as `naming` | A.6.1.1.5.2.1.1.3 holds Instances but is titled 'Completed Instances Directory', same as hub doc A.6.1.1.5.2.1.1.1.3; sibling A.6.1.1.5.2.1.2.3 is 'Completed Instances'. Title-only defect. |
 | 132 | A.6.1.1.5.2.6.1.2.1.1.1.2.1 Ethereum Mainnet | structural | Real | kept, severity high | Ethereum Mainnet container A.6.1.1.5.2.6.1.2.1.1.1.2.1 has no children; the ALM contract docs are its siblings .2.2-.2.7, unlike the Allocator side where .1.1 contains .1.1.1-.1.1.5. |
@@ -1377,7 +1377,7 @@ Near-Term Process · A.2.2.9.1.2.1.3.3.1:
 
 **Action:** kept, severity high.
 
-### 129. A.6.1.1.4.2.5.2.2.3.1.2 Integration Partner Reward Address — real
+### 129. A.6.1.1.4.2.5.2.2.3.1.2 Integration Partner Reward Address — false positive (see addendum)
 
 Sweep id `A.6.1.1.4.2.5.2.2.3.1.2#entity` (`b70f1003-1159-4d5b-b362-c37aa11403d3`), factual pass, category `entity`. Morpho (A.6.1.1.4.2.5.2.2.3.1.2) and Curve (A.6.1.1.4.2.5.2.2.2.1.2) list the identical partner reward address while every other Integration Partner Reward Address is unique; likely copy-paste, unverifiable from text.
 
@@ -1389,7 +1389,7 @@ Integration Partner Reward Address · A.6.1.1.4.2.5.2.2.2.1.2:
 
 > The reward address for the Curve Integration Boost is `0xa7843f843d29ca33ba48d9d1335b774eecc328dc`.
 
-**Action:** kept, severity low.
+**Action:** rejected on human review — see the addendum.
 
 ### 130. A.6.1.1.4.2.5.2.4.1.3.1 Routine Protocol — real
 
@@ -1602,3 +1602,9 @@ Completed Instances · A.6.1.1.8.2.1.2.3:
 > Completed Instances
 
 **Action:** re-filed as `naming`.
+
+---
+
+## Addendum — row 129 rejected on human review
+
+The reviewer kept row 129 as real at `low`, reading the shared address as likely copy-paste. On human review it is a false positive: the Morpho (A.6.1.1.4.2.5.2.2.3.1.2) and Curve (A.6.1.1.4.2.5.2.2.2.1.2) Integration Boost Instances name the same Integration Partner Reward Address because one address does receive the rewards for both integrations. Nothing in either Instance requires the address to be unique to one partner, so a shared address is not a defect. The row is moved to `rejected`, so a later sweep cannot re-add it while the quoted text is unchanged.
