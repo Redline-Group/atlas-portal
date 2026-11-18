@@ -2156,6 +2156,18 @@
       "fix": "Drop the Reward Code / Tracking Methodology fields here (they belong to the Distribution Reward version, A.2.2.9.1.2.3.6.4.1.2), or state where an Integration-Boost-only Integrator's Reward Code comes from."
     },
     {
+      "id": "A.2.2.10.1.1.1.2.2.7#contradiction",
+      "docNo": "A.2.2.10.1.1.1.2.2.7",
+      "uuid": "d823b872-fe99-4856-9096-55335357d55e",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "both are held by Sky Governance through the Prime Agent's SubProxy",
+      "issue": "The linked Default Admin Role (A.2.2.10.1.1.1.2.2.1) says it is held through the SubProxy on Ethereum Mainnet but through the Prime Agent's Executor on other networks, so 'through the Prime Agent's SubProxy' is only true on Mainnet.",
+      "fix": ""
+    },
+    {
       "id": "A.2.2.10.1.1.1.2.5.2.5.3.3#contradiction",
       "docNo": "A.2.2.10.1.1.1.2.5.2.5.3.3",
       "uuid": "3986fe17-e84d-407a-9192-61e6b842426a",
@@ -3124,6 +3136,18 @@
       "fix": "Title should be 'Completed Instances' (the sibling A.6.1.1.3.2.1.1.4 has the same problem, titled 'In Progress Invocations Directory' instead of 'In Progress Invocations')."
     },
     {
+      "id": "A.6.1.1.3.2.2.2.2.1.2.1.1#copy-paste",
+      "docNo": "A.6.1.1.3.2.2.2.2.1.2.1.1",
+      "uuid": "98f59541-8896-4e64-8e99-2b25e7791bf0",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "copy-paste",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
+      "issue": "\"Where the token-holding requirement applies\" refers to nothing: unlike Spark and Grove, the Keel artifact has no Nested Contributor exception, so this is residue of their template. Primes without the exception (Obex, Pattern, Osero, Launch Agent 7) state the proof requirement unconditionally.",
+      "fix": "The post must include cryptographic proof"
+    },
+    {
       "id": "A.6.1.1.3.2.3.2.2.1.2.1.3#contradiction",
       "docNo": "A.6.1.1.3.2.3.2.2.1.2.1.3",
       "uuid": "77ad2a49-8fa6-499b-bd26-b9fdef57fded",
@@ -3314,6 +3338,18 @@
       "quote": "##### A.6.1.1.4.2.1.1.4 - In Progress Invocations Directory [Core] <!-- UUID: 58ddd7d7-28af-4ca3-ac6a-f5d2105f9e79 -->",
       "issue": "Same defect as the sibling above: the Invocation container at this position is titled as the hub Directory document (duplicating A.6.1.1.4.2.1.1.1.4's title within the same Primitive), whereas A.6.1.1.4.2.1.2.4, A.6.1.1.4.2.1.3.4 and A.6.1.1.4.2.1.4.4 are all titled 'In Progress Invocations'.",
       "fix": "Rename to 'In Progress Invocations'."
+    },
+    {
+      "id": "A.6.1.1.4.2.2.2.2.1.2.1.1#copy-paste",
+      "docNo": "A.6.1.1.4.2.2.2.2.1.2.1.1",
+      "uuid": "f57f157c-c260-4671-8150-01acabcd286d",
+      "file": "A.6.1.1.4 - Skybase.md",
+      "category": "copy-paste",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
+      "issue": "\"Where the token-holding requirement applies\" refers to nothing: unlike Spark and Grove, the Skybase artifact has no Nested Contributor exception, so this is residue of their template. Primes without the exception (Obex, Pattern, Osero, Launch Agent 7) state the proof requirement unconditionally.",
+      "fix": "The post must include cryptographic proof"
     },
     {
       "id": "A.6.1.1.4.2.3.2.2.1.2.1.3#contradiction",
@@ -3700,18 +3736,6 @@
       "fix": ""
     },
     {
-      "id": "A.2.2.10.1.1.1.2.2.7#contradiction",
-      "docNo": "A.2.2.10.1.1.1.2.2.7",
-      "uuid": "d823b872-fe99-4856-9096-55335357d55e",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "contradiction",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "both are held by Sky Governance through the Prime Agent's SubProxy",
-      "issue": "The linked Default Admin Role (A.2.2.10.1.1.1.2.2.1) says it is held through the SubProxy on Ethereum Mainnet but through the Prime Agent's Executor on other networks, so 'through the Prime Agent's SubProxy' is only true on Mainnet.",
-      "fix": ""
-    },
-    {
       "id": "A.2.2.10.1.1.1.2.3.1.2.20.1#numeric",
       "docNo": "A.2.2.10.1.1.1.2.3.1.2.20.1",
       "uuid": "d9b04eda-c204-4bac-a2ec-7af1f9d0dd9c",
@@ -3892,18 +3916,6 @@
       "fix": ""
     },
     {
-      "id": "A.6.1.1.1.2.2.2.2.1.2.1.1#contradiction",
-      "docNo": "A.6.1.1.1.2.2.2.2.1.2.1.1",
-      "uuid": "c9f7cc6e-0548-4599-9f9d-bfa1d2bb7577",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "contradiction",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
-      "issue": "The document states unconditionally that a submitter must hold at least 1% of the total token supply, yet later treats the token-holding requirement as conditional (\"Where ... applies\"), without saying when it does not apply.",
-      "fix": ""
-    },
-    {
       "id": "A.6.1.1.1.2.2.2.2.1.2.1.4#xref",
       "docNo": "A.6.1.1.1.2.2.2.2.1.2.1.4",
       "uuid": "a9cecbeb-6f07-46fa-b5ad-68dd8ae4b0f0",
@@ -4012,18 +4024,6 @@
       "fix": ""
     },
     {
-      "id": "A.6.1.1.1.2.6.1.2.2.1.1.3#contradiction",
-      "docNo": "A.6.1.1.1.2.6.1.2.2.1.1.3",
-      "uuid": "846e460d-db29-4ad0-82f7-5174fcb9b195",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "contradiction",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "ALM Controller contracts are accessed and modified via the Relayer Role.",
-      "issue": "Controller configuration such as `setMintRecipient` is restricted to `DEFAULT_ADMIN_ROLE` (A.6.1.1.1.2.6.1.2.2.1.2.1.1.1, A.6.1.1.1.2.6.1.2.2.1.2.2.1.1), so saying the controllers are modified via the Relayer Role conflicts with those documents; the Relayer only calls operational functions.",
-      "fix": "ALM Controller contracts are accessed via the Relayer Role and configured via the Default Admin Role."
-    },
-    {
       "id": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3#entity",
       "docNo": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3",
       "uuid": "8efbce12-9417-4ab7-9e55-6194ee592bd4",
@@ -4106,18 +4106,6 @@
       "quote": "For detailed logic specific for this instance",
       "issue": "Wrong preposition; 'specific to' is the correct collocation.",
       "fix": "For detailed logic specific to this instance"
-    },
-    {
-      "id": "A.6.1.1.1.3.2.1.1.2.1.18#contradiction",
-      "docNo": "A.6.1.1.1.3.2.1.1.2.1.18",
-      "uuid": "5e05e5d8-8477-460f-a197-4b49bfa8652f",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "contradiction",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "- Collateral: Yes",
-      "issue": "pyUSD has LTV 0% and Liquidation Threshold 0%, yet is listed as Collateral: Yes; sibling stablecoins with the same 0%/0% settings (USDG, RLUSD) are listed as Collateral: No. pyUSD also omits the Flash Loan Enabled line its siblings carry.",
-      "fix": ""
     },
     {
       "id": "A.6.1.1.1.3.4.2.2.2#naming",
@@ -4298,18 +4286,6 @@
       "quote": "A complete freeze prevents any movement of funds within the Controller",
       "issue": "This is the Reallocation Freeze document (status Frozen), but the sentence describes a \"complete freeze\", wording carried over from the sibling Full Freeze document.",
       "fix": "A reallocation freeze prevents any movement of funds within the Controller"
-    },
-    {
-      "id": "A.6.1.1.4.2.2.2.2.1.2.1.1#contradiction",
-      "docNo": "A.6.1.1.4.2.2.2.2.1.2.1.1",
-      "uuid": "f57f157c-c260-4671-8150-01acabcd286d",
-      "file": "A.6.1.1.4 - Skybase.md",
-      "category": "contradiction",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
-      "issue": "The document states unconditionally that a submitter must hold at least 1% of supply, yet this sentence implies the requirement only sometimes applies; sibling Prime documents (Obex, Pattern, Osero, Launch Agent 7) state the proof requirement unconditionally.",
-      "fix": "The post must include cryptographic proof"
     },
     {
       "id": "A.6.1.1.5.2.6.1.3.1.1.1.2.4.1#naming",
@@ -4994,6 +4970,51 @@
       "rejectedReason": "\"subdocuments\" vs \"documents\" for the same containment relation. Cosmetic.",
       "rejectedOn": "2026-09-16",
       "rejectedIn": "docs/reviews/2026-09-16-corpus-detector-vetoes.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.2.2.2.1.2.1.1#contradiction",
+      "docNo": "A.6.1.1.1.2.2.2.2.1.2.1.1",
+      "uuid": "c9f7cc6e-0548-4599-9f9d-bfa1d2bb7577",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "contradiction",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
+      "issue": "The document states unconditionally that a submitter must hold at least 1% of the total token supply, yet later treats the token-holding requirement as conditional (\"Where ... applies\"), without saying when it does not apply.",
+      "fix": "",
+      "rejectedReason": "The conditional refers to the Nested Contributor exception on the child A.6.1.1.1.2.2.2.2.1.2.1.1.1 — a general rule with a named exception, not a clash.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.3.2.1.1.2.1.18#contradiction",
+      "docNo": "A.6.1.1.1.3.2.1.1.2.1.18",
+      "uuid": "5e05e5d8-8477-460f-a197-4b49bfa8652f",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "contradiction",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "- Collateral: Yes",
+      "issue": "pyUSD has LTV 0% and Liquidation Threshold 0%, yet is listed as Collateral: Yes; sibling stablecoins with the same 0%/0% settings (USDG, RLUSD) are listed as Collateral: No. pyUSD also omits the Flash Loan Enabled line its siblings carry.",
+      "fix": "",
+      "rejectedReason": "USDS (A.6.1.1.1.3.2.1.1.2.1.3) is also 0%/0% with Collateral: Yes, and cbBTC/sUSDS also omit the Flash Loan line; the text sets no rule pyUSD breaks.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.2.2.1.1.3#contradiction",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.1.1.3",
+      "uuid": "846e460d-db29-4ad0-82f7-5174fcb9b195",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "contradiction",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "ALM Controller contracts are accessed and modified via the Relayer Role.",
+      "issue": "Controller configuration such as `setMintRecipient` is restricted to `DEFAULT_ADMIN_ROLE` (A.6.1.1.1.2.6.1.2.2.1.2.1.1.1, A.6.1.1.1.2.6.1.2.2.1.2.2.1.1), so saying the controllers are modified via the Relayer Role conflicts with those documents; the Relayer only calls operational functions.",
+      "fix": "ALM Controller contracts are accessed via the Relayer Role and configured via the Default Admin Role.",
+      "rejectedReason": "General operational sentence beside the Default Admin Role (A.6.1.1.1.2.6.1.2.2.1.1.1), which covers admin functions; loose wording, not incompatible rules.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
     }
   ]
 }
