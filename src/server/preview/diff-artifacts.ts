@@ -79,8 +79,8 @@ function ownChanges(d: SnapshotDiff, head: Snapshot, live: Snapshot | undefined)
 /** Listed docs main has also moved on since the fork: one the branch changes
  *  or removes that live main has since edited or deleted, or one the branch
  *  adds whose UUID main has since added too. The redline shows only the
- *  branch's own edits, so this is what says the document on main is no longer
- *  the one the redline starts from. */
+ *  branch's own edits, so this flag is what tells the reader that main's
+ *  current text differs from the redline's old side. */
 function mainAlsoChanged(ids: string[], base: Snapshot, live: Snapshot): string[] {
   return ids.filter((id) => {
     const b = base.get(id);
