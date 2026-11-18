@@ -8,7 +8,8 @@ import { useDocumentTitle } from "./useDocumentTitle";
 import { loadGraph, type GraphData } from "../lib/graph";
 import { buildOwningAgentMap } from "../lib/owningAgent";
 import { useDataSource } from "../lib/dataSource";
-import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
+import { usePreviewDiff } from "../lib/previewDiff";
+import { ancestorsWithRemoved } from "../lib/previewRemoved";
 
 // The graph loads from the same data-source base as the atlas bundle (the
 // preview bundle in preview), so its entity ids resolve against the docs being
@@ -35,10 +36,8 @@ export function useAtlasView(id: string, onNavigate: (id: string) => void) {
   useDocViewTracking(data?.atlas ?? null, id, graph);
   const docTitle = id ? data?.atlas.docs[id]?.title : null;
   useDocumentTitle(docTitle ? `${docTitle} — Redline Portal` : null);
-  const ancestors = useMemo(
-    () => (data && id ? buildAncestorsWithSelf(data.atlas.docs, data.atlas.docNoToId, id) : []),
-    [data, id],
-  );
+  const { removedDocs } = usePreviewDiff();
+  const ancestors = useMemo(() => (data && id ? ancestorsWithRemoved(data.atlas, id, removedDocs) : []), [data, id, removedDocs]);
   const agentByDoc = useMemo(() => (data ? buildOwningAgentMap(data.atlas, graph) : null), [data, graph]);
   return { ...load, ...selection, annotations, ancestors, agentByDoc };
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { withRemovedDocs } from "./previewRemoved";
+import { ancestorsWithRemoved, withRemovedDocs } from "./previewRemoved";
 import type { AtlasBundle } from "./docs";
 import type { AtlasNode } from "@/types";
 import type { RemovedDoc } from "@/lib/previewPatch";
@@ -54,5 +54,14 @@ describe("withRemovedDocs", () => {
     const out = withRemovedDocs(b, [gone("z", "deep-parent", null), gone("b", "p", "a")]);
     expect(out.docs.z).toBeUndefined();
     expect(out.docNoToId.has("A.b")).toBe(false);
+  });
+
+  it("gives a removed doc breadcrumbs by where it was placed, not by its old doc number", () => {
+    // "A.b" would otherwise resolve to whatever the preview numbers A.b now.
+    const kept = bundle([node("p", null, 0), node("q", "p", 1)]);
+    const removed = [gone("x", "q", null), gone("y", "x", null)];
+    const out = withRemovedDocs(kept, removed);
+    expect(ancestorsWithRemoved(out, "y", removed).map((n) => n.id)).toEqual(["q", "x", "y"]);
+    expect(ancestorsWithRemoved(out, "q", removed).at(-1)!.id).toBe("q");
   });
 });

@@ -10,6 +10,7 @@ import type { AtlasBundle } from "./docs";
 import type { AtlasNode } from "@/types";
 import type { RemovedDoc } from "@/lib/previewPatch";
 import { cmpDocNo } from "@/lib/docNo";
+import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
 
 function toNode(d: RemovedDoc, order: number): AtlasNode {
   return {
@@ -65,4 +66,17 @@ export function withRemovedDocs(bundle: AtlasBundle, removed: readonly RemovedDo
     placed = waiting.length < before;
   }
   return { ...bundle, docs, byParent };
+}
+
+/** Breadcrumbs, self last. A removed document's old doc number would resolve
+ *  against the preview's numbering and name other documents, so its chain
+ *  follows where it was placed instead: its nearest kept ancestor's usual
+ *  chain, then the removed documents down to it. */
+export function ancestorsWithRemoved(bundle: AtlasBundle, id: string, removed: readonly RemovedDoc[] | undefined): AtlasNode[] {
+  const byId = new Map((removed ?? []).map((d) => [d.id, d]));
+  if (!byId.has(id)) return buildAncestorsWithSelf(bundle.docs, bundle.docNoToId, id);
+  const chain: AtlasNode[] = [];
+  let cur: string | null = id;
+  for (; cur && byId.has(cur); cur = byId.get(cur)!.parentId) if (bundle.docs[cur]) chain.unshift(bundle.docs[cur]);
+  return cur ? [...buildAncestorsWithSelf(bundle.docs, bundle.docNoToId, cur), ...chain] : chain;
 }
