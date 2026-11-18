@@ -60,6 +60,21 @@ describe("computeDiffArtifacts: what counts as a change", () => {
     expect(diff.alreadyOnMain).toEqual([ID1]);
   });
 
+  test("flags listed docs main has also changed since the fork: edited, deleted, or added under the same UUID", () => {
+    const ID4 = "00000000-0000-4000-8000-000000000004";
+    const base = snap([doc(ID1, "A.1", "fork"), doc(ID2, "A.2", "fork"), doc(ID3, "A.3", "fork")]);
+    const live = snap([doc(ID1, "A.1", "main moved on"), doc(ID3, "A.3", "fork"), doc(ID4, "A.4", "main's copy")]);
+    const head = snap([doc(ID1, "A.1", "branch"), doc(ID2, "A.2", "branch"), doc(ID3, "A.3", "branch"), doc(ID4, "A.4", "branch's copy")]);
+    const { diff } = computeDiffArtifacts(base, head, live);
+    expect(diff.changed.sort()).toEqual([ID1, ID2, ID3].sort());
+    // ID1 edited on main, ID2 deleted on main, ID4 added on main too; ID3 untouched on main.
+    expect(diff.mainAlsoChanged!.sort()).toEqual([ID1, ID2, ID4].sort());
+  });
+
+  test("without live, nothing is flagged as also changed on main", () => {
+    expect(computeDiffArtifacts(snap([doc(ID1, "A.1", "old")]), snap([doc(ID1, "A.1", "new")])).diff.mainAlsoChanged).toBeUndefined();
+  });
+
   test("without live, nothing is listed as already on main", () => {
     expect(computeDiffArtifacts(snap([doc(ID1, "A.1", "old")]), snap([doc(ID1, "A.1", "new")])).diff.alreadyOnMain).toBeUndefined();
   });

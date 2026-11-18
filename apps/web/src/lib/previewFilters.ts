@@ -15,7 +15,7 @@ import type { PreviewDiff } from "./previewDiff";
 // "Renumber-only changes" is one, so the doc-number-only changes Edited counts
 // can be hidden.
 
-export const PREVIEW_FILTER_IDS = ["new", "edited", "removed", "no-renumbered", "retitled", "identity-swap", "reused-slot"] as const;
+export const PREVIEW_FILTER_IDS = ["new", "edited", "removed", "no-renumbered", "retitled", "identity-swap", "reused-slot", "main-also-changed"] as const;
 export type PreviewFilterId = (typeof PREVIEW_FILTER_IDS)[number];
 
 export const PREVIEW_FILTER_GROUPS = [
@@ -87,6 +87,14 @@ export const PREVIEW_FILTERS: readonly PreviewFilterDef[] = [
     glyph: "#",
     description: "A new document at a doc number another document held",
     ids: (d) => keys(d.reusedSlot),
+  },
+  {
+    id: "main-also-changed",
+    group: "flag",
+    label: "Main also changed",
+    glyph: "≠",
+    description: "Main has changed the document since the branch was cut",
+    ids: (d) => d.mainAlsoChanged ?? null,
   },
 ];
 

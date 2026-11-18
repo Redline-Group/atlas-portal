@@ -40,6 +40,10 @@ export interface PreviewDiff {
    *  not marked as changes. Absent when the build applied no such rule (a
    *  merged PR, a repo base) or predates it. */
   alreadyOnMain?: Set<string>;
+  /** Listed docs main has also changed since the branch was cut, so main's
+   *  version may differ from the redline's old side. Absent when the build
+   *  applied no live-main rule. */
+  mainAlsoChanged?: Set<string>;
   renumbered: Record<string, [string, string]>;
   /** Changed docs whose only change is the doc number. Absent on bundles
    *  built before the build recorded it. */

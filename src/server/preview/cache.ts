@@ -100,6 +100,9 @@ export interface BaseCandidateMeta {
   repo: string;
   ref: string;
   mergeBase: string;
+  /** The merge-base commit's committer date (ISO 8601), from the same compare.
+   *  Absent when the compare gave none. */
+  mergeBaseDate?: string;
   /** From GitHub's compare of the base ref vs the head (commits the head adds /
    *  commits on the base the head lacks). Absent when the compare gave none. */
   aheadBy?: number;

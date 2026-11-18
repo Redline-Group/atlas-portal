@@ -3,6 +3,7 @@ import { isReassigned } from "../../lib/identitySwap";
 import { diffBaseLabel, type PreviewMeta } from "../../lib/previewMetaCopy";
 import { CHANGE_LABEL } from "@/lib/changeTypes";
 import { DocNoDiff, TypeDiff } from "./ChangePair";
+import { MAIN_ALSO_CHANGED } from "../preview/PreviewMainAlsoChanged";
 
 // The ⚠ glyph renders small for its weight next to 11px mono — size it up 25%.
 export const WARN_GLYPH = { fontSize: "1.25em" };
@@ -57,6 +58,11 @@ export function PreviewChangeNotes({ nodeId, meta, source, hasPatch, status }: P
       {retype && (
         <p className="mt-1" style={{ color: "var(--lilac)" }}>
           {CHANGE_LABEL.retyped} <TypeDiff prev={retype[0]} next={retype[1]} />
+        </p>
+      )}
+      {diff.mainAlsoChanged?.has(nodeId) && (
+        <p className="mt-1" style={{ color: "var(--tan-3)" }}>
+          ≠ {MAIN_ALSO_CHANGED}
         </p>
       )}
       {silent && (

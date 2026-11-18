@@ -9,6 +9,8 @@ export interface BaseCandidateMeta {
   repo: string;
   ref: string;
   mergeBase: string;
+  /** The merge-base commit's date (ISO 8601). Absent on older bundles. */
+  mergeBaseDate?: string;
   aheadBy?: number;
   behindBy?: number;
 }

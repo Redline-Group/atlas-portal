@@ -2,10 +2,12 @@ import type { ComponentProps } from "react";
 import { useLocation, useSearch } from "wouter";
 import { useDataSource } from "../../lib/dataSource";
 import { usePreviewDiff } from "../../lib/previewDiff";
-import { baseSwitch, compareParts, type PreviewMeta } from "../../lib/previewMetaCopy";
+import { baseSwitch, compareParts, forkPoint, type PreviewMeta } from "../../lib/previewMetaCopy";
+import { timeAgo } from "../../lib/timeAgo";
 import { Link } from "../Link";
 
-// "Comparing <ref> — <PR title> to <base> · <state>", and the link that swaps
+// "Comparing <ref> — <PR title> to <base> where this branch left it (<sha>,
+// <when>) · <state>", and the link that swaps
 // the base it is compared against. Both read the resolved base themselves, so
 // the banner hands them nothing but the bundle's meta.
 
@@ -25,6 +27,9 @@ export function PreviewCompareStatement({ meta, ...props }: PreviewCompareStatem
   // name the preview by its id instead.
   const id = head || title ? "" : preview?.id ?? "";
   const state = meta?.prState && meta.prState !== "open" ? meta.prState : "";
+  // Redlines compare to the base as the branch left it, not as it is now: say which commit, and when.
+  const fork = meta && base ? forkPoint(meta, activeBase ?? null) : null;
+  const when = fork?.date ? `, ${timeAgo(Date.parse(fork.date))}` : "";
   return (
     <span {...props}>
       {"Comparing "}
@@ -37,6 +42,13 @@ export function PreviewCompareStatement({ meta, ...props }: PreviewCompareStatem
           {" to "}
           <em className="italic">{base}</em>
         </>
+      ) : null}
+      {fork ? (
+        <span title={fork.date ? `Merge base ${fork.sha}, committed ${new Date(fork.date).toUTCString()}` : `Merge base ${fork.sha}`}>
+          {" where this branch left it ("}
+          <span className="mono">{fork.sha}</span>
+          {`${when})`}
+        </span>
       ) : null}
       {state ? ` · ${state}` : null}
     </span>

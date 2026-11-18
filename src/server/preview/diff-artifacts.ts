@@ -44,6 +44,9 @@ export interface PreviewDiffJson {
   /** Docs the branch changed whose change live main already has, so they are
    *  not listed above. Absent when no live-main rule applied. */
   alreadyOnMain?: string[];
+  /** Listed docs that main has also changed since the branch was cut (see
+   *  mainAlsoChanged). Absent when no live-main rule applied. */
+  mainAlsoChanged?: string[];
   reusedSlot: Record<string, { title: string; movedTo?: string }>;
   identitySwap: Record<string, IdentitySwap>;
   formerUuid: Record<string, FormerUuid>;
@@ -71,6 +74,20 @@ function ownChanges(d: SnapshotDiff, head: Snapshot, live: Snapshot | undefined)
   const all = [...d.added, ...d.changed, ...d.removed];
   const keptIds = new Set([...kept.added, ...kept.changed, ...kept.removed]);
   return { ...kept, alreadyOnMain: all.filter((id) => !keptIds.has(id)) };
+}
+
+/** Listed docs main has also moved on since the fork: one the branch changes
+ *  or removes that live main has since edited or deleted, or one the branch
+ *  adds whose UUID main has since added too. The redline shows only the
+ *  branch's own edits, so this is what says the document on main is no longer
+ *  the one the redline starts from. */
+function mainAlsoChanged(ids: string[], base: Snapshot, live: Snapshot): string[] {
+  return ids.filter((id) => {
+    const b = base.get(id);
+    const l = live.get(id);
+    if (!b) return !!l;
+    return !l || docDiffers(b, l);
+  });
 }
 
 function headingChanges(changed: string[], base: Snapshot, head: Snapshot) {
@@ -124,6 +141,7 @@ export function computeDiffArtifacts(base: Snapshot, head: Snapshot, live?: Snap
     identitySwap,
     formerUuid,
     ...(alreadyOnMain ? { alreadyOnMain } : {}),
+    ...(live ? { mainAlsoChanged: mainAlsoChanged([...added, ...changed, ...removed], base, live) } : {}),
   };
   return { diff, before: beforeEntries(changed, base, head), removed: removedDocs(removed, base, head) };
 }

@@ -17,6 +17,16 @@ export type {
 export { broadGrantCopy, pullsPermissionCopy, type BannerNotice } from "./previewNoticeCopy";
 export { dismissAccessRepo, readDismissedAccessRepos } from "./previewAccessDismissed";
 
+/** Where the branch left the base it is compared to: the merge-base commit
+ *  (short) and its date. Null for the live-main fallback, which compares to
+ *  main as it is now, and for a bundle that recorded no merge base. */
+export function forkPoint(meta: PreviewMeta, active: ActiveBase | null): { sha: string; date?: string } | null {
+  const key = active?.key ?? meta.bases?.auto ?? null;
+  if (key !== "sky" && key !== "repo") return null;
+  const cand = meta.bases?.[key];
+  return cand?.mergeBase ? { sha: cand.mergeBase.slice(0, 7), date: cand.mergeBaseDate } : null;
+}
+
 /** The PR number digits in a `pull-N` ref (a Contents-only private PR), else null. */
 function pullRefDigits(ref: string | undefined): string | null {
   return ref?.match(/^pull-(\d+)$/)?.[1] ?? null;

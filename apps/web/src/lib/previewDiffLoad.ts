@@ -43,6 +43,7 @@ function diffFromDoc(d: Record<string, unknown>, activeBase: ActiveBase | null):
     changed: ids(d.changed),
     removed: d.removed ? ids(d.removed) : undefined,
     alreadyOnMain: d.alreadyOnMain ? ids(d.alreadyOnMain) : undefined,
+    mainAlsoChanged: d.mainAlsoChanged ? ids(d.mainAlsoChanged) : undefined,
     renumbered: (d.renumbered as PreviewDiff["renumbered"]) ?? {},
     renumberedOnly: d.renumberedOnly ? new Set<string>(d.renumberedOnly as string[]) : undefined,
     retitled: (d.retitled as PreviewDiff["retitled"]) ?? {},

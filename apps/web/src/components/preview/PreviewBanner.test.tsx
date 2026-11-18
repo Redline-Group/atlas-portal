@@ -228,6 +228,8 @@ describe("PreviewBanner", () => {
       expect(screen.getByText(/^Comparing/)).toHaveTextContent("Comparing main to acme/fork:main"),
     );
     expect(screen.getByText("acme/fork:main").tagName).toBe("EM");
+    // The redline's base is where the branch left main, not main today: the banner names that commit.
+    expect(screen.getByText(/^Comparing/)).toHaveTextContent("acme/fork:main where this branch left it (y)");
     expect(screen.queryByText(/redlined against/)).toBeNull();
     expect(screen.queryByText(/docs differ/)).toBeNull();
   });
