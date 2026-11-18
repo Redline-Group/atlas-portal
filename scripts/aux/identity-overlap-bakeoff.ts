@@ -1,7 +1,7 @@
 // Which measure decides "this uuid now holds a DIFFERENT document" for a SHORT
 // atlas body? Offline bakeoff behind REPLACE_MAX_WORD_OVERLAP in
 // src/server/preview/identity-body.ts. Not on the `pnpm build` chain — it needs the
-// network (live docs.json + a preview's diff/patches).
+// network (live docs.json + a preview's diff, before.json and docs.json).
 //
 //   bun scripts/aux/identity-overlap-bakeoff.ts [--preview-sha <sha>] [--tern] [--qwen]
 //
@@ -127,23 +127,6 @@ async function getJson<T>(path: string): Promise<T> {
   return (await r.json()) as T;
 }
 
-/** Reconstruct (before, after) from a rendered DiffLine[] patch. */
-function sides(dl: any[]): [string, string] {
-  const a: string[] = [], b: string[] = [];
-  for (const l of dl) {
-    if (l[0] === "…") continue;
-    if (l[0] === "=") { a.push(l[1]); b.push(l[1]); }
-    else if (l[0] === "-") a.push(l[1]);
-    else if (l[0] === "+") b.push(l[1]);
-    else if (l[0] === "~") {
-      let x = "", y = "";
-      for (const [op, t] of l[1]) { if (op !== "+") x += t; if (op !== "-") y += t; }
-      a.push(x); b.push(y);
-    }
-  }
-  return [a.join("\n"), b.join("\n")];
-}
-
 // Deterministic PRNG so a re-run reproduces the published numbers.
 let seed = 7;
 const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
@@ -198,7 +181,14 @@ const main = async () => {
   const docs = (await getJson<{ nodes: Record<string, any> }>("/docs.json")).nodes;
   buildDf(Object.values(docs).map((n: any) => String(n.content ?? "")));
   const diff = await getJson<{ changed: string[]; identitySwap: Record<string, unknown> }>(`/api/preview/${PREVIEW_SHA}/diff.json`);
-  const patches = await getJson<Record<string, any[]>>(`/api/preview/${PREVIEW_SHA}/patches.json`);
+  // Each changed doc's body on the diff base (before.json leaves it out when unchanged) and in the preview.
+  const before = await getJson<Record<string, { content?: string }>>(`/api/preview/${PREVIEW_SHA}/before.json`);
+  const head = (await getJson<{ nodes: Record<string, any> }>(`/api/preview/${PREVIEW_SHA}/docs.json`)).nodes;
+  const bodies = (id: string): [string, string] => {
+    const now = String(head[id]?.content ?? "");
+    return [before[id]?.content ?? now, now];
+  };
+  const edited = (id: string) => !!before[id] && bodies(id)[0] !== bodies(id)[1];
 
   // The class at risk: a single-line body long enough to carry signal. Capped
   // at 120 words so the population is ordinary prose, not an inlined table.
@@ -211,7 +201,7 @@ const main = async () => {
   const FILLER = ["updated", "revised", "current", "applicable", "designated", "relevant", "must", "is", "shall", "may"];
   const substitute = (t: string, rate: number) => t.split(" ").map((w) => (rnd() < rate ? pick(FILLER) : w)).join(" ");
 
-  const realEdits = diff.changed.filter((id) => patches[id]).map((id) => score(...sides(patches[id])));
+  const realEdits = diff.changed.filter(edited).map((id) => score(...bodies(id)));
   const synthetic: [string, Row[]][] = [0.05, 0.1, 0.2, 0.3].map((rate) => [
     `substitution ${Math.round(rate * 100)}% of words`,
     Array.from({ length: 400 }, () => { const n = pick(oneLiners); return score(n.content, substitute(n.content, rate)); }),
@@ -224,7 +214,7 @@ const main = async () => {
 
   const neg = [...realEdits, ...synthetic.flatMap(([, r]) => r)];
   const pos = [...unrelated, ...siblings];
-  const badged = Object.keys(diff.identitySwap).filter((id) => patches[id]).map((id) => [id, score(...sides(patches[id]))] as const);
+  const badged = Object.keys(diff.identitySwap).filter(edited).map((id) => [id, score(...bodies(id))] as const);
 
   // Embed every distinct body once, then fill the qwen column.
   const all = [...neg, ...pos, ...badged.map(([, r]) => r)];

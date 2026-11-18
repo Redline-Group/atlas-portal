@@ -9,6 +9,7 @@ import { createCache } from "../ttl-cache.ts";
 import type { DiffLine, WordSegment } from "../../lib/history";
 import { previewPaths } from "./cache.ts";
 import type { PreviewDiffJson } from "./diff-artifacts.ts";
+import { previewPatch, type BeforeEntry, type RemovedDoc } from "../../lib/previewPatch.ts";
 
 export interface PreviewDocs {
   byId: Map<string, AtlasNode>;
@@ -49,8 +50,37 @@ export function loadPreviewDocs(sha: string): PreviewDocs {
 
 export const readPreviewDiff = (sha: string): PreviewDiffJson | null => readJson<PreviewDiffJson>(sha, "diff.json");
 
-export const readPreviewPatches = (sha: string): Record<string, DiffLine[]> =>
-  readJson<Record<string, DiffLine[]>>(sha, "patches.json") ?? {};
+/** The old side of the auto diff: each changed document's base fields and each removed document. */
+export interface PreviewOldSide {
+  before: Record<string, BeforeEntry>;
+  removed: Map<string, RemovedDoc>;
+}
+
+export function readPreviewOldSide(sha: string): PreviewOldSide {
+  const removed = readJson<RemovedDoc[]>(sha, "removed.json") ?? [];
+  return { before: readJson<Record<string, BeforeEntry>>(sha, "before.json") ?? {}, removed: new Map(removed.map((d) => [d.id, d])) };
+}
+
+/** One document's redline, built the way the reader builds it (src/lib/previewPatch.ts). */
+export function previewPatchFor(
+  id: string,
+  kind: "added" | "changed" | "removed",
+  diff: PreviewDiffJson,
+  docs: PreviewDocs,
+  old: PreviewOldSide,
+): DiffLine[] {
+  const previousId = diff.formerUuid[id]?.previousId;
+  return previewPatch({
+    id,
+    kind,
+    doc: docs.byId.get(id),
+    before: old.before,
+    removed: old.removed.get(id),
+    previousId,
+    previousDoc: previousId ? docs.byId.get(previousId) : undefined,
+    corroboratedSwap: !!diff.identitySwap[id]?.movedTo,
+  });
+}
 
 /** A patch as plain text lines a model reads: "+ added", "- removed", "…" for
  *  a run of unchanged lines between two changes (a patch carries the whole

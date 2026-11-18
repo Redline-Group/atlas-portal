@@ -10,7 +10,7 @@ vi.mock("./dataSource", () => ({ useDataSource: vi.fn() }));
 vi.mock("./previewDiff", () => ({ usePreviewDiff: vi.fn() }));
 vi.mock("./previewView", () => ({ usePreviewView: vi.fn() }));
 
-import { usePreviewChangedSet, usePreviewDim } from "./previewFilter";
+import { REMOVED_OPACITY, usePreviewChangedSet, usePreviewDim, usePreviewFade } from "./previewFilter";
 import { useDataSource } from "./dataSource";
 import { usePreviewDiff } from "./previewDiff";
 import { usePreviewView } from "./previewView";
@@ -24,12 +24,14 @@ function configure({
   onlyChanged = false,
   added = [] as string[],
   changed = [] as string[],
+  removed = [] as string[],
 }) {
   mockSource.mockReturnValue({ base: "/b/", preview: preview ? { id: "p", sha: "s" } : null });
   mockView.mockReturnValue({ onlyChanged, changeFilters: [] } as unknown as ReturnType<typeof usePreviewView>);
   mockDiff.mockReturnValue({
     added: new Set(added),
     changed: new Set(changed),
+    removed: new Set(removed),
     renumbered: {},
     retitled: {},
     retyped: {},
@@ -85,5 +87,30 @@ describe("usePreviewDim", () => {
   it("dims an untouched doc in preview mode", () => {
     configure({ preview: true, added: ["a"], changed: ["b"] });
     expect(renderHook(() => usePreviewDim("untouched")).result.current).toBe(true);
+  });
+});
+
+describe("usePreviewFade", () => {
+  it("is full strength outside preview", () => {
+    configure({ preview: false, removed: ["r"] });
+    expect(renderHook(() => usePreviewFade("r", 0.9)).result.current).toBeUndefined();
+  });
+
+  it("draws a removed doc faint, selected or not", () => {
+    configure({ preview: true, removed: ["r"] });
+    expect(renderHook(() => usePreviewFade("r", 0.9)).result.current).toBe(REMOVED_OPACITY);
+    expect(renderHook(() => usePreviewFade("r", 0.9, true)).result.current).toBe(REMOVED_OPACITY);
+  });
+
+  it("dims an untouched doc unless it is selected, and leaves a change at full strength", () => {
+    configure({ preview: true, added: ["a"] });
+    expect(renderHook(() => usePreviewFade("u", 0.9)).result.current).toBe(0.9);
+    expect(renderHook(() => usePreviewFade("u", 0.9, true)).result.current).toBeUndefined();
+    expect(renderHook(() => usePreviewFade("a", 0.9)).result.current).toBeUndefined();
+  });
+
+  it("counts removed docs in the changed-only set", () => {
+    configure({ preview: true, onlyChanged: true, added: ["a"], removed: ["r"] });
+    expect([...renderHook(() => usePreviewChangedSet()).result.current!].sort()).toEqual(["a", "r"]);
   });
 });

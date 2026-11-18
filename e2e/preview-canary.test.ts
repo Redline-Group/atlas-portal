@@ -120,7 +120,7 @@ describe("isPreviewDiffResponse", () => {
 
   it("ignores other preview artifacts and unknown keyed names", () => {
     expect(isPreviewDiffResponse(resp(`${host}/meta.json`, 200))).toBe(false);
-    expect(isPreviewDiffResponse(resp(`${host}/patches.json`, 200))).toBe(false);
+    expect(isPreviewDiffResponse(resp(`${host}/before.json`, 200))).toBe(false);
     expect(isPreviewDiffResponse(resp(`${host}/diff.auto.json`, 200))).toBe(false);
     expect(isPreviewDiffResponse(resp(`${host}/docs.json`, 200))).toBe(false);
   });

@@ -12,7 +12,7 @@ interface PreviewChangeNotesProps {
   meta: PreviewMeta | null;
   source: string;
   hasPatch: boolean;
-  status: "Added" | "Changed";
+  status: "Added" | "Changed" | "Removed";
 }
 
 /** What the preview diff says about one doc's identity, number and title. */
@@ -24,7 +24,7 @@ function docChanges(diff: PreviewDiff, nodeId: string) {
     former: diff.formerUuid[nodeId],
     // A changed doc that moved: same UUID, new doc number ([live, preview]).
     renumber: diff.renumbered[nodeId],
-    // A changed doc whose title differs from the live atlas.
+    // A changed doc whose title differs from the diff base.
     retitle: diff.retitled[nodeId],
     // A changed doc whose [Type] differs ([live, preview]).
     retype: diff.retyped[nodeId],
@@ -43,7 +43,7 @@ function docChanges(diff: PreviewDiff, nodeId: string) {
 export function PreviewChangeNotes({ nodeId, meta, source, hasPatch, status }: PreviewChangeNotesProps) {
   const diff = usePreviewDiff();
   const { swap, former, renumber, retitle, retype } = docChanges(diff, nodeId);
-  // "the live atlas" or "{repo}:{ref}": what the redlines are compared against.
+  // "{repo}:{ref}" or "the live atlas": what the redlines are compared against.
   const label = diffBaseLabel(meta ?? {}, diff.activeBase ?? null);
   const silent = status === "Changed" && !hasPatch && !renumber && !retitle && !retype && !swap;
   return (

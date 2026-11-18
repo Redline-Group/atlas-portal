@@ -7,7 +7,7 @@ import { truncateTitle } from "../../lib/treeUtils";
 import { DocNoChiclets } from "../DocNoChiclets";
 import { PreviewMark } from "../preview/PreviewMark";
 import { PreviewRollupBadge } from "../preview/PreviewRollupBadge";
-import { usePreviewDim } from "../../lib/previewFilter";
+import { usePreviewFade } from "../../lib/previewFilter";
 
 export const ROW_HEIGHT = 29;
 const TOGGLE_WIDTH = 15;
@@ -101,7 +101,7 @@ export function TreeRow({
   // chevron column and renders those segments a step smaller, pulling the title
   // back toward the doc they annotate. See src/lib/annotation.ts.
   const isAnnotation = !!node && !!annotationTarget(node);
-  const dim = usePreviewDim(node?.id ?? "");
+  const fade = usePreviewFade(node?.id ?? "", 0.86);
 
   const docNoSegments = useMemo(() => {
     type Seg = {
@@ -177,7 +177,7 @@ export function TreeRow({
         ...style,
         ...ROW_LAYOUT_STYLE,
         boxShadow,
-        opacity: dim ? 0.86 : undefined,
+        opacity: fade,
         ["--row-color" as string]: depthVar,
         ...(inCradle ? { ["--cradle-color" as string]: cradle!.color } : {}),
       }}

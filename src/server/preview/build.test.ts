@@ -469,11 +469,9 @@ test("fork build: forkOwner/aheadBy/behindBy land in meta, and diff.json capture
     // Same title on both sides of the renumber → not an identity swap.
     expect(diffJson.identitySwap).toEqual({});
 
-    // Patches are computed locally from the two snapshots (contentDiff), not
-    // taken from GitHub's per-path patch strings: the added doc renders as pure
-    // additions, the changed one as this uuid's content vs the live atlas.
-    const patches = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "patches.json"), "utf8"));
-    expect(Object.keys(patches).sort()).toEqual([realId, newId].sort());
+    // The old side is stored only for the changed doc: the added one has none.
+    const before = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "before.json"), "utf8"));
+    expect(Object.keys(before)).toEqual([realId]);
   } finally {
     globalThis.fetch = origFetch;
     console.warn = origWarn;
@@ -488,7 +486,7 @@ test("fork build: forkOwner/aheadBy/behindBy land in meta, and diff.json capture
 //
 // This drives the real wiring — resolveCandidates (via a stubbed fetch),
 // snapshotFromDocsJson over the built bundle, loadBaseSnapshot through the
-// injected fetcher, and diff.json/patches.json on disk.
+// injected fetcher, and the diff set (diff.json, before.json, removed.json) on disk.
 // ---------------------------------------------------------------------------
 
 const U = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
@@ -590,8 +588,8 @@ test("private build with no base branch: redlined against live nga main, with th
     expect(diff.changed).toEqual([U(1)]);
     expect(diff.added).toEqual([U(3)]);
     expect(fs.existsSync(path.join(previewPaths(sha).outDir, "diff.sky.json"))).toBe(false);
-    const patches = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "patches.json"), "utf8"));
-    expect(patches[U(1)].some((l: [string, ...unknown[]]) => l[0] === "-" || l[0] === "+" || l[0] === "~")).toBe(true);
+    const before = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "before.json"), "utf8"));
+    expect(before[U(1)].content).toBeDefined();
 
     // …and the durable record says exactly that.
     expect(diffBaseType(upserted!)).toBe("nga-main");
@@ -680,11 +678,11 @@ test("doc-level diff: added/changed split by uuid against the merge base, not by
     expect(diff.added).toEqual([U(3)]); // uuid absent from the merge base
     expect(diff.changed).not.toContain(U(2)); // untouched doc stays out of the redline
 
-    // An added doc has no prior content anywhere, so its patch is pure additions
-    // (DiffLine is a tuple: ["+" | "-" | "=" | "~" | "…", …]).
-    const patches = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "patches.json"), "utf8"));
-    expect(patches[U(3)].every((l: [string, ...unknown[]]) => l[0] === "+")).toBe(true);
-    expect(patches[U(3)].map((l: [string, string]) => l[1])).toContain("brand new");
+    // An added doc has no prior content anywhere, so it has no old side; the
+    // changed one's old side is the merge base's.
+    const before = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "before.json"), "utf8"));
+    expect(before[U(3)]).toBeUndefined();
+    expect(Object.keys(before)).toEqual([U(1)]);
   } finally {
     setIndexes(prevIndexes as never);
     if (prevMin === undefined) delete process.env.ATLAS_MIN_NODES;
@@ -724,7 +722,7 @@ test("doc-level diff: no merge base from GitHub → diffs against live main, bot
     });
     expect(ev.phase).toBe("ready");
     expect(fs.existsSync(path.join(previewPaths(sha).outDir, "diff.json"))).toBe(true);
-    expect(fs.existsSync(path.join(previewPaths(sha).outDir, "patches.json"))).toBe(true);
+    expect(fs.existsSync(path.join(previewPaths(sha).outDir, "before.json"))).toBe(true);
     expect(warnings.some((w) => w.includes("no merge base — diffing against live main"))).toBe(true);
   } finally {
     console.warn = origWarn;
@@ -772,7 +770,7 @@ test("doc-level diff: base tree fetch throws → falls back to live main, still 
       upsertPreview: async () => {},
     });
     expect(ev.phase).toBe("ready");
-    expect(fs.existsSync(path.join(previewPaths(sha).outDir, "patches.json"))).toBe(true);
+    expect(fs.existsSync(path.join(previewPaths(sha).outDir, "before.json"))).toBe(true);
     expect(warnings.some((w) => w.includes("base") && w.includes("unavailable") && w.includes("diffing against live main"))).toBe(
       true,
     );
@@ -829,7 +827,7 @@ test("doc-level diff: indexes not loaded → artifacts skipped, build still read
 // the base's own repo (they differ here on purpose: this PR's head is a fork).
 // ---------------------------------------------------------------------------
 
-test("PR against a non-main base: bases.auto is repo, reference is the base (no upstream drift in the patch), drift present, base fetched from the head repo", async () => {
+test("PR against a non-main base: bases.auto is repo, the old side is its merge base (no upstream drift in the redline), drift present, base fetched from the head repo", async () => {
   const sha = "prnonmain";
   builtShas.push(sha);
   config.githubToken = "tok";
@@ -969,11 +967,10 @@ test("PR against a non-main base: bases.auto is repo, reference is the base (no 
     expect(diffRepo.changed).toEqual([U(2)]); // U(1) untouched between base and head — no marker at all
     expect(diffRepo.added).toEqual([]);
 
-    const patchesRepo = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "patches.repo.json"), "utf8"));
-    expect(patchesRepo[U(1)]).toBeUndefined(); // the upstream-only doc gets no patch
-    expect(patchesRepo[U(2)]).toBeDefined();
-    const rendered = JSON.stringify(patchesRepo[U(2)]);
-    expect(rendered).toContain("before"); // reference = base ("before PR edit"), not live
+    const beforeRepo = JSON.parse(fs.readFileSync(path.join(previewPaths(sha).outDir, "before.repo.json"), "utf8"));
+    expect(beforeRepo[U(1)]).toBeUndefined(); // the upstream-only doc has no old side
+    const rendered = JSON.stringify(beforeRepo[U(2)]);
+    expect(rendered).toContain("before"); // the old side is the merge base ("before PR edit"), not live
     expect(rendered).not.toContain("UNRELATED EDIT"); // live's drift never leaks in
 
     // diff.json is the `auto` ("repo") pair, copied byte-for-byte.

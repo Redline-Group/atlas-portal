@@ -14,7 +14,7 @@ vi.mock("./previewView", () => ({
   usePreviewView: () => ({ baseKey: baseKeyValue, setBaseKey: vi.fn(), onlyChanged: false, setOnlyChanged: vi.fn() }),
 }));
 
-import { usePreviewDiff, usePreviewPatch, PreviewDiffProvider } from "./previewDiff";
+import { usePreviewDiff, PreviewDiffProvider } from "./previewDiff";
 import { resetPreviewMetaCache } from "./previewMeta";
 
 function wrapper({ children }: { children: ReactNode }) {
@@ -256,92 +256,24 @@ describe("usePreviewDiff", () => {
   });
 });
 
-describe("usePreviewPatch", () => {
-  it("returns null and does not fetch outside preview mode", () => {
-    const fetchMock = vi.fn();
+describe("usePreviewDiff — removed documents", () => {
+  it("reads removed ids and loads removed.json beside diff.json", async () => {
+    dataSourceValue = { base: "/api/preview/removed-1/", preview: { id: "removed-1", sha: "deadbeef" } };
+    const gone = { id: "g", doc_no: "A.9", title: "Gone", content: "x", parentId: null, after: null, depth: 1 };
+    vi.stubGlobal("fetch", mockFetchByUrl({ "meta.json": {}, "diff.json": { added: [], changed: [], removed: ["g"] }, "removed.json": [gone] }));
+    const { result } = renderHook(() => usePreviewDiff(), { wrapper });
+    await waitFor(() => expect(result.current.removed?.has("g")).toBe(true));
+    expect(result.current.removedDocs).toEqual([gone]);
+  });
+
+  it("fetches no removed.json when nothing was removed", async () => {
+    dataSourceValue = { base: "/api/preview/nothing-gone/", preview: { id: "nothing-gone", sha: "deadbeef" } };
+    const fetchMock = mockFetchByUrl({ "meta.json": {}, "diff.json": { added: ["a"], changed: [] } });
     vi.stubGlobal("fetch", fetchMock);
-    const { result } = renderHook(() => usePreviewPatch("node-1"));
-    expect(result.current).toBeNull();
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it("fetches plain patches.json outside a diff provider (no activeBase)", async () => {
-    dataSourceValue = { base: "/api/preview/patch-test/", preview: { id: "patch-test", sha: "deadbeef" } };
-    const lines = [{ type: "add", text: "hello" }];
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ "node-1": lines }) });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const { result } = renderHook(() => usePreviewPatch("node-1"));
-    await waitFor(() => expect(result.current).toEqual(lines));
-    expect(fetchMock).toHaveBeenCalledWith("/api/preview/patch-test/patches.json");
-  });
-
-  it("follows the diff provider's resolved base to fetch patches.<key>.json", async () => {
-    dataSourceValue = { base: "/api/preview/patch-repo/", preview: { id: "patch-repo", sha: "deadbeef" } };
-    const meta = { bases: { auto: "repo", repo: { repo: "acme/fork", ref: "main", mergeBase: "x" } } };
-    const fetchMock = mockFetchByUrl({
-      "meta.json": meta,
-      "diff.repo.json": { added: [], changed: [] },
-      "patches.repo.json": { "node-1": [{ type: "add", text: "hi" }] },
-    });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const { result } = renderHook(() => usePreviewPatch("node-1"), { wrapper });
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/preview/patch-repo/patches.repo.json"));
-    await waitFor(() => expect(result.current).toEqual([{ type: "add", text: "hi" }]));
-  });
-
-  it("falls back to patches.json when the keyed patches response 404s", async () => {
-    dataSourceValue = { base: "/api/preview/patch-404/", preview: { id: "patch-404", sha: "deadbeef" } };
-    const meta = { bases: { auto: "repo", repo: { repo: "acme/fork", ref: "main", mergeBase: "x" } } };
-    const fetchMock = mockFetchByUrl({
-      "meta.json": meta,
-      "diff.repo.json": { added: [], changed: [] },
-      "patches.repo.json": null,
-      "patches.json": { "node-1": [{ type: "del", text: "bye" }] },
-    });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const { result } = renderHook(() => usePreviewPatch("node-1"), { wrapper });
-    await waitFor(() => expect(result.current).toEqual([{ type: "del", text: "bye" }]));
-    expect(fetchMock).toHaveBeenCalledWith("/api/preview/patch-404/patches.repo.json");
-    expect(fetchMock).toHaveBeenCalledWith("/api/preview/patch-404/patches.json");
-  });
-
-  it("returns null for a node id absent from the patch map", async () => {
-    dataSourceValue = { base: "/api/preview/patch-missing/", preview: { id: "patch-missing", sha: "deadbeef" } };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({}) }));
-
-    const { result } = renderHook(() => usePreviewPatch("missing-node"));
-    await waitFor(() => expect(result.current).toBeNull());
-  });
-
-  it("falls back to {} when the patches fetch response is not ok", async () => {
-    dataSourceValue = { base: "/api/preview/patch-notok/", preview: { id: "patch-notok", sha: "deadbeef" } };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
-
-    const { result } = renderHook(() => usePreviewPatch("node-1"));
-    await waitFor(() => expect(result.current).toBeNull());
-  });
-
-  it("swallows a patches fetch rejection and falls back to {}", async () => {
-    dataSourceValue = { base: "/api/preview/patch-reject/", preview: { id: "patch-reject", sha: "deadbeef" } };
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
-
-    const { result } = renderHook(() => usePreviewPatch("node-1"));
-    await waitFor(() => expect(result.current).toBeNull());
-  });
-
-  it("caches the patches promise per base+key across multiple hook instances", async () => {
-    dataSourceValue = { base: "/api/preview/shared-base/", preview: { id: "shared-base", sha: "deadbeef" } };
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ "node-1": [] }) });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const { result: r1 } = renderHook(() => usePreviewPatch("node-1"));
-    const { result: r2 } = renderHook(() => usePreviewPatch("node-1"));
-    await waitFor(() => expect(r1.current).not.toBeNull());
-    await waitFor(() => expect(r2.current).not.toBeNull());
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const { result } = renderHook(() => usePreviewDiff(), { wrapper });
+    await waitFor(() => expect(result.current.added.has("a")).toBe(true));
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes("removed"))).toBe(false);
+    expect(result.current.removedDocs).toEqual([]);
   });
 });
 

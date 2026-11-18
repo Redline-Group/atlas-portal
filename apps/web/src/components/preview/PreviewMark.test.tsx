@@ -38,6 +38,12 @@ describe("PreviewMark", () => {
     expect(mark).toHaveTextContent("+");
   });
 
+  it("renders − for a removed doc", () => {
+    setDiff({ removed: new Set(["x"]) });
+    render(<PreviewMark nodeId="x" />);
+    expect(screen.getByLabelText("removed in this preview")).toHaveTextContent("−");
+  });
+
   it("renders Δ for a changed doc", () => {
     setDiff({ changed: new Set(["x"]) });
     render(<PreviewMark nodeId="x" />);

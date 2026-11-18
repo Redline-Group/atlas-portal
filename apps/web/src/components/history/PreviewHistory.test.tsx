@@ -11,6 +11,8 @@ import "@testing-library/jest-dom/vitest";
 
 vi.mock("../../lib/previewDiff", () => ({
   usePreviewDiff: vi.fn(),
+}));
+vi.mock("../../lib/previewPatchHook", () => ({
   usePreviewPatch: vi.fn(),
 }));
 vi.mock("./NodeHistory", () => ({
@@ -21,7 +23,8 @@ vi.mock("./DiffView", () => ({
 }));
 
 import { PreviewHistory } from "./PreviewHistory";
-import { usePreviewDiff, usePreviewPatch } from "../../lib/previewDiff";
+import { usePreviewDiff } from "../../lib/previewDiff";
+import { usePreviewPatch } from "../../lib/previewPatchHook";
 import { resetPreviewMetaCache } from "../../lib/previewMeta";
 import type { PreviewDiff } from "../../lib/previewDiff";
 import type { DiffLine } from "@/lib/history";
@@ -145,6 +148,14 @@ describe("PreviewHistory preview entry", () => {
     render(<PreviewHistory nodeId="n1" />);
     expect(screen.getByTestId("diff-view")).toBeInTheDocument();
     expect(screen.queryByText(/Title changed/)).toBeNull();
+  });
+
+  it("heads a removed doc's entry Removed, with its all-removed box", () => {
+    setDiff({ removed: new Set(["n1"]) });
+    mockPatch.mockReturnValue([["-", "A.1 - Gone"], ["-", "body"]] as DiffLine[]);
+    render(<PreviewHistory nodeId="n1" />);
+    expect(screen.getByRole("heading", { name: /^Removed in this/ })).toBeInTheDocument();
+    expect(screen.getByTestId("diff-view")).toBeInTheDocument();
   });
 
   it("shows a neutral fallback sentence for a changed doc with no patch, renumber, retitle or swap", () => {

@@ -1,6 +1,7 @@
 import type { ActiveBase, PreviewBaseKey, PreviewBases } from "./previewMetaCopy";
 import { loadPreviewMeta } from "./previewMeta";
 import type { PreviewDiff } from "./previewDiff";
+import { loadPreviewRemoved } from "./previewOldSide";
 
 function resolveBase(baseKey: PreviewBaseKey | null, bases: PreviewBases | undefined) {
   if (!bases) return { fetchKey: null, activeBase: null };
@@ -40,6 +41,7 @@ function diffFromDoc(d: Record<string, unknown>, activeBase: ActiveBase | null):
   return {
     added: ids(d.added),
     changed: ids(d.changed),
+    removed: d.removed ? ids(d.removed) : undefined,
     renumbered: (d.renumbered as PreviewDiff["renumbered"]) ?? {},
     renumberedOnly: d.renumberedOnly ? new Set<string>(d.renumberedOnly as string[]) : undefined,
     retitled: (d.retitled as PreviewDiff["retitled"]) ?? {},
@@ -62,5 +64,6 @@ export async function fetchPreviewDiff(base: string, baseKey: PreviewBaseKey | n
   const { fetchKey, activeBase } = resolveBase(baseKey, meta?.bases);
   const { doc, usedKey } = await fetchDiff(base, fetchKey);
   if (!doc) return null;
-  return { diff: diffFromDoc(doc, activeBase), usedKey };
+  const removedDocs = doc.removed?.length ? await loadPreviewRemoved(base, usedKey) : [];
+  return { diff: { ...diffFromDoc(doc, activeBase), removedDocs }, usedKey };
 }

@@ -96,18 +96,13 @@ const MAIN_ALLOWLIST = new Set([
 // Preview-only / handler-computed artifacts: they are allowlisted for serving
 // but are never materialised by publishBundle or hydrateBundleFromStore (they
 // are written by the preview build itself, and meta.json does not even live in
-// the artifact subdir). meta.json/diff.json/patches.json live at the bundle
+// the artifact subdir). meta.json and the diff set live at the bundle
 // root or are computed by the handler — publishBundle skips them.
 const NOT_MATERIALISED = new Set([
   "meta.json",
-  "diff.json",
-  "patches.json",
-  // Per-candidate diff pairs (see preview/cache.ts PreviewBases): diff.json /
-  // patches.json stay the `auto` pair for old clients and the e2e canary.
-  "diff.sky.json",
-  "diff.repo.json",
-  "patches.sky.json",
-  "patches.repo.json",
+  // The diff set (preview/diff-artifacts.ts): the plain names are the `auto`
+  // base's, the keyed ones each candidate's (see preview/cache.ts PreviewBases).
+  ...["diff", "before", "removed"].flatMap((stem) => [`${stem}.json`, `${stem}.sky.json`, `${stem}.repo.json`]),
   // The identity gate's verdict by meaning, written AFTER the bundle is ready
   // (preview/identity-refine.ts). identity.json is the `auto` one.
   "identity.json",

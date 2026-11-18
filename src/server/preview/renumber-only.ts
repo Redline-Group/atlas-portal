@@ -4,8 +4,8 @@
 // children's bodies often cite their siblings ("per A.1.2.3"), so a strict
 // body comparison would call every one of them edited.
 //
-// The reader's Exclude › "Renumber-only changes" filter reads this list; patches are loaded
-// lazily, so the browser cannot work it out itself.
+// The reader's Exclude › "Renumber-only changes" filter reads this list; the
+// old text (before.json) is loaded lazily, so the browser cannot work it out itself.
 import type { Snapshot, SnapshotDoc } from "./snapshot.ts";
 import { typeChanged } from "../../../scripts/lib/history-events.ts";
 
@@ -48,7 +48,7 @@ export function findRenumberedOnly(changed: string[], sides: Sides): string[] {
 }
 
 /** The before/after pair computeDiffArtifacts compares a changed doc across:
- *  the reference snapshot, else the merge base, against the head. */
-export function diffSides(base: Snapshot, head: Snapshot, reference: Snapshot): Sides {
-  return { before: (id) => reference.get(id) ?? base.get(id), after: (id) => head.get(id) };
+ *  the diff base against the head. */
+export function diffSides(base: Snapshot, head: Snapshot): Sides {
+  return { before: (id) => base.get(id), after: (id) => head.get(id) };
 }

@@ -1,5 +1,7 @@
 import { useDataSource } from "../../lib/dataSource";
-import { usePreviewDiff, usePreviewPatch } from "../../lib/previewDiff";
+import { usePreviewDiff } from "../../lib/previewDiff";
+import { usePreviewPatch } from "../../lib/previewPatchHook";
+import { changeKind } from "../../lib/previewChangeKind";
 import { usePreviewMeta } from "../../lib/previewMeta";
 import { entrySourceUrl, type PreviewMeta } from "../../lib/previewMetaCopy";
 import { NodeHistory } from "./NodeHistory";
@@ -9,6 +11,14 @@ import { PreviewCommits } from "./PreviewCommits";
 import { PreviewEntryLine1 } from "./PreviewEntryLine1";
 import { DiffView } from "./DiffView";
 import { CONTENT_INDENT, TimelineRow } from "./Timeline";
+
+const STATUS = { added: "Added", changed: "Changed", removed: "Removed" } as const;
+
+/** The preview entry's heading word, or null for a document the preview left alone. */
+function previewStatus(diff: ReturnType<typeof usePreviewDiff>, nodeId: string) {
+  const kind = changeKind(diff, nodeId);
+  return kind ? STATUS[kind] : null;
+}
 
 // History tab in preview mode. The real per-doc history lives in Postgres for
 // the *live* atlas, which is meaningless for an unmerged branch — so instead we
@@ -20,7 +30,7 @@ export function PreviewHistory({ nodeId }: { nodeId: string }) {
   const diff = usePreviewDiff();
   const patch = usePreviewPatch(nodeId);
   const meta: PreviewMeta | null = usePreviewMeta(base) ?? null;
-  const status = diff.added.has(nodeId) ? "Added" : diff.changed.has(nodeId) ? "Changed" : null;
+  const status = previewStatus(diff, nodeId);
   // Added doc whose doc number exists on the live atlas under another uuid
   // (slot reuse, flagged server-side with the old occupant's title + where it
   // moved). The label gets an asterisk; the disclaimer below the live-history

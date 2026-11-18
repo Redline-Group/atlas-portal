@@ -143,11 +143,11 @@ export function baseSwitch(
   return { href: qs ? `?${qs}` : "?", label };
 }
 
-/** Heading label for the history panel's "compared against" side. */
+/** Heading label for the history panel's "compared against" side: the base
+ *  branch whose merge base the redlines compare against, or the live atlas when
+ *  no base resolved. */
 export function diffBaseLabel(meta: PreviewMeta, active: ActiveBase | null): string {
-  if (active?.key === "repo" && meta.bases?.repo) {
-    const { repo, ref } = meta.bases.repo;
-    return `${repo}:${ref}`;
-  }
-  return "the live atlas";
+  const key = active?.key === "repo" || active?.key === "sky" ? active.key : null;
+  const base = key ? meta.bases?.[key] : undefined;
+  return base ? `${base.repo}:${base.ref}` : "the live atlas";
 }

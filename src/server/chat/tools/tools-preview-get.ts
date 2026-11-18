@@ -5,7 +5,7 @@ import type { Indexes } from "../../retrieval/indexes.ts";
 import type { AtlasNode } from "../../../types.ts";
 import type { ToolResult } from "./tools.ts";
 import type { ToolOpen } from "../../preview/tool-access.ts";
-import { loadPreviewDocs, previewCite, readPreviewDiff, readPreviewPatches, renderPatch, type PreviewDocs } from "../../preview/bundle-read.ts";
+import { loadPreviewDocs, previewCite, previewPatchFor, readPreviewDiff, readPreviewOldSide, renderPatch, type PreviewDocs, type PreviewOldSide } from "../../preview/bundle-read.ts";
 import { CITATION_NOTE, PREVIEW_SOURCE_CLASS, previewHeader } from "./tools-preview-common.ts";
 import { previewCaps } from "../large-read.ts";
 
@@ -40,16 +40,17 @@ interface GetCtx {
   sha: string;
   args: PreviewGetArgs;
   docs: PreviewDocs;
+  diff: ReturnType<typeof readPreviewDiff>;
   added: Set<string>;
   changed: Set<string>;
-  patches: ReturnType<typeof readPreviewPatches>;
+  old: PreviewOldSide;
 }
 
 function getCtx(ix: Indexes, sha: string, args: PreviewGetArgs): GetCtx {
   const diff = readPreviewDiff(sha);
   const added = new Set(diff?.added ?? []);
   const changed = new Set(diff?.changed ?? []);
-  return { ix, sha, args, docs: loadPreviewDocs(sha), added, changed, patches: readPreviewPatches(sha) };
+  return { ix, sha, args, docs: loadPreviewDocs(sha), diff, added, changed, old: readPreviewOldSide(sha) };
 }
 
 const summary = (n: AtlasNode) => ({ id: n.id, doc_no: n.doc_no, title: n.title, type: n.type });
@@ -59,7 +60,7 @@ const statusOf = (c: GetCtx, id: string) => (c.added.has(id) ? "added" : c.chang
 function documentOut(c: GetCtx, node: AtlasNode) {
   const status = statusOf(c, node.id);
   const parent = node.parentId ? c.docs.byId.get(node.parentId) : undefined;
-  const patch = c.patches[node.id];
+  const patch = c.diff && status !== "unchanged" ? previewPatchFor(node.id, status, c.diff, c.docs, c.old) : [];
   return {
     ...summary(node),
     status,
@@ -67,7 +68,7 @@ function documentOut(c: GetCtx, node: AtlasNode) {
     ancestors: ancestors(node, c.docs),
     content: node.content,
     ...(c.args.include_base && status !== "added" ? { base: liveBase(c.ix, node.id) } : {}),
-    ...(patch ? { patch: renderPatch(patch, PATCH_LINES) } : {}),
+    ...(patch.length ? { patch: renderPatch(patch, PATCH_LINES) } : {}),
     ...(c.args.include_children ? { children: (c.docs.children.get(node.id) ?? []).map(summary) } : {}),
     cite: previewCite(c.sha, node.id),
   };

@@ -10,7 +10,7 @@ import { NodeMeta } from "./NodeMeta";
 import { useAtlasActions } from "./AtlasActionsContext";
 import { revealStore } from "../../lib/revealStore";
 import { PreviewMark } from "../preview/PreviewMark";
-import { usePreviewDim } from "../../lib/previewFilter";
+import { usePreviewFade } from "../../lib/previewFilter";
 import { useDataSource } from "../../lib/dataSource";
 import { NodeSelectBox } from "./NodeSelectBox";
 import { track } from "../../lib/analytics";
@@ -135,8 +135,8 @@ export const CollapsibleNode = memo(function CollapsibleNode({
   // degrades to plain text rather than a dead link.
   const annotatesId = annotates ? docNoToId?.get(annotates) : undefined;
   const mouseDownRef = useRef<{ x: number; y: number } | null>(null);
-  // Selected node always full-strength; otherwise dim untouched docs in preview.
-  const dim = usePreviewDim(node.id) && !isSelected;
+  // In preview: faint when removed, slightly dimmed when untouched (unless selected).
+  const fade = usePreviewFade(node.id, 0.92, isSelected);
 
   const showExpandAll = hasChildren && !!pendulum;
   // No annotation in the atlas has children, so its chevron column is pure
@@ -330,7 +330,7 @@ export const CollapsibleNode = memo(function CollapsibleNode({
       style={
         {
           ["--row-color" as string]: color,
-          opacity: dim ? 0.92 : undefined,
+          opacity: fade,
           ...(cradleColor ? { ["--cradle-color" as string]: cradleColor } : {}),
         } as React.CSSProperties
       }

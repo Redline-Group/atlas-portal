@@ -3,6 +3,7 @@ import { useDataSource } from "./dataSource";
 import { usePreviewDiff } from "./previewDiff";
 import { usePreviewView } from "./previewView";
 import { filterPreviewDocs } from "./previewFilters";
+import { changeKind } from "./previewChangeKind";
 
 // In preview mode, true for docs the branch did NOT touch — so the reader/tree
 // can very slightly dim them, making the changed/added docs (full strength)
@@ -10,7 +11,21 @@ import { filterPreviewDocs } from "./previewFilters";
 export function usePreviewDim(nodeId: string): boolean {
   const { preview } = useDataSource();
   const diff = usePreviewDiff();
-  return !!preview && !diff.added.has(nodeId) && !diff.changed.has(nodeId);
+  return !!preview && !changeKind(diff, nodeId);
+}
+
+/** A removed document is drawn this faint, whole: number, title, body and metadata. */
+export const REMOVED_OPACITY = 0.45;
+
+// The opacity a reader node or tree row takes in preview: faint for a removed
+// document (selected or not), `untouched` for a document the branch left alone
+// unless it is the selected one, full strength otherwise. Undefined outside preview.
+export function usePreviewFade(nodeId: string, untouched: number, selected = false): number | undefined {
+  const { preview } = useDataSource();
+  const kind = changeKind(usePreviewDiff(), nodeId);
+  if (!preview) return undefined;
+  if (kind === "removed") return REMOVED_OPACITY;
+  return kind || selected ? undefined : untouched;
 }
 
 // The set of doc ids to show when "show only changed" is on: exactly the docs

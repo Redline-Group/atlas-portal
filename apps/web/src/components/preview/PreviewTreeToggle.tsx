@@ -22,7 +22,7 @@ export function PreviewTreeToggle() {
   const barRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useDismissiblePopover(barRef, { claimEscape: true });
   if (!preview) return null;
-  const changedCount = diff.added.size + diff.changed.size;
+  const changedCount = diff.added.size + diff.changed.size + (diff.removed?.size ?? 0);
 
   const showAll = (via: "all" | "clear") => {
     track("preview_view_toggle", { view: "all", changed_count: changedCount, via });

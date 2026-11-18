@@ -4,7 +4,7 @@ import type { Indexes } from "../../retrieval/indexes.ts";
 import type { AtlasNode } from "../../../types.ts";
 import type { ToolResult } from "./tools.ts";
 import type { ToolOpen } from "../../preview/tool-access.ts";
-import { loadPreviewDocs, previewCite, readPreviewDiff, readPreviewPatches, renderPatch, type PreviewDocs } from "../../preview/bundle-read.ts";
+import { loadPreviewDocs, previewCite, previewPatchFor, readPreviewDiff, readPreviewOldSide, renderPatch, type PreviewDocs, type PreviewOldSide } from "../../preview/bundle-read.ts";
 import { CITATION_NOTE, PREVIEW_SOURCE_CLASS, byDocNo, previewHeader } from "./tools-preview-common.ts";
 import { previewCaps } from "../large-read.ts";
 
@@ -27,7 +27,7 @@ function parentOf(node: Row["node"], docs: PreviewDocs, ix: Indexes) {
   return p ? { id: p.id, doc_no: p.doc_no, title: p.title } : { id: node.parentId };
 }
 
-function collectRows(ix: Indexes, docs: PreviewDocs, diff: NonNullable<ReturnType<typeof readPreviewDiff>>): Row[] {
+function collectRows(ix: Indexes, docs: PreviewDocs, diff: NonNullable<ReturnType<typeof readPreviewDiff>>, old: PreviewOldSide): Row[] {
   const rows: Row[] = [];
   for (const id of diff.added) {
     const n = docs.byId.get(id);
@@ -38,8 +38,8 @@ function collectRows(ix: Indexes, docs: PreviewDocs, diff: NonNullable<ReturnTyp
     if (n) rows.push({ change: "changed", node: n });
   }
   for (const id of diff.removed ?? []) {
-    const n = ix.docMap.get(id);
-    rows.push({ change: "removed", node: n ?? { id, doc_no: "", title: "", type: "", parentId: null } });
+    const n = old.removed.get(id) ?? ix.docMap.get(id);
+    rows.push({ change: "removed", node: n ? { ...n, title: n.title ?? "", type: n.type ?? "" } : { id, doc_no: "", title: "", type: "", parentId: null } });
   }
   return rows.sort((x, y) => byDocNo(x.node, y.node));
 }
@@ -54,18 +54,19 @@ export function buildPreviewDiff(ix: Indexes, open: Extract<ToolOpen, { status: 
     return { source_class: PREVIEW_SOURCE_CLASS, status: "no-diff", preview: previewHeader(meta, id), message: "This preview was built without a diff." };
   }
   const docs = loadPreviewDocs(sha);
-  const patches = readPreviewPatches(sha);
-  const all = collectRows(ix, docs, diff).filter((r) => !a.change || r.change === a.change);
+  const old = readPreviewOldSide(sha);
+  const all = collectRows(ix, docs, diff, old).filter((r) => !a.change || r.change === a.change);
   const page = all.slice(a.offset, a.offset + a.limit);
-  const documents = page.map((row) => previewDocument(row, { sha, diff, docs, ix, patches, patchLines: a.patch_lines }));
+  const documents = page.map((row) => previewDocument(row, { sha, diff, docs, ix, old, patchLines: a.patch_lines }));
   return previewPage(meta, id, diff, documents, a.offset + page.length, all.length);
 }
 
 function previewDocument(
   { change, node }: Row,
-  ctx: { sha: string; diff: NonNullable<ReturnType<typeof readPreviewDiff>>; docs: PreviewDocs; ix: Indexes; patches: ReturnType<typeof readPreviewPatches>; patchLines: number },
+  ctx: { sha: string; diff: NonNullable<ReturnType<typeof readPreviewDiff>>; docs: PreviewDocs; ix: Indexes; old: PreviewOldSide; patchLines: number },
 ) {
-  const { sha, diff, docs, ix, patches, patchLines } = ctx;
+  const { sha, diff, docs, ix, old, patchLines } = ctx;
+  const patch = patchLines > 0 ? previewPatchFor(node.id, change, diff, docs, old) : [];
   return {
     change,
     id: node.id,
@@ -78,7 +79,7 @@ function previewDocument(
     ...(diff.retyped?.[node.id] ? { retyped: diff.retyped[node.id] } : {}),
     ...(diff.reusedSlot[node.id] ? { reused_slot: diff.reusedSlot[node.id] } : {}),
     ...(diff.identitySwap[node.id] ? { identity_swap: diff.identitySwap[node.id] } : {}),
-    ...(patchLines > 0 && patches[node.id] ? { patch: renderPatch(patches[node.id], patchLines) } : {}),
+    ...(patch.length ? { patch: renderPatch(patch, patchLines) } : {}),
     cite: change === "removed" ? `/atlas/${node.id}` : previewCite(sha, node.id),
   };
 }

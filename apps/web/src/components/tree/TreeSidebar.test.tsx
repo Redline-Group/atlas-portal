@@ -37,6 +37,7 @@ vi.mock("../../hooks/useRevealFlash", () => ({ useRevealFlash: () => new Set<str
 vi.mock("../../lib/previewFilter", () => ({
   usePreviewChangedSet: () => mocks.changedSet,
   usePreviewDim: () => false,
+  usePreviewFade: () => undefined,
 }));
 vi.mock("../../lib/previewDiff", () => ({ usePreviewDiff: () => mocks.diff }));
 vi.mock("../../lib/selectionFilter", () => ({ useSelectionSet: () => mocks.selectionSet }));

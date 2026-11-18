@@ -84,8 +84,8 @@ export interface PreviewMeta {
    *  `sky` = merge base with sky-ecosystem/next-gen-atlas:main (the fork
    *  point); `repo` = merge base with the head repo's own base (the PR's base
    *  branch, or the fork's default branch). The build writes one
-   *  diff.<key>.json + patches.<key>.json pair per candidate; `auto` names the
-   *  pair also copied to diff.json / patches.json. "live-main" = degraded: no
+   *  diff/before/removed.<key>.json set per candidate; `auto` names the set
+   *  also copied to the plain diff.json / before.json / removed.json. "live-main" = degraded: no
    *  candidate could be resolved and the redline is vs the served atlas. */
   bases?: PreviewBases;
   /** Size of the automatic pair's doc list (diff.json). Persisted to the

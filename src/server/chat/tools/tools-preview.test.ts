@@ -36,7 +36,9 @@ function writeBundle(withRemoved: boolean) {
   fs.writeFileSync(path.join(out, "docs.json"), JSON.stringify({ atlasCommit: SHA, nodes: Object.fromEntries(head.map((n) => [n.id, n])) }));
   const diff = { added: [ADDED, ADDED2], changed: [KEPT], renumbered: {}, retitled: {}, reusedSlot: {}, identitySwap: {}, formerUuid: {} };
   fs.writeFileSync(path.join(out, "diff.json"), JSON.stringify(withRemoved ? { ...diff, removed: [GONE] } : diff));
-  fs.writeFileSync(path.join(out, "patches.json"), JSON.stringify({ [KEPT]: [["~", [["-", "old"], ["+", "new"], ["=", " text"]]]], [ADDED]: [["+", "hello"]] }));
+  fs.writeFileSync(path.join(out, "before.json"), JSON.stringify({ [KEPT]: { doc_no: "A.1.10", title: "Kept", type: "Core", content: "old text" } }));
+  const removed = withRemoved ? [{ ...live[2], after: KEPT }] : [];
+  fs.writeFileSync(path.join(out, "removed.json"), JSON.stringify(removed));
 }
 writeBundle(true);
 afterAll(() => fs.rmSync(previewPaths(SHA).dir, { recursive: true, force: true }));
