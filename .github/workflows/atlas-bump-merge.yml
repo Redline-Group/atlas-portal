@@ -1,0 +1,62 @@
+name: Atlas bump merge
+
+# Merges an atlas bump pull request once CI and the E2E gate pass at its head.
+#
+# Branch protection requires the Railway deployment of the web service, and a
+# bump never gets one (scripts/lib/atlas-bump.ts says why it does not need one),
+# so the auto-merge atlas-update.yml enables waits forever. The ATLAS_BOT App is
+# a bypass actor on the ruleset that requires the deployment; merging as the App
+# applies that bypass, and scripts/aux/atlas-bump-merge.ts only does so for a
+# pull request that is purely a bump and has passed every other gate.
+#
+# Both gating workflows trigger this, so whichever finishes last finds both
+# green and merges. workflow_run always runs this file as it is on main, never
+# a pull request's copy, which is what makes holding the App credentials here
+# safe.
+on:
+  workflow_run:
+    workflows: ["CI", "E2E gate"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  # The two triggers can finish together; the second must see the first's merge.
+  group: atlas-bump-merge-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      startsWith(github.event.workflow_run.head_branch, 'atlas-update/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Holds the ATLAS_BOT App credentials, as for atlas-update.yml.
+    environment: atlas-update-main-bypass
+    steps:
+      - name: Generate ATLAS_BOT app token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.ATLAS_BOT_APP_ID }}
+          private-key: ${{ secrets.ATLAS_BOT_PRIVATE_KEY }}
+
+      # main, not the pull request: the merge logic must be the reviewed copy.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      # install: "false" — the script imports only repo modules and node: builtins.
+      - uses: ./.github/actions/setup
+        with:
+          install: "false"
+
+      - name: Merge the bump if it is ready
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: bun scripts/aux/atlas-bump-merge.ts
