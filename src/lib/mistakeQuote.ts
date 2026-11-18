@@ -2,8 +2,8 @@
 //
 // The sweep only admits a finding whose quote is a literal substring of the
 // document's title + body (validateFinding, scripts/lib/mistakes-sweep.mjs), so
-// a quote that is no longer there means the passage was rewritten upstream —
-// usually because the defect was fixed. Matching is looser than the sweep's in
+// a quote absent from the served doc means its passage differs from the swept
+// text — usually because the defect was fixed. Matching is looser than the sweep's in
 // three ways that only absorb how older rows were quoted, never a real edit:
 // whitespace runs compare equal (list items and paragraphs quoted on one
 // line), an elided quote ("a ... b", "a [...] b") needs every fragment, and a
