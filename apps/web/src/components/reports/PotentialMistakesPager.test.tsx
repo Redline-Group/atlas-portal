@@ -18,6 +18,11 @@ const row = (over: Partial<MistakeRow> & Pick<MistakeRow, "id" | "quote">): Mist
   status: "current",
   currentDocNo: "A.1",
   title: "Example",
+  scope: "",
+  scopeLabel: "",
+  agent: "",
+  executor: "",
+  executorLabel: "",
   ...over,
 });
 

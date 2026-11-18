@@ -33,6 +33,10 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
+## 2026-11-18
+
+- Added Scope and Executor agent filters to the Potential Mistakes report.
+
 ## 2026-11-17
 
 - Shift-clicking a document link now opens it in Splitview, and shift-clicking inside Splitview highlights that document in the main reader.

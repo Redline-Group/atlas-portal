@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   resolveMistakes,
   sortMistakes,
-  mistakesToCSV,
   mistakeSearchFields,
   presentCategories,
   countBy,
@@ -11,6 +10,7 @@ import {
   type MistakesFile,
 } from "./potentialMistakesIndex";
 import type { AtlasNode } from "../types";
+import { mistakesToCSV } from "./potentialMistakesCsv";
 
 const UUID_A = "11111111-1111-4111-8111-111111111111";
 const UUID_B = "22222222-2222-4222-8222-222222222222";
@@ -110,6 +110,13 @@ describe("mistakesToCSV", () => {
   it("escapes quotes and commas in the quoted atlas text", () => {
     const rows = resolveMistakes(file([mistake({ quote: 'a "quoted", comma' })]), DOCS);
     expect(mistakesToCSV(rows)).toContain('"a ""quoted"", comma"');
+  });
+
+  it("carries the scope, agent and executor agent columns", () => {
+    const owner = () => ({ scope: "s", scopeLabel: "A.6 Agent", agent: "Spark", executor: "amatsu", executorLabel: "Amatsu" });
+    const csv = mistakesToCSV(resolveMistakes(file([mistake()]), DOCS, owner));
+    expect(csv.split("\r\n")[0]).toContain('"Status","Scope","Agent","Executor Agent"');
+    expect(csv).toContain('"A.6 Agent","Spark","Amatsu"');
   });
 
   it("emits exactly one row per finding", () => {

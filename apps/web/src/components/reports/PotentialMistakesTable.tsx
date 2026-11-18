@@ -7,6 +7,7 @@ import { CATEGORY_LABELS, PASS_LABELS, mistakeSearchFields, type MistakeRow } fr
 import { hiddenMatches, type ReportQuery } from "@/lib/reportFilter";
 import { Highlight, MatchAside } from "./Highlight";
 import { Fix, SEV_TONE, StatusNote } from "./MistakeCard";
+import { MistakeOwnerNote } from "./MistakeOwnerNote";
 import { PotentialMistakesPager } from "./PotentialMistakesPager";
 
 // Quote / issue / fix wrap instead of widening the table. table-layout:fixed
@@ -52,6 +53,7 @@ function Row({ r, rq, split }: { r: MistakeRow; rq: ReportQuery; split: boolean 
           <span className="mono text-[10px] text-accent block">
             <Highlight text={r.docNo} rq={rq} />
           </span>
+          <MistakeOwnerNote r={r} />
           <StatusNote r={r} />
         </div>
       </td>

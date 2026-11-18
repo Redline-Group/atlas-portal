@@ -42,14 +42,32 @@ const file: MistakesFile = {
   ],
 };
 
-const doc = (id: string, doc_no: string, title: string): AtlasNode =>
-  ({ id, doc_no, title, type: "Core", depth: 3, parentId: null, content: "", order: 0, addressRefs: [] }) as AtlasNode;
+const doc = (id: string, doc_no: string, title: string, parentId: string | null = null): AtlasNode =>
+  ({ id, doc_no, title, type: "Core", depth: 3, parentId, content: "", order: 0, addressRefs: [] }) as AtlasNode;
 
+// A.1.1 sits in the Governance Scope; the renumbered doc sits in Spark's
+// artifact, whose operational executor is Amatsu.
 vi.mock("../../lib/docs", () => ({
   loadDocs: () =>
     Promise.resolve({
-      [UUID_HERE]: doc(UUID_HERE, "A.1.1", "Website And Domain"),
-      [UUID_MOVED]: doc(UUID_MOVED, "A.2.9", "Renamed Support Doc"),
+      gov: doc("gov", "A.1", "The Governance Scope"),
+      agents: doc("agents", "A.6", "The Agent Scope"),
+      spark: doc("spark", "A.6.1.1.1", "Spark", "agents"),
+      [UUID_HERE]: doc(UUID_HERE, "A.1.1", "Website And Domain", "gov"),
+      [UUID_MOVED]: doc(UUID_MOVED, "A.2.9", "Renamed Support Doc", "spark"),
+    }),
+}));
+vi.mock("../../lib/graph", () => ({
+  loadGraph: () =>
+    Promise.resolve({
+      participants: [
+        { id: "e-spark", slug: "spark", name: "Spark", et: "agent", st: "prime", did: "spark" },
+        { id: "e-amatsu", slug: "amatsu", name: "Amatsu", et: "agent", st: "operational_executor", did: "amatsu" },
+      ],
+      instances: [],
+      invocations: [],
+      primitives: [],
+      edges: [{ f: "e-amatsu", ft: "entity", t: "e-spark", tt: "entity", e: "operational_executor_agent_for" }],
     }),
 }));
 vi.mock("../../lib/potentialMistakesLoad", () => ({
@@ -134,6 +152,21 @@ describe("PotentialMistakesReport", () => {
     fireEvent.click(await screen.findByRole("button", { name: /^medium/ }));
     expect(screen.getByText("1 of 3 findings")).toBeInTheDocument();
     expect(window.location.search).toContain("sev=medium");
+  });
+
+  it("filters by Atlas scope and by executor agent through URL-synced pills", async () => {
+    render(<PotentialMistakesReport query="" mode="broad" />);
+    fireEvent.click(await screen.findByRole("button", { name: /^A\.1 Governance/ }));
+    expect(screen.getByText("1 of 3 findings")).toBeInTheDocument();
+    expect(window.location.search).toContain("scope=the-governance-scope");
+    fireEvent.click(screen.getByRole("button", { name: /^A\.1 Governance/ }));
+
+    fireEvent.click(await screen.findByRole("button", { name: /^Amatsu/ }));
+    expect(screen.getByText("1 of 3 findings")).toBeInTheDocument();
+    expect(window.location.search).toContain("exec=amatsu");
+    expect(screen.getByText("100,000,00 USDC")).toBeInTheDocument();
+    // The row names the artifact and the executor accountable for it.
+    expect(within(screen.getByRole("table")).getByText("Spark · executor Amatsu")).toBeInTheDocument();
   });
 
   // The suggested fix only gets its own column on a wide screen (110rem).

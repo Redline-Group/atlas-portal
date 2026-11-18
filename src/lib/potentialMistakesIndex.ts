@@ -15,8 +15,7 @@
 // claim is checkable against the source in context.
 
 import type { AtlasNode } from "../types";
-import { toCSV } from "./csv";
-import { atlasUrlOrEmpty } from "./routes";
+import { NO_OWNER, ownershipResolver, type Ownership } from "./mistakeOwnership";
 import type { SearchField } from "./reportFilter";
 
 export type MistakeSeverity = "high" | "medium" | "low";
@@ -73,7 +72,8 @@ export type MistakeStatus =
   | "missing" // UUID no longer in the atlas — doc deleted, or the finding is stale
   | "corpus"; // finding spans documents; nothing single to resolve
 
-export interface MistakeRow extends Mistake {
+/** Ownership fields (mistakeOwnership.ts) are all "" when the doc is unresolvable. */
+export interface MistakeRow extends Mistake, Ownership {
   status: MistakeStatus;
   /** Live doc_no when resolvable, else "". Differs from docNo when renumbered. */
   currentDocNo: string;
@@ -141,13 +141,18 @@ export const STATUS_LABELS: Record<MistakeStatus, string> = {
  * part of the report that is live — it is what stops a hand-run artifact from
  * quietly presenting findings about documents that have since moved or gone.
  */
-export function resolveMistakes(file: MistakesFile, docs: Record<string, AtlasNode>): MistakeRow[] {
+export function resolveMistakes(
+  file: MistakesFile,
+  docs: Record<string, AtlasNode>,
+  owner: (uuid: string | null) => Ownership | null = ownershipResolver(docs, null),
+): MistakeRow[] {
   const rows = file.findings.map((f): MistakeRow => {
-    if (!f.uuid) return { ...f, status: "corpus", currentDocNo: "", title: "" };
+    if (!f.uuid) return { ...f, ...NO_OWNER, status: "corpus", currentDocNo: "", title: "" };
     const doc = docs[f.uuid];
-    if (!doc) return { ...f, status: "missing", currentDocNo: "", title: "" };
+    if (!doc) return { ...f, ...NO_OWNER, status: "missing", currentDocNo: "", title: "" };
     return {
       ...f,
+      ...(owner(f.uuid) ?? NO_OWNER),
       status: doc.doc_no === f.docNo ? "current" : "renumbered",
       currentDocNo: doc.doc_no,
       title: doc.title,
@@ -182,51 +187,14 @@ export function mistakeSearchFields(r: MistakeRow): SearchField[] {
     { label: "category", value: CATEGORY_LABELS[r.category] ?? r.category, hidden: true },
     { label: "pass", value: PASS_LABELS[r.pass], hidden: true },
     { label: "file", value: r.file, hidden: true },
+    { label: "scope", value: r.scopeLabel, hidden: true },
+    { label: "agent", value: r.agent, hidden: true },
+    { label: "executor", value: r.executorLabel, hidden: true },
   ];
 }
 
 export const MISTAKE_SEARCHES =
-  "doc no · title · quoted atlas text · issue · suggested fix · category · pass";
-
-const CSV_HEADERS = [
-  "Severity",
-  "Category",
-  "Pass",
-  "Doc No (at sweep)",
-  "Doc No (current)",
-  "Title",
-  "Status",
-  "Source File",
-  "Quoted Text",
-  "Issue",
-  "Suggested Fix",
-  "UUID",
-  "Atlas Link",
-];
-
-/** One row per finding; each row carries the single doc it targets, so a UUID
- *  and Atlas Link always point at exactly one document (empty for the handful
- *  of corpus-wide findings, which by definition have no single target). */
-export function mistakesToCSV(rows: readonly MistakeRow[]): string {
-  return toCSV(
-    CSV_HEADERS,
-    rows.map((r) => [
-      r.severity,
-      CATEGORY_LABELS[r.category] ?? r.category,
-      PASS_LABELS[r.pass],
-      r.docNo,
-      r.currentDocNo,
-      r.title,
-      STATUS_LABELS[r.status],
-      r.file,
-      r.quote,
-      r.issue,
-      r.fix ?? "",
-      r.uuid ?? "",
-      atlasUrlOrEmpty(r.uuid),
-    ]),
-  );
-}
+  "doc no · title · quoted atlas text · issue · suggested fix · category · pass · scope · agent · executor agent";
 
 /** Per-bucket counts for the filter pills. */
 export function countBy<K extends string>(rows: readonly MistakeRow[], key: (r: MistakeRow) => K): Partial<Record<K, number>> {
@@ -242,3 +210,4 @@ export function presentCategories(rows: readonly MistakeRow[]): string[] {
   const extra = [...seen].filter((c) => !CATEGORIES.includes(c as MistakeCategory)).sort();
   return [...known, ...extra];
 }
+

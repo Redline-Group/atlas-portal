@@ -11,6 +11,7 @@ import {
 } from "@/lib/potentialMistakesIndex";
 import type { ReportQuery } from "@/lib/reportFilter";
 import { Highlight } from "./Highlight";
+import { MistakeOwnerNote } from "./MistakeOwnerNote";
 
 export const SEV_TONE: Record<MistakeRow["severity"], string> = {
   high: "var(--error-text)",
@@ -55,6 +56,7 @@ export function MistakeCard({ r, rq }: { r: MistakeRow; rq: ReportQuery }) {
                 <Highlight text={r.docNo} rq={rq} />
               </span>
             )}
+            <MistakeOwnerNote r={r} />
             <StatusNote r={r} />
           </dd>
         </div>

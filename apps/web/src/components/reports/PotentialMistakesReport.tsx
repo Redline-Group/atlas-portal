@@ -3,7 +3,8 @@
 // The rows are a hand-run LLM sweep (public/potential-mistakes.json); state
 // and the live drift join live in usePotentialMistakesState. See
 // src/lib/potentialMistakesIndex.ts.
-import { MISTAKE_SEARCHES, mistakesToCSV, type MistakeRow } from "@/lib/potentialMistakesIndex";
+import { mistakesToCSV } from "@/lib/potentialMistakesCsv";
+import { MISTAKE_SEARCHES, type MistakeRow } from "@/lib/potentialMistakesIndex";
 import { type ReportMode } from "@/lib/reportFilter";
 import type { ReportId } from "@/types";
 import { DownloadCsvButton } from "./DownloadCsvButton";
@@ -35,13 +36,13 @@ function MistakesCsvButton({
       fullRowCount={all.length}
       buildFull={() => mistakesToCSV(all)}
       query={query}
-      filters={[f.severity, f.pass, f.status, f.category]}
+      filters={[f.severity, f.pass, f.status, f.category, f.scope, f.executor]}
     />
   );
 }
 
 export function PotentialMistakesReport({ query, mode }: { query: string; mode: ReportMode }) {
-  const { file, all, filters, rq, rows, drifted, catLabels } = usePotentialMistakesState(query, mode);
+  const { file, all, filters, rq, rows, drifted, buckets } = usePotentialMistakesState(query, mode);
   return (
     <ReportShell
       report={REPORT}
@@ -52,8 +53,8 @@ export function PotentialMistakesReport({ query, mode }: { query: string; mode: 
       description="Suspected typos, grammar slips, broken references and internal inconsistencies in the Atlas source text — each one quoted, explained, and linked to the document it was found in."
       query={query}
       searches={MISTAKE_SEARCHES}
-      filters={mistakeFilterSummary(filters, catLabels)}
-      controls={all && <MistakesFilters all={all} {...filters} />}
+      filters={mistakeFilterSummary(filters, buckets)}
+      controls={all && <MistakesFilters all={all} buckets={buckets} {...filters} />}
       count={rows ? `${rows.length} of ${all?.length ?? 0} findings` : undefined}
       actions={all && rows ? <MistakesCsvButton all={all} rows={rows} query={query} filters={filters} /> : undefined}
       loading={!rows}
