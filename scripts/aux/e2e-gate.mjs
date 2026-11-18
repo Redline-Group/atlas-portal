@@ -17,6 +17,9 @@
 //
 //   markdown-only diff -> pass immediately. Nothing will deploy, so there is
 //                         nothing for E2E to verify.
+//   atlas bump         -> pass immediately. Railway gives the bump bot's pull
+//                         requests no PR environment, and a bump changes nothing
+//                         a deploy would exercise (scripts/lib/atlas-bump.ts).
 //   anything else      -> wait for a run of e2e.yml at this head SHA, or at an
 //                         older PR commit that deploys the same app (see
 //                         deployEquivalentShas), and mirror its verdict.
@@ -30,6 +33,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { isAtlasBump } from "../lib/atlas-bump.ts";
 import { deployEquivalentShasFromGit } from "../lib/deploy-equivalent.ts";
 import { shouldSkipDeploy } from "../lib/deploy-skip.ts";
 import { fetchPullRequest, fetchRuns } from "./e2e-gate-github.mjs";
@@ -206,6 +210,13 @@ if (isMain) {
     console.log(msg);
     console.log(changed.map((f) => `  ${f}`).join("\n"));
     summarize([`### E2E gate`, "", `✅ ${msg}`, "", "Railway skips the deploy for this diff, so there is nothing to test."]);
+    process.exit(0);
+  }
+
+  if (isAtlasBump({ author: process.env.PR_AUTHOR, headRef: process.env.HEAD_REF, files: changed })) {
+    const msg = `E2E skipped: an automated atlas bump (${changed.length} changed path(s), all bump outputs).`;
+    console.log(msg);
+    summarize([`### E2E gate`, "", `✅ ${msg}`, "", "A bump is gated by CI; see scripts/lib/atlas-bump.ts."]);
     process.exit(0);
   }
 
