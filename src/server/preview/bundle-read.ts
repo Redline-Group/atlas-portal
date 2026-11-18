@@ -9,7 +9,7 @@ import { createCache } from "../ttl-cache.ts";
 import type { DiffLine, WordSegment } from "../../lib/history";
 import { previewPaths } from "./cache.ts";
 import type { PreviewDiffJson } from "./diff-artifacts.ts";
-import { previewPatch, type BeforeEntry, type RemovedDoc } from "../../lib/previewPatch.ts";
+import { beforeDoc, previewPatch, type BeforeEntry, type PatchDoc, type RemovedDoc } from "../../lib/previewPatch.ts";
 
 export interface PreviewDocs {
   byId: Map<string, AtlasNode>;
@@ -59,6 +59,18 @@ export interface PreviewOldSide {
 export function readPreviewOldSide(sha: string): PreviewOldSide {
   const removed = readJson<RemovedDoc[]>(sha, "removed.json") ?? [];
   return { before: readJson<Record<string, BeforeEntry>>(sha, "before.json") ?? {}, removed: new Map(removed.map((d) => [d.id, d])) };
+}
+
+/** A removed document as a node, so a tool can read it the way the reader
+ *  shows it: in place under its parent, which may itself be removed. */
+export function removedNode(d: RemovedDoc): AtlasNode {
+  return { id: d.id, doc_no: d.doc_no, title: d.title ?? "", type: d.type ?? "", depth: d.depth, parentId: d.parentId, content: d.content ?? "", order: 0, addressRefs: [] };
+}
+
+/** A changed document's text on the diff base (where the branch left it), or
+ *  undefined when before.json has no entry for it. */
+export function baseDocOf(id: string, docs: PreviewDocs, old: PreviewOldSide): PatchDoc | undefined {
+  return beforeDoc(id, old.before, docs.byId.get(id));
 }
 
 /** One document's redline, built the way the reader builds it (src/lib/previewPatch.ts). */

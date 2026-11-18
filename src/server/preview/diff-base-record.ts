@@ -97,10 +97,11 @@ export function diffBaseCandidates(meta: RecordMeta): DiffBaseCandidates | null 
 
 /** Size of the automatic pair's doc list, read back off the diff.json the
  *  build just wrote. Undefined when there is none (artifacts skipped). */
-export function readDiffCounts(outDir: string): { added: number; changed: number } | undefined {
+export function readDiffCounts(outDir: string): { added: number; changed: number; removed?: number } | undefined {
   try {
     const d = JSON.parse(fs.readFileSync(path.join(outDir, "diff.json"), "utf8"));
-    return { added: Array.isArray(d.added) ? d.added.length : 0, changed: Array.isArray(d.changed) ? d.changed.length : 0 };
+    const n = (v: unknown) => (Array.isArray(v) ? v.length : 0);
+    return { added: n(d.added), changed: n(d.changed), ...(Array.isArray(d.removed) ? { removed: d.removed.length } : {}) };
   } catch {
     return undefined;
   }

@@ -79,10 +79,15 @@ function previewDocument(
     ...(diff.retyped?.[node.id] ? { retyped: diff.retyped[node.id] } : {}),
     ...(diff.reusedSlot[node.id] ? { reused_slot: diff.reusedSlot[node.id] } : {}),
     ...(diff.identitySwap[node.id] ? { identity_swap: diff.identitySwap[node.id] } : {}),
+    ...(diff.mainAlsoChanged?.includes(node.id) ? { main_also_changed: true } : {}),
     ...(patch.length ? { patch: renderPatch(patch, patchLines) } : {}),
-    cite: change === "removed" ? `/atlas/${node.id}` : previewCite(sha, node.id),
+    // A removed document opens in the preview too, faint where it stood; /atlas/<uuid> would be main's live copy.
+    cite: previewCite(sha, node.id),
   };
 }
+
+const MAIN_ALSO_CHANGED_NOTE =
+  "Rows with main_also_changed: main has changed that document since the branch was cut. Each patch shows only this PR's own edits against where the branch left main, so main's current text may differ from the patch's old side; read it with atlas_get.";
 
 const ALREADY_ON_MAIN_NOTE =
   "already_on_main counts documents this branch also changes whose change live main already has; they are not listed as changes.";
@@ -99,12 +104,14 @@ function previewPage(meta: Extract<ToolOpen, { status: "ready" }>["meta"], id: s
       retitled: Object.keys(diff.retitled).length,
       identity_swaps: Object.keys(diff.identitySwap).length,
       ...(diff.alreadyOnMain?.length ? { already_on_main: diff.alreadyOnMain.length } : {}),
+      ...(diff.mainAlsoChanged?.length ? { main_also_changed: diff.mainAlsoChanged.length } : {}),
     },
     documents,
     has_more: next < total,
     ...(next < total ? { next_offset: next } : {}),
     ...(diff.removed ? {} : { removed_note: "Removed documents were not recorded for this build." }),
     ...(diff.alreadyOnMain?.length ? { already_on_main_note: ALREADY_ON_MAIN_NOTE } : {}),
+    ...(diff.mainAlsoChanged?.length ? { main_also_changed_note: MAIN_ALSO_CHANGED_NOTE } : {}),
     citation_note: CITATION_NOTE,
   };
 }

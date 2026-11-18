@@ -91,7 +91,8 @@ export interface PreviewMeta {
   /** Size of the automatic pair's doc list (diff.json). Persisted to the
    *  previews row with the base it was computed against — see
    *  diff-base-record.ts. Absent when the diff artifacts were skipped. */
-  diffCounts?: { added: number; changed: number };
+  /** `removed` is absent on bundles built before it was counted. */
+  diffCounts?: { added: number; changed: number; removed?: number };
 }
 
 export type BaseKey = "sky" | "repo";

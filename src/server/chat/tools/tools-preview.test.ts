@@ -34,7 +34,7 @@ const out = previewPaths(SHA).outDir;
 function writeBundle(withRemoved: boolean) {
   fs.mkdirSync(out, { recursive: true });
   fs.writeFileSync(path.join(out, "docs.json"), JSON.stringify({ atlasCommit: SHA, nodes: Object.fromEntries(head.map((n) => [n.id, n])) }));
-  const diff = { added: [ADDED, ADDED2], changed: [KEPT], renumbered: {}, retitled: {}, reusedSlot: {}, identitySwap: {}, formerUuid: {} };
+  const diff = { added: [ADDED, ADDED2], changed: [KEPT], renumbered: {}, retitled: {}, reusedSlot: {}, identitySwap: {}, formerUuid: {}, mainAlsoChanged: [KEPT] };
   fs.writeFileSync(path.join(out, "diff.json"), JSON.stringify(withRemoved ? { ...diff, removed: [GONE] } : diff));
   fs.writeFileSync(path.join(out, "before.json"), JSON.stringify({ [KEPT]: { doc_no: "A.1.10", title: "Kept", type: "Core", content: "old text" } }));
   const removed = withRemoved ? [{ ...live[2], after: KEPT }] : [];
@@ -53,7 +53,12 @@ test("diff: source_class leads, counts, doc_no order, cite forms", () => {
   expect(r.documents.map((d: any) => d.doc_no)).toEqual(["A.1.2", "A.1.3", "A.1.10", "A.1.11"]);
   const byId = Object.fromEntries(r.documents.map((d: any) => [d.id, d]));
   expect(byId[ADDED].cite).toBe(`/preview/${SHA}/atlas?id=${ADDED}`);
-  expect(byId[GONE]).toMatchObject({ change: "removed", title: "Gone", cite: `/atlas/${GONE}` });
+  // A removal cites the preview's copy, shown where it stood, not main's live document.
+  expect(byId[GONE]).toMatchObject({ change: "removed", title: "Gone", cite: `/preview/${SHA}/atlas?id=${GONE}` });
+  expect(byId[GONE].patch).toEqual(["- A.1.3 - Gone [Core] <!-- UUID: " + GONE + " -->", "- bye"]);
+  expect(byId[KEPT].main_also_changed).toBe(true);
+  expect(byId[ADDED].main_also_changed).toBeUndefined();
+  expect(r.counts.main_also_changed).toBe(1);
   // An in-line edit is whole old line, then whole new line, never word markup.
   expect(byId[KEPT].patch).toEqual(["- old text", "+ new text"]);
   expect(byId[ADDED].parent).toEqual({ id: P, doc_no: "A.1", title: "Parent" });
@@ -83,16 +88,39 @@ test("diff: a bundle without a recorded removed list says so instead of claiming
   }
 });
 
-test("get: by uuid or the preview's doc_no, with live text for comparison", () => {
+test("get: by uuid or the preview's doc_no, with the text where the branch left its base", () => {
   const r = buildPreviewGet(ix, open, { ids: [KEPT, "A.1.2", "Z.9"], include_base: true, include_children: false }) as any;
   expect(r.source_class).toBe("preview");
   expect(r.not_found).toEqual(["Z.9"]);
   const [kept, added] = r.documents;
   expect(kept).toMatchObject({ status: "changed", content: "new text", base: { content: "old text", source: "live atlas abcdef1" } });
   expect(kept.ancestors).toEqual([{ doc_no: "A.1", title: "Parent" }]);
+  expect(kept.main_also_changed).toContain("atlas_get");
   expect(added).toMatchObject({ status: "added", content: "hello", cite: `/preview/${SHA}/atlas?id=${ADDED}` });
   expect(added.base).toBeUndefined();
   expect(r.style_hint).toContain("atlas_filter");
+});
+
+test("get: `base` is labelled with where the branch left its base, not as the live atlas", () => {
+  const bases = { auto: "sky" as const, sky: { repo: "sky-ecosystem/next-gen-atlas", ref: "main", mergeBase: "1234567890abc", mergeBaseDate: "2026-10-01T00:00:00Z" } };
+  const withBase = { ...open, meta: { ...meta, bases } };
+  const [kept] = (buildPreviewGet(ix, withBase, { ids: [KEPT], include_base: true, include_children: false }) as any).documents;
+  expect(kept.base).toEqual({
+    source: "sky-ecosystem/next-gen-atlas:main where this branch left it (1234567, 2026-10-01)",
+    doc_no: "A.1.10",
+    title: "Kept",
+    content: "old text",
+  });
+});
+
+test("get: opens a document the PR removes, as the reader shows it", () => {
+  const r = buildPreviewGet(ix, open, { ids: [GONE], include_base: true, include_children: false }) as any;
+  expect(r.not_found).toBeUndefined();
+  const [gone] = r.documents;
+  expect(gone).toMatchObject({ id: GONE, status: "removed", title: "Gone", content: "bye", cite: `/preview/${SHA}/atlas?id=${GONE}` });
+  expect(gone.parent).toMatchObject({ id: P, doc_no: "A.1" });
+  expect(gone.base).toBeUndefined();
+  expect(gone.patch).toEqual(["- A.1.3 - Gone [Core] <!-- UUID: " + GONE + " -->", "- bye"]);
 });
 
 test("get: children on request", () => {

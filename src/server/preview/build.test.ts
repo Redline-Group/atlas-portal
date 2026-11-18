@@ -948,7 +948,7 @@ test("PR against a non-main base: bases.auto is repo, the old side is its merge 
     // the base actually used (branch@merge-base commit) and the doc-list size,
     // and the build says so in one positive log line — no repo name in it.
     expect(upserted?.bases).toEqual(meta?.bases);
-    expect(upserted?.diffCounts).toEqual({ added: 0, changed: 1 });
+    expect(upserted?.diffCounts).toEqual({ added: 0, changed: 1, removed: 0 });
     expect(diffBaseType(upserted!)).toBe("pr-base"); // a declared PR base, not the default branch standing in
     expect(diffBaseLabel(upserted!)).toBe(`${CANONICAL_REPO}:develop@${REPO_MERGE_BASE}`);
     const line = logged.find((l) => l.startsWith(`[preview] ${sha.slice(0, 8)}: redlined vs pr-base develop@${REPO_MERGE_BASE.slice(0, 8)} (LCA)`));
