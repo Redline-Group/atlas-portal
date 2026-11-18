@@ -59,6 +59,16 @@ vi.mock("../../lib/pau", async (importOriginal) => {
 
 vi.mock("../../lib/docs", async (importOriginal) => ({ ...(await importOriginal<typeof import("../../lib/docs")>()), loadAtlas: () => new Promise(() => {}) }));
 vi.mock("../../lib/graph", () => ({ loadGraph: () => Promise.resolve({ participants: [{ id: PRIME, slug: "spark", name: "Spark", et: "agent", st: "prime", did: "p", m: "{}" }], instances: [], invocations: [], primitives: [], edges: [] }) }));
+// The hover-linking rules are `:has()` selectors, which jsdom re-evaluates
+// against the whole card on every getComputedStyle — so each role query here
+// would pay for them, enough to time a test out on a loaded runner. jsdom
+// cannot hover, so these tests lose nothing; src/lib/pauPlumbingLinks.test.ts
+// covers the rules themselves.
+vi.mock("@/lib/pauPlumbingLinks", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/pauPlumbingLinks")>()),
+  entityLinkCss: () => "",
+  plumbingLinkCss: () => "",
+}));
 vi.mock("@/lib/pauAtlasValues", () => ({
   checkAtlasValues: () => [
     { contract: RL, key: NAMED, status: "match" }, { contract: RL, key: NAMED, status: "match" },
