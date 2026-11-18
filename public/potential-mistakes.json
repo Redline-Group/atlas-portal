@@ -226,6 +226,30 @@
       "fix": "Should read 'Operational GovOps validates the Agent's inputs.'"
     },
     {
+      "id": "A.2.2.6.2.1.2.2#entity",
+      "docNo": "A.2.2.6.2.1.2.2",
+      "uuid": "823cad54-4438-4ec3-9e13-d2624795fabd",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "entity",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "The Operational Facilitator reviews the proposal. This review encompasses two aspects. First, the Operational Executor reviews the proposal for alignment with the Atlas.",
+      "issue": "The alignment review is attributed to the Operational Executor, but the document's own first sentence and A.2.2.6.2.2.2 clause (2) ('the Operational Facilitator must review each proposal for alignment and conformance') assign that review to the Operational Facilitator — two different actors for the same act in the same paragraph.",
+      "fix": "Should read 'First, the Operational Facilitator reviews the proposal for alignment with the Atlas.'"
+    },
+    {
+      "id": "A.2.2.9.1.2.3.5.2#entity",
+      "docNo": "A.2.2.9.1.2.3.5.2",
+      "uuid": "d0ceb4ed-8f65-45c6-808e-fca702dc2a62",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "entity",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "Using the finalized `Atlas Edit Proposal` content",
+      "issue": "Every sibling input/output document names this document `Artifact Edit Proposal`; `Atlas Edit Proposal` does not exist in the process.",
+      "fix": "Using the finalized `Artifact Edit Proposal` content"
+    },
+    {
       "id": "A.2.2.9.1.2.4.1.1.4.2#grammar",
       "docNo": "A.2.2.9.1.2.4.1.1.4.2",
       "uuid": "f3ba519f-0d2f-4565-80be-3c095fc49b75",
@@ -250,6 +274,18 @@
       "fix": null
     },
     {
+      "id": "A.2.2.9.2.2.3.5.2#entity",
+      "docNo": "A.2.2.9.2.2.3.5.2",
+      "uuid": "185d7f3b-9612-42ef-bde7-c9a64ad3ceab",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "entity",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "Using the finalized `Atlas Edit Proposal` content",
+      "issue": "Every sibling input/output document names this document `Artifact Edit Proposal`; `Atlas Edit Proposal` does not exist in the process.",
+      "fix": "Using the finalized `Artifact Edit Proposal` content"
+    },
+    {
       "id": "A.2.2.9.2.2.4.1.1.4.2#grammar",
       "docNo": "A.2.2.9.2.2.4.1.1.4.2",
       "uuid": "b785cb0c-1ebb-438d-a5c4-c385e7446977",
@@ -262,6 +298,18 @@
       "fix": "The requirements specified in [A.2.2.9.2.2.4.1.1.3 - Required Primitive Inputs](4c84f0a6-0d4d-4718-a7c4-04fa29fadfcc) fully complete the Process."
     },
     {
+      "id": "A.2.3.1.2.1.1#typo",
+      "docNo": "A.2.3.1.2.1.1",
+      "uuid": "bddce7bf-c568-444b-b196-e15a99016696",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "typo",
+      "severity": "high",
+      "pass": "language",
+      "quote": "Income and Expenses are defined such that Net Revenue must always be positive",
+      "issue": "Sentence is missing its terminating period, unlike every other sentence in this document.",
+      "fix": "Income and Expenses are defined such that Net Revenue must always be positive."
+    },
+    {
       "id": "A.2.4.1.2.2.1.1.2.3.2.1#xref",
       "docNo": "A.2.4.1.2.2.1.1.2.3.2.1",
       "uuid": "5e78fb21-1208-442f-b215-3babcd69fd69",
@@ -272,6 +320,18 @@
       "quote": "the excess of (1) its Low Yield Actively Stabilizing Collateral (see [A.2.4.1.2.2.1.1.2.3.2 - Low Yield Actively Stabilizing Collateral Penalty](631e7c75-375f-4298-9d85-b17cb2eb019f)) as a percentage of its Collateral Portfolio",
       "issue": "The definition of 'Low Yield Actively Stabilizing Collateral' is cited to the Penalty document (631e7c75), which only describes the penalty; the term is actually defined in its own document A.2.4.1.2.2.1.1.2.3.2.1.1 - Low Yield Actively Stabilizing Collateral (858b2ee0-89b8-4505-8324-f3cd315de40c) in the same chunk.",
       "fix": "Point the reference at A.2.4.1.2.2.1.1.2.3.2.1.1 - Low Yield Actively Stabilizing Collateral (858b2ee0-89b8-4505-8324-f3cd315de40c)"
+    },
+    {
+      "id": "A.2.7.1.2.1.1.1.1#grammar",
+      "docNo": "A.2.7.1.2.1.1.1.1",
+      "uuid": "a3e4d767-56d1-4b1f-8ade-b733bca4244f",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "grammar",
+      "severity": "high",
+      "pass": "language",
+      "quote": "the ban interrupts the users' exercise of a governance process",
+      "issue": "Plural possessive \"users'\" disagrees with the singular antecedent \"a user\" used earlier in the same sentence.",
+      "fix": "the ban interrupts the user's exercise of a governance process"
     },
     {
       "id": "A.2.8.2.1.1.2#stale",
@@ -394,6 +454,18 @@
       "fix": "It is set to `0.13`."
     },
     {
+      "id": "A.3.2.2.1.1.1.1.1.3.3#naming",
+      "docNo": "A.3.2.2.1.1.1.1.1.3.3",
+      "uuid": "3b7924b2-1236-43cb-b0f0-ebe06f573b78",
+      "file": "A.3 - The-Stability-Scope.md",
+      "category": "naming",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The Sensitivity Factor `K` is a tuning parameter indicating how quickly the correlations transition between $a$ and $b$.",
+      "issue": "The document's own heading calls this parameter \"Sensitivity Coefficient\", but the body calls it \"Sensitivity Factor\".",
+      "fix": "The Sensitivity Coefficient `K` is a tuning parameter indicating how quickly the correlations transition between $a$ and $b$."
+    },
+    {
       "id": "A.3.2.2.1.1.1.2#grammar",
       "docNo": "A.3.2.2.1.1.1.2",
       "uuid": "69fac7fa-6168-4b74-99cc-28b557826556",
@@ -442,6 +514,18 @@
       "fix": "The near-term treatment of these assets is specified in the subdocuments herein."
     },
     {
+      "id": "A.3.2.2.1.2.2.3#naming",
+      "docNo": "A.3.2.2.1.2.2.3",
+      "uuid": "295e4d3b-8c8a-4f74-879f-88060bb07803",
+      "file": "A.3 - The-Stability-Scope.md",
+      "category": "naming",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The Code Complexity Rate $CCR$ is a measure of the complexity of the code of the smart contracts used by the protocol.",
+      "issue": "The document's own heading and every related subdocument call this \"Code Complexity Rating\", but this sentence calls it \"Code Complexity Rate\".",
+      "fix": "The Code Complexity Rating $CCR$ is a measure of the complexity of the code of the smart contracts used by the protocol."
+    },
+    {
       "id": "A.3.2.2.1.2.2.3.3.10#typo",
       "docNo": "A.3.2.2.1.2.2.3.3.10",
       "uuid": "a30c8bc7-2686-46ac-952e-9c1f71c96aa0",
@@ -476,6 +560,18 @@
       "quote": "f_{2} = \\dfrac{e_{\\text{int}} + a \\,\\bigl(e_{\\text{tot}} - e_{\\text{int}}\\bigr)}{s_{\\text{liq}}}",
       "issue": "Two contradictions in one line: the formula's coefficient is written $a$ but the note defines $\\alpha$, and $\\alpha$ is already defined in the same Instance Smart Contract CRR chain as the blend weight alpha = (r - 25)/(50 - 25) (A.3.2.2.1.2.3.1.2.5.2), which is a function of the Risk Rating and not the constant 0.1 — the reference implementation confirms these are two different quantities (a literal 0.1 in f2, and alpha = (rating-25)/(50-25) in the blend).",
       "fix": "Use a distinct symbol for the 0.1 coefficient in the F2 function (and make the formula and the note use the same symbol), leaving alpha for the medium-risk blend weight."
+    },
+    {
+      "id": "A.3.2.2.1.3.1.2#naming",
+      "docNo": "A.3.2.2.1.3.1.2",
+      "uuid": "368786cb-da80-4d48-a2e8-52d14fb6320c",
+      "file": "A.3 - The-Stability-Scope.md",
+      "category": "naming",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The Starting Rate $\\text{SR}$ is an initial risk rating for Administrative Risk before taking into account the Delay Factor and Lindy Adjustment Factor.",
+      "issue": "The document's own heading calls this parameter \"Starting Rating\", but the body and all three child documents call it \"Starting Rate\".",
+      "fix": "Rename the heading of A.3.2.2.1.3.1.2 from \"Starting Rating\" to \"Starting Rate\" so it matches its body, its three children and the sibling parameter A.3.2.2.1.2.2.2 - Starting Rate."
     },
     {
       "id": "A.3.2.2.1.3.1.3#naming",
@@ -608,6 +704,30 @@
       "quote": "Active Instances Directory](bb23a141-5119-4473-be3a-8f3c2a6f181a),; whereas failed Invocations are Archived",
       "issue": "A.6.1.1.1.2.5.2.1.4 has the doubled punctuation ',;' after the link. This is a punctuation typo, not a markdown error, and the fix to ', whereas' is correct.",
       "fix": "Active Instances Directory](bb23a141-5119-4473-be3a-8f3c2a6f181a), whereas failed Invocations are Archived"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.1.2.4.1#typo",
+      "docNo": "A.6.1.1.1.2.6.1.1.2.4.1",
+      "uuid": "d0cbb95a-5115-4a9a-a67e-cc00172beef5",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "typo",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The Robinhood Chain Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein",
+      "issue": "A.6.1.1.1.2.6.1.1.2.4.1 (renumbered) has no closing period, unlike the same boilerplate in its siblings, e.g. A.6.1.1.1.2.6.1.1.2.3.1. A missing period is punctuation, not markdown.",
+      "fix": "The Robinhood Chain Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein."
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.1.2.5.1#typo",
+      "docNo": "A.6.1.1.1.2.6.1.1.2.5.1",
+      "uuid": "70c70fa9-9cb4-4bcf-a62f-b815a90981c3",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "typo",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The X Layer Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein",
+      "issue": "A.6.1.1.1.2.6.1.1.2.5.1 (renumbered) has no closing period, unlike the same boilerplate in its sibling A.6.1.1.1.2.6.1.1.2.5.2. A missing period is punctuation, not markdown.",
+      "fix": "The X Layer Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein."
     },
     {
       "id": "A.6.1.1.1.2.6.1.2.1.1.1.2.1.4#grammar",
@@ -766,6 +886,18 @@
       "fix": "Should read 'the parameters of the Spark Savings v2 USDC Instance of the Allocation System Primitive.'"
     },
     {
+      "id": "A.6.1.1.1.2.6.1.3.1.6.5.2.4#markdown",
+      "docNo": "A.6.1.1.1.2.6.1.3.1.6.5.2.4",
+      "uuid": "908bf4b2-0b28-4e2f-8928-4a4dd867b33f",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "markdown",
+      "severity": "high",
+      "pass": "language",
+      "quote": "`maxAmount,` `slope`",
+      "issue": "The comma sits inside the backticks, so the code span reads `maxAmount,` rather than `maxAmount`.",
+      "fix": "`maxAmount`, `slope`"
+    },
+    {
       "id": "A.6.1.1.1.2.6.1.3.2.1.1.4.1#grammar",
       "docNo": "A.6.1.1.1.2.6.1.3.2.1.1.4.1",
       "uuid": "ab15055e-99ff-4699-82f9-6f1b9a6b4f58",
@@ -800,6 +932,30 @@
       "quote": "These addesses will be specified in a future iteration of the Spark Artifact.",
       "issue": "Misspelling of 'addresses'.",
       "fix": "These addresses will be specified in a future iteration of the Spark Artifact."
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.1#grammar",
+      "docNo": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.1",
+      "uuid": "893256f7-00f6-42e7-92cd-218af9beac76",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "grammar",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The inflow rate limit parameter is:",
+      "issue": "Singular 'parameter is' introduces a list of two parameters (maxAmount and slope); sibling documents use 'parameters are'.",
+      "fix": "The inflow rate limit parameters are:"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.2#grammar",
+      "docNo": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.2",
+      "uuid": "dfcceae6-65f0-44e2-9d47-9ad2324d983d",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "grammar",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The outflow rate limit parameter is:",
+      "issue": "Singular 'parameter is' introduces a list of two parameters (maxAmount and slope); sibling documents use 'parameters are'.",
+      "fix": "The outflow rate limit parameters are:"
     },
     {
       "id": "A.6.1.1.1.3.1.3.4.3#stale",
@@ -884,6 +1040,18 @@
       "quote": "Spark Asset Foundation (including legal council)",
       "issue": "Malapropism: \"legal council\" (a deliberative body) should be \"legal counsel\" (legal advisors), which is the intended meaning here.",
       "fix": "Spark Asset Foundation (including legal counsel)"
+    },
+    {
+      "id": "A.6.1.1.1.3.10.3#naming",
+      "docNo": "A.6.1.1.1.3.10.3",
+      "uuid": "56281438-63f9-46d4-a382-39a790a3bba1",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "high",
+      "pass": "language",
+      "quote": "voluntarily deposited by users into a Confidential Strategic Partnership and Deployment through preconfigured product functionality",
+      "issue": "Inconsistent naming: this document and its section otherwise consistently use \"Confidential Strategic Integration(s) and Deployment(s)\"; this instance swaps in \"Partnership\" for \"Integration\" for the same concept.",
+      "fix": "voluntarily deposited by users into a Confidential Strategic Integration and Deployment through preconfigured product functionality"
     },
     {
       "id": "A.6.1.1.2.2.3.2#grammar",
@@ -1090,6 +1258,18 @@
       "fix": "must use it to exercise the [A.6.1.1.3.2.6.1.2.2.2.1.1.2 - Relayer Role]"
     },
     {
+      "id": "A.6.1.1.3.2.6.1.2.1.2.3.1.5#grammar",
+      "docNo": "A.6.1.1.3.2.6.1.2.1.2.3.1.5",
+      "uuid": "e7492c8c-10b6-4ee1-9d62-fb3c292f1308",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "grammar",
+      "severity": "high",
+      "pass": "language",
+      "quote": "Changes to the Prime Relayer Addresses is a controller action",
+      "issue": "Plural subject 'Changes' with singular verb 'is'.",
+      "fix": "Changes to the Prime Relayer Addresses are controller actions which must be invoked by a"
+    },
+    {
       "id": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.3.2.1#copy-paste",
       "docNo": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.3.2.1",
       "uuid": "37c09b7c-6aa0-4c3c-861e-984de4e3ba4d",
@@ -1114,6 +1294,18 @@
       "fix": "Body should read 'using the SkyBridge (LayerZero OFT) Token Bridge' to match the title (or the title corrected if OP Token Bridge is meant)."
     },
     {
+      "id": "A.6.1.1.3.2.6.1.2.2.2.1.1.3#typo",
+      "docNo": "A.6.1.1.3.2.6.1.2.2.2.1.1.3",
+      "uuid": "6f7becc7-2e70-44e5-8662-25ba7dd1a5f8",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "typo",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The Freezer role has `can_freeze_controller` , `can_suspend_permissions` and `can_liquidate` permissions.",
+      "issue": "Stray space before the comma after the first code-formatted permission name.",
+      "fix": "The Freezer role has `can_freeze_controller`, `can_suspend_permissions` and `can_liquidate` permissions."
+    },
+    {
       "id": "A.6.1.1.3.2.6.1.2.2.2.1.3.2.1#copy-paste",
       "docNo": "A.6.1.1.3.2.6.1.2.2.2.1.3.2.1",
       "uuid": "c75e8c0d-0b16-4808-a14c-dac919ef9269",
@@ -1124,6 +1316,18 @@
       "quote": "The properties associated with a Reserve level rate limit can be read from the `Integration` account corresponding to a particular token",
       "issue": "Under Integration Level Rate Limits (A.6.1.1.3.2.6.1.2.2.2.1.3.2), the text says 'Reserve level rate limit', copied from the Reserve-level doc A.6.1.1.3.2.6.1.2.2.2.1.3.1.1.",
       "fix": "Should read 'The properties associated with an Integration level rate limit can be read from the `Integration` account...'."
+    },
+    {
+      "id": "A.6.1.1.3.2.6.1.2.2.2.3.2.1#grammar",
+      "docNo": "A.6.1.1.3.2.6.1.2.2.2.3.2.1",
+      "uuid": "4f8c8aa3-fffc-46dd-aeb7-b23e996619d7",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "grammar",
+      "severity": "high",
+      "pass": "language",
+      "quote": "Integrations, Reserves nor Permissions cannot be managed during this period",
+      "issue": "\"nor\" combined with \"cannot\" is a double negative; the list should be joined with \"and\".",
+      "fix": "Integrations, Reserves and Permissions cannot be managed during this period"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.2.2.3.4#copy-paste",
@@ -1150,6 +1354,18 @@
       "fix": "moved to [A.6.1.1.4.2.5.1.1.2 - Active Instances Directory](c6275b51-9ee0-49df-a4ea-33a24cd2c752), whereas failed Invocations"
     },
     {
+      "id": "A.6.1.1.4.2.5.2.2.1.2.1#xref",
+      "docNo": "A.6.1.1.4.2.5.2.2.1.2.1",
+      "uuid": "6fe71ca8-3c28-408e-8b11-3c2fcfcc5778",
+      "file": "A.6.1.1.4 - Skybase.md",
+      "category": "xref",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "subject to the qualifications specified in [A.2.2.9.1.2.1.3.3.1 - Near-Term Process](05fb732b-de55-4886-81a7-7c5d4c13d2d2).",
+      "issue": "The Euler Instance belongs to the Integration Boost Primitive (A.6.1.1.4.2.5.2, 'See A.2.2.9.2 - Integration Boost Primitive'), but its Near-Term Process qualification points into the Distribution Reward Primitive subtree (A.2.2.9.1.*), while its two sibling Integration Boost Instances (Curve A.6.1.1.4.2.5.2.2.2.2.1 and Morpho A.6.1.1.4.2.5.2.2.3.2.1) both cite A.2.2.9.2.2.1.3.2.1 - Near Term Process.",
+      "fix": "Should cite [A.2.2.9.2.2.1.3.2.1 - Near Term Process](4ab621b4-ef8e-4b01-a6aa-9296601033c5), as the Curve and Morpho Instances do"
+    },
+    {
       "id": "A.6.1.1.4.2.5.2.4.1.2.6#placeholder",
       "docNo": "A.6.1.1.4.2.5.2.4.1.2.6",
       "uuid": "45a70053-e0a3-4188-a40b-f6b64ffde9e6",
@@ -1162,6 +1378,30 @@
       "fix": "Should read 'The Data Submission Responsible Actor is Core Council Risk Advisor.' (or the actual intended actor)"
     },
     {
+      "id": "A.6.1.1.4.2.5.2.4.1.3.1#xref",
+      "docNo": "A.6.1.1.4.2.5.2.4.1.3.1",
+      "uuid": "9ad35e12-7bd0-46c8-a753-4a341ab880a2",
+      "file": "A.6.1.1.4 - Skybase.md",
+      "category": "xref",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "subject to the qualifications specified in [A.2.2.9.1.2.1.3.3.1 - Near-Term Process](05fb732b-de55-4886-81a7-7c5d4c13d2d2).",
+      "issue": "The Compound Instance is an Integration Boost Primitive Instance (A.6.1.1.4.2.5.2 -> A.2.2.9.2) yet its Near-Term Process qualification points into the Distribution Reward Primitive subtree (A.2.2.9.1.*), contradicting the Curve and Morpho Integration Boost Instances in the same chunk which cite A.2.2.9.2.2.1.3.2.1 - Near Term Process.",
+      "fix": "Should cite [A.2.2.9.2.2.1.3.2.1 - Near Term Process](4ab621b4-ef8e-4b01-a6aa-9296601033c5)"
+    },
+    {
+      "id": "A.6.1.1.5.2.6.1.2.1.1.1.2.1#structural",
+      "docNo": "A.6.1.1.5.2.6.1.2.1.1.1.2.1",
+      "uuid": "5d99d731-c3ed-461c-a6ea-50ebd741b3d2",
+      "file": "A.6.1.1.5 - Obex.md",
+      "category": "structural",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "A.6.1.1.5.2.6.1.2.1.1.1.2.1 - Ethereum Mainnet ... The documents herein contain the ALM Contract Addresses for the Obex Liquidity Layer on the Ethereum Mainnet.",
+      "issue": "This chain container is left empty: the ALM contract documents that belong under it are numbered A.6.1.1.5.2.6.1.2.1.1.1.2.2 through .2.7, i.e. as its SIBLINGS under ALM Contracts, unlike the parallel Allocator section where Ethereum Mainnet (.1.1.1) correctly contains .1.1.1.1-.1.1.1.5.",
+      "fix": "Renumber the ALM contract documents as A.6.1.1.5.2.6.1.2.1.1.1.2.1.1 ... .2.1.6 so they sit under the Ethereum Mainnet container."
+    },
+    {
       "id": "A.6.1.1.5.2.6.1.2.1.1.3.1.3#grammar",
       "docNo": "A.6.1.1.5.2.6.1.2.1.1.3.1.3",
       "uuid": "8505febf-f853-4de9-89dc-d483d5439cbc",
@@ -1172,6 +1412,18 @@
       "quote": "The maximum amount that can be transferred and sent to the Ethereum Mainnet ALM Proxy for USDC are located herein.",
       "issue": "Subject/verb disagreement: singular subject \"amount\" takes plural verb \"are located\".",
       "fix": "The maximum amount that can be transferred and sent to the Ethereum Mainnet ALM Proxy for USDC is located herein."
+    },
+    {
+      "id": "A.6.1.1.5.2.6.1.2.1.2.1#xref",
+      "docNo": "A.6.1.1.5.2.6.1.2.1.2.1",
+      "uuid": "f6be405d-fae7-474e-882d-5c98985324b6",
+      "file": "A.6.1.1.5 - Obex.md",
+      "category": "xref",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The governance process to invoke a new Instance of the Allocation System Primitive follows the Root Edit process see Operational Process Definition.",
+      "issue": "Every sibling Prime (e.g. A.6.1.1.6.2.6.1.2.1.2.1) has the same 'process see' wording but links the Operational Process Definition; in A.6.1.1.5.2.6.1.2.1.2.1 the link is lost and only plain text remains.",
+      "fix": "The governance process to invoke a new Instance of the Allocation System Primitive follows the Root Edit process see [A.6.1.1.5.2.2.2.2.1.2 - Operational Process Definition](ef3c8fc4-d958-492b-bee6-d96b5f972720)."
     },
     {
       "id": "A.6.1.1.5.2.6.1.2.2.1.1#grammar",
@@ -1198,6 +1450,18 @@
       "fix": "Precondition should be that the ALM Proxy holds at least the number of vault shares needed to cover the requested withdrawal amount (copy-paste from depositERC4626)."
     },
     {
+      "id": "A.6.1.1.6.2.6.1.1.2.1.2#grammar",
+      "docNo": "A.6.1.1.6.2.6.1.1.2.1.2",
+      "uuid": "efa428ed-6e6b-433a-a7e0-2ae781167940",
+      "file": "A.6.1.1.6 - Pattern.md",
+      "category": "grammar",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The Ethereum Mainnet Instances Directory of River deals with `Active` Status are stored herein.",
+      "issue": "Broken sentence: singular verb 'deals' with plural 'are stored'; sibling directories read 'Instances ... with `Active` Status are stored herein'.",
+      "fix": "The Ethereum Mainnet Instances Directory of River with `Active` Status are stored herein."
+    },
+    {
       "id": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1#copy-paste",
       "docNo": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1",
       "uuid": "40875283-48ec-48f0-8b61-e45d33f976ab",
@@ -1222,6 +1486,30 @@
       "fix": "For more detailed instructions on the code to execute this, see [A.6.1.1.6.2.6.1.2.2.1.2.1.2.1.2 - Burn USDS]"
     },
     {
+      "id": "A.6.1.1.6.2.6.1.3.1.2#grammar",
+      "docNo": "A.6.1.1.6.2.6.1.3.1.2",
+      "uuid": "2503b3b1-e0cc-477c-95b7-6fdf25a72ea4",
+      "file": "A.6.1.1.6 - Pattern.md",
+      "category": "grammar",
+      "severity": "high",
+      "pass": "language",
+      "quote": "The Ethereum Mainnet Instances of River deals with `Active` Status are stored herein.",
+      "issue": "Broken sentence: 'deals with' disagrees with the plural subject and is not the phrasing used by sibling documents ('Instances of X with `Completed` Status').",
+      "fix": "The Ethereum Mainnet Instances of River with `Active` Status are stored herein."
+    },
+    {
+      "id": "A.6.1.1.8.2.1.1.1.3#naming",
+      "docNo": "A.6.1.1.8.2.1.1.1.3",
+      "uuid": "9378730b-3ec4-4b75-918d-1dc4163f4c45",
+      "file": "A.6.1.1.8 - Launch-Agent-7.md",
+      "category": "naming",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "###### A.6.1.1.8.2.1.1.1.3 - Completed Instances [Core] This document contains a Directory of all Instances of the Agent Creation Primitive with Instance status of `Completed`.",
+      "issue": "Hub doc A.6.1.1.8.2.1.1.1.3 describes itself as a Directory yet is titled 'Completed Instances'; every other agent's hub slot (e.g. A.6.1.1.7.2.1.1.1.3) is 'Completed Instances Directory'.",
+      "fix": "Rename to 'Completed Instances Directory' (and rename A.6.1.1.8.2.1.1.3 to 'Completed Instances')."
+    },
+    {
       "id": "NR-18#grammar",
       "docNo": "NR-18",
       "uuid": "ab868a43-3f89-4e9e-b281-6078e655e065",
@@ -1244,18 +1532,6 @@
       "quote": "can have variable number of components, and different characteristics of each component, for each instance of the Type",
       "issue": "Missing indefinite article before \"variable number\".",
       "fix": "can have a variable number of components, and different characteristics of each component, for each instance of the Type"
-    },
-    {
-      "id": "A.1.2.2.2.22#markdown",
-      "docNo": "A.1.2.2.2.22",
-      "uuid": "6eceace8-f499-4954-9ecc-1ada12a02c18",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "markdown",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Definition Type is used for documents that define unique concepts contained in subdocuments to the Target Document of the Definition Document",
-      "issue": "Sentence is missing its terminal period.",
-      "fix": "The Definition Type is used for documents that define unique concepts contained in subdocuments to the Target Document of the Definition Document."
     },
     {
       "id": "A.1.2.2.2.25#contradiction",
@@ -1330,30 +1606,6 @@
       "fix": "Whether An Entity Is \"Operationally Active\" In A Role Is Determined Purely On A Formal Basis"
     },
     {
-      "id": "A.1.6.3.0.3.1#structural",
-      "docNo": "A.1.6.3.0.3.1",
-      "uuid": "9446b896-f33f-4593-97e9-60db6c385afd",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The element \"delegated voting power\" refers to the ability of SKY holders and Staking users to entrust their voting power to a Delegate Contract, allowing the Aligned Delegate controlling that contract to cast votes in the Sky Governance process on their behalf.",
-      "issue": "Defines the element as an ability held by SKY holders, which contradicts both the usage in its own Target Document A.1.6.3 ('Delegate Contracts are smart contracts that can receive delegated voting power' — an ability to entrust cannot be received) and the second annotation of the same element at A.1.6.4.1.3.3.0.3.1, which defines 'delegated Voting Power' as 'the cumulative SKY that has been delegated to an Aligned Delegate's Delegate Contract' — a quantity, and the meaning the Level 3 ranking rule depends on.",
-      "fix": "Define the element once, as the quantity of voting power delegated to a Delegate Contract, and describe the act of entrusting separately."
-    },
-    {
-      "id": "A.1.6.4.3.1#grammar",
-      "docNo": "A.1.6.4.3.1",
-      "uuid": "ad1ef0f4-246f-4289-b5fc-ea5c91508ccf",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "their RD rank, and the budget eligibility associated with that rank, is transferred to the next highest-ranking AD",
-      "issue": "Subject/verb disagreement: the compound subject \"their RD rank\" and \"the budget eligibility\" joined by \"and\" requires a plural verb.",
-      "fix": "their RD rank, and the budget eligibility associated with that rank, are transferred to the next highest-ranking AD"
-    },
-    {
       "id": "A.1.6.4.3.3.1#governance",
       "docNo": "A.1.6.4.3.3.1",
       "uuid": "21d0b626-cd84-4237-8cab-d68f697c276d",
@@ -1366,42 +1618,6 @@
       "fix": "Align the subdocument with its parent: the Core Facilitator renders the RD ineligible for RD income (and, for a Level 3 RD, transfers the rank), rather than 'removing them from RD status'."
     },
     {
-      "id": "A.1.9.1.3.2#governance",
-      "docNo": "A.1.9.1.3.2",
-      "uuid": "3efb0238-aaae-4351-9ec9-31902f3a1394",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "governance",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "This emergency contact mechanism is selected and validated by the Protocol Security Workstream Lead.",
-      "issue": "Vests selection of the mechanism in the Protocol Security Workstream Lead, while its own subdocument A.1.9.1.3.2.3 vests it elsewhere: 'The Core Facilitator may recommend changing the approved emergency contact mechanism ... in consultation with the Protocol Security Workstream Lead. The Core Facilitator's recommendation is subject to a poll through the Operational Weekly Cycle' — i.e. the PSWL is only consulted and Sky Governance decides.",
-      "fix": "'This emergency contact mechanism is validated by the Protocol Security Workstream Lead and approved through the process in A.1.9.1.3.2.3', or amend A.1.9.1.3.2.3 to give the PSWL the selection authority."
-    },
-    {
-      "id": "A.1.9.1.3.2.4#naming",
-      "docNo": "A.1.9.1.3.2.4",
-      "uuid": "4627de70-9866-41b8-be8e-68e9ca809a45",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "may run firedrills to test the preparedness of individuals ... The results of firedrills shall be published",
-      "issue": "Body text spells \"firedrills\" as one word twice, inconsistent with the document's own heading title \"Emergency Contact Mechanism Fire Drills\" (two words) and with \"fire drills\" (two words) used elsewhere in the atlas.",
-      "fix": "Replace \"firedrills\" with \"fire drills\" in both places to match the heading."
-    },
-    {
-      "id": "A.1.10.2.3.2.2.1.4.1.1.1#governance",
-      "docNo": "A.1.10.2.3.2.2.1.4.1.1.1",
-      "uuid": "01b44f43-c6e1-4b24-b715-296a5122fb35",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "governance",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Unreasonable delay in submitting the Report, or failure to thoroughly and accurately complete it (including omission of relevant facts), as determined by the Core Council, constitutes a separate Prime Spell Security Incident",
-      "issue": "A.1.10.2.3.2.2.1.3.3 (b3cd3112) gives the Core Facilitator and Core GovOps 'full discretion to determine whether a Prime Spell Security Incident has occurred and to impose appropriate penalties', but this document (and the escalation multiplier in A.1.10.2.3.2.2.1.4.2.3.2) assign that determination to the Core Council instead.",
-      "fix": "Use one determining authority consistently (e.g. 'as determined by the Core Facilitator and Core GovOps') or state that the Core Council acts through them"
-    },
-    {
       "id": "A.1.10.2.4.8.5.3#markdown",
       "docNo": "A.1.10.2.4.8.5.3",
       "uuid": "95c6809a-17a3-4741-b428-5ecb1b1f5b20",
@@ -1412,30 +1628,6 @@
       "quote": "Executive Validator [(https://vote.sky.money/executive/create](https://vote.sky.money/executive/create)).",
       "issue": "Malformed markdown link: an extra opening parenthesis is included in the link text and a stray closing parenthesis is left after the link.",
       "fix": "Executive Validator [https://vote.sky.money/executive/create](https://vote.sky.money/executive/create)."
-    },
-    {
-      "id": "A.1.10.2.4.9.2.3#structural",
-      "docNo": "A.1.10.2.4.9.2.3",
-      "uuid": "952d9bdc-1298-49b5-a52f-11ab480a82b7",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "###### A.1.10.2.4.9.2.3 - A.1.9 -Spell Reviewer Direct Authoring Ban [Core]",
-      "issue": "The title carries a stray, stale doc number 'A.1.9 -' in front of the actual title, so the heading presents two different doc numbers for one document (its real number is A.1.10.2.4.9.2.3).",
-      "fix": "A.1.10.2.4.9.2.3 - Spell Reviewer Direct Authoring Ban"
-    },
-    {
-      "id": "A.1.10.2.4.11.1.6#xref",
-      "docNo": "A.1.10.2.4.11.1.6",
-      "uuid": "12ebd0d9-52dc-4d1f-8e1a-8bdc2a51b9b0",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "xref",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Executive Validator [(](https://vote.makerdao.com/executive/create)[https://vote.sky.money/executive/create](https://vote.sky.money/executive/create))",
-      "issue": "The validator link is split into two links pointing at two different hosts — a hidden stale vote.makerdao.com URL behind '(' and the vote.sky.money URL — whereas the parallel step A.1.10.2.4.8.5.3 gives only vote.sky.money.",
-      "fix": "Executive Validator ([https://vote.sky.money/executive/create](https://vote.sky.money/executive/create)) — drop the vote.makerdao.com link."
     },
     {
       "id": "A.1.10.2.4.12.3.1.1#markdown",
@@ -1507,19 +1699,7 @@
       "pass": "factual",
       "quote": "Spark is one of the initial Agents focused on developing crypto on-chain lending engines. ... structured as a Conduit in the upcoming Allocation System. SparkLend will be adopted by Spark once Agents are launched.",
       "issue": "The same document states Spark IS an Agent (present tense) yet says SparkLend will be adopted 'once Agents are launched' and calls the Allocation System 'upcoming' — the future-tense framing cannot be true if Agents already exist, and it is stale relative to 2026-09-15.",
-      "fix": "Rewrite in present tense: SparkLend is operated by the Spark Agent as a Conduit/Allocation instance; drop 'upcoming' and 'once Agents are launched'."
-    },
-    {
-      "id": "A.1.10.5.2.3.3.1#naming",
-      "docNo": "A.1.10.5.2.3.3.1",
-      "uuid": "0567fc4c-4a93-4f7e-803e-f587ddbd4f15",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "the Core Facilitator may temporarily grant an Operational Facilitator the sole authority to validate the authenticity of the Emergency Spell pursuant to",
-      "issue": "This document and its heading are entirely about Standby Spells (the surrounding sentences say 'Standby Spell' twice), but this clause switches to 'Emergency Spell' for the same referent, unlike the parallel Protego document (A.1.10.5.3.2.3.1) which consistently says 'Emergency Drop Spell' throughout.",
-      "fix": "the Core Facilitator may temporarily grant an Operational Facilitator the sole authority to validate the authenticity of the Standby Spell pursuant to"
+      "fix": "Drop 'in the upcoming Allocation System' and the sentence 'SparkLend will be adopted by Spark once Agents are launched.', since the document already calls Spark an Agent."
     },
     {
       "id": "A.2.1.1.1.0.3.3#copy-paste",
@@ -1558,18 +1738,6 @@
       "fix": "Should say the Primitive's *Instance* Status is `Completed` while its Global Activation Status remains Active (and cannot be deactivated)."
     },
     {
-      "id": "A.2.2.6.2.1.2.2#entity",
-      "docNo": "A.2.2.6.2.1.2.2",
-      "uuid": "823cad54-4438-4ec3-9e13-d2624795fabd",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The Operational Facilitator reviews the proposal. This review encompasses two aspects. First, the Operational Executor reviews the proposal for alignment with the Atlas.",
-      "issue": "The alignment review is attributed to the Operational Executor, but the document's own first sentence and A.2.2.6.2.2.2 clause (2) ('the Operational Facilitator must review each proposal for alignment and conformance') assign that review to the Operational Facilitator — two different actors for the same act in the same paragraph.",
-      "fix": "Should read 'First, the Operational Facilitator reviews the proposal for alignment with the Atlas.'"
-    },
-    {
       "id": "A.2.2.9.1.2.2.3#wrong-word",
       "docNo": "A.2.2.9.1.2.2.3",
       "uuid": "108c6d9c-8ecf-48bf-bc8b-365f8cf65c0c",
@@ -1592,30 +1760,6 @@
       "quote": "Edit `Primitive Hub Document/In Progress Invocations/Instance Name`",
       "issue": "The same document path is given earlier in this document, and in A.2.2.9.1.2.3.2.4.2.1, as `Primitive Hub Document/In Progress Invocations Directory/Instance Name`; here the word \"Directory\" is missing.",
       "fix": "Edit `Primitive Hub Document/In Progress Invocations Directory/Instance Name`"
-    },
-    {
-      "id": "A.2.2.9.1.2.3.5.2#entity",
-      "docNo": "A.2.2.9.1.2.3.5.2",
-      "uuid": "d0ceb4ed-8f65-45c6-808e-fca702dc2a62",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Using the finalized `Atlas Edit Proposal` content",
-      "issue": "Every sibling input/output document names this document `Artifact Edit Proposal`; `Atlas Edit Proposal` does not exist in the process.",
-      "fix": "Using the finalized `Artifact Edit Proposal` content"
-    },
-    {
-      "id": "A.2.2.9.1.2.3.5.2#naming",
-      "docNo": "A.2.2.9.1.2.3.5.2",
-      "uuid": "d0ceb4ed-8f65-45c6-808e-fca702dc2a62",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "Using the finalized `Atlas Edit Proposal` content",
-      "issue": "The document is named `Artifact Edit Proposal` everywhere else in this process; `Atlas Edit Proposal` appears to be a wrong name.",
-      "fix": "Using the finalized `Artifact Edit Proposal` content"
     },
     {
       "id": "A.2.2.9.1.2.4.1.1#stale",
@@ -1654,39 +1798,15 @@
       "fix": "State that data is submitted weekly but payment occurs at the end of each occurrence of the Instance's configured Cadence."
     },
     {
-      "id": "A.2.2.9.2.2.3.5.2#entity",
-      "docNo": "A.2.2.9.2.2.3.5.2",
-      "uuid": "185d7f3b-9612-42ef-bde7-c9a64ad3ceab",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Using the finalized `Atlas Edit Proposal` content",
-      "issue": "Every sibling input/output document names this document `Artifact Edit Proposal`; `Atlas Edit Proposal` does not exist in the process.",
-      "fix": "Using the finalized `Artifact Edit Proposal` content"
-    },
-    {
-      "id": "A.2.2.9.2.2.3.5.2#naming",
-      "docNo": "A.2.2.9.2.2.3.5.2",
-      "uuid": "185d7f3b-9612-42ef-bde7-c9a64ad3ceab",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "Using the finalized `Atlas Edit Proposal` content",
-      "issue": "The document is named `Artifact Edit Proposal` everywhere else in this process; `Atlas Edit Proposal` appears to be a wrong name.",
-      "fix": "Using the finalized `Artifact Edit Proposal` content"
-    },
-    {
-      "id": "A.2.2.9.2.2.3.6.4.1.2#structural",
+      "id": "A.2.2.9.2.2.3.6.4.1.2#copy-paste",
       "docNo": "A.2.2.9.2.2.3.6.4.1.2",
       "uuid": "1b03bc85-a7f4-4cc5-be41-d13a16b8c379",
       "file": "A.2 - The-Support-Scope.md",
-      "category": "structural",
+      "category": "copy-paste",
       "severity": "medium",
       "pass": "factual",
       "quote": "- `Reward Code` - New value: set to the Reward Code from the approved Proposal - `Tracking Methodology` - New value: set to the tracking methodology from the approved Proposal",
-      "issue": "This Integration Boost output requires copying a 'Reward Code' and 'Tracking Methodology' out of the approved Proposal, but the Integration Boost Proposal defines neither: its Initial Planning Document fields (A.2.2.9.2.2.3.1.3) and the ratified Instance Configuration parameters (A.2.2.9.2.2.3.6.3) list only Integration Partner Name/Reward Address/Chain, Cadence, Data Submission Format, Data Submission Responsible Actor, Savings Rate Adjustment Strategy and Custom Instance Parameters, and the Integration Boost onboarding update (A.2.2.9.2.2.3.1.4.1.1) records only the Integrator Name.",
+      "issue": "A.2.2.9.2.2.3.6.4.1.2 (Integration Boost) copies Distribution Reward's A.2.2.9.1.2.3.6.4.1.2 verbatim, including Reward Code and Tracking Methodology, which Integration Boost's inputs (A.2.2.9.2.2.3.1.3) never define.",
       "fix": "Drop the Reward Code / Tracking Methodology fields here (they belong to the Distribution Reward version, A.2.2.9.1.2.3.6.4.1.2), or state where an Integration-Boost-only Integrator's Reward Code comes from."
     },
     {
@@ -1726,18 +1846,6 @@
       "fix": "the monthly settlement cycles, which include the determination"
     },
     {
-      "id": "A.2.3.1.2.1.1#typo",
-      "docNo": "A.2.3.1.2.1.1",
-      "uuid": "bddce7bf-c568-444b-b196-e15a99016696",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "typo",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "Income and Expenses are defined such that Net Revenue must always be positive",
-      "issue": "Sentence is missing its terminating period, unlike every other sentence in this document.",
-      "fix": "Income and Expenses are defined such that Net Revenue must always be positive."
-    },
-    {
       "id": "A.2.4.1.2.2.1.1.2.3.2.1.1#xref",
       "docNo": "A.2.4.1.2.2.1.1.2.3.2.1.1",
       "uuid": "858b2ee0-89b8-4505-8324-f3cd315de40c",
@@ -1747,7 +1855,7 @@
       "pass": "factual",
       "quote": "Low Yield Actively Stabilizing Collateral is Actively Stabilizing Collateral (see [A.3.3.2.2.1.1 - Resting Actively Stabilizing Collateral](0e17b35a-c830-4695-b63c-5ef58b249d3f)) that earns less than the Agent Credit Line Borrow Rate.",
       "issue": "The sentence defines a subset of 'Actively Stabilizing Collateral' but cites a document titled 'Resting Actively Stabilizing Collateral', a narrower and differently-named concept, so the definition silently restricts itself to resting collateral (or cites the wrong document).",
-      "fix": "Cite the document that defines Actively Stabilizing Collateral generally, or say 'Resting Actively Stabilizing Collateral' in the sentence if that is what is meant"
+      "fix": "Low Yield Actively Stabilizing Collateral is Actively Stabilizing Collateral (see [A.3.3.2.2.1 - Actively Stabilizing Collateral](62495dee-8d2a-45d4-87c4-01150e3db3c8)) that earns less than the Agent Credit Line Borrow Rate."
     },
     {
       "id": "A.2.7.1.1.1.1.4.0.6.1#structural",
@@ -1762,30 +1870,6 @@
       "fix": "Supply Keel's entity handle or at least one Authorized Representative, or remove the row until one exists"
     },
     {
-      "id": "A.2.7.1.2.1.1.1.1#grammar",
-      "docNo": "A.2.7.1.2.1.1.1.1",
-      "uuid": "a3e4d767-56d1-4b1f-8ade-b733bca4244f",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "the ban interrupts the users' exercise of a governance process",
-      "issue": "Plural possessive \"users'\" disagrees with the singular antecedent \"a user\" used earlier in the same sentence.",
-      "fix": "the ban interrupts the user's exercise of a governance process"
-    },
-    {
-      "id": "A.2.7.1.2.1.1.3#wrong-word",
-      "docNo": "A.2.7.1.2.1.1.3",
-      "uuid": "4d4a1d9a-c8c7-4c2b-aaec-33e382790d52",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "wrong-word",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "the ban on unbanned users will be lifted across all communication channels",
-      "issue": "\"Unbanned users\" already implies the ban was lifted, contradicting the statement that their ban \"will be lifted\"; should refer to users approved for unbanning.",
-      "fix": "the ban on users approved for unbanning will be lifted across all communication channels"
-    },
-    {
       "id": "A.2.8.2.2#entity",
       "docNo": "A.2.8.2.2",
       "uuid": "aa3b8e65-0ded-48c2-9c40-812debf99f32",
@@ -1798,18 +1882,6 @@
       "fix": "Add Moonbow to the parent sentence: 'between Sky, Grove, Spark, and Moonbow'"
     },
     {
-      "id": "A.2.8.2.2.2.1.2.1#numeric",
-      "docNo": "A.2.8.2.2.2.1.2.1",
-      "uuid": "9d7a2d3f-3079-4d3b-be89-e06966aec07c",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "3,000,000,000 GROVE tokens are allocated to the Grove Foundation, with an option to further increase this allocation by 5% (500,000,000 tokens).",
-      "issue": "5% of 'this allocation' (3,000,000,000) is 150,000,000, not 500,000,000; 500,000,000 is 5% of the 10,000,000,000 total supply stated in A.2.8.2.2.2.1.1, so the percentage and the parenthetical figure use different bases.",
-      "fix": "Say 'by 5% of the total token supply (500,000,000 tokens)' (or correct the figure to 150,000,000)"
-    },
-    {
       "id": "A.2.8.2.2.2.2.4#contradiction",
       "docNo": "A.2.8.2.2.2.2.4",
       "uuid": "23b21d6f-ad66-42ff-9e9f-c5bd5da6e8d4",
@@ -1820,30 +1892,6 @@
       "quote": "This grant will cover the difference between the borrowing Base Rate and SOFR, as specified in [A.3.3.2.2.4.1.3 - Secured Overnight Financing Rate](2edd1333-6ca6-4c10-9d71-80b85d4a4265).",
       "issue": "A grant covering the full Base Rate minus SOFR leaves the Prime paying SOFR flat for the whole subsidised period, which contradicts A.2.8.2.2.2.2.2's subsidy formula `SOFR + ((Base_Rate - SOFR) * T/24)` under which the rate paid ramps from SOFR up to the Base Rate over the same 24 months.",
       "fix": "State that the grant covers only the un-ramped portion, i.e. (Base_Rate - SOFR) * (1 - T/24), or reconcile the two documents"
-    },
-    {
-      "id": "A.2.8.2.7.1.2#stale",
-      "docNo": "A.2.8.2.7.1.2",
-      "uuid": "9d207eb3-955e-4b4d-af1b-056519d0235b",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "stale",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The duration of Ecosystem Accord 7 is indefinite, commencing from September 1, 2024.",
-      "issue": "Breaks the otherwise monotonic commencement sequence of the numbered Ecosystem Accords (3: June 23, 2025; 4: November 13, 2025; 5: December 11, 2025; 6: December 18, 2025; 8 and 9: March 19, 2026) by more than a year, with no 'retroactively' qualifier of the kind Accord 10 carries, and precedes Skybase's own Genesis Capital Allocation (January 29, 2026 Executive Vote) by 17 months.",
-      "fix": "Probably should be a 2025 or 2026 date consistent with Accord 6 and Accord 8, or be marked as retroactive as in A.2.8.2.10.1.2."
-    },
-    {
-      "id": "A.2.9.1.1.1.4.2.2.6#governance",
-      "docNo": "A.2.9.1.1.1.4.2.2.6",
-      "uuid": "10662753-b167-4043-b952-225cc9dd9e49",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "governance",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Decisions related to claim payouts require a quorum of three (3) experts from the Resilience Technical Committee with a simple majority (>50%).",
-      "issue": "The quorum is unsatisfiable as the Atlas stands: the Active Data list of current Resilience Technical Committee members (A.2.9.1.1.1.2.3.0.6.1) contains a single entry ('Gallagher'), so no three-expert quorum can be formed and no claim payout decision can be taken.",
-      "fix": "Either populate the member list to at least three members, or state the quorum as a proportion of appointed members; unclear — needs author."
     },
     {
       "id": "A.2.11.1.1.1#stale",
@@ -1894,28 +1942,16 @@
       "fix": "Add Impact Classification and Operational Classification (and any other registered details) to the Multisig Registry entry requirements and to the Registered Multisigs table columns."
     },
     {
-      "id": "A.3.2.2.1.1.1.1.1.3.1#structural",
+      "id": "A.3.2.2.1.1.1.1.1.3.1#naming",
       "docNo": "A.3.2.2.1.1.1.1.1.3.1",
       "uuid": "68c5da4f-9c4e-4206-a582-99be9833481f",
       "file": "A.3 - The-Stability-Scope.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "The Lower Bound $a$ is an estimate of the correlation between assets during \"calm\" periods. It is set of `0.13`.",
-      "issue": "The symbol $a$ is already defined in the same five-step procedure as the Leverage Adjusted Drift To Risk Ratio (A.3.2.2.1.1.1.1.1.1.1), which appears as the exponent -2a in the Probability Of Default formula; binding a to the constant 0.13 in step 3 collides with that definition.",
+      "issue": "Symbol a is the Leverage Adjusted Drift To Risk Ratio (A.3.2.2.1.1.1.1.1.1.1) used as exponent -2a in PD, and is rebound to 0.13 in step 3 (A.3.2.2.1.1.1.1.1.3.1); a notation collision (K is likewise reused).",
       "fix": "Give the correlation lower bound its own symbol (e.g. R_min / a_R) distinct from the drift-to-risk ratio a."
-    },
-    {
-      "id": "A.3.2.2.1.1.1.1.1.3.3#naming",
-      "docNo": "A.3.2.2.1.1.1.1.1.3.3",
-      "uuid": "3b7924b2-1236-43cb-b0f0-ebe06f573b78",
-      "file": "A.3 - The-Stability-Scope.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Sensitivity Factor `K` is a tuning parameter indicating how quickly the correlations transition between $a$ and $b$.",
-      "issue": "The document's own heading calls this parameter \"Sensitivity Coefficient\", but the body calls it \"Sensitivity Factor\".",
-      "fix": "The Sensitivity Coefficient `K` is a tuning parameter indicating how quickly the correlations transition between $a$ and $b$."
     },
     {
       "id": "A.3.2.2.1.1.1.1.1.4#structural",
@@ -1942,64 +1978,16 @@
       "fix": "Cite `CRE20.94-101` (the off-balance-sheet credit conversion factor paragraphs) instead of `CRE51`."
     },
     {
-      "id": "A.3.2.2.1.1.1.5.2.6#numeric",
-      "docNo": "A.3.2.2.1.1.1.5.2.6",
-      "uuid": "70013695-3823-407a-9603-b38795ba9899",
-      "file": "A.3 - The-Stability-Scope.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The final step is to multiply the adjusted Aggregate RWA ... by an 8% capital ratio to arrive at Instance Financial RRC.",
-      "issue": "The same framework's lending-market path states the capital ratio as 8.75% (A.3.2.2.1.1.1.1.1.5.1: 'The Capital Ratio $CR$ is the capital ratio without additional buffers. It is set to `8.75%`', and A.3.2.2.1.1.1.1.1.5.3 repeats 8.75% for ECR); the Real World Asset path uses 8% for the same role without saying why they differ.",
-      "fix": "State one capital ratio for Instance Financial RRC, or say explicitly that the RWA/Basel path deliberately uses 8% while the lending-market model uses 8.75%."
-    },
-    {
-      "id": "A.3.2.2.1.2.2.1#structural",
-      "docNo": "A.3.2.2.1.2.2.1",
-      "uuid": "b824c6ec-940b-4921-89f0-aca89b54e86a",
-      "file": "A.3 - The-Stability-Scope.md",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The Smart Contract Risk Rating Cap $\\text{CAP}$ is a temporary cap on the Smart Contract Risk Rating. The value of the $CAP$ is `30`.",
-      "issue": "SCRR = min[CAP, ...] with CAP = 30 means the Risk Rating can never exceed 30, so the High Risk (rating > 50, A.3.2.2.1.2.3.1.3) and Extreme Risk (rating > 75, A.3.2.2.1.2.3.1.4) categories — and the F2-only methodology and the automatic 100% CRR they define — are unreachable; the same holds for the Administrative Risk Rating, whose CAP is also 30 (A.3.2.2.1.3.1.1) even though Starting Rates of 50 and 100 are defined.",
-      "fix": "unclear — needs author: either raise/remove the cap, or state that the High/Extreme methodologies are dormant while the temporary cap is in force."
-    },
-    {
-      "id": "A.3.2.2.1.2.2.3#naming",
-      "docNo": "A.3.2.2.1.2.2.3",
-      "uuid": "295e4d3b-8c8a-4f74-879f-88060bb07803",
-      "file": "A.3 - The-Stability-Scope.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Code Complexity Rate $CCR$ is a measure of the complexity of the code of the smart contracts used by the protocol.",
-      "issue": "The document's own heading and every related subdocument call this \"Code Complexity Rating\", but this sentence calls it \"Code Complexity Rate\".",
-      "fix": "The Code Complexity Rating $CCR$ is a measure of the complexity of the code of the smart contracts used by the protocol."
-    },
-    {
-      "id": "A.3.2.2.1.2.3.1.2.5.1#structural",
+      "id": "A.3.2.2.1.2.3.1.2.5.1#naming",
       "docNo": "A.3.2.2.1.2.3.1.2.5.1",
       "uuid": "303c0d7f-42a7-4b9e-8afd-26e4d54e2f56",
       "file": "A.3 - The-Stability-Scope.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "The constant factor $b$ is set to `0.15`.",
-      "issue": "The symbol $b$ is already bound inside the same Instance Smart Contract CRR calculation as the Piecewise Function's medium risk parameter, set to `0.25` (A.3.2.2.1.2.3.3.1.2), and that 0.25 is load-bearing (the piecewise is continuous only because b = 0.25 and b + c = 1); binding b to 0.15 in the medium-risk blend formula x = b x alpha x f_2 + (1 - alpha) x f_1 gives one symbol two values in one calculation chain.",
+      "issue": "b is the piecewise function's medium risk parameter = 0.25 (A.3.2.2.1.2.3.3.1.2) and is rebound to 0.15 as the blend constant (A.3.2.2.1.2.3.1.2.5.1) in the same calculation chain; a notation collision.",
       "fix": "Rename the blend constant (e.g. beta) so it is distinct from the piecewise function's b = 0.25."
-    },
-    {
-      "id": "A.3.2.2.1.2.3.4#numeric",
-      "docNo": "A.3.2.2.1.2.3.4",
-      "uuid": "35ec7382-0613-4e74-b5ba-d86c647b1d73",
-      "file": "A.3 - The-Stability-Scope.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "in % terms, e.g. 5%, 23.75%, 30%, etc.",
-      "issue": "The docstring example does not match the code: x_max is always x_start + 50% and the kink is 75% of that gap, so a 5% start gives a kink of 42.5% and a max of 55%, not 23.75% and 30%.",
-      "fix": "in % terms, e.g. 5%, 42.5%, 55%, etc."
     },
     {
       "id": "A.3.2.2.1.2.4.2.2.2#numeric",
@@ -2014,18 +2002,6 @@
       "fix": "State the cap in the same unit and normalise, e.g. 'Effective Age expressed in years, capped at 1' (equivalently min(AGEeff_months, 12)/12)."
     },
     {
-      "id": "A.3.2.2.1.3.1.2#naming",
-      "docNo": "A.3.2.2.1.3.1.2",
-      "uuid": "368786cb-da80-4d48-a2e8-52d14fb6320c",
-      "file": "A.3 - The-Stability-Scope.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Starting Rate $\\text{SR}$ is an initial risk rating for Administrative Risk before taking into account the Delay Factor and Lindy Adjustment Factor.",
-      "issue": "The document's own heading calls this parameter \"Starting Rating\", but the body and all three child documents call it \"Starting Rate\".",
-      "fix": "The Starting Rating $\\text{SR}$ is an initial risk rating for Administrative Risk before taking into account the Delay Factor and Lindy Adjustment Factor."
-    },
-    {
       "id": "A.3.3.1.3#xref",
       "docNo": "A.3.3.1.3",
       "uuid": "810270db-2436-411b-94e4-afbc66492531",
@@ -2038,15 +2014,15 @@
       "fix": "Cite both A.3.3.2.2 (ASC) and A.3.3.2.3 (DAB)."
     },
     {
-      "id": "A.3.4.3.3.1#structural",
+      "id": "A.3.4.3.3.1#copy-paste",
       "docNo": "A.3.4.3.3.1",
       "uuid": "7b902bb1-68b4-477d-a575-29aaa02e9e7b",
       "file": "A.3 - The-Stability-Scope.md",
-      "category": "structural",
+      "category": "copy-paste",
       "severity": "medium",
       "pass": "factual",
       "quote": "Cash income over the reporting period. Any income over $20,000 in value should be broken out as its own line item, and an explanation provided for any non-recurring or non-ordinary expenses.",
-      "issue": "The income requirement ends by requiring an explanation for non-recurring or non-ordinary *expenses*, duplicating the following bullet; as written no explanation is ever required for non-recurring or non-ordinary income.",
+      "issue": "The income bullet in A.3.4.3.3.1 ends with the expense bullet's wording ('non-ordinary expenses'), a copy-paste slip; the fix 'income' is right.",
       "fix": "'...and an explanation provided for any non-recurring or non-ordinary income.'"
     },
     {
@@ -2062,15 +2038,15 @@
       "fix": "For example, 0.99 equates to a 1% price drop."
     },
     {
-      "id": "A.3.7.1.1.4#structural",
+      "id": "A.3.7.1.1.4#contradiction",
       "docNo": "A.3.7.1.1.4",
       "uuid": "a38e05bf-0820-4916-a71c-cff4f54e45df",
       "file": "A.3 - The-Stability-Scope.md",
-      "category": "structural",
+      "category": "contradiction",
       "severity": "medium",
       "pass": "factual",
       "quote": "The Native Vault Engine collateral types of ETH, STETH, WBTC will specifically use the Chronicle v3 oracle solution, until at least January 1st 2026.",
-      "issue": "This classifies WBTC as a Native Vault Engine collateral type, but A.3.7.1.1.3.2 (f6762223-29f3-46c1-8fa4-a5c27636772d) states WBTC-A/B/C 'are otherwise not considered Native Vault Engine collateral'; it also names STETH, which is not among the vault types defined in A.3.7.1.1.1 (those are WSTETH-A and WSTETH-B).",
+      "issue": "A.3.7.1.1.4 calls WBTC a Native Vault Engine collateral type, but A.3.7.1.1.3.2 says WBTC-A/B/C are otherwise not NVE collateral; STETH also matches no vault type (A.3.7.1.1.1 has WSTETH-A/B).",
       "fix": "Name the actual vault collateral types (ETH, WSTETH) and state the WBTC oracle requirement separately, consistent with A.3.7.1.1.3.2."
     },
     {
@@ -2098,30 +2074,6 @@
       "fix": "Use \"Dai\" consistently: \"...benefiting Dai users and USDS users... Dai users can access the legacy Dai Savings Rate Mechanism.\""
     },
     {
-      "id": "A.4.4.1.3.8.5.1#numeric",
-      "docNo": "A.4.4.1.3.8.5.1",
-      "uuid": "13c51e11-8ea3-4d4e-b631-2e99c559a914",
-      "file": "A.4 - The-Protocol-Scope.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "- `str` - 0 basis points",
-      "issue": "An initial `str` of 0 basis points is below the `str` BEAM `min` of 200 basis points declared in A.4.4.1.3.8.2.1 (516eccc7-dd7f-4782-84d5-55121bc1ae44), so the value set by the BEAM at deployment violates the BEAM's own stated minimum for that parameter.",
-      "fix": "unclear — needs author: either the initial `str` must be at least 200 bps, or the document should note that the deployment Executive Vote sets `str` directly rather than through the BEAM bounds"
-    },
-    {
-      "id": "A.5.3.1.1.1#entity",
-      "docNo": "A.5.3.1.1.1",
-      "uuid": "eaf8cf29-90fd-4b9b-b0a8-02ce8386908c",
-      "file": "A.5 - The-Accessibility-Scope.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The remaining SKY in the `0x14D98650d46BF7679BBD05D4f615A1547C87Bf68` multisig that is not used to fund the MerkleDistributor will be burned by calling the `burn` function on the multisig.",
-      "issue": "`burn` is an ERC-20 function on the SKY token contract, not a function of the multisig wallet the same sentence identifies as an Accessibility Facilitator multisig at that address; as written the action is attributed to the wrong contract.",
-      "fix": "Say the multisig will call the `burn` function on the SKY token contract to burn its remaining balance."
-    },
-    {
       "id": "A.5.4.1.1#structural",
       "docNo": "A.5.4.1.1",
       "uuid": "58f85237-4d1d-424b-be03-6eea1e8a8d0d",
@@ -2134,19 +2086,7 @@
       "fix": "Either list the limited-filtering locations in A.5.4.1.3.2 or reword A.5.4.1.1 so that only full-block locations are stated as identified in the subdocuments."
     },
     {
-      "id": "A.5.4.1.4.1#copy-paste",
-      "docNo": "A.5.4.1.4.1",
-      "uuid": "e6b9065e-8dd7-4f23-b7e4-4e3d2736bee4",
-      "file": "A.5 - The-Accessibility-Scope.md",
-      "category": "copy-paste",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "Luhansk People’s Republic of Ukraine",
-      "issue": "Breaks the parallel list structure: every other entry in this list is a bare region/republic name (e.g. \"Donetsk People’s Republic\", \"Crimea and Sevastopol\", \"Kherson Oblast\") with no country appended, but this one entry has \"of Ukraine\" tacked on, reading as leftover/copy-paste text.",
-      "fix": "Luhansk People’s Republic"
-    },
-    {
-      "id": "A.6.1.1.*.2.2.1.1.4#structural",
+      "id": "A.6.1.1.*.2.2.1.1.4#structural-a6112212",
       "docNo": "A.6.1.1.*.2.2.1.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2159,33 +2099,7 @@
       "fix": "In A.6.1.1.3.2.2.1.1.4 replace [A.6.1.1.3.2.2.1.2 - Active Instances](e1eb3283-ac9c-490e-bd36-850dd8bd71bd) with [A.6.1.1.3.2.2.1.1.2 - Active Instances Directory](67640351-2db1-4252-a1cb-5c28aa02a56e)."
     },
     {
-      "id": "A.6.1.1.*.2.2.2.2.1.2.1.1#structural-total",
-      "docNo": "A.6.1.1.*.2.2.2.2.1.2.1.1",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "A SPK token holder must hold at least 1% of the total token supply to submit a proposal.",
-      "issue": "The same sentence at A.6.1.1.*.2.2.2.2.1.2.1.1 does not say the same thing in every Prime Agent artifact: Keel, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"circulating\", while Spark, Grove say \"total\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.2.2.2.1.2.3#structural-urgent",
-      "docNo": "A.6.1.1.*.2.2.2.2.1.2.3",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "The documents herein define the process for using the Root Edit Primitive to update the Obex Agent Artifact in emergency situations.",
-      "issue": "The same sentence at A.6.1.1.*.2.2.2.2.1.2.3 does not say the same thing in every Prime Agent artifact: Spark, Grove, Keel, Skybase say \"urgent or\", while Obex, Pattern, Osero, Launch Agent 7 say \"\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.2.3.1.4#structural",
+      "id": "A.6.1.1.*.2.2.3.1.4#structural-a6112232",
       "docNo": "A.6.1.1.*.2.2.3.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2198,20 +2112,7 @@
       "fix": "In A.6.1.1.3.2.2.3.1.4 replace [A.6.1.1.3.2.2.3.2 - Active Instances](7acfe8a6-80a2-4074-a6d0-fad968c95d1c) with [A.6.1.1.3.2.2.3.1.2 - Active Instances Directory](e196d802-de22-410a-963a-c9d8359e9644)."
     },
     {
-      "id": "A.6.1.1.*.2.3.2#structural-groves",
-      "docNo": "A.6.1.1.*.2.3.2",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "The documents herein contain all data and specifications for Groves Instance of the Upkeep Rebate Primitive.",
-      "issue": "The same sentence at A.6.1.1.*.2.3.2 does not say the same thing in every Prime Agent artifact: Spark, Keel, Skybase, Obex, Osero, Launch Agent 7 say \"<agent>'s\", while Grove say \"groves\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.4.1.1.4#structural",
+      "id": "A.6.1.1.*.2.4.1.1.4#structural-a6112412",
       "docNo": "A.6.1.1.*.2.4.1.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2224,20 +2125,7 @@
       "fix": "In A.6.1.1.3.2.4.1.1.4 replace [A.6.1.1.3.2.4.1.2 - Active Instances](38756877-b767-4a71-9f38-630a96b50f5a) with [A.6.1.1.3.2.4.1.1.2 - Active Instances Directory](9e793e15-c1b3-41e9-a9ea-5cdd034aa27f)."
     },
     {
-      "id": "A.6.1.1.*.2.5.1.1#structural-groves",
-      "docNo": "A.6.1.1.*.2.5.1.1",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "The documents herein organize all base information relevant to Groves usage of the Distribution Reward Primitive.",
-      "issue": "The same sentence at A.6.1.1.*.2.5.1.1 does not say the same thing in every Prime Agent artifact: Spark, Keel, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"<agent>'s\", while Grove say \"groves\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.5.1.1.4#structural",
+      "id": "A.6.1.1.*.2.5.1.1.4#structural-a6112512",
       "docNo": "A.6.1.1.*.2.5.1.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2250,7 +2138,7 @@
       "fix": "In A.6.1.1.3.2.5.1.1.4 replace [A.6.1.1.3.2.5.1.2 - Active Instances](4da74767-8e45-420c-9477-89b810654ab4) with [A.6.1.1.3.2.5.1.1.2 - Active Instances Directory](cc24f926-2163-46e6-a480-8d6365911553)."
     },
     {
-      "id": "A.6.1.1.*.2.5.2.1.4#structural",
+      "id": "A.6.1.1.*.2.5.2.1.4#structural-a6112522",
       "docNo": "A.6.1.1.*.2.5.2.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2263,7 +2151,7 @@
       "fix": "In A.6.1.1.3.2.5.2.1.4 replace [A.6.1.1.3.2.5.2.2 - Active Instances](a53d1d40-f944-4cf2-9941-8e6f0ec77a72) with [A.6.1.1.3.2.5.2.1.2 - Active Instances Directory](bc7296ae-4bfb-4318-87fb-44869a7932c1)."
     },
     {
-      "id": "A.6.1.1.*.2.5.3.1.4#structural",
+      "id": "A.6.1.1.*.2.5.3.1.4#structural-a6112532",
       "docNo": "A.6.1.1.*.2.5.3.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2276,46 +2164,7 @@
       "fix": "In A.6.1.1.3.2.5.3.1.4 replace [A.6.1.1.3.2.5.3.2 - Active Instances](5d043c09-1d78-456d-b356-c72a13fe46c8) with [A.6.1.1.3.2.5.3.1.2 - Active Instances Directory](0596e4e7-880f-42ce-96b8-00e8482837fb)."
     },
     {
-      "id": "A.6.1.1.*.2.6.1.1.4#structural-toa61126112",
-      "docNo": "A.6.1.1.*.2.6.1.1.4",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "Invocations that are completed successfully are moved to[A.6.1.1.3.2.6.1.1.2 - Active Instances Directory](134c14e9-28ed-4e18-b15a-26899644dc0b), whereas failed Invocations are Archived in [A.6.1.1.3.2.6.1.1.5 - Hub Data Repository](99be2bd2-c065-43b7-82f9-d51dfeeeaa58).",
-      "issue": "The same sentence at A.6.1.1.*.2.6.1.1.4 does not say the same thing in every Prime Agent artifact: Spark, Grove, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"to [a.6.1.1.*.2.6.1.1.2\", while Keel say \"to[a.6.1.1.*.2.6.1.1.2\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.6.1.2.2.3#structural-event",
-      "docNo": "A.6.1.1.*.2.6.1.2.2.3",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "The documents herein define the actions that can be taken in the event of an emergency within Osero Liquidity Layer operations.",
-      "issue": "The same sentence at A.6.1.1.*.2.6.1.2.2.3 does not say the same thing in every Prime Agent artifact: Spark, Grove, Obex, Pattern say \"all possible case\", while Osero say \"event\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.6.1.3.1.1.1.2.4#structural-deposit",
-      "docNo": "A.6.1.1.*.2.6.1.3.1.1.1.2.4",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "The current `maxAmount` and `slope` for this conduit’s deposit and withdrawal are defined in the subdocuments herein.",
-      "issue": "The same sentence at A.6.1.1.*.2.6.1.3.1.1.1.2.4 does not say the same thing in every Prime Agent artifact: Spark, Grove, Osero say \"inflow/outflow\", while Keel say \"deposit withdrawal\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.6.2.1.4#structural",
+      "id": "A.6.1.1.*.2.6.2.1.4#structural-a6112622",
       "docNo": "A.6.1.1.*.2.6.2.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2328,20 +2177,7 @@
       "fix": "In A.6.1.1.3.2.6.2.1.4 replace [A.6.1.1.3.2.6.2.2 - Active Instances](ee196317-63fc-4f69-a985-2a4f5a5be4e5) with [A.6.1.1.3.2.6.2.1.2 - Active Instances Directory](9264bed6-21a2-4e39-8546-0ab157380740)."
     },
     {
-      "id": "A.6.1.1.*.2.6.3#structural-groves",
-      "docNo": "A.6.1.1.*.2.6.3",
-      "uuid": null,
-      "file": "A.6.1.1.* (all prime artifacts)",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "deterministic",
-      "detector": "template-divergence",
-      "quote": "The documents herein contain all data and specifications for Groves Instances of the Asset Liability Management Rental Primitive.",
-      "issue": "The same sentence at A.6.1.1.*.2.6.3 does not say the same thing in every Prime Agent artifact: Spark, Keel, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"<agent>'s\", while Grove say \"groves\". Only visible corpus-wide; no single chunk of the sweep contains both.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.*.2.6.3.1.4#structural",
+      "id": "A.6.1.1.*.2.6.3.1.4#structural-a6112632",
       "docNo": "A.6.1.1.*.2.6.3.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2354,7 +2190,7 @@
       "fix": "In A.6.1.1.3.2.6.3.1.4 replace [A.6.1.1.3.2.6.3.2 - Active Instances](537fef57-4e7f-49d7-ac58-b23ed98aff7c) with [A.6.1.1.3.2.6.3.1.2 - Active Instances Directory](7b21f5bd-68dd-4cf6-8048-cb5eef547b47)."
     },
     {
-      "id": "A.6.1.1.*.2.7.1.1.4#structural",
+      "id": "A.6.1.1.*.2.7.1.1.4#structural-a6112712",
       "docNo": "A.6.1.1.*.2.7.1.1.4",
       "uuid": null,
       "file": "A.6.1.1.* (all prime artifacts)",
@@ -2367,27 +2203,27 @@
       "fix": "In A.6.1.1.3.2.7.1.1.4 replace [A.6.1.1.3.2.7.1.2 - Active Instances](0b4cc335-c2ed-4b7f-8cb5-eeb1bab394b8) with [A.6.1.1.3.2.7.1.1.2 - Active Instances Directory](11bc952d-781a-439b-9760-83a007fb9dd2)."
     },
     {
-      "id": "A.6.1.1.1.2.1.1.3#structural",
+      "id": "A.6.1.1.1.2.1.1.3#naming",
       "docNo": "A.6.1.1.1.2.1.1.3",
       "uuid": "5eff8c9f-8499-41ff-9aed-2e31d9f5f139",
       "file": "A.6.1.1.1 - Spark.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "A.6.1.1.1.2.1.1.3 - Completed Instances Directory [Core] ... The Instances of the Agent Creation Primitive with `Completed` Status are contained herein.",
-      "issue": "The title says 'Directory' but the body says the Instances themselves are contained herein, and the title duplicates the separate directory document A.6.1.1.1.2.1.1.1.3 (Completed Instances Directory, UUID 4620942e-...); every other primitive in this artifact names this slot 'Completed Instances' (e.g. A.6.1.1.1.2.1.2.3, A.6.1.1.1.2.1.3.3, A.6.1.1.1.2.1.4.3).",
+      "issue": "A.6.1.1.1.2.1.1.3 is titled 'Completed Instances Directory', duplicating hub doc A.6.1.1.1.2.1.1.1.3, while the same slot is 'Completed Instances' in A.6.1.1.1.2.1.2.3/.3.3/.4.3.",
       "fix": "Rename to 'Completed Instances'."
     },
     {
-      "id": "A.6.1.1.1.2.1.1.4#structural",
+      "id": "A.6.1.1.1.2.1.1.4#naming",
       "docNo": "A.6.1.1.1.2.1.1.4",
       "uuid": "1974618c-b054-41c3-a6aa-860ea7875d02",
       "file": "A.6.1.1.1 - Spark.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "A.6.1.1.1.2.1.1.4 - In Progress Invocations Directory [Core]",
-      "issue": "Same slot in every other primitive is titled 'In Progress Invocations' (A.6.1.1.1.2.1.2.4, A.6.1.1.1.2.1.3.4, A.6.1.1.1.2.1.4.4); here it duplicates the title of the hub's directory document A.6.1.1.1.2.1.1.1.4 (UUID 5c48cc46-...), making the two documents indistinguishable by title.",
+      "issue": "A.6.1.1.1.2.1.1.4 is titled 'In Progress Invocations Directory', the same as hub doc A.6.1.1.1.2.1.1.1.4; sibling primitives use 'In Progress Invocations' (A.6.1.1.1.2.1.2.4).",
       "fix": "Rename to 'In Progress Invocations'."
     },
     {
@@ -2412,43 +2248,7 @@
       "pass": "language",
       "quote": "Spark Savings v2 spPYUSD Instance Configuration Document",
       "issue": "The heading names the instance 'Spark Savings v2 PYUSD' but the linked document is named 'Spark Savings v2 spPYUSD'; the same instance is named two ways.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.2.1.4.4#xref",
-      "docNo": "A.6.1.1.1.2.6.1.1.2.1.4.4",
-      "uuid": "3dabe1bb-244d-4546-993a-449b988d9199",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "xref",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Ethereum Mainnet - Spark Savings v2 spPYUSD Instance Configuration Document",
-      "issue": "The Location document is titled for the Spark Savings v2 PYUSD Instance, but its link label names \"spPYUSD\", unlike the sibling ETH/USDC/USDT location documents whose titles and link labels match.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.2.5.1#markdown",
-      "docNo": "A.6.1.1.1.2.6.1.1.2.5.1",
-      "uuid": "d0cbb95a-5115-4a9a-a67e-cc00172beef5",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "markdown",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Robinhood Chain Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein",
-      "issue": "Sentence is missing its terminal period; every other instance of this identical boilerplate sentence pattern in the document ends with a period.",
-      "fix": "The Robinhood Chain Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein."
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.2.6.1#markdown",
-      "docNo": "A.6.1.1.1.2.6.1.1.2.6.1",
-      "uuid": "70c70fa9-9cb4-4bcf-a62f-b815a90981c3",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "markdown",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The X Layer Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein",
-      "issue": "Sentence is missing its terminal period; every other instance of this identical boilerplate sentence pattern in the document ends with a period.",
-      "fix": "The X Layer Instances Directory of the Spark Savings v2 Protocol with `Active` Status are stored herein."
+      "fix": "Rename A.6.1.1.1.2.6.1.3.1.4.4 to \"Ethereum Mainnet - Spark Savings v2 PYUSD Instance Configuration Document\" (siblings .4.1-.4.3 name the underlying token) and update the link text in A.6.1.1.1.2.6.1.1.2.1.4.4."
     },
     {
       "id": "A.6.1.1.1.2.6.1.2.1.1.1.2.6.1#grammar",
@@ -2463,18 +2263,6 @@
       "fix": "The address of the ALM_CONTROLLER (ForeignController) contract is:"
     },
     {
-      "id": "A.6.1.1.1.2.6.1.2.1.1.3.7.2#entity",
-      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.7.2",
-      "uuid": "bb47f741-e64b-440c-822c-3937fe94e87e",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The maximum amount of USDG that can be sent to the Robinhood Chain ALM Proxy is specified in the document herein. - `maxAmount` (USDG): 50,000,000 - `slope` (USDG/ day): 250,000,000 - Recipient: `0xf752cF318dfF2C01575c98741AA52e7a34d873Fd`",
-      "issue": "The limit is described as USDG sent TO the Robinhood Chain ALM Proxy, but the stated Recipient 0xf752cF318dfF2C01575c98741AA52e7a34d873Fd is not the Robinhood Chain ALM_PROXY address, which A.6.1.1.1.2.6.1.2.1.1.1.2.7.5 (d19eab7d-e0b8-4be2-b672-40d7773c6119) gives as 0xfD2fD4B046136B540A56C11c75ac679AE7d1dB24.",
-      "fix": "Either correct the Recipient to the ALM Proxy address, or reword the description to say what this recipient actually is."
-    },
-    {
       "id": "A.6.1.1.1.2.6.1.2.1.2.2.2.3#governance",
       "docNo": "A.6.1.1.1.2.6.1.2.1.2.2.2.3",
       "uuid": "1563f1ee-0097-4bb3-a03a-01162d00788b",
@@ -2484,7 +2272,7 @@
       "pass": "factual",
       "quote": "- Operational GovOps Soter Labs: 2 signers - Spark Assets Foundation (SAF): 2 signers - Phoenix Labs (PL): 1 signer ... execution requires meeting the 2/5 threshold.",
       "issue": "The multisig is stated to be 'jointly controlled by Operational GovOps Soter Labs and the Spark Assets Foundation' (A.6.1.1.1.2.6.1.2.1.2.2.2, 8286092a-69f2-46af-a989-c694a1756753), but with a 2-of-5 threshold Soter Labs' 2 signers alone (or SAF's 2 alone) meet it, so neither party's participation is actually required — joint control is unsatisfiable as configured.",
-      "fix": "Raise the threshold (e.g. 3/5, which forces at least two parties) or drop the 'jointly controlled' characterisation."
+      "fix": "Raise the threshold to at least 4/5 (two-thirds of 5 signers, per A.6.1.1.1.2.6.1.2.1.2.2.2.5), which also forces at least two parties to sign; or amend the Modification rule and the 'jointly controlled' wording."
     },
     {
       "id": "A.6.1.1.1.2.6.1.2.2.1.3#naming",
@@ -2559,42 +2347,6 @@
       "fix": "For more detailed instructions on the code to execute this, see"
     },
     {
-      "id": "A.6.1.1.1.2.6.1.3.1.6.4.4.1.3#entity",
-      "docNo": "A.6.1.1.1.2.6.1.3.1.6.4.4.1.3",
-      "uuid": "2ece6e1d-b07a-4df5-9aa6-616756f64815",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "`0x9Ad87668d49ab69EEa0AF091de970EF52b0D5178`",
-      "issue": "The Spark Savings v2 spPYUSD Instance's Setter is given as 0x9Ad8...5178, which is the address listed as the Morpho USDC Instance's Allocator Role Address (A.6.1.1.1.2.6.1.3.1.5.1.2.2.3), while all three sibling Spark Savings v2 instances (ETH A...6.1.4.1.3, USDC A...6.2.4.1.3, USDT A...6.3.4.1.3) list Setter 0x2E1b01adABB8D4981863394bEa23a1263CBaeDfC and share identical Vault Implementation, Default admin and Taker addresses.",
-      "fix": "Almost certainly should be `0x2E1b01adABB8D4981863394bEa23a1263CBaeDfC` like the other Spark Savings v2 instances — otherwise unclear, needs author."
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.3.1.6.5.2.1.4#typo",
-      "docNo": "A.6.1.1.1.2.6.1.3.1.6.5.2.1.4",
-      "uuid": "c7b6ad97-5e83-488d-8aad-19a7ed272765",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "typo",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "OUSDUSDS",
-      "issue": "Token value runs two token symbols together; the sibling documents write the pair as OUSD/USDS.",
-      "fix": "OUSD/USDS"
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.3.1.6.5.2.4#markdown",
-      "docNo": "A.6.1.1.1.2.6.1.3.1.6.5.2.4",
-      "uuid": "908bf4b2-0b28-4e2f-8928-4a4dd867b33f",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "markdown",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "`maxAmount,` `slope`",
-      "issue": "The comma sits inside the backticks, so the code span reads `maxAmount,` rather than `maxAmount`.",
-      "fix": "`maxAmount`, `slope`"
-    },
-    {
       "id": "A.6.1.1.1.2.6.1.3.2.1.1.3#xref",
       "docNo": "A.6.1.1.1.2.6.1.3.2.1.1.3",
       "uuid": "9b849363-5380-406f-888a-d533f6ec69de",
@@ -2604,7 +2356,7 @@
       "pass": "factual",
       "quote": "for emergency procedures see [A.6.1.1.1.2.6.1.2.2.3.4.1 - ERC-4626 Withdrawal Action](f92ddc3f-672a-4f52-931f-5263a9f709b9)",
       "issue": "This is the Base Morpho ERC4626 Instance, but it links the mainnet emergency action (under Redeem All Mainnet Positions, using `mainnetController`) and the Mainnet Controller ERC-4626 Functions, rather than the L2 equivalents (A.6.1.1.1.2.6.1.2.2.3.2.1 and Foreign Controller ERC-4626 Functions A.6.1.1.1.2.6.1.2.2.1.2.2.2.1).",
-      "fix": "for emergency procedures see [A.6.1.1.1.2.6.1.2.2.3.2.1 - ERC-4626 Withdrawal Action](aad3683d-38d4-4e94-b2bf-88b408c2290e)"
+      "fix": "The Instance follows the general ERC4626 procedures see [A.6.1.1.1.2.6.1.2.2.1.2.2.2.1 - ERC-4626 Functions](f9225946-9172-4013-bd04-5e032a998e05) and for emergency procedures see [A.6.1.1.1.2.6.1.2.2.3.2.1 - ERC-4626 Withdrawal Action](aad3683d-38d4-4e94-b2bf-88b408c2290e)."
     },
     {
       "id": "A.6.1.1.1.2.6.1.3.5.2.1.4.1.2#entity",
@@ -2616,67 +2368,19 @@
       "pass": "factual",
       "quote": "| Spark | `0x50c770E6dC6CfdEE33509273FA9a215bfAffF9B2` |",
       "issue": "The Sentinel table attributes 0x50c770E6dC6CfdEE33509273FA9a215bfAffF9B2 to Spark, but the sibling Curator Role Address document lists that same address as the Soter Labs co-curator Safe (Spark's co-curator Safe there is 0xAB5710211458FC8d7E0Be628202F47DdbD3F38Eb). One of the two entity attributions is likely wrong.",
-      "fix": ""
+      "fix": "Leave this Sentinel row as is. Swap the Soter Labs/Spark rows in the sibling Curator doc A.6.1.1.1.2.6.1.3.5.2.1.4.1.1 (Soter Labs 0xAB57...38Eb, Spark 0x50c7...F9B2), as in every other Spark curator table."
     },
     {
-      "id": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.1#grammar",
-      "docNo": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.1",
-      "uuid": "893256f7-00f6-42e7-92cd-218af9beac76",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The inflow rate limit parameter is:",
-      "issue": "Singular 'parameter is' introduces a list of two parameters (maxAmount and slope); sibling documents use 'parameters are'.",
-      "fix": "The inflow rate limit parameters are:"
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.2#grammar",
-      "docNo": "A.6.1.1.1.2.6.1.4.1.6.3.2.4.2",
-      "uuid": "dfcceae6-65f0-44e2-9d47-9ad2324d983d",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The outflow rate limit parameter is:",
-      "issue": "Singular 'parameter is' introduces a list of two parameters (maxAmount and slope); sibling documents use 'parameters are'.",
-      "fix": "The outflow rate limit parameters are:"
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.4.3#structural",
-      "docNo": "A.6.1.1.1.2.6.1.4.3",
-      "uuid": "4a98960f-dd05-4f2b-9e7c-66a489ee499a",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The Ethereum Mainnet Instances of the Spark Liquidity Layer with `Completed` Status are stored herein and are organized by target protocol.",
-      "issue": "Two Ethereum Mainnet protocol groups with Completed status — A.6.1.1.1.2.6.1.4.1 Blackrock ('The Ethereum Mainnet Instances of the Blackrock Protocol with `Completed` Status are stored herein') and A.6.1.1.1.2.6.1.4.2 Centrifuge (same wording) — sit as siblings of this container rather than inside it, so the claim that the Ethereum Mainnet Completed instances are stored herein is false as written.",
-      "fix": "Move the Blackrock and Centrifuge groups under A.6.1.1.1.2.6.1.4.3, or reword this document so it does not claim to hold all Ethereum Mainnet Completed instances."
-    },
-    {
-      "id": "A.6.1.1.1.3.1.3.3.4.1#structural",
+      "id": "A.6.1.1.1.3.1.3.3.4.1#grammar",
       "docNo": "A.6.1.1.1.3.1.3.3.4.1",
       "uuid": "cfdf3c2d-6ede-49f0-8f2c-0cd91a5602bc",
       "file": "A.6.1.1.1 - Spark.md",
-      "category": "structural",
+      "category": "grammar",
       "severity": "medium",
       "pass": "factual",
       "quote": "Conflicts must be disclosed to both the Spark Foundation before the voting window (see [A.6.1.1.1.2.2.2.2.1.2.1.3 - Root Edit Token Holder Vote](b60cfc4e-4cc5-4040-9610-f2113980831b)) for the proposal begins.",
-      "issue": "\"both\" announces two mandatory disclosure recipients but only one (the Spark Foundation) is named, so the second party a Delegate must disclose a conflict to is undefined.",
+      "issue": "A.6.1.1.1.3.1.3.3.4.1 says 'disclosed to both the Spark Foundation' but names only one recipient, so either a second party is missing or 'both' is stray.",
       "fix": "unclear - needs author: either name the second recipient (e.g. \"to both the Spark Foundation and the Sky Forum\") or drop \"both\"."
-    },
-    {
-      "id": "A.6.1.1.1.3.2.1.1.3.2.2#numeric",
-      "docNo": "A.6.1.1.1.3.2.1.1.3.2.2",
-      "uuid": "93b851d7-9825-4022-a583-51a4bbdf4f9c",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "- Borrow cap - `gap`: 10,000 wstETH - `ttl`: 12 hours - `max`: 1 wstETH",
-      "issue": "The borrow-cap target gap (10,000 wstETH) is 10,000x the absolute maximum the borrow cap may be raised to (1 wstETH), so the automator's target can never be reached - while A.6.1.1.1.3.2.1.1.2.1.8 (5d721ab3) lists wstETH with Borrowing: Yes and Borrow Cap: Set by cap automator.",
-      "fix": "unclear - needs author: `max` looks like a unit/decimal slip (compare WETH's `max`: Unlimited), or the wstETH borrow cap is deliberately disabled and should be stated as such."
     },
     {
       "id": "A.6.1.1.1.3.2.1.1.3.2.5#naming",
@@ -2691,16 +2395,16 @@
       "fix": "Use \"sDai\" consistently throughout (`max`: 0 sDai)."
     },
     {
-      "id": "A.6.1.1.1.3.4.2.2.2#xref",
+      "id": "A.6.1.1.1.3.4.2.2.2#naming",
       "docNo": "A.6.1.1.1.3.4.2.2.2",
       "uuid": "99d4b8da-fa5c-49ce-b93c-70d07334d7aa",
       "file": "A.6.1.1.1 - Spark.md",
-      "category": "xref",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "divided by Risk Tolerance Ratio ([A.6.1.1.1.3.4.2.1 - Encumbrance Ratio](9995ba51-1de7-4b32-8b76-a71462dc4c5b))",
-      "issue": "The divisor is called 'Risk Tolerance Ratio', but the cited document defines the 'Encumbrance Ratio'; the term in the formula does not match the document it points to.",
-      "fix": ""
+      "issue": "The link target is right (A.6.1.1.1.3.4.2.1 holds the ratio), but 'Risk Tolerance Ratio' is a stale name: the Parameters doc A.6.1.1.1.3.4.2.1.3 names it the 'Target Encumbrance Ratio'.",
+      "fix": "divided by the Target Encumbrance Ratio ([A.6.1.1.1.3.4.2.1 - Encumbrance Ratio](9995ba51-1de7-4b32-8b76-a71462dc4c5b))"
     },
     {
       "id": "A.6.1.1.1.3.5.3.2.3.2#xref",
@@ -2739,27 +2443,15 @@
       "fix": "[A.6.1.1.1.3.5.2.2.8 - Spark Savings USDT on X Layer](c6eb9203-a5af-4f9b-baaf-b70c4449d4a4)"
     },
     {
-      "id": "A.6.1.1.1.3.10.3#naming",
-      "docNo": "A.6.1.1.1.3.10.3",
-      "uuid": "56281438-63f9-46d4-a382-39a790a3bba1",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "voluntarily deposited by users into a Confidential Strategic Partnership and Deployment through preconfigured product functionality",
-      "issue": "Inconsistent naming: this document and its section otherwise consistently use \"Confidential Strategic Integration(s) and Deployment(s)\"; this instance swaps in \"Partnership\" for \"Integration\" for the same concept.",
-      "fix": "voluntarily deposited by users into a Confidential Strategic Integration and Deployment through preconfigured product functionality"
-    },
-    {
-      "id": "A.6.1.1.2.2.1.1.3#structural",
+      "id": "A.6.1.1.2.2.1.1.3#naming",
       "docNo": "A.6.1.1.2.2.1.1.3",
       "uuid": "994395c0-c61d-4fc9-8167-00ee3134bd5a",
       "file": "A.6.1.1.2 - Grove.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "##### A.6.1.1.2.2.1.1.3 - Completed Instances Directory [Core] ... The Instances of the Agent Creation Primitive with `Completed` Status are contained herein.",
-      "issue": "This container document is titled '… Directory' although its own body says instances are 'contained herein', and it duplicates the title of the actual directory document A.6.1.1.2.2.1.1.1.3; every sibling primitive names the equivalent container 'Completed Instances' (A.6.1.1.2.2.1.2.3, .1.3.3, .1.4.3).",
+      "issue": "The container is titled 'Completed Instances Directory', the same title as the hub directory A.6.1.1.2.2.1.1.1.3, while sibling primitives name the slot 'Completed Instances' (A.6.1.1.2.2.1.2.3). The defect is a title, not structure.",
       "fix": "Rename to 'A.6.1.1.2.2.1.1.3 - Completed Instances' (and likewise A.6.1.1.2.2.1.1.4 to 'In Progress Invocations')."
     },
     {
@@ -2787,18 +2479,6 @@
       "fix": "whereas failed Invocations are Archived in [A.6.1.1.2.2.5.2.1.5 - Hub Data Repository](732e99b3-3a0c-4116-b3f6-5b9d2ad4d351)."
     },
     {
-      "id": "A.6.1.1.2.2.6.1.2.1.1.3.1.2.3#numeric",
-      "docNo": "A.6.1.1.2.2.6.1.2.1.1.3.1.2.3",
-      "uuid": "a3b52620-db3f-40fa-80d5-a7eacf52090c",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "- `maxAmount`: Unlimited - `slope`: Unlimited",
-      "issue": "`slope` is a per-day refill rate stated numerically in every other rate-limit document in this chunk; the one other 'Unlimited' limit (A.6.1.1.2.2.6.1.2.1.1.3.1.1.5, b43ee2cd-06b9-4615-bcb4-ac44e2b8c693) expresses the same condition as maxAmount 'Unlimited' with `slope`: 0, so 'slope: Unlimited' is an inconsistent/invalid value for the same concept.",
-      "fix": "`slope`: 0 (matching the unlimited-limit convention used for LIMIT_USDC_TO_CCTP_ETH)"
-    },
-    {
       "id": "A.6.1.1.2.2.6.1.2.1.2.1#grammar",
       "docNo": "A.6.1.1.2.2.6.1.2.1.2.1",
       "uuid": "edf44383-44e6-4aaa-972a-7dfdaee0998d",
@@ -2809,18 +2489,6 @@
       "quote": "The governance process to invoke a new Instance of the Allocation System Primitive follows the Root Edit process see [A.6.1.1.2.2.2.2.2.1.2 - Operational Process Definition](40826926-adb2-4de3-936d-702e2d8cb3b9).",
       "issue": "Missing punctuation between \"Root Edit process\" and \"see\" makes the sentence run on / fail to parse; needs a comma or period to separate the clause from the cross-reference instruction.",
       "fix": "The governance process to invoke a new Instance of the Allocation System Primitive follows the Root Edit process, see [A.6.1.1.2.2.2.2.2.1.2 - Operational Process Definition](40826926-adb2-4de3-936d-702e2d8cb3b9)."
-    },
-    {
-      "id": "A.6.1.1.2.2.6.1.3.1.1.3.2.5.1#numeric",
-      "docNo": "A.6.1.1.2.2.6.1.3.1.1.3.2.5.1",
-      "uuid": "96e8ca2f-4e71-4ab0-ba0f-1958ea8e637b",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Total ACRDX exposure may not exceed 50.97 million USDS and should be reduced to zero over time.",
-      "issue": "Unit mismatch: the Centrifuge ACRDX Instance's Asset Supplied By Grove Liquidity Layer is USDC (A.6.1.1.2.2.6.1.3.1.1.3.2.1.3) and its deposit rate limits are denominated in USDC (20,000,000 USDC), but the exposure cap for the same Instance is denominated in USDS.",
-      "fix": "State the cap in USDC to match the Instance's supplied asset and rate limits, or state the conversion basis if USDS is deliberate."
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.1.4.3.2.2.1#entity",
@@ -2835,18 +2503,6 @@
       "fix": "Replace with the actual Pendle PT-USDe token address; 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3 is the USDe token."
     },
     {
-      "id": "A.6.1.1.2.2.6.1.3.2.1.1.2.2.1#entity",
-      "docNo": "A.6.1.1.2.2.6.1.3.2.1.1.2.2.1",
-      "uuid": "f9f790ea-f67a-4e6d-ac63-cd84faf208fe",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "###### A.6.1.1.2.2.6.1.3.2.1.1.2.2.1 - Token Address `0xFE6920eB6C421f1179cA8c8d4170530CDBdfd77A`",
-      "issue": "The Avalanche Centrifuge JTRSY Instance gives 0xFE6920eB...d77A as the JTRSY Token Address, but the same address is declared as the 'Centrifuge ERC-7540 Vault Address' for the Ethereum Mainnet JTRSY Instance (A.6.1.1.2.2.6.1.3.1.14.1.2.2.2, uuid c519baf9-b02c-4c07-a113-ac73738a217c), whose JTRSY token is 0x8c213ee79581Ff4984583C6a801e5263418C4b86 — a vault address appears to have been recorded as the token address.",
-      "fix": "unclear — needs author: supply the Avalanche JTRSY share-token address, or relabel this field as the vault address"
-    },
-    {
       "id": "A.6.1.1.2.2.6.1.3.4.1.1.2.1.3#entity",
       "docNo": "A.6.1.1.2.2.6.1.3.4.1.1.2.1.3",
       "uuid": "c3aa0280-f998-4510-a1fd-45bb47c62f4b",
@@ -2859,39 +2515,15 @@
       "fix": "Asset Supplied By Grove Liquidity Layer should most likely read 'USDT0' (or the rate limits should be restated in USDC)."
     },
     {
-      "id": "A.6.1.1.2.2.6.1.3.7.2.1.2.2.1#entity",
-      "docNo": "A.6.1.1.2.2.6.1.3.7.2.1.2.2.1",
-      "uuid": "82df3c6c-85a2-4ba2-917f-f3ea230b610d",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "A.6.1.1.2.2.6.1.3.7.2.1.2.2.1 - Token Address [Core] ... `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168`",
-      "issue": "For the 'USDG To USDC Via Paxos' Instance the Token Address is identical to that Instance's Underlying Asset Address (A.6.1.1.2.2.6.1.3.7.2.1.2.2.2) and to the USDG underlying address used by the sibling Morpho Instance (A.6.1.1.2.2.6.1.3.7.1.1.2.2.2), yet the Instance's 'Token to Receive' is USDC - so the USDC address appears to have been replaced by the USDG address.",
-      "fix": "Token Address should be the USDC contract address on Robinhood Chain, not 0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168 (USDG)."
-    },
-    {
-      "id": "A.6.1.1.2.3.6.7#xref",
-      "docNo": "A.6.1.1.2.3.6.7",
-      "uuid": "db2e4893-d315-4a65-a5cc-133d7763c693",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "xref",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "[https://gateway.pinata.cloud/ipfs/bafkreierc3rxu3d64xakeeibkqujkqbhlz3lcsnjymcckaacix55vhya6u](ttps://gateway.pinata.cloud/ipfs/bafkreierc3rxu3d64xakeeibkqujkqbhlz3lcsnjymcckaacix55vhya6u)",
-      "issue": "The link target is 'ttps://' - it disagrees with its own link text and is not a resolvable URL scheme; every other DAO Resolution in this section links to a well-formed https URL.",
-      "fix": "Link target should be https://gateway.pinata.cloud/ipfs/bafkreierc3rxu3d64xakeeibkqujkqbhlz3lcsnjymcckaacix55vhya6u."
-    },
-    {
-      "id": "A.6.1.1.3.2.1.1.3#structural",
+      "id": "A.6.1.1.3.2.1.1.3#naming",
       "docNo": "A.6.1.1.3.2.1.1.3",
       "uuid": "0b9ec93a-58c8-48cf-b88f-ebbbc3a4333b",
       "file": "A.6.1.1.3 - Keel.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "A.6.1.1.3.2.1.1.3 - Completed Instances Directory [Core] ... The Instances of the Agent Creation Primitive with `Completed` Status are contained herein.",
-      "issue": "This container document is titled 'Completed Instances Directory' although its body says it holds the Instances themselves, duplicating the title of the hub's real directory at A.6.1.1.3.2.1.1.1.3; every sibling primitive names this slot 'Completed Instances' (e.g. A.6.1.1.3.2.1.2.3, A.6.1.1.3.2.1.4.3).",
+      "issue": "The container is titled 'Completed Instances Directory' (the same title as the hub directory A.6.1.1.3.2.1.1.1.3), while sibling A.6.1.1.3.2.1.2.3 is 'Completed Instances'. The defect is a title.",
       "fix": "Title should be 'Completed Instances' (the sibling A.6.1.1.3.2.1.1.4 has the same problem, titled 'In Progress Invocations Directory' instead of 'In Progress Invocations')."
     },
     {
@@ -2919,64 +2551,16 @@
       "fix": "Describe the review as gating the deduction of the rebate from the Ecosystem Upkeep fee payment, not a surplus distribution to token holders — or state which distribution is meant; needs author."
     },
     {
-      "id": "A.6.1.1.3.2.3.2.2.1.2.3#markdown",
-      "docNo": "A.6.1.1.3.2.3.2.2.1.2.3",
+      "id": "A.6.1.1.3.2.3.2.2.1.2.1.3#typo",
+      "docNo": "A.6.1.1.3.2.3.2.2.1.2.1.3",
       "uuid": "77ad2a49-8fa6-499b-bd26-b9fdef57fded",
       "file": "A.6.1.1.3 - Keel.md",
-      "category": "markdown",
+      "category": "typo",
       "severity": "medium",
       "pass": "language",
       "quote": "it must be escalated to Core GovOps",
-      "issue": "Sentence ends without terminal punctuation (missing period).",
+      "issue": "A.6.1.1.3.2.3.2.2.1.2.1.3 (renumbered) ends without a period; this is missing punctuation, not a markdown problem.",
       "fix": "it must be escalated to Core GovOps."
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.1.1.3.1.1.1#numeric",
-      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.1.1.1",
-      "uuid": "568f6fae-4680-4090-8eee-fe0b8e920155",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The maximum amount of USDS that can be minted within the Keel Liquidity Layer (`LIMIT_USDS_MINT`) is specified in the document herein. - `maxAmount`: 10,000 USDS - `slope`: 10,000 USDS per day",
-      "issue": "A 10,000 USDS mint cap is four orders of magnitude below every other USDS limit in the same Ethereum Mainnet rate-limit table and below the limits that consume minted USDS — LIMIT_USDS_TO_USDC (100,000,000 USDS) and LIMIT_LAYERZERO_TRANSFER to Solana (100,000,000 USDS) — which are therefore unreachable, indicating a dropped-magnitude figure.",
-      "fix": "Probably 100,000,000 USDS maxAmount / 50,000,000 USDS per day to match the sibling limits — unclear, needs author."
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.1.1.3.1.2.1#numeric",
-      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.1.2.1",
-      "uuid": "28831fcf-2e28-4760-a4cd-27ae538edd9a",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The maximum amount of sUSDS that can be deposited (`LIMIT_4626_DEPOSIT`) is specified in the document herein. - `maxAmount`: 100,000,000 USDS - `slope`: 50,000,000 USDS per day",
-      "issue": "Unit mismatch within the same document: the limit is stated as an amount of sUSDS but the figures are denominated in USDS, which is a different token with a different (non-1:1, accruing) value, so the cap is ambiguous.",
-      "fix": "State both the asset and the figures in the same unit — either 'amount of USDS that can be deposited into sUSDS' with USDS figures, or sUSDS figures."
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.1.1.3.2.1.2#numeric",
-      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.2.1.2",
-      "uuid": "5f86844e-579b-425c-8f7b-e6521cfe55b9",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "numeric",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The maximum amount of USDS that can be swapped for USDC by the Keel Liquidity Layer on Solana ... - `maxAmount`: 100,000,000 USDS - `slope`: 50,000,000 USDS per day",
-      "issue": "This is the only Solana rate limit at 100,000,000/50,000,000 — every other Solana limit in the same table is 25,000,000/10,000,000 — and it exceeds the USDS Reserve cap in A.6.1.1.3.2.6.1.2.1.1.3.2.1.1 (d9e9085a-cc04-41b9-8708-fe41fc2ef0f3), which limits USDS leaving the Reserve in aggregate to 25,000,000; the values duplicate the Ethereum Mainnet swap limit exactly, suggesting a copy-paste.",
-      "fix": "Probably `maxAmount`: 25,000,000 USDS / `slope`: 10,000,000 USDS per day, consistent with the other Solana limits."
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.1.2.3.1.5#grammar",
-      "docNo": "A.6.1.1.3.2.6.1.2.1.2.3.1.5",
-      "uuid": "e7492c8c-10b6-4ee1-9d62-fb3c292f1308",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "Changes to the Prime Relayer Addresses is a controller action",
-      "issue": "Plural subject 'Changes' with singular verb 'is'.",
-      "fix": "Changes to the Prime Relayer Addresses are controller actions"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.4#entity",
@@ -2998,7 +2582,7 @@
       "category": "structural",
       "severity": "medium",
       "pass": "factual",
-      "quote": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.5 - PSM Functions ... define the swap operations performed by the Keel Liquidity Layer in the PSM. ... A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.5.3 - Transfer Token Via LayerZero",
+      "quote": "Transfer Token Via LayerZero",
       "issue": "A LayerZero cross-chain token transfer is filed as a child of 'PSM Functions' (which the parent defines as PSM swap operations only), while the adjacent 'Bridging Functions' section (66d40b48) is where it belongs — and that section's LayerZero entry (d239ba22) claims the process 'will be specified in a future iteration' even though transferTokenLayerZero is fully specified here.",
       "fix": "Move Transfer Token Via LayerZero under A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.6 - Bridging Functions and drop the 'future iteration' placeholder there."
     },
@@ -3013,42 +2597,6 @@
       "quote": "The documents herein define roles (Admin, Relayer, ALM Controller and Freezer) and their responsibilities/permissions for managing the Keel Liquidity Layer.",
       "issue": "Four roles are enumerated but only three are defined in the documents herein (Default Admin 0270b595, Relayer 2b42015c, Freezer 6f7becc7); no ALM Controller role document or ALM-Controller permission appears anywhere in the Solana branch.",
       "fix": "Either add the ALM Controller role document or drop it from the enumeration."
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.2.2.1.1.2#naming",
-      "docNo": "A.6.1.1.3.2.6.1.2.2.2.1.1.2",
-      "uuid": "2b42015c-c76a-4364-b8b5-c9a2b9f6f484",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Relayer role is the address(es) ... The Relayer Role has `can_execute_swap` and `can_reallocate` permissions. The Relayer Role may be granted...",
-      "issue": "Within the same paragraph, \"Relayer role\" and \"Relayer Role\" are capitalized inconsistently (lowercase in the first sentence, capitalized in the next two), unlike parallel Admin/Freezer role sections which stay lowercase throughout.",
-      "fix": "Use consistent capitalization, e.g. \"The Relayer role is ... The Relayer role has ... The Relayer role may be granted...\""
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.2.2.1.1.3#typo",
-      "docNo": "A.6.1.1.3.2.6.1.2.2.2.1.1.3",
-      "uuid": "6f7becc7-2e70-44e5-8662-25ba7dd1a5f8",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "typo",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Freezer role has `can_freeze_controller` , `can_suspend_permissions` and `can_liquidate` permissions.",
-      "issue": "Stray space before the comma after the first code-formatted permission name.",
-      "fix": "The Freezer role has `can_freeze_controller`, `can_suspend_permissions` and `can_liquidate` permissions."
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.2.2.3.2.1#grammar",
-      "docNo": "A.6.1.1.3.2.6.1.2.2.2.3.2.1",
-      "uuid": "4f8c8aa3-fffc-46dd-aeb7-b23e996619d7",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "Integrations, Reserves nor Permissions cannot be managed during this period",
-      "issue": "\"nor\" combined with \"cannot\" is a double negative; the list should be joined with \"and\".",
-      "fix": "Integrations, Reserves and Permissions cannot be managed during this period"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.2.2.3.2.2#copy-paste",
@@ -3075,27 +2623,27 @@
       "fix": "Either retire this transitionary clause or restate it to cover only funds outside the now-active Allocation System Primitive Instances."
     },
     {
-      "id": "A.6.1.1.4.2.1.1.3#structural",
+      "id": "A.6.1.1.4.2.1.1.3#naming",
       "docNo": "A.6.1.1.4.2.1.1.3",
       "uuid": "87ad87f5-5441-4003-8029-b7ce10442119",
       "file": "A.6.1.1.4 - Skybase.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "##### A.6.1.1.4.2.1.1.3 - Completed Instances Directory [Core] <!-- UUID: 87ad87f5-5441-4003-8029-b7ce10442119 --> The Instances of the Agent Creation Primitive with `Completed` Status are contained herein.",
-      "issue": "This is the Instance container, not a Directory — its body says Instances 'are contained herein' — yet it carries the title of the hub Directory document A.6.1.1.4.2.1.1.1.3, duplicating that title inside the same Primitive; the three sibling Primitives all title this position 'Completed Instances' (A.6.1.1.4.2.1.2.3, A.6.1.1.4.2.1.3.3, A.6.1.1.4.2.1.4.3).",
+      "issue": "A.6.1.1.4.2.1.1.3 holds the Instances but is titled like the hub Directory A.6.1.1.4.2.1.1.1.3; sibling A.6.1.1.4.2.1.2.3 is 'Completed Instances'. Title-only defect (template-wide across Agent Creation Primitives).",
       "fix": "Rename to 'Completed Instances'."
     },
     {
-      "id": "A.6.1.1.4.2.1.1.4#structural",
+      "id": "A.6.1.1.4.2.1.1.4#naming",
       "docNo": "A.6.1.1.4.2.1.1.4",
       "uuid": "58ddd7d7-28af-4ca3-ac6a-f5d2105f9e79",
       "file": "A.6.1.1.4 - Skybase.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "##### A.6.1.1.4.2.1.1.4 - In Progress Invocations Directory [Core] <!-- UUID: 58ddd7d7-28af-4ca3-ac6a-f5d2105f9e79 -->",
-      "issue": "Same defect as the sibling above: the Invocation container at this position is titled as the hub Directory document (duplicating A.6.1.1.4.2.1.1.1.4's title within the same Primitive), whereas A.6.1.1.4.2.1.2.4, A.6.1.1.4.2.1.3.4 and A.6.1.1.4.2.1.4.4 are all titled 'In Progress Invocations'.",
+      "issue": "A.6.1.1.4.2.1.1.4 duplicates the hub title 'In Progress Invocations Directory' (A.6.1.1.4.2.1.1.1.4); the parallel slot A.6.1.1.4.2.1.2.4 is 'In Progress Invocations'. Title-only defect.",
       "fix": "Rename to 'In Progress Invocations'."
     },
     {
@@ -3135,51 +2683,15 @@
       "fix": "[A.6.1.1.4.2.5.2.2.3 - Morpho Instance Configuration Document]"
     },
     {
-      "id": "A.6.1.1.4.2.5.2.2.1.2.1#xref",
-      "docNo": "A.6.1.1.4.2.5.2.2.1.2.1",
-      "uuid": "6fe71ca8-3c28-408e-8b11-3c2fcfcc5778",
-      "file": "A.6.1.1.4 - Skybase.md",
-      "category": "xref",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "subject to the qualifications specified in [A.2.2.9.1.2.1.3.3.1 - Near-Term Process](05fb732b-de55-4886-81a7-7c5d4c13d2d2).",
-      "issue": "The Euler Instance belongs to the Integration Boost Primitive (A.6.1.1.4.2.5.2, 'See A.2.2.9.2 - Integration Boost Primitive'), but its Near-Term Process qualification points into the Distribution Reward Primitive subtree (A.2.2.9.1.*), while its two sibling Integration Boost Instances (Curve A.6.1.1.4.2.5.2.2.2.2.1 and Morpho A.6.1.1.4.2.5.2.2.3.2.1) both cite A.2.2.9.2.2.1.3.2.1 - Near Term Process.",
-      "fix": "Should cite [A.2.2.9.2.2.1.3.2.1 - Near Term Process](4ab621b4-ef8e-4b01-a6aa-9296601033c5), as the Curve and Morpho Instances do"
-    },
-    {
-      "id": "A.6.1.1.4.2.5.2.2.3.1.2#entity",
-      "docNo": "A.6.1.1.4.2.5.2.2.3.1.2",
-      "uuid": "b70f1003-1159-4d5b-b362-c37aa11403d3",
-      "file": "A.6.1.1.4 - Skybase.md",
-      "category": "entity",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The reward address for the Morpho Integration Boost is `0xa7843f843d29ca33ba48d9d1335b774eecc328dc`.",
-      "issue": "This is byte-for-byte the same address given as the Curve Integration Boost reward address in A.6.1.1.4.2.5.2.2.2.1.2 (fa241343-8f00-454b-9b95-726cbcbb7b9d), so two distinct Integration Partners are recorded with an identical, partner-specific 'Integration Partner Reward Address' — every other Instance in the chunk has a unique address.",
-      "fix": "unclear — needs author; one of the two partner reward addresses is almost certainly a copy-paste of the other"
-    },
-    {
-      "id": "A.6.1.1.4.2.5.2.4.1.3.1#xref",
-      "docNo": "A.6.1.1.4.2.5.2.4.1.3.1",
-      "uuid": "9ad35e12-7bd0-46c8-a753-4a341ab880a2",
-      "file": "A.6.1.1.4 - Skybase.md",
-      "category": "xref",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "subject to the qualifications specified in [A.2.2.9.1.2.1.3.3.1 - Near-Term Process](05fb732b-de55-4886-81a7-7c5d4c13d2d2).",
-      "issue": "The Compound Instance is an Integration Boost Primitive Instance (A.6.1.1.4.2.5.2 -> A.2.2.9.2) yet its Near-Term Process qualification points into the Distribution Reward Primitive subtree (A.2.2.9.1.*), contradicting the Curve and Morpho Integration Boost Instances in the same chunk which cite A.2.2.9.2.2.1.3.2.1 - Near Term Process.",
-      "fix": "Should cite [A.2.2.9.2.2.1.3.2.1 - Near Term Process](4ab621b4-ef8e-4b01-a6aa-9296601033c5)"
-    },
-    {
-      "id": "A.6.1.1.5.2.1.1.3#structural",
+      "id": "A.6.1.1.5.2.1.1.3#naming",
       "docNo": "A.6.1.1.5.2.1.1.3",
       "uuid": "31bafd0d-b417-4759-88af-7589f9a32518",
       "file": "A.6.1.1.5 - Obex.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "A.6.1.1.5.2.1.1.3 - Completed Instances Directory ... The Instances of the Agent Creation Primitive with `Completed` Status are contained herein.",
-      "issue": "Title says 'Directory' but the body describes the container that holds the Instances themselves; the actual Directory already exists at A.6.1.1.5.2.1.1.1.3 with the same title, and every other primitive names this node 'Completed Instances' (e.g. A.6.1.1.5.2.1.2.3, .3.3, .4.3).",
+      "issue": "A.6.1.1.5.2.1.1.3 holds Instances but is titled 'Completed Instances Directory', same as hub doc A.6.1.1.5.2.1.1.1.3; sibling A.6.1.1.5.2.1.2.3 is 'Completed Instances'. Title-only defect.",
       "fix": "Rename to 'Completed Instances' to match the sibling primitives and to disambiguate from the hub Directory at A.6.1.1.5.2.1.1.1.3."
     },
     {
@@ -3195,51 +2707,27 @@
       "fix": "unclear — needs author: either describe the control as Operational GovOps withholding approval of the fee deduction, or define the surplus-distribution mechanism this step assumes."
     },
     {
-      "id": "A.6.1.1.5.2.6.1.2.1.1.1.2.1#structural",
-      "docNo": "A.6.1.1.5.2.6.1.2.1.1.1.2.1",
-      "uuid": "5d99d731-c3ed-461c-a6ea-50ebd741b3d2",
-      "file": "A.6.1.1.5 - Obex.md",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "A.6.1.1.5.2.6.1.2.1.1.1.2.1 - Ethereum Mainnet ... The documents herein contain the ALM Contract Addresses for the Obex Liquidity Layer on the Ethereum Mainnet.",
-      "issue": "This chain container is left empty: the ALM contract documents that belong under it are numbered A.6.1.1.5.2.6.1.2.1.1.1.2.2 through .2.7, i.e. as its SIBLINGS under ALM Contracts, unlike the parallel Allocator section where Ethereum Mainnet (.1.1.1) correctly contains .1.1.1.1-.1.1.1.5.",
-      "fix": "Renumber the ALM contract documents as A.6.1.1.5.2.6.1.2.1.1.1.2.1.1 ... .2.1.6 so they sit under the Ethereum Mainnet container."
-    },
-    {
-      "id": "A.6.1.1.5.2.6.1.2.1.2.1#grammar",
-      "docNo": "A.6.1.1.5.2.6.1.2.1.2.1",
-      "uuid": "f6be405d-fae7-474e-882d-5c98985324b6",
-      "file": "A.6.1.1.5 - Obex.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The governance process to invoke a new Instance of the Allocation System Primitive follows the Root Edit process see Operational Process Definition.",
-      "issue": "Sentence does not parse: \"follows the Root Edit process see Operational Process Definition\" is missing punctuation connecting the cross-reference (e.g. a parenthesis or period before \"see\").",
-      "fix": "The governance process to invoke a new Instance of the Allocation System Primitive follows the Root Edit process (see Operational Process Definition)."
-    },
-    {
-      "id": "A.6.1.1.6.2.1.1.3#structural",
+      "id": "A.6.1.1.6.2.1.1.3#naming",
       "docNo": "A.6.1.1.6.2.1.1.3",
       "uuid": "b57af67d-e709-41a7-986b-afdd90fd18d1",
       "file": "A.6.1.1.6 - Pattern.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "##### A.6.1.1.6.2.1.1.3 - Completed Instances Directory [Core] ... The Instances of the Agent Creation Primitive with `Completed` Status are contained herein.",
-      "issue": "This document is titled 'Completed Instances Directory' but its body says it holds the Instances themselves, and a genuine 'Completed Instances Directory' already exists in the Hub at A.6.1.1.6.2.1.1.1.3; every sibling primitive (e.g. A.6.1.1.6.2.1.2.3, A.6.1.1.6.2.1.3.3) names this slot 'Completed Instances'.",
+      "issue": "A.6.1.1.6.2.1.1.3 holds Instances but carries the hub Directory title of A.6.1.1.6.2.1.1.1.3; sibling A.6.1.1.6.2.1.2.3 is 'Completed Instances'. Title-only defect.",
       "fix": "Rename the document to 'Completed Instances'."
     },
     {
-      "id": "A.6.1.1.6.2.1.1.4#structural",
+      "id": "A.6.1.1.6.2.1.1.4#naming",
       "docNo": "A.6.1.1.6.2.1.1.4",
       "uuid": "38aff44f-e8ef-4734-8e11-fb7894d024a5",
       "file": "A.6.1.1.6 - Pattern.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "##### A.6.1.1.6.2.1.1.4 - In Progress Invocations Directory [Core] <!-- UUID: 38aff44f-e8ef-4734-8e11-fb7894d024a5 -->",
-      "issue": "This slot duplicates the Hub's 'In Progress Invocations Directory' (A.6.1.1.6.2.1.1.1.4); in every sibling primitive the fourth child of the Primitive document is 'In Progress Invocations' (e.g. A.6.1.1.6.2.1.2.4, A.6.1.1.6.2.1.3.4, A.6.1.1.6.2.1.4.4), so the Agent Creation Primitive has no 'In Progress Invocations' container.",
+      "issue": "A.6.1.1.6.2.1.1.4 duplicates hub title 'In Progress Invocations Directory' (A.6.1.1.6.2.1.1.1.4); parallel slot A.6.1.1.6.2.1.2.4 is 'In Progress Invocations'. Title-only defect.",
       "fix": "Rename the document to 'In Progress Invocations'."
     },
     {
@@ -3255,18 +2743,6 @@
       "fix": "Describe the review as gating the deduction Pattern applies to its Ecosystem Upkeep fee payment, not a surplus distribution to token holders"
     },
     {
-      "id": "A.6.1.1.6.2.6.1.1.2.1.2#grammar",
-      "docNo": "A.6.1.1.6.2.6.1.1.2.1.2",
-      "uuid": "efa428ed-6e6b-433a-a7e0-2ae781167940",
-      "file": "A.6.1.1.6 - Pattern.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Ethereum Mainnet Instances Directory of River deals with `Active` Status are stored herein.",
-      "issue": "Broken sentence: singular verb 'deals' with plural 'are stored'; sibling directories read 'Instances ... with `Active` Status are stored herein'.",
-      "fix": "The Ethereum Mainnet Instances Directory of River with `Active` Status are stored herein."
-    },
-    {
       "id": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.6.3#structural",
       "docNo": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.6.3",
       "uuid": "901bf629-cee3-4296-afd6-d1e7779d15bb",
@@ -3279,27 +2755,15 @@
       "fix": "Renumber the LayerZero transfer as a sibling of the PSM Functions group (e.g. A.6.1.1.6.2.6.1.2.2.1.2.1.2.7 - LayerZero Functions), or widen the parent's scope statement."
     },
     {
-      "id": "A.6.1.1.6.2.6.1.3.1.2#grammar",
-      "docNo": "A.6.1.1.6.2.6.1.3.1.2",
-      "uuid": "2503b3b1-e0cc-477c-95b7-6fdf25a72ea4",
-      "file": "A.6.1.1.6 - Pattern.md",
-      "category": "grammar",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "The Ethereum Mainnet Instances of River deals with `Active` Status are stored herein.",
-      "issue": "Broken sentence: 'deals with' disagrees with the plural subject and is not the phrasing used by sibling documents ('Instances of X with `Completed` Status').",
-      "fix": "The Ethereum Mainnet Instances of River with `Active` Status are stored herein."
-    },
-    {
-      "id": "A.6.1.1.7.2.1.1.4#structural",
+      "id": "A.6.1.1.7.2.1.1.4#naming",
       "docNo": "A.6.1.1.7.2.1.1.4",
       "uuid": "ff4e7a8d-3832-40a3-b2b0-fec3831ed689",
       "file": "A.6.1.1.7 - Osero.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "##### A.6.1.1.7.2.1.1.4 - In Progress Invocations Directory",
-      "issue": "In the Primitive skeleton the '.4' slot directly under a Primitive is 'In Progress Invocations' (the '.1.4' slot under the Primitive Hub Document is the 'Directory'); every other Primitive in this Artifact follows that (e.g. A.6.1.1.7.2.1.2.4, A.6.1.1.7.2.1.3.4, A.6.1.1.7.2.1.4.4, A.6.1.1.7.2.2.1.4 are all 'In Progress Invocations'), so this node duplicates the title of its own sibling A.6.1.1.7.2.1.1.1.4 (383eb03a) and mislabels the slot.",
+      "issue": "A.6.1.1.7.2.1.1.4 is titled like hub doc A.6.1.1.7.2.1.1.1.4; parallel A.6.1.1.7.2.1.2.4 is 'In Progress Invocations' (Osero's .1.3 already uses 'Completed Instances'). Title-only defect.",
       "fix": "Retitle to 'A.6.1.1.7.2.1.1.4 - In Progress Invocations'."
     },
     {
@@ -3315,51 +2779,15 @@
       "fix": "Describe the review as gating the deduction Osero applies to its Ecosystem Upkeep fee payment, not a surplus distribution to token holders"
     },
     {
-      "id": "A.6.1.1.7.2.5.1.2.2.2.1#copy-paste",
-      "docNo": "A.6.1.1.7.2.5.1.2.2.2.1",
-      "uuid": "1b4d6f03-f4f2-45c0-a4d3-02b842656ea7",
-      "file": "A.6.1.1.7 - Osero.md",
-      "category": "copy-paste",
-      "severity": "medium",
-      "pass": "language",
-      "quote": "In future iterations of the Osero Artifact, a version of the full process definition customized to Osero will be included herein.",
-      "issue": "This is the Nightly Instance's Routine Protocol but the sentence names Osero, left over from the sibling Osero document.",
-      "fix": "In future iterations of the Osero Artifact, a version of the full process definition customized to Nightly will be included herein."
-    },
-    {
-      "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming",
-      "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4",
-      "uuid": "be9ca01f-1675-4d83-80af-b80789c3bd6f",
-      "file": "A.6.1.1.7 - Osero.md",
-      "category": "naming",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "ogusdcp",
-      "issue": "The Mainnet vault token symbol is given entirely in lowercase, while the sibling Base Instance gives its token as \"ogUSDCb\" with the same template, so the casing looks inconsistent.",
-      "fix": "ogUSDCp"
-    },
-    {
-      "id": "A.6.1.1.8.2.1.1.1.3#structural",
-      "docNo": "A.6.1.1.8.2.1.1.1.3",
-      "uuid": "9378730b-3ec4-4b75-918d-1dc4163f4c45",
-      "file": "A.6.1.1.8 - Launch-Agent-7.md",
-      "category": "structural",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "###### A.6.1.1.8.2.1.1.1.3 - Completed Instances [Core] This document contains a Directory of all Instances of the Agent Creation Primitive with Instance status of `Completed`.",
-      "issue": "Title says 'Completed Instances' but the body (and its child, a 'Single Instance Configuration Document Location' pointer) is the Directory; it is swapped with A.6.1.1.8.2.1.1.3, which is titled 'Completed Instances Directory' but contains the instances. Every sibling primitive in the same chunk (Prime Transformation, Executor Transformation, Agent Token, Executor Accord, Root Edit, Light Agent) uses the opposite, correct pairing.",
-      "fix": "Rename to 'Completed Instances Directory' (and rename A.6.1.1.8.2.1.1.3 to 'Completed Instances')."
-    },
-    {
-      "id": "A.6.1.1.8.2.1.1.3#structural",
+      "id": "A.6.1.1.8.2.1.1.3#naming",
       "docNo": "A.6.1.1.8.2.1.1.3",
       "uuid": "f661d4a1-a5ff-4cbd-8d57-82418669a279",
       "file": "A.6.1.1.8 - Launch-Agent-7.md",
-      "category": "structural",
+      "category": "naming",
       "severity": "medium",
       "pass": "factual",
       "quote": "##### A.6.1.1.8.2.1.1.3 - Completed Instances Directory [Core] The Instances of the Agent Creation Primitive with `Completed` Status are contained herein.",
-      "issue": "Title says this is the Directory, but the body states the Instances themselves are contained herein and its child is the actual Single Instance Configuration Document — the title is swapped with the hub child A.6.1.1.8.2.1.1.1.3, contradicting the naming used by every other primitive in this Artifact.",
+      "issue": "A.6.1.1.8.2.1.1.3 holds the Instances (child is the Single Instance Configuration Document) but is titled 'Completed Instances Directory'; parallel A.6.1.1.8.2.1.2.3 is 'Completed Instances'.",
       "fix": "Rename to 'Completed Instances' (and rename A.6.1.1.8.2.1.1.1.3 to 'Completed Instances Directory')."
     },
     {
@@ -3387,6 +2815,18 @@
       "fix": "Defining “Severe Actions Or Violations” And “Governance Attack”"
     },
     {
+      "id": "A.1.2.2.2.22#typo",
+      "docNo": "A.1.2.2.2.22",
+      "uuid": "6eceace8-f499-4954-9ecc-1ada12a02c18",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "typo",
+      "severity": "low",
+      "pass": "language",
+      "quote": "The Definition Type is used for documents that define unique concepts contained in subdocuments to the Target Document of the Definition Document",
+      "issue": "A.1.2.2.2.22 Type Overview ends without a terminal period, unlike sibling overviews (e.g. A.1.2.2.2.25); it is a punctuation slip, not a markdown issue.",
+      "fix": "The Definition Type is used for documents that define unique concepts contained in subdocuments to the Target Document of the Definition Document."
+    },
+    {
       "id": "A.1.2.2.2.29#typo",
       "docNo": "A.1.2.2.2.29",
       "uuid": "935bd219-df68-4466-99fe-0f9c5b328032",
@@ -3411,6 +2851,30 @@
       "fix": null
     },
     {
+      "id": "A.1.6.4.3.1#grammar",
+      "docNo": "A.1.6.4.3.1",
+      "uuid": "ad1ef0f4-246f-4289-b5fc-ea5c91508ccf",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "grammar",
+      "severity": "low",
+      "pass": "language",
+      "quote": "their RD rank, and the budget eligibility associated with that rank, is transferred to the next highest-ranking AD",
+      "issue": "Subject/verb disagreement: the compound subject \"their RD rank\" and \"the budget eligibility\" joined by \"and\" requires a plural verb.",
+      "fix": "their RD rank, and the budget eligibility associated with that rank, are transferred to the next highest-ranking AD"
+    },
+    {
+      "id": "A.1.9.1.3.2.4#naming",
+      "docNo": "A.1.9.1.3.2.4",
+      "uuid": "4627de70-9866-41b8-be8e-68e9ca809a45",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "language",
+      "quote": "may run firedrills to test the preparedness of individuals ... The results of firedrills shall be published",
+      "issue": "Body text spells \"firedrills\" as one word twice, inconsistent with the document's own heading title \"Emergency Contact Mechanism Fire Drills\" (two words) and with \"fire drills\" (two words) used elsewhere in the atlas.",
+      "fix": "Replace \"firedrills\" with \"fire drills\" in both places to match the heading."
+    },
+    {
       "id": "A.1.10.2.3.2.1.2.1.2.1#grammar",
       "docNo": "A.1.10.2.3.2.1.2.1.2.1",
       "uuid": "3d031b7c-1b1f-4f84-8668-1cdf43cb2ab2",
@@ -3421,6 +2885,18 @@
       "quote": "- Constructor arguments are as expected in the Init script",
       "issue": "The list introduced by \"The Forum post must include the following:\" mixes noun items with a full clause and an imperative (\"Include instructions…\"), so this item does not read as something the post includes.",
       "fix": "- Confirmation that the constructor arguments are as expected in the Init script"
+    },
+    {
+      "id": "A.1.10.5.2.3.3.1#naming",
+      "docNo": "A.1.10.5.2.3.3.1",
+      "uuid": "0567fc4c-4a93-4f7e-803e-f587ddbd4f15",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "language",
+      "quote": "the Core Facilitator may temporarily grant an Operational Facilitator the sole authority to validate the authenticity of the Emergency Spell pursuant to",
+      "issue": "This document and its heading are entirely about Standby Spells (the surrounding sentences say 'Standby Spell' twice), but this clause switches to 'Emergency Spell' for the same referent, unlike the parallel Protego document (A.1.10.5.3.2.3.1) which consistently says 'Emergency Drop Spell' throughout.",
+      "fix": "the Core Facilitator may temporarily grant an Operational Facilitator the sole authority to validate the authenticity of the Standby Spell pursuant to"
     },
     {
       "id": "A.1.11.2.5.2#naming",
@@ -3481,18 +2957,6 @@
       "quote": "how agreements to setup an Instance",
       "issue": "\"setup\" is the noun; the verb phrase should be \"set up\".",
       "fix": "how agreements to set up an Instance"
-    },
-    {
-      "id": "A.2.2.9.1.2.3.1.4.2#naming-2",
-      "docNo": "A.2.2.9.1.2.3.1.4.2",
-      "uuid": "11161730-6568-445f-a250-ba5c67857390",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "Edit `Primitive Hub Document/In Progress Invocations/Instance Name`",
-      "issue": "The earlier edit in the same document names the path `Primitive Hub Document/In Progress Invocations Directory/Instance Name`; this one omits \"Directory\".",
-      "fix": "Edit `Primitive Hub Document/In Progress Invocations Directory/Instance Name`"
     },
     {
       "id": "A.2.2.9.1.2.3.4.4.2#copy-paste",
@@ -3627,6 +3091,18 @@
       "fix": "The documents herein define the intended operation of the Sky Treasury Management Function;"
     },
     {
+      "id": "A.2.8.2.2.2.1.2.1#numeric",
+      "docNo": "A.2.8.2.2.2.1.2.1",
+      "uuid": "9d7a2d3f-3079-4d3b-be89-e06966aec07c",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "numeric",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "3,000,000,000 GROVE tokens are allocated to the Grove Foundation, with an option to further increase this allocation by 5% (500,000,000 tokens).",
+      "issue": "5% of 'this allocation' (3,000,000,000) is 150,000,000, not 500,000,000; 500,000,000 is 5% of the 10,000,000,000 total supply stated in A.2.8.2.2.2.1.1, so the percentage and the parenthetical figure use different bases.",
+      "fix": "Say 'by 5% of the total token supply (500,000,000 tokens)' (or correct the figure to 150,000,000)"
+    },
+    {
       "id": "A.2.8.2.2.2.7.2.1#naming",
       "docNo": "A.2.8.2.2.2.7.2.1",
       "uuid": "e3ec99ec-54c9-4fe7-8104-aee20c57ec57",
@@ -3649,6 +3125,18 @@
       "quote": "2.4 million USDS transferred from the Ecosystem Liquidity Bootstrapping Budget",
       "issue": "The same budget is called the 'Sky Ecosystem Liquidity Bootstrapping Budget' earlier in the same sentence and 'Liquidity Bootstrapping Budget' in the linked titles, so it has three different names.",
       "fix": "2.4 million USDS transferred from the Sky Ecosystem Liquidity Bootstrapping Budget"
+    },
+    {
+      "id": "A.2.8.2.7.1.2#numeric",
+      "docNo": "A.2.8.2.7.1.2",
+      "uuid": "9d207eb3-955e-4b4d-af1b-056519d0235b",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "numeric",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The duration of Ecosystem Accord 7 is indefinite, commencing from September 1, 2024.",
+      "issue": "Accord 7 (Sky-Skybase) commences Sept 1, 2024, before Accords 1-2 (May 29, 2025) and 17 months before Skybase's Jan 29, 2026 Genesis allocation (A.2.8.2.7.2.2.2.1); a likely wrong date, not stale content.",
+      "fix": "Probably should be a 2025 or 2026 date consistent with Accord 6 and Accord 8, or be marked as retroactive as in A.2.8.2.10.1.2."
     },
     {
       "id": "A.2.8.2.7.2.2.2.2#naming",
@@ -3711,6 +3199,18 @@
       "fix": ""
     },
     {
+      "id": "A.3.2.2.1.2.3.4#numeric",
+      "docNo": "A.3.2.2.1.2.3.4",
+      "uuid": "35ec7382-0613-4e74-b5ba-d86c647b1d73",
+      "file": "A.3 - The-Stability-Scope.md",
+      "category": "numeric",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "in % terms, e.g. 5%, 23.75%, 30%, etc.",
+      "issue": "The docstring example does not match the code: x_max is always x_start + 50% and the kink is 75% of that gap, so a 5% start gives a kink of 42.5% and a max of 55%, not 23.75% and 30%.",
+      "fix": "in % terms, e.g. 5%, 42.5%, 55%, etc."
+    },
+    {
       "id": "A.3.5.2.2.1.2.1#markdown",
       "docNo": "A.3.5.2.2.1.2.1",
       "uuid": "443e0ae4-11d6-43f9-9988-f0e73926bf60",
@@ -3733,6 +3233,30 @@
       "quote": "The algorithm was specified by the Core Council Risk Advisor, implemented and tested by Ecosystem Actor Sidestream, and reviewed by the Core Council Risk Advisor.",
       "issue": "The same entity (Core Council Risk Advisor) is named as both the specifier and the reviewer of the algorithm, so the review is not independent; one of the two roles may name the wrong party.",
       "fix": ""
+    },
+    {
+      "id": "A.5.3.1.1.1#entity",
+      "docNo": "A.5.3.1.1.1",
+      "uuid": "eaf8cf29-90fd-4b9b-b0a8-02ce8386908c",
+      "file": "A.5 - The-Accessibility-Scope.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The remaining SKY in the `0x14D98650d46BF7679BBD05D4f615A1547C87Bf68` multisig that is not used to fund the MerkleDistributor will be burned by calling the `burn` function on the multisig.",
+      "issue": "`burn` is an ERC-20 function on the SKY token contract, not a function of the multisig wallet the same sentence identifies as an Accessibility Facilitator multisig at that address; as written the action is attributed to the wrong contract.",
+      "fix": "Say the multisig will call the `burn` function on the SKY token contract to burn its remaining balance."
+    },
+    {
+      "id": "A.5.4.1.4.1#naming",
+      "docNo": "A.5.4.1.4.1",
+      "uuid": "e6b9065e-8dd7-4f23-b7e4-4e3d2736bee4",
+      "file": "A.5 - The-Accessibility-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "language",
+      "quote": "Luhansk People’s Republic of Ukraine",
+      "issue": "In A.5.4.1.4.1 only the Luhansk entry adds \"of Ukraine\", while the parallel Donetsk entry does not. That is an inconsistent name, not copy-paste residue.",
+      "fix": "Luhansk People’s Republic"
     },
     {
       "id": "A.6.1.1.1.2.2.2.2.1.2.1.4#xref",
@@ -3843,6 +3367,30 @@
       "fix": ""
     },
     {
+      "id": "A.6.1.1.1.2.6.1.2.1.1.3.7.2#entity",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.7.2",
+      "uuid": "bb47f741-e64b-440c-822c-3937fe94e87e",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The maximum amount of USDG that can be sent to the Robinhood Chain ALM Proxy is specified in the document herein. - `maxAmount` (USDG): 50,000,000 - `slope` (USDG/ day): 250,000,000 - Recipient: `0xf752cF318dfF2C01575c98741AA52e7a34d873Fd`",
+      "issue": "The limit is described as USDG sent TO the Robinhood Chain ALM Proxy, but the stated Recipient 0xf752cF318dfF2C01575c98741AA52e7a34d873Fd is not the Robinhood Chain ALM_PROXY address, which A.6.1.1.1.2.6.1.2.1.1.1.2.7.5 (d19eab7d-e0b8-4be2-b672-40d7773c6119) gives as 0xfD2fD4B046136B540A56C11c75ac679AE7d1dB24.",
+      "fix": "Either correct the Recipient to the ALM Proxy address, or reword the description to say what this recipient actually is."
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.3.1.4.4.4.1.3#entity",
+      "docNo": "A.6.1.1.1.2.6.1.3.1.4.4.4.1.3",
+      "uuid": "2ece6e1d-b07a-4df5-9aa6-616756f64815",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "`0x9Ad87668d49ab69EEa0AF091de970EF52b0D5178`",
+      "issue": "The Spark Savings v2 spPYUSD Instance's Setter is given as 0x9Ad8...5178, which is the address listed as the Morpho USDC Instance's Allocator Role Address (A.6.1.1.1.2.6.1.3.1.5.1.2.2.3), while all three sibling Spark Savings v2 instances (ETH A...6.1.4.1.3, USDC A...6.2.4.1.3, USDT A...6.3.4.1.3) list Setter 0x2E1b01adABB8D4981863394bEa23a1263CBaeDfC and share identical Vault Implementation, Default admin and Taker addresses.",
+      "fix": "Almost certainly should be `0x2E1b01adABB8D4981863394bEa23a1263CBaeDfC` like the other Spark Savings v2 instances — otherwise unclear, needs author."
+    },
+    {
       "id": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3#entity",
       "docNo": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3",
       "uuid": "8efbce12-9417-4ab7-9e55-6194ee592bd4",
@@ -3925,18 +3473,6 @@
       "quote": "For detailed logic specific for this instance",
       "issue": "Wrong preposition; 'specific to' is the correct collocation.",
       "fix": "For detailed logic specific to this instance"
-    },
-    {
-      "id": "A.6.1.1.1.3.4.2.2.2#naming",
-      "docNo": "A.6.1.1.1.3.4.2.2.2",
-      "uuid": "99d4b8da-fa5c-49ce-b93c-70d07334d7aa",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "divided by Risk Tolerance Ratio ([A.6.1.1.1.3.4.2.1 - Encumbrance Ratio]",
-      "issue": "The term \"Risk Tolerance Ratio\" is linked to a document titled \"Encumbrance Ratio\", so the same thing is named two different ways within one sentence.",
-      "fix": ""
     },
     {
       "id": "A.6.1.1.1.3.5.3.2.3.7#xref",
@@ -4119,16 +3655,52 @@
       "fix": "[https://github.com/sky-ecosystem/next-gen-atlas](https://github.com/sky-ecosystem/next-gen-atlas)"
     },
     {
-      "id": "A.6.1.1.3.2.6.1.2.2.2.3.2.2#copy-paste-2",
-      "docNo": "A.6.1.1.3.2.6.1.2.2.2.3.2.2",
-      "uuid": "2ed41eef-989b-4253-8de7-5e368da0242a",
+      "id": "A.6.1.1.3.2.6.1.2.1.1.3.1.2.1#wrong-word",
+      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.1.2.1",
+      "uuid": "28831fcf-2e28-4760-a4cd-27ae538edd9a",
       "file": "A.6.1.1.3 - Keel.md",
-      "category": "copy-paste",
+      "category": "wrong-word",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The maximum amount of sUSDS that can be deposited (`LIMIT_4626_DEPOSIT`) is specified in the document herein. - `maxAmount`: 100,000,000 USDS - `slope`: 50,000,000 USDS per day",
+      "issue": "LIMIT_4626_DEPOSIT counts deposited assets (USDS), so the USDS figures are right. The loose phrase 'amount of sUSDS that can be deposited' is the error. Spark's version says 'USDS worth of sUSDS' (A.6.1.1.1.2.6.1.2.1.1.3.3.5).",
+      "fix": "The maximum amount of USDS that can be deposited into sUSDS (`LIMIT_4626_DEPOSIT`) is specified in the document herein."
+    },
+    {
+      "id": "A.6.1.1.3.2.6.1.2.1.1.3.2.1.2#numeric",
+      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.2.1.2",
+      "uuid": "5f86844e-579b-425c-8f7b-e6521cfe55b9",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "numeric",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The maximum amount of USDS that can be swapped for USDC by the Keel Liquidity Layer on Solana ... - `maxAmount`: 100,000,000 USDS - `slope`: 50,000,000 USDS per day",
+      "issue": "This is the only Solana rate limit at 100,000,000/50,000,000 — every other Solana limit in the same table is 25,000,000/10,000,000 — and it exceeds the USDS Reserve cap in A.6.1.1.3.2.6.1.2.1.1.3.2.1.1 (d9e9085a-cc04-41b9-8708-fe41fc2ef0f3), which limits USDS leaving the Reserve in aggregate to 25,000,000; the values duplicate the Ethereum Mainnet swap limit exactly, suggesting a copy-paste.",
+      "fix": "Probably `maxAmount`: 25,000,000 USDS / `slope`: 10,000,000 USDS per day, consistent with the other Solana limits."
+    },
+    {
+      "id": "A.6.1.1.3.2.6.1.2.2.2.1.1.2#naming",
+      "docNo": "A.6.1.1.3.2.6.1.2.2.2.1.1.2",
+      "uuid": "2b42015c-c76a-4364-b8b5-c9a2b9f6f484",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "naming",
       "severity": "low",
       "pass": "language",
-      "quote": "A complete freeze prevents any movement of funds within the Controller",
-      "issue": "This is the Reallocation Freeze document (status Frozen), but the sentence describes a \"complete freeze\", wording carried over from the sibling Full Freeze document.",
-      "fix": "A reallocation freeze prevents any movement of funds within the Controller"
+      "quote": "The Relayer role is the address(es) ... The Relayer Role has `can_execute_swap` and `can_reallocate` permissions. The Relayer Role may be granted...",
+      "issue": "Within the same paragraph, \"Relayer role\" and \"Relayer Role\" are capitalized inconsistently (lowercase in the first sentence, capitalized in the next two), unlike parallel Admin/Freezer role sections which stay lowercase throughout.",
+      "fix": "Use consistent capitalization, e.g. \"The Relayer role is ... The Relayer role has ... The Relayer role may be granted...\""
+    },
+    {
+      "id": "A.6.1.1.4.2.5.2.2.3.1.2#entity",
+      "docNo": "A.6.1.1.4.2.5.2.2.3.1.2",
+      "uuid": "b70f1003-1159-4d5b-b362-c37aa11403d3",
+      "file": "A.6.1.1.4 - Skybase.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The reward address for the Morpho Integration Boost is `0xa7843f843d29ca33ba48d9d1335b774eecc328dc`.",
+      "issue": "This is byte-for-byte the same address given as the Curve Integration Boost reward address in A.6.1.1.4.2.5.2.2.2.1.2 (fa241343-8f00-454b-9b95-726cbcbb7b9d), so two distinct Integration Partners are recorded with an identical, partner-specific 'Integration Partner Reward Address' — every other Instance in the chunk has a unique address.",
+      "fix": "unclear — needs author; one of the two partner reward addresses is almost certainly a copy-paste of the other"
     },
     {
       "id": "A.6.1.1.5.2.6.1.3.1.1.1.2.4.1#naming",
@@ -4155,15 +3727,15 @@
       "fix": "Deposit Rate Limit"
     },
     {
-      "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming-2",
+      "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming",
       "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4",
       "uuid": "be9ca01f-1675-4d83-80af-b80789c3bd6f",
       "file": "A.6.1.1.7 - Osero.md",
       "category": "naming",
       "severity": "low",
-      "pass": "language",
+      "pass": "factual",
       "quote": "ogusdcp",
-      "issue": "Token symbol is all lowercase, while the sibling Base instance writes ogUSDCb and the mainnet vault constant is OGUSDCP_VAULT; casing is inconsistent.",
+      "issue": "The Mainnet vault token symbol is given entirely in lowercase, while the sibling Base Instance gives its token as \"ogUSDCb\" with the same template, so the casing looks inconsistent.",
       "fix": "ogUSDCp"
     }
   ],
@@ -5099,6 +4671,539 @@
       "rejectedReason": "Duplicate of A.6.1.1.3.2.6.1.2.1.1.3.2.2.2#wrong-word, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
       "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+    },
+    {
+      "id": "A.2.2.9.1.2.3.1.4.2#naming-2",
+      "docNo": "A.2.2.9.1.2.3.1.4.2",
+      "uuid": "11161730-6568-445f-a250-ba5c67857390",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "language",
+      "quote": "Edit `Primitive Hub Document/In Progress Invocations/Instance Name`",
+      "issue": "The earlier edit in the same document names the path `Primitive Hub Document/In Progress Invocations Directory/Instance Name`; this one omits \"Directory\".",
+      "fix": "Edit `Primitive Hub Document/In Progress Invocations Directory/Instance Name`",
+      "rejectedReason": "Duplicate of A.2.2.9.1.2.3.1.4.2#naming, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.3.4.2.2.2#naming",
+      "docNo": "A.6.1.1.1.3.4.2.2.2",
+      "uuid": "99d4b8da-fa5c-49ce-b93c-70d07334d7aa",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "language",
+      "quote": "divided by Risk Tolerance Ratio ([A.6.1.1.1.3.4.2.1 - Encumbrance Ratio]",
+      "issue": "The term \"Risk Tolerance Ratio\" is linked to a document titled \"Encumbrance Ratio\", so the same thing is named two different ways within one sentence.",
+      "fix": "",
+      "rejectedReason": "Duplicate of A.6.1.1.1.3.4.2.2.2#xref, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.3.2.6.1.2.2.2.3.2.2#copy-paste-2",
+      "docNo": "A.6.1.1.3.2.6.1.2.2.2.3.2.2",
+      "uuid": "2ed41eef-989b-4253-8de7-5e368da0242a",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "copy-paste",
+      "severity": "low",
+      "pass": "language",
+      "quote": "A complete freeze prevents any movement of funds within the Controller",
+      "issue": "This is the Reallocation Freeze document (status Frozen), but the sentence describes a \"complete freeze\", wording carried over from the sibling Full Freeze document.",
+      "fix": "A reallocation freeze prevents any movement of funds within the Controller",
+      "rejectedReason": "Duplicate of A.6.1.1.3.2.6.1.2.2.2.3.2.2#copy-paste, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming-2",
+      "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4",
+      "uuid": "be9ca01f-1675-4d83-80af-b80789c3bd6f",
+      "file": "A.6.1.1.7 - Osero.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "language",
+      "quote": "ogusdcp",
+      "issue": "Token symbol is all lowercase, while the sibling Base instance writes ogUSDCb and the mainnet vault constant is OGUSDCP_VAULT; casing is inconsistent.",
+      "fix": "ogUSDCp",
+      "rejectedReason": "Duplicate of A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.1.6.3.0.3.1#structural",
+      "docNo": "A.1.6.3.0.3.1",
+      "uuid": "9446b896-f33f-4593-97e9-60db6c385afd",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The element \"delegated voting power\" refers to the ability of SKY holders and Staking users to entrust their voting power to a Delegate Contract, allowing the Aligned Delegate controlling that contract to cast votes in the Sky Governance process on their behalf.",
+      "issue": "Defines the element as an ability held by SKY holders, which contradicts both the usage in its own Target Document A.1.6.3 ('Delegate Contracts are smart contracts that can receive delegated voting power' — an ability to entrust cannot be received) and the second annotation of the same element at A.1.6.4.1.3.3.0.3.1, which defines 'delegated Voting Power' as 'the cumulative SKY that has been delegated to an Aligned Delegate's Delegate Contract' — a quantity, and the meaning the Level 3 ranking rule depends on.",
+      "fix": "Define the element once, as the quantity of voting power delegated to a Delegate Contract, and describe the act of entrusting separately.",
+      "rejectedReason": "Element Annotations are scoped to their own Target Documents; A.1.6.3.0.3.1 explains the delegation mechanism for A.1.6.3 while A.1.6.4.1.3.3.0.3.1 gives the quantity sense for the ranking rule. Not a contradiction.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.1.9.1.3.2#governance",
+      "docNo": "A.1.9.1.3.2",
+      "uuid": "3efb0238-aaae-4351-9ec9-31902f3a1394",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "governance",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "This emergency contact mechanism is selected and validated by the Protocol Security Workstream Lead.",
+      "issue": "Vests selection of the mechanism in the Protocol Security Workstream Lead, while its own subdocument A.1.9.1.3.2.3 vests it elsewhere: 'The Core Facilitator may recommend changing the approved emergency contact mechanism ... in consultation with the Protocol Security Workstream Lead. The Core Facilitator's recommendation is subject to a poll through the Operational Weekly Cycle' — i.e. the PSWL is only consulted and Sky Governance decides.",
+      "fix": "'This emergency contact mechanism is validated by the Protocol Security Workstream Lead and approved through the process in A.1.9.1.3.2.3', or amend A.1.9.1.3.2.3 to give the PSWL the selection authority.",
+      "rejectedReason": "A.1.9.1.3.2 covers selection/validation of the mechanism; A.1.9.1.3.2.3 is a specific process for changing the approved one and still requires PSWL consultation. A general rule beside a named change process.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.1.10.2.3.2.2.1.4.1.1.1#governance",
+      "docNo": "A.1.10.2.3.2.2.1.4.1.1.1",
+      "uuid": "01b44f43-c6e1-4b24-b715-296a5122fb35",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "governance",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Unreasonable delay in submitting the Report, or failure to thoroughly and accurately complete it (including omission of relevant facts), as determined by the Core Council, constitutes a separate Prime Spell Security Incident",
+      "issue": "A.1.10.2.3.2.2.1.3.3 (b3cd3112) gives the Core Facilitator and Core GovOps 'full discretion to determine whether a Prime Spell Security Incident has occurred and to impose appropriate penalties', but this document (and the escalation multiplier in A.1.10.2.3.2.2.1.4.2.3.2) assign that determination to the Core Council instead.",
+      "fix": "Use one determining authority consistently (e.g. 'as determined by the Core Facilitator and Core GovOps') or state that the Core Council acts through them",
+      "rejectedReason": "The Atlas has the Core Facilitator and Core Spell Teams act on behalf of the Core Council (A.0.1.2.1, A.1.10.2.3.2.2.1.4.1.2), so 'as determined by the Core Council' fits A.1.10.2.3.2.2.1.3.3 rather than naming a rival authority.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.1.10.2.4.9.2.3#structural",
+      "docNo": "A.1.10.2.4.9.2.3",
+      "uuid": "952d9bdc-1298-49b5-a52f-11ab480a82b7",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "###### A.1.10.2.4.9.2.3 - A.1.9 -Spell Reviewer Direct Authoring Ban [Core]",
+      "issue": "The title carries a stray, stale doc number 'A.1.9 -' in front of the actual title, so the heading presents two different doc numbers for one document (its real number is A.1.10.2.4.9.2.3).",
+      "fix": "A.1.10.2.4.9.2.3 - Spell Reviewer Direct Authoring Ban",
+      "rejectedReason": "Duplicate of A.1.10.2.4.9.2.3#copy-paste, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.1.10.2.4.11.1.6#xref",
+      "docNo": "A.1.10.2.4.11.1.6",
+      "uuid": "12ebd0d9-52dc-4d1f-8e1a-8bdc2a51b9b0",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "xref",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Executive Validator [(](https://vote.makerdao.com/executive/create)[https://vote.sky.money/executive/create](https://vote.sky.money/executive/create))",
+      "issue": "The validator link is split into two links pointing at two different hosts — a hidden stale vote.makerdao.com URL behind '(' and the vote.sky.money URL — whereas the parallel step A.1.10.2.4.8.5.3 gives only vote.sky.money.",
+      "fix": "Executive Validator ([https://vote.sky.money/executive/create](https://vote.sky.money/executive/create)) — drop the vote.makerdao.com link.",
+      "rejectedReason": "Duplicate of A.1.10.2.4.11.1.6#markdown, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.2.2.9.1.2.3.5.2#naming",
+      "docNo": "A.2.2.9.1.2.3.5.2",
+      "uuid": "d0ceb4ed-8f65-45c6-808e-fca702dc2a62",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "Using the finalized `Atlas Edit Proposal` content",
+      "issue": "The document is named `Artifact Edit Proposal` everywhere else in this process; `Atlas Edit Proposal` appears to be a wrong name.",
+      "fix": "Using the finalized `Artifact Edit Proposal` content",
+      "rejectedReason": "Duplicate of A.2.2.9.1.2.3.5.2#entity, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.2.2.9.2.2.3.5.2#naming",
+      "docNo": "A.2.2.9.2.2.3.5.2",
+      "uuid": "185d7f3b-9612-42ef-bde7-c9a64ad3ceab",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "Using the finalized `Atlas Edit Proposal` content",
+      "issue": "The document is named `Artifact Edit Proposal` everywhere else in this process; `Atlas Edit Proposal` appears to be a wrong name.",
+      "fix": "Using the finalized `Artifact Edit Proposal` content",
+      "rejectedReason": "Duplicate of A.2.2.9.2.2.3.5.2#entity, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.2.7.1.2.1.1.3#wrong-word",
+      "docNo": "A.2.7.1.2.1.1.3",
+      "uuid": "4d4a1d9a-c8c7-4c2b-aaec-33e382790d52",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "wrong-word",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "the ban on unbanned users will be lifted across all communication channels",
+      "issue": "\"Unbanned users\" already implies the ban was lifted, contradicting the statement that their ban \"will be lifted\"; should refer to users approved for unbanning.",
+      "fix": "the ban on users approved for unbanning will be lifted across all communication channels",
+      "rejectedReason": "In A.2.7.1.2.1.1.3 \"unbanned users\" means users unbanned by the binding Governance Poll; the sentence extends that lifting to all channels. This is redundant wording, not a contradiction.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.2.9.1.1.1.4.2.2.6#governance",
+      "docNo": "A.2.9.1.1.1.4.2.2.6",
+      "uuid": "10662753-b167-4043-b952-225cc9dd9e49",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "governance",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Decisions related to claim payouts require a quorum of three (3) experts from the Resilience Technical Committee with a simple majority (>50%).",
+      "issue": "The quorum is unsatisfiable as the Atlas stands: the Active Data list of current Resilience Technical Committee members (A.2.9.1.1.1.2.3.0.6.1) contains a single entry ('Gallagher'), so no three-expert quorum can be formed and no claim payout decision can be taken.",
+      "fix": "Either populate the member list to at least three members, or state the quorum as a proportion of appointed members; unclear — needs author.",
+      "rejectedReason": "The Committee is 'a group of Ecosystem Actors' (A.2.9.1.1.1.2) whose 'individual members' serve on its behalf (A.2.9.1.1.1.2.2); listed member Gallagher is an entity that can supply three experts, so the quorum is satisfiable.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.3.2.2.1.1.1.5.2.6#numeric",
+      "docNo": "A.3.2.2.1.1.1.5.2.6",
+      "uuid": "70013695-3823-407a-9603-b38795ba9899",
+      "file": "A.3 - The-Stability-Scope.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The final step is to multiply the adjusted Aggregate RWA ... by an 8% capital ratio to arrive at Instance Financial RRC.",
+      "issue": "The same framework's lending-market path states the capital ratio as 8.75% (A.3.2.2.1.1.1.1.1.5.1: 'The Capital Ratio $CR$ is the capital ratio without additional buffers. It is set to `8.75%`', and A.3.2.2.1.1.1.1.1.5.3 repeats 8.75% for ECR); the Real World Asset path uses 8% for the same role without saying why they differ.",
+      "fix": "State one capital ratio for Instance Financial RRC, or say explicitly that the RWA/Basel path deliberately uses 8% while the lending-market model uses 8.75%.",
+      "rejectedReason": "The RWA path (A.3.2.2.1.1.1.5.2.6) and the lending-market model are distinct methodologies; in the latter CR divides K and is offset by ECR (A.3.2.2.1.1.1.1.1.5), so 8.75% plays a different role than the RWA 8% ratio.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.3.2.2.1.2.2.1#structural",
+      "docNo": "A.3.2.2.1.2.2.1",
+      "uuid": "b824c6ec-940b-4921-89f0-aca89b54e86a",
+      "file": "A.3 - The-Stability-Scope.md",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The Smart Contract Risk Rating Cap $\\text{CAP}$ is a temporary cap on the Smart Contract Risk Rating. The value of the $CAP$ is `30`.",
+      "issue": "SCRR = min[CAP, ...] with CAP = 30 means the Risk Rating can never exceed 30, so the High Risk (rating > 50, A.3.2.2.1.2.3.1.3) and Extreme Risk (rating > 75, A.3.2.2.1.2.3.1.4) categories — and the F2-only methodology and the automatic 100% CRR they define — are unreachable; the same holds for the Administrative Risk Rating, whose CAP is also 30 (A.3.2.2.1.3.1.1) even though Starting Rates of 50 and 100 are defined.",
+      "fix": "unclear — needs author: either raise/remove the cap, or state that the High/Extreme methodologies are dormant while the temporary cap is in force.",
+      "rejectedReason": "A.3.2.2.1.2.2.1 and A.3.2.2.1.3.1.1 expressly call CAP a temporary cap; higher-band methodologies being dormant while a named temporary override is in force is by design, not a defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.4.4.1.3.8.5.1#numeric",
+      "docNo": "A.4.4.1.3.8.5.1",
+      "uuid": "13c51e11-8ea3-4d4e-b631-2e99c559a914",
+      "file": "A.4 - The-Protocol-Scope.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- `str` - 0 basis points",
+      "issue": "An initial `str` of 0 basis points is below the `str` BEAM `min` of 200 basis points declared in A.4.4.1.3.8.2.1 (516eccc7-dd7f-4782-84d5-55121bc1ae44), so the value set by the BEAM at deployment violates the BEAM's own stated minimum for that parameter.",
+      "fix": "unclear — needs author: either the initial `str` must be at least 200 bps, or the document should note that the deployment Executive Vote sets `str` directly rather than through the BEAM bounds",
+      "rejectedReason": "The initial values were set by the deploying Executive Vote, which the BEAM bounds do not limit (A.4.4.1.3.8.5), and BEAM params are modifiable (A.4.4.1.3.8.3); a historical 0 bps start does not breach the current min.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.2.2.2.1.2.1.1#structural-total",
+      "docNo": "A.6.1.1.*.2.2.2.2.1.2.1.1",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "A SPK token holder must hold at least 1% of the total token supply to submit a proposal.",
+      "issue": "The same sentence at A.6.1.1.*.2.2.2.2.1.2.1.1 does not say the same thing in every Prime Agent artifact: Keel, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"circulating\", while Spark, Grove say \"total\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "Spark (A.6.1.1.1.2.2.2.2.1.2.1.1) and Grove use total supply consistently within their own doc; per-agent Root Edit thresholds may differ and nothing in the text says they must match.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.2.2.2.1.2.3#structural-urgent",
+      "docNo": "A.6.1.1.*.2.2.2.2.1.2.3",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "The documents herein define the process for using the Root Edit Primitive to update the Obex Agent Artifact in emergency situations.",
+      "issue": "The same sentence at A.6.1.1.*.2.2.2.2.1.2.3 does not say the same thing in every Prime Agent artifact: Spark, Grove, Keel, Skybase say \"urgent or\", while Obex, Pattern, Osero, Launch Agent 7 say \"\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "Each agent's Emergency Protocol matches its own child: Obex's A.6.1.1.5.2.2.2.2.1.2.3.1 covers only Emergency Situations, Spark's A.6.1.1.1.2.2.2.2.1.2.3.1 covers Urgent and Emergency; a per-agent difference, not a defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.3.2#structural-groves",
+      "docNo": "A.6.1.1.*.2.3.2",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "The documents herein contain all data and specifications for Groves Instance of the Upkeep Rebate Primitive.",
+      "issue": "The same sentence at A.6.1.1.*.2.3.2 does not say the same thing in every Prime Agent artifact: Spark, Keel, Skybase, Obex, Osero, Launch Agent 7 say \"<agent>'s\", while Grove say \"groves\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "Duplicate of A.6.1.1.2.2.3.2#grammar, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.5.1.1#structural-groves",
+      "docNo": "A.6.1.1.*.2.5.1.1",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "The documents herein organize all base information relevant to Groves usage of the Distribution Reward Primitive.",
+      "issue": "The same sentence at A.6.1.1.*.2.5.1.1 does not say the same thing in every Prime Agent artifact: Spark, Keel, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"<agent>'s\", while Grove say \"groves\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "Duplicate of A.6.1.1.2.2.5.1.1#grammar, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.6.1.1.4#structural-toa61126112",
+      "docNo": "A.6.1.1.*.2.6.1.1.4",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "Invocations that are completed successfully are moved to[A.6.1.1.3.2.6.1.1.2 - Active Instances Directory](134c14e9-28ed-4e18-b15a-26899644dc0b), whereas failed Invocations are Archived in [A.6.1.1.3.2.6.1.1.5 - Hub Data Repository](99be2bd2-c065-43b7-82f9-d51dfeeeaa58).",
+      "issue": "The same sentence at A.6.1.1.*.2.6.1.1.4 does not say the same thing in every Prime Agent artifact: Spark, Grove, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"to [a.6.1.1.*.2.6.1.1.2\", while Keel say \"to[a.6.1.1.*.2.6.1.1.2\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "Duplicate of A.6.1.1.3.2.6.1.1.4#markdown, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.6.1.2.2.3#structural-event",
+      "docNo": "A.6.1.1.*.2.6.1.2.2.3",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "The documents herein define the actions that can be taken in the event of an emergency within Osero Liquidity Layer operations.",
+      "issue": "The same sentence at A.6.1.1.*.2.6.1.2.2.3 does not say the same thing in every Prime Agent artifact: Spark, Grove, Obex, Pattern say \"all possible case\", while Osero say \"event\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "\"in the event of\" vs \"in case of\" is harmless wording variation; Osero's A.6.1.1.7.2.6.1.2.2.3 has since been rewritten to point to A.2.2.10.1.1.1.2.5.4 anyway.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.6.1.3.1.1.1.2.4#structural-deposit",
+      "docNo": "A.6.1.1.*.2.6.1.3.1.1.1.2.4",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "The current `maxAmount` and `slope` for this conduit’s deposit and withdrawal are defined in the subdocuments herein.",
+      "issue": "The same sentence at A.6.1.1.*.2.6.1.3.1.1.1.2.4 does not say the same thing in every Prime Agent artifact: Spark, Grove, Osero say \"inflow/outflow\", while Keel say \"deposit withdrawal\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "Keel's A.6.1.1.3.2.6.1.3.1.1.1.2.4 says deposit and withdrawal because its children are a Deposit Rate Limit and a Withdrawal Rate Limit; accurate per-instance wording, not a defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.*.2.6.3#structural-groves",
+      "docNo": "A.6.1.1.*.2.6.3",
+      "uuid": null,
+      "file": "A.6.1.1.* (all prime artifacts)",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "deterministic",
+      "detector": "template-divergence",
+      "quote": "The documents herein contain all data and specifications for Groves Instances of the Asset Liability Management Rental Primitive.",
+      "issue": "The same sentence at A.6.1.1.*.2.6.3 does not say the same thing in every Prime Agent artifact: Spark, Keel, Skybase, Obex, Pattern, Osero, Launch Agent 7 say \"<agent>'s\", while Grove say \"groves\". Only visible corpus-wide; no single chunk of the sweep contains both.",
+      "fix": "",
+      "rejectedReason": "Duplicate of A.6.1.1.2.2.6.3#typo, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.1.2.1.4.4#xref",
+      "docNo": "A.6.1.1.1.2.6.1.1.2.1.4.4",
+      "uuid": "3dabe1bb-244d-4546-993a-449b988d9199",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "xref",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Ethereum Mainnet - Spark Savings v2 spPYUSD Instance Configuration Document",
+      "issue": "The Location document is titled for the Spark Savings v2 PYUSD Instance, but its link label names \"spPYUSD\", unlike the sibling ETH/USDC/USDT location documents whose titles and link labels match.",
+      "fix": "",
+      "rejectedReason": "Duplicate of A.6.1.1.1.2.6.1.1.2.1.4.4#naming, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.3.1.6.5.2.1.4#typo",
+      "docNo": "A.6.1.1.1.2.6.1.3.1.6.5.2.1.4",
+      "uuid": "c7b6ad97-5e83-488d-8aad-19a7ed272765",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "typo",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "OUSDUSDS",
+      "issue": "Token value runs two token symbols together; the sibling documents write the pair as OUSD/USDS.",
+      "fix": "OUSD/USDS",
+      "rejectedReason": "Every sibling Uniswap v4 Token parameter (A.6.1.1.1.2.6.1.3.1.6.1-.6.4 .2.1.4) concatenates the pair, as in PYUSDUSDS and USDTUSDS, so OUSDUSDS follows house style. The slash form appears only in rate-limit text.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.4.3#structural",
+      "docNo": "A.6.1.1.1.2.6.1.4.3",
+      "uuid": "4a98960f-dd05-4f2b-9e7c-66a489ee499a",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "structural",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The Ethereum Mainnet Instances of the Spark Liquidity Layer with `Completed` Status are stored herein and are organized by target protocol.",
+      "issue": "Two Ethereum Mainnet protocol groups with Completed status — A.6.1.1.1.2.6.1.4.1 Blackrock ('The Ethereum Mainnet Instances of the Blackrock Protocol with `Completed` Status are stored herein') and A.6.1.1.1.2.6.1.4.2 Centrifuge (same wording) — sit as siblings of this container rather than inside it, so the claim that the Ethereum Mainnet Completed instances are stored herein is false as written.",
+      "fix": "Move the Blackrock and Centrifuge groups under A.6.1.1.1.2.6.1.4.3, or reword this document so it does not claim to hold all Ethereum Mainnet Completed instances.",
+      "rejectedReason": "Fixed upstream: The container is now A.6.1.1.1.2.6.1.4.1, and the Blackrock and Centrifuge groups sit inside it as A.6.1.1.1.2.6.1.4.1.8 and .9.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.3.2.1.1.3.2.2#numeric",
+      "docNo": "A.6.1.1.1.3.2.1.1.3.2.2",
+      "uuid": "93b851d7-9825-4022-a583-51a4bbdf4f9c",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- Borrow cap - `gap`: 10,000 wstETH - `ttl`: 12 hours - `max`: 1 wstETH",
+      "issue": "The borrow-cap target gap (10,000 wstETH) is 10,000x the absolute maximum the borrow cap may be raised to (1 wstETH), so the automator's target can never be reached - while A.6.1.1.1.3.2.1.1.2.1.8 (5d721ab3) lists wstETH with Borrowing: Yes and Borrow Cap: Set by cap automator.",
+      "fix": "unclear - needs author: `max` looks like a unit/decimal slip (compare WETH's `max`: Unlimited), or the wstETH borrow cap is deliberately disabled and should be stated as such.",
+      "rejectedReason": "A borrow-cap max of 1 with a larger gap is a deliberate pattern: rETH (A.6.1.1.1.3.2.1.1.3.2.3) has the same shape and also lists Borrowing: Yes (A.6.1.1.1.3.2.1.1.2.1.11); max simply bounds the automator.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.2.1.1.3.1.2.3#numeric",
+      "docNo": "A.6.1.1.2.2.6.1.2.1.1.3.1.2.3",
+      "uuid": "a3b52620-db3f-40fa-80d5-a7eacf52090c",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- `maxAmount`: Unlimited - `slope`: Unlimited",
+      "issue": "`slope` is a per-day refill rate stated numerically in every other rate-limit document in this chunk; the one other 'Unlimited' limit (A.6.1.1.2.2.6.1.2.1.1.3.1.1.5, b43ee2cd-06b9-4615-bcb4-ac44e2b8c693) expresses the same condition as maxAmount 'Unlimited' with `slope`: 0, so 'slope: Unlimited' is an inconsistent/invalid value for the same concept.",
+      "fix": "`slope`: 0 (matching the unlimited-limit convention used for LIMIT_USDC_TO_CCTP_ETH)",
+      "rejectedReason": "'slope: Unlimited' alongside 'maxAmount: Unlimited' is a common convention across the rate-limit tables, e.g. A.6.1.1.3.2.6.1.2.1.1.3.1.1.2 and A.6.1.1.1.2.6.1.2.1.1.3.6.1.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.1.1.3.2.5.1#numeric",
+      "docNo": "A.6.1.1.2.2.6.1.3.1.1.3.2.5.1",
+      "uuid": "96e8ca2f-4e71-4ab0-ba0f-1958ea8e637b",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Total ACRDX exposure may not exceed 50.97 million USDS and should be reduced to zero over time.",
+      "issue": "Unit mismatch: the Centrifuge ACRDX Instance's Asset Supplied By Grove Liquidity Layer is USDC (A.6.1.1.2.2.6.1.3.1.1.3.2.1.3) and its deposit rate limits are denominated in USDC (20,000,000 USDC), but the exposure cap for the same Instance is denominated in USDS.",
+      "fix": "State the cap in USDC to match the Instance's supplied asset and rate limits, or state the conversion basis if USDS is deliberate.",
+      "rejectedReason": "Grove states Maximum Exposure caps in USDS whatever the supplied asset: the USDG (A.6.1.1.2.2.6.1.3.7.1.1.2.5.1) and USDC/AUSD (A.6.1.1.2.2.6.1.3.1.12.3.2.5.1) Instances do the same, so USDS is the unit of account here.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.2.1.1.2.2.1#entity",
+      "docNo": "A.6.1.1.2.2.6.1.3.2.1.1.2.2.1",
+      "uuid": "f9f790ea-f67a-4e6d-ac63-cd84faf208fe",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "entity",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "###### A.6.1.1.2.2.6.1.3.2.1.1.2.2.1 - Token Address `0xFE6920eB6C421f1179cA8c8d4170530CDBdfd77A`",
+      "issue": "The Avalanche Centrifuge JTRSY Instance gives 0xFE6920eB...d77A as the JTRSY Token Address, but the same address is declared as the 'Centrifuge ERC-7540 Vault Address' for the Ethereum Mainnet JTRSY Instance (A.6.1.1.2.2.6.1.3.1.14.1.2.2.2, uuid c519baf9-b02c-4c07-a113-ac73738a217c), whose JTRSY token is 0x8c213ee79581Ff4984583C6a801e5263418C4b86 — a vault address appears to have been recorded as the token address.",
+      "fix": "unclear — needs author: supply the Avalanche JTRSY share-token address, or relabel this field as the vault address",
+      "rejectedReason": "The address is still present, so this is not fixed, but the Ethereum Centrifuge JTRSY ICD (A.6.1.1.2.2.6.1.3.1.1.1.2.2.1) also gives 0xFE69…d77A as its 'Token Address'. The Avalanche doc follows that convention, and the text cannot show the address is wrong.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.7.2.1.2.2.1#entity",
+      "docNo": "A.6.1.1.2.2.6.1.3.7.2.1.2.2.1",
+      "uuid": "82df3c6c-85a2-4ba2-917f-f3ea230b610d",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "entity",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "A.6.1.1.2.2.6.1.3.7.2.1.2.2.1 - Token Address [Core] ... `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168`",
+      "issue": "For the 'USDG To USDC Via Paxos' Instance the Token Address is identical to that Instance's Underlying Asset Address (A.6.1.1.2.2.6.1.3.7.2.1.2.2.2) and to the USDG underlying address used by the sibling Morpho Instance (A.6.1.1.2.2.6.1.3.7.1.1.2.2.2), yet the Instance's 'Token to Receive' is USDC - so the USDC address appears to have been replaced by the USDG address.",
+      "fix": "Token Address should be the USDC contract address on Robinhood Chain, not 0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168 (USDG).",
+      "rejectedReason": "In Paxos conversion ICDs, Token Address = Underlying = the supplied asset, not the received one: e.g. the Grove USDC-to-USDG Instance A.6.1.1.2.2.6.1.3.1.15.1.2.2.1 lists the USDC address.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.3.6.7#xref",
+      "docNo": "A.6.1.1.2.3.6.7",
+      "uuid": "db2e4893-d315-4a65-a5cc-133d7763c693",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "xref",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "[https://gateway.pinata.cloud/ipfs/bafkreierc3rxu3d64xakeeibkqujkqbhlz3lcsnjymcckaacix55vhya6u](ttps://gateway.pinata.cloud/ipfs/bafkreierc3rxu3d64xakeeibkqujkqbhlz3lcsnjymcckaacix55vhya6u)",
+      "issue": "The link target is 'ttps://' - it disagrees with its own link text and is not a resolvable URL scheme; every other DAO Resolution in this section links to a well-formed https URL.",
+      "fix": "Link target should be https://gateway.pinata.cloud/ipfs/bafkreierc3rxu3d64xakeeibkqujkqbhlz3lcsnjymcckaacix55vhya6u.",
+      "rejectedReason": "Duplicate of A.6.1.1.2.3.6.7#markdown, which reports the same defect in the same document.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.3.2.6.1.2.1.1.3.1.1.1#numeric",
+      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.1.1.1",
+      "uuid": "568f6fae-4680-4090-8eee-fe0b8e920155",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The maximum amount of USDS that can be minted within the Keel Liquidity Layer (`LIMIT_USDS_MINT`) is specified in the document herein. - `maxAmount`: 10,000 USDS - `slope`: 10,000 USDS per day",
+      "issue": "A 10,000 USDS mint cap is four orders of magnitude below every other USDS limit in the same Ethereum Mainnet rate-limit table and below the limits that consume minted USDS — LIMIT_USDS_TO_USDC (100,000,000 USDS) and LIMIT_LAYERZERO_TRANSFER to Solana (100,000,000 USDS) — which are therefore unreachable, indicating a dropped-magnitude figure.",
+      "fix": "Probably 100,000,000 USDS maxAmount / 50,000,000 USDS per day to match the sibling limits — unclear, needs author.",
+      "rejectedReason": "10,000 USDS is low but self-consistent (maxAmount and slope agree) and plausibly a deliberate near-zero mint cap. LIMIT_USDS_TO_USDC is not 'unreachable', because USDS can enter other ways. The text alone shows no error.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.7.2.5.1.2.2.2.1#copy-paste",
+      "docNo": "A.6.1.1.7.2.5.1.2.2.2.1",
+      "uuid": "1b4d6f03-f4f2-45c0-a4d3-02b842656ea7",
+      "file": "A.6.1.1.7 - Osero.md",
+      "category": "copy-paste",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "In future iterations of the Osero Artifact, a version of the full process definition customized to Osero will be included herein.",
+      "issue": "This is the Nightly Instance's Routine Protocol but the sentence names Osero, left over from the sibling Osero document.",
+      "fix": "In future iterations of the Osero Artifact, a version of the full process definition customized to Nightly will be included herein.",
+      "rejectedReason": "'customized to <Agent>' names the Agent, not the Instance, across every Prime. A.6.1.1.1.2.5.1.2.1.2.1 says 'customized to Spark' and all Osero instances say 'Osero', so 'Osero' is correct here.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
     }
   ]
 }
