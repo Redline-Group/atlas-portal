@@ -1,4 +1,4 @@
-// Per-candidate diff-pair computation + base-drift wiring, split out of
+// Per-candidate diff-set computation + base-drift wiring, split out of
 // diff-base.ts to keep that file within the ~150-line convention.
 //
 // The base tarball for EVERY candidate's merge base is fetched from the HEAD
@@ -14,12 +14,11 @@ import path from "node:path";
 import { config } from "../config.ts";
 import { makeGhClient, type Resolved } from "./resolve.ts";
 import { loadBaseSnapshot, type Snapshot } from "./snapshot.ts";
-import { computeDiffArtifacts, writeDiffArtifacts, type PreviewDiffJson } from "./diff-artifacts.ts";
+import { computeDiffArtifacts, writeDiffArtifacts, DIFF_FILES } from "./diff-artifacts.ts";
 import { refineJob } from "./identity-refine.ts";
 import { computeBaseDrift } from "./base-drift.ts";
 import type { Candidates, Candidate } from "./pr-diff.ts";
-import type { BaseKey, BaseCandidateMeta, PreviewBases, PreviewPaths } from "./cache.ts";
-import type { DiffLine } from "../../lib/history";
+import type { BaseCandidateMeta, PreviewBases, PreviewPaths } from "./cache.ts";
 import type { Indexes } from "../retrieval/indexes.ts";
 import type { RefineJob } from "./identity-refine.ts";
 
@@ -40,21 +39,17 @@ function stripKey(c: Candidate): BaseCandidateMeta {
   return meta;
 }
 
-function writeDiffPair(outDir: string, key: BaseKey, a: { diff: PreviewDiffJson; patches: Record<string, DiffLine[]> }): void {
-  fs.writeFileSync(path.join(outDir, `diff.${key}.json`), JSON.stringify(a.diff));
-  fs.writeFileSync(path.join(outDir, `patches.${key}.json`), JSON.stringify(a.patches));
-}
 
 /**
  * Load (deduped by mergeBase, so two candidates sharing one merge base fetch
- * it once) each present candidate's base snapshot, write a diff/patch pair
- * for every candidate whose base actually loaded, copy the `auto` pair to the
- * plain diff.json/patches.json, and compute base-drift for the `repo`
+ * it once) each present candidate's base snapshot, write a diff set (diff,
+ * before, removed) for every candidate whose base actually loaded, copy the
+ * `auto` set to the plain names, and compute base-drift for the `repo`
  * candidate. A candidate whose merge-base tree could not be fetched is
  * DROPPED from the advertised bases rather than silently redlined against
  * live main under its own name — the label and the bytes must agree; when
  * that was the `auto` candidate, `auto` moves to the other one, or to
- * "live-main" with a reason (and the vs-main pair goes to diff.json).
+ * "live-main" with a reason (and the vs-main set goes to the plain names).
  */
 export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCandidateDiffsOpts): Promise<{ bases: PreviewBases; refine: RefineJob[] }> {
   const { resolved, token, priv, sha8, paths, fetchTree, head, mainDocs, live } = opts;
@@ -86,13 +81,12 @@ export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCan
   const refine: RefineJob[] = [];
   for (const key of kept) {
     const base = loaded.get(candidates[key]!.mergeBase)!;
-    // sky renders against live main (today's behaviour); repo renders against
-    // its OWN merge base so a PR's redline never shows drift main or the base
-    // branch picked up independently of the change under review.
-    const reference = key === "repo" ? base : mainDocs;
-    const a = computeDiffArtifacts(base, head, reference);
-    writeDiffPair(paths.outDir, key, a);
-    refine.push(refineJob([`identity.${key}.json`], reference, head, a.diff));
+    // Both compare against their own merge base. sky also drops what live
+    // main already has, unless the PR is merged (diff-artifacts.ts); repo's
+    // base is another repo's branch, which live main says nothing about.
+    const a = computeDiffArtifacts(base, head, key === "sky" && resolved.pr?.state !== "merged" ? mainDocs : undefined);
+    writeDiffArtifacts(paths.outDir, a, `.${key}`);
+    refine.push(refineJob([`identity.${key}.json`], base, head, a.diff));
   }
 
   let auto: PreviewBases["auto"] = candidates.auto;
@@ -102,14 +96,15 @@ export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCan
     auto = kept[0] ?? "live-main";
   }
   if (auto === "live-main") {
-    const a = computeDiffArtifacts(mainDocs, head, mainDocs);
+    const a = computeDiffArtifacts(mainDocs, head);
     writeDiffArtifacts(paths.outDir, a);
     refine.push(refineJob(["identity.json"], mainDocs, head, a.diff));
   } else {
     // identity.json is the `auto` verdict, as diff.json is the `auto` diff.
     refine[kept.indexOf(auto)].files.push("identity.json");
-    fs.copyFileSync(path.join(paths.outDir, `diff.${auto}.json`), path.join(paths.outDir, "diff.json"));
-    fs.copyFileSync(path.join(paths.outDir, `patches.${auto}.json`), path.join(paths.outDir, "patches.json"));
+    for (const name of DIFF_FILES) {
+      fs.copyFileSync(path.join(paths.outDir, `${name}.${auto}.json`), path.join(paths.outDir, `${name}.json`));
+    }
   }
 
   const bases: PreviewBases = { auto };

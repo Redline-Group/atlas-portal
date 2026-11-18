@@ -1,6 +1,6 @@
 // Preview diff-BASE orchestration: kick off candidate resolution alongside the
 // head fetch/build, then — once the head is built — load each candidate's
-// base snapshot and write the diff/patch artifact pairs against it.
+// base snapshot and write the diff artifact sets against it.
 //
 // Extracted from build.ts's inline diff-artifacts block (and the candidate
 // kick-off just before the tarball fetch) so the diff-base wiring is testable
@@ -8,12 +8,10 @@
 // base-drift plumbing lives in diff-base-write.ts (kept separate to stay
 // within the file-size convention).
 //
-// Three snapshots feed every diff pair (see diff-artifacts.ts): `base` (a
-// candidate's merge base, or live main when no candidate resolved), `head`
-// (this preview's own built docs.json), and `reference` — the snapshot the
-// rendered patch compares against, which is live main for the `sky` pair but
-// the candidate's OWN merge base for the `repo` pair, so upstream drift never
-// shows up inside a PR's redline (see diff-artifacts.ts's header comment).
+// Every diff set compares `head` (this preview's own built docs.json) against
+// `base` (a candidate's merge base, or live main when no candidate resolved),
+// so upstream drift never shows up inside a PR's redline. The `sky` set also
+// drops what live main already has (see diff-artifacts.ts's header comment).
 
 import { config } from "../config.ts";
 import { getIndexes } from "../retrieval/indexes.ts";
@@ -63,8 +61,8 @@ export function startCandidates(resolved: Resolved, token: string, priv: boolean
 
 /**
  * After the head is built: load each candidate's merge-base snapshot, compute
- * + write one diff pair per candidate, copy the `auto` pair to diff.json /
- * patches.json, compute base-drift for the `repo` candidate, and return the
+ * + write one diff set per candidate, copy the `auto` set to the plain names
+ * (diff.json, before.json, removed.json), compute base-drift for the `repo` candidate, and return the
  * meta.bases shape. Never rejects — every failure degrades to live main.
  */
 export async function writeDiffBases(
@@ -103,7 +101,7 @@ export async function writeDiffBases(
     const why =
       candidates.reason ?? (opts.priv ? "no base branch to compare against" : candidates.compareOk ? "no merge base" : "compare failed");
     console.warn(`[preview] ${sha8}: ${why} — diffing against live main`);
-    const a = computeDiffArtifacts(mainDocs, head, mainDocs);
+    const a = computeDiffArtifacts(mainDocs, head);
     writeDiffArtifacts(opts.paths.outDir, a);
     return { candidates, bases: { auto: "live-main", reason: why }, refine: [refineJob(["identity.json"], mainDocs, head, a.diff)] };
   }

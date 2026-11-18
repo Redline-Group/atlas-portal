@@ -1,6 +1,7 @@
 // Pure tests for computeDiffArtifacts/writeDiffArtifacts — no build, no
-// subprocess, no network. Covers the six shape cases from the plan, keyed on
-// document identity (uuid) the way the real diff pipeline is.
+// subprocess, no network. Keyed on document identity (uuid) the way the real
+// diff pipeline is: the head is compared against the merge base, and `live`
+// drops what main already has.
 import { afterAll, describe, expect, test } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
@@ -15,120 +16,140 @@ function snap(docs: SnapshotDoc[]): Snapshot {
 const ID1 = "00000000-0000-4000-8000-000000000001";
 const ID2 = "00000000-0000-4000-8000-000000000002";
 const ID3 = "00000000-0000-4000-8000-000000000003";
+const doc = (id: string, docNo: string, content: string, over: Partial<SnapshotDoc> = {}): SnapshotDoc => ({
+  id,
+  doc_no: docNo,
+  title: "One",
+  content,
+  contentHash: `h:${content}`,
+  ...over,
+});
 
-describe("computeDiffArtifacts", () => {
-  test("added doc: patch is all pure additions, no other fields touched", () => {
-    const base: Snapshot = snap([]);
-    const live: Snapshot = snap([]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "line one\nline two" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, live);
+describe("computeDiffArtifacts: what counts as a change", () => {
+  test("added doc: listed, with no old side", () => {
+    const head = snap([doc(ID1, "A.1", "line one")]);
+    const { diff, before, removed } = computeDiffArtifacts(snap([]), head);
     expect(diff.added).toEqual([ID1]);
     expect(diff.changed).toEqual([]);
-    expect(patches[ID1]).toBeDefined();
-    expect(patches[ID1].every((l) => l[0] === "+")).toBe(true);
-    expect(patches[ID1].map((l) => (l as ["+", string])[1])).toEqual(["line one", "line two"]);
-    expect(diff.renumbered).toEqual({});
-    expect(diff.retitled).toEqual({});
+    expect(before).toEqual({});
+    expect(removed).toEqual([]);
   });
 
-  test("removed doc: in the base, gone from the head → listed in removed, no patch", () => {
-    const base = snap([
-      { id: ID1, doc_no: "A.1", title: "One", content: "kept", contentHash: "h1" },
-      { id: ID2, doc_no: "A.2", title: "Two", content: "dropped", contentHash: "h2" },
-    ]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "kept", contentHash: "h1" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, base);
+  test("an edit main made after the fork is not the branch reverting it", () => {
+    const base = snap([doc(ID1, "A.1", "fork-point text")]);
+    const live = snap([doc(ID1, "A.1", "main's later text")]);
+    const head = snap([doc(ID1, "A.1", "branch text")]);
+    const { diff, before } = computeDiffArtifacts(base, head, live);
+    expect(diff.changed).toEqual([ID1]);
+    expect(before[ID1].content).toBe("fork-point text");
+  });
+
+  test("a renumbering main made after the fork is not reported on a doc the branch edited", () => {
+    const base = snap([doc(ID1, "A.1", "old")]);
+    const live = snap([doc(ID1, "A.9", "old")]);
+    const head = snap([doc(ID1, "A.1", "new")]);
+    expect(computeDiffArtifacts(base, head, live).diff.renumbered).toEqual({});
+  });
+
+  test("an edit main already has is not a change, and is listed as already on main", () => {
+    const base = snap([doc(ID1, "A.1", "old"), doc(ID2, "A.2", "old")]);
+    const live = snap([doc(ID1, "A.1", "new"), doc(ID2, "A.2", "old")]);
+    const head = snap([doc(ID1, "A.1", "new"), doc(ID2, "A.2", "mine")]);
+    const { diff } = computeDiffArtifacts(base, head, live);
+    expect(diff.changed).toEqual([ID2]);
+    expect(diff.alreadyOnMain).toEqual([ID1]);
+  });
+
+  test("flags listed docs main has also changed since the fork: edited, deleted, or added under the same UUID", () => {
+    const ID4 = "00000000-0000-4000-8000-000000000004";
+    const base = snap([doc(ID1, "A.1", "fork"), doc(ID2, "A.2", "fork"), doc(ID3, "A.3", "fork")]);
+    const live = snap([doc(ID1, "A.1", "main moved on"), doc(ID3, "A.3", "fork"), doc(ID4, "A.4", "main's copy")]);
+    const head = snap([doc(ID1, "A.1", "branch"), doc(ID2, "A.2", "branch"), doc(ID3, "A.3", "branch"), doc(ID4, "A.4", "branch's copy")]);
+    const { diff } = computeDiffArtifacts(base, head, live);
+    expect(diff.changed.sort()).toEqual([ID1, ID2, ID3].sort());
+    // ID1 edited on main, ID2 deleted on main, ID4 added on main too; ID3 untouched on main.
+    expect(diff.mainAlsoChanged!.sort()).toEqual([ID1, ID2, ID4].sort());
+  });
+
+  test("without live, nothing is flagged as also changed on main", () => {
+    expect(computeDiffArtifacts(snap([doc(ID1, "A.1", "old")]), snap([doc(ID1, "A.1", "new")])).diff.mainAlsoChanged).toBeUndefined();
+  });
+
+  test("without live, nothing is listed as already on main", () => {
+    expect(computeDiffArtifacts(snap([doc(ID1, "A.1", "old")]), snap([doc(ID1, "A.1", "new")])).diff.alreadyOnMain).toBeUndefined();
+  });
+
+  test("a doc main already added with the same UUID and text is not a change", () => {
+    const live = snap([doc(ID1, "A.1", "same")]);
+    const head = snap([doc(ID1, "A.1", "same")]);
+    expect(computeDiffArtifacts(snap([]), head, live).diff.added).toEqual([]);
+  });
+
+  test("a removal main already made is not a change; one main still has is", () => {
+    const base = snap([doc(ID1, "A.1", "a"), doc(ID2, "A.2", "b")]);
+    const live = snap([doc(ID2, "A.2", "b")]);
+    const { diff, removed } = computeDiffArtifacts(base, snap([]), live);
     expect(diff.removed).toEqual([ID2]);
-    expect(diff.added).toEqual([]);
-    expect(diff.changed).toEqual([]);
-    expect(patches[ID2]).toBeUndefined();
+    expect(removed.map((d) => d.id)).toEqual([ID2]);
   });
 
-  test("changed doc: patch is computed vs LIVE, not vs base", () => {
-    const base = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "aaa aaa", contentHash: "b1" }]);
-    const live = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "bbb bbb", contentHash: "l1" }]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "ccc ccc", contentHash: "h1" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, live);
+  test("without live, the merge base alone decides", () => {
+    const base = snap([doc(ID1, "A.1", "old")]);
+    const head = snap([doc(ID1, "A.1", "new")]);
+    expect(computeDiffArtifacts(base, head).diff.changed).toEqual([ID1]);
+  });
+
+  test("raw-only edit: hash differs, text identical → changed, old side has no body", () => {
+    const base = snap([doc(ID1, "A.1", "same", { contentHash: "raw-a" })]);
+    const head = snap([doc(ID1, "A.1", "same", { contentHash: "raw-b" })]);
+    const { diff, before } = computeDiffArtifacts(base, head);
     expect(diff.changed).toEqual([ID1]);
-    expect(patches[ID1]).toBeDefined();
-    // The removed side of the patch must be LIVE content ("bbb"), never base ("aaa").
-    const rendered = JSON.stringify(patches[ID1]);
-    expect(rendered).toContain("bbb");
-    expect(rendered).not.toContain("aaa");
+    expect(before[ID1]).toEqual({ doc_no: "A.1", title: "One", type: undefined });
   });
+});
 
-  test("renumber-only: doc_no differs, content/title identical → renumbered, still a patch-worthy change if content differs; no patch when content is identical", () => {
-    const base = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same content", contentHash: "h1" }]);
-    const live = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same content", contentHash: "h1" }]);
-    const head = snap([{ id: ID1, doc_no: "A.9", title: "One", content: "same content", contentHash: "h1" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, live);
-    expect(diff.changed).toEqual([ID1]); // doc_no differs → diffSnapshots flags it
+describe("computeDiffArtifacts: the old side and the heading flags", () => {
+  test("renumber only: flagged, renumber-only, old side carries the heading fields but no body", () => {
+    const base = snap([doc(ID1, "A.1", "same")]);
+    const head = snap([doc(ID1, "A.9", "same")]);
+    const { diff, before } = computeDiffArtifacts(base, head);
     expect(diff.renumbered).toEqual({ [ID1]: ["A.1", "A.9"] });
-    expect(diff.retitled).toEqual({});
-    expect(patches[ID1]).toBeUndefined(); // content identical vs live → no patch
+    expect(diff.renumberedOnly).toEqual([ID1]);
+    expect(before[ID1]).toEqual({ doc_no: "A.1", title: "One", type: undefined });
   });
 
-  test("type-only edit: the doc is changed and retyped, not renumber-only", () => {
-    const base = snap([{ id: ID1, doc_no: "A.1", title: "One", type: "Core", content: "same", contentHash: "h1" }]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", type: "Section", content: "same", contentHash: "h1" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, base);
-    expect(diff.changed).toEqual([ID1]);
+  test("title and type: flagged against the merge base", () => {
+    const base = snap([doc(ID1, "A.1", "body", { title: "Old", type: "Core" })]);
+    const head = snap([doc(ID1, "A.1", "body", { title: "New", type: "Section" })]);
+    const { diff, before } = computeDiffArtifacts(base, head);
+    expect(diff.retitled).toEqual({ [ID1]: ["Old", "New"] });
     expect(diff.retyped).toEqual({ [ID1]: ["Core", "Section"] });
     expect(diff.renumberedOnly).toEqual([]);
-    expect(patches[ID1]).toBeUndefined();
+    expect(before[ID1]).toMatchObject({ title: "Old", type: "Core" });
   });
 
   test("a side with no type is never a type change", () => {
-    const base = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same", contentHash: "h1" }]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", type: "Section", content: "same", contentHash: "h1" }]);
-    const { diff } = computeDiffArtifacts(base, head, base);
+    const base = snap([doc(ID1, "A.1", "same")]);
+    const head = snap([doc(ID1, "A.1", "same", { type: "Section" })]);
+    const { diff } = computeDiffArtifacts(base, head);
     expect(diff.changed).toEqual([]);
     expect(diff.retyped).toEqual({});
   });
 
-  test("title-only edit: retitled set, no patch", () => {
-    const base = snap([{ id: ID1, doc_no: "A.1", title: "Old Title", content: "body", contentHash: "h1" }]);
-    const live = snap([{ id: ID1, doc_no: "A.1", title: "Old Title", content: "body", contentHash: "h1" }]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "New Title", content: "body", contentHash: "h1" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, live);
-    expect(diff.changed).toEqual([ID1]); // title differs → diffSnapshots flags it
-    expect(diff.retitled).toEqual({ [ID1]: ["Old Title", "New Title"] });
-    expect(diff.renumbered).toEqual({});
-    expect(patches[ID1]).toBeUndefined();
+  test("reused slot: an added doc at a number another doc held on the merge base", () => {
+    const base = snap([doc(ID1, "A.1", "old occupant", { title: "Old Doc" })]);
+    const head = snap([doc(ID1, "A.2", "old occupant", { title: "Old Doc" }), doc(ID2, "A.1", "newcomer")]);
+    const { diff } = computeDiffArtifacts(base, head);
+    expect(diff.reusedSlot[ID2]).toEqual({ title: "Old Doc", movedTo: "A.2" });
   });
 
-  test("class 4: changed vs base but absent from live → patch computed vs base, not skipped", () => {
-    const base = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "base content", contentHash: "b1" }]);
-    const live: Snapshot = snap([]); // live doesn't have this doc at all
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "head content", contentHash: "h1" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, live);
-    expect(diff.changed).toEqual([ID1]);
-    expect(patches[ID1]).toBeDefined();
-    expect(patches[ID1].length).toBeGreaterThan(0);
-  });
-
-  test("raw-only edit: contentHash differs but cleaned content/title/doc_no are identical → changed, no patch, no retitle", () => {
-    const base = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same content", contentHash: "raw-a" }]);
-    const live = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same content", contentHash: "raw-a" }]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same content", contentHash: "raw-b" }]);
-    const { diff, patches } = computeDiffArtifacts(base, head, live);
-    expect(diff.changed).toEqual([ID1]); // hash differs → diffSnapshots flags it
-    expect(patches[ID1]).toBeUndefined(); // cleaned content identical → no visible patch
-    expect(diff.retitled[ID1]).toBeUndefined();
-    expect(diff.renumbered[ID1]).toBeUndefined();
-  });
-
-  test("unrelated live doc is untouched by a changed/added mix (sanity: multiple docs don't cross-contaminate)", () => {
-    const base = snap([{ id: ID2, doc_no: "A.2", title: "Two", content: "two", contentHash: "h2" }]);
-    const live = snap([{ id: ID2, doc_no: "A.2", title: "Two", content: "two", contentHash: "h2" }]);
-    const head = snap([
-      { id: ID2, doc_no: "A.2", title: "Two", content: "two", contentHash: "h2" },
-      { id: ID3, doc_no: "A.3", title: "Three", content: "three", contentHash: "h3" },
-    ]);
-    const { diff, patches } = computeDiffArtifacts(base, head, live);
+  test("unrelated docs stay out of the diff", () => {
+    const base = snap([doc(ID2, "A.2", "two")]);
+    const head = snap([doc(ID2, "A.2", "two"), doc(ID3, "A.3", "three")]);
+    const { diff, before } = computeDiffArtifacts(base, head);
     expect(diff.added).toEqual([ID3]);
     expect(diff.changed).toEqual([]);
-    expect(Object.keys(patches)).toEqual([ID3]);
+    expect(Object.keys(before)).toEqual([]);
   });
 });
 
@@ -138,20 +159,21 @@ describe("writeDiffArtifacts", () => {
     for (const d of dirs) fs.rmSync(d, { recursive: true, force: true });
   });
 
-  test("writes both diff.json and patches.json with the computed shapes", () => {
+  test("writes diff, before and removed under the plain names, or a candidate's suffix", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "diff-artifacts-"));
     dirs.push(dir);
-    const base: Snapshot = snap([]);
-    const live: Snapshot = snap([]);
-    const head = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "hello" }]);
-    const result = computeDiffArtifacts(base, head, live);
+    const base = snap([doc(ID1, "A.1", "old"), doc(ID2, "A.2", "gone")]);
+    const head = snap([doc(ID1, "A.1", "new")]);
+    const result = computeDiffArtifacts(base, head);
     writeDiffArtifacts(dir, result);
-
-    const diffOnDisk = JSON.parse(fs.readFileSync(path.join(dir, "diff.json"), "utf8"));
-    const patchesOnDisk = JSON.parse(fs.readFileSync(path.join(dir, "patches.json"), "utf8"));
-    expect(diffOnDisk).toEqual(result.diff);
-    expect(patchesOnDisk).toEqual(result.patches);
-    expect(diffOnDisk.added).toEqual([ID1]);
-    expect(patchesOnDisk[ID1]).toBeDefined();
+    writeDiffArtifacts(dir, result, ".sky");
+    for (const suffix of ["", ".sky"]) {
+      const read = (name: string) => JSON.parse(fs.readFileSync(path.join(dir, `${name}${suffix}.json`), "utf8"));
+      expect(read("diff")).toEqual(result.diff);
+      expect(read("before")).toEqual(JSON.parse(JSON.stringify(result.before)));
+      expect(read("removed")).toEqual(result.removed);
+    }
+    expect(result.before[ID1].content).toBe("old");
+    expect(result.removed.map((d) => d.id)).toEqual([ID2]);
   });
 });

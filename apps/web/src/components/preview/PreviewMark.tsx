@@ -1,5 +1,7 @@
 import { usePreviewDiff } from "../../lib/previewDiff";
 import { isReassigned } from "../../lib/identitySwap";
+import { changeKind } from "../../lib/previewChangeKind";
+import { PreviewMainAlsoChangedMark } from "./PreviewMainAlsoChanged";
 import { Tooltip } from "../Tooltip";
 import { AtlasLink } from "../AtlasLink";
 import { atlasHref } from "@/lib/routes";
@@ -8,6 +10,9 @@ import { atlasHref } from "@/lib/routes";
 // unambiguous which doc it refers to:
 //   "+" = new in this preview
 //   "Δ" = changed in this preview
+//   "−" = removed by this preview (shown in place, faint — previewRemoved.ts)
+//   "≠" = main has also changed it since the branch was cut, beside any of the
+//         above (PreviewMainAlsoChanged.tsx)
 //   "⚠" = identity reassigned — a stable UUID that now holds a *different*
 //         document, or content that moved in under a UUID it never had before.
 // The ⚠ uses the custom Tooltip (not a native title) so its hover card can link
@@ -38,7 +43,16 @@ function DocLink({ id, label }: { id: string; label: string }) {
   );
 }
 
-export function PreviewMark({ nodeId, className }: { nodeId: string; className?: string }) {
+export function PreviewMark(props: { nodeId: string; className?: string }) {
+  return (
+    <>
+      <ChangeMark {...props} />
+      <PreviewMainAlsoChangedMark {...props} />
+    </>
+  );
+}
+
+function ChangeMark({ nodeId, className }: { nodeId: string; className?: string }) {
   const diff = usePreviewDiff();
   const swap = diff.identitySwap[nodeId];
   const former = diff.formerUuid[nodeId];
@@ -97,17 +111,23 @@ export function PreviewMark({ nodeId, className }: { nodeId: string; className?:
     );
   }
 
-  const added = diff.added.has(nodeId);
-  const changed = !added && diff.changed.has(nodeId);
-  if (!added && !changed) return null;
+  const kind = changeKind(diff, nodeId);
+  if (!kind) return null;
+  const [glyph, label] = MARK[kind];
   return (
     <span
       className={className}
-      title={added ? "New in this preview" : "Changed in this preview"}
-      aria-label={added ? "new in this preview" : "changed in this preview"}
+      title={label}
+      aria-label={label.toLowerCase()}
       style={{ color: "var(--tan)", fontWeight: 700, flexShrink: 0 }}
     >
-      {added ? "+" : "Δ"}
+      {glyph}
     </span>
   );
 }
+
+const MARK = {
+  added: ["+", "New in this preview"],
+  changed: ["Δ", "Changed in this preview"],
+  removed: ["−", "Removed in this preview"],
+} as const;

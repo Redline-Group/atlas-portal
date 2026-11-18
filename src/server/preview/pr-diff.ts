@@ -64,6 +64,12 @@ export interface Candidates {
   compareOk: boolean;
 }
 
+/** The merge-base commit's date from a compare response, when it is a string. */
+function mergeBaseDateOf(json: any): string | undefined {
+  const date = json?.merge_base_commit?.commit?.committer?.date;
+  return typeof date === "string" ? date : undefined;
+}
+
 /**
  * sky candidate. Public: canonical compare of the served atlasCommit (falls
  * back to COMPARE_BASE when unknown) against the bare head sha, on
@@ -86,7 +92,7 @@ export async function skyCandidate(
   if (!r.ok) throw new CompareError(r.status);
   const mergeBase = r.json?.merge_base_commit?.sha;
   if (typeof mergeBase !== "string" || !mergeBase) return null;
-  return { key: "sky", repo: CANONICAL_REPO, ref: "main", mergeBase, aheadBy: r.json?.ahead_by, behindBy: r.json?.behind_by };
+  return { key: "sky", repo: CANONICAL_REPO, ref: "main", mergeBase, mergeBaseDate: mergeBaseDateOf(r.json), aheadBy: r.json?.ahead_by, behindBy: r.json?.behind_by };
 }
 
 /**
@@ -119,7 +125,7 @@ export async function repoCandidate(resolved: Resolved, repoGh: GhClient): Promi
   if (!r.ok) return null;
   const mergeBase = r.json?.merge_base_commit?.sha;
   if (typeof mergeBase !== "string" || !mergeBase) return null;
-  return { key: "repo", repo: compareRepo, ref: baseRef, mergeBase, aheadBy: r.json?.ahead_by, behindBy: r.json?.behind_by };
+  return { key: "repo", repo: compareRepo, ref: baseRef, mergeBase, mergeBaseDate: mergeBaseDateOf(r.json), aheadBy: r.json?.ahead_by, behindBy: r.json?.behind_by };
 }
 
 /**

@@ -213,9 +213,14 @@ describe("broadGrantCopy", () => {
 });
 
 describe("diffBaseLabel", () => {
-  it("says the live atlas for sky/absent", () => {
+  it("says the live atlas when no base resolved", () => {
     expect(diffBaseLabel(meta(undefined), null)).toBe("the live atlas");
-    expect(diffBaseLabel(meta({ auto: "sky" }), { key: "sky", auto: true })).toBe("the live atlas");
+    expect(diffBaseLabel(meta({ auto: "live-main" }), { key: "live-main", auto: true })).toBe("the live atlas");
+  });
+
+  it("names repo:ref for the sky base, whose merge base the redline compares against", () => {
+    const m = meta({ auto: "sky", sky: { repo: "sky-ecosystem/next-gen-atlas", ref: "main", mergeBase: "x" } });
+    expect(diffBaseLabel(m, { key: "sky", auto: true })).toBe("sky-ecosystem/next-gen-atlas:main");
   });
 
   it("names repo:ref for the repo base", () => {

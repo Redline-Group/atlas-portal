@@ -1,29 +1,33 @@
-// Pure computation + disk-write for a preview build's two diff artifacts:
-// diff.json (added/changed ids — eager, drives markers) and patches.json (id →
-// DiffLine[] — lazy, drives preview history). Split out of build.ts (which
-// otherwise grows past its intended size) so the diff logic is testable
-// without driving a full build.
+// Pure computation + disk-write for a preview build's diff artifacts:
+//   diff.json    what changed (added/changed/removed ids and the flags beside
+//                them) — eager, drives the reader's marks, filter and counts;
+//   before.json  each changed document as it stood on the diff base — lazy,
+//                the old side of the reader's redline (src/lib/previewPatch.ts);
+//   removed.json each removed document in full, with where it stood — eager,
+//                so the reader can show it in place.
+// The new side of every redline is the preview's own docs, which the reader
+// already holds, so no line diff is stored at all.
 //
-// `base`/`head`/`reference` are three separate snapshots on purpose: `base` is
-// the merge base (or live main when there isn't one — see build.ts), `head` is
-// this preview's own built docs.json, and `reference` is the snapshot the
-// reader compares against — live main for the sky candidate, the candidate's
-// own merge base for the repo candidate (so upstream drift never appears
-// inside a patch). `added`/`changed` come from diffSnapshots(base, head); the
-// rendered patch and the renumbered/retitled fields compare against
-// `reference` (what the reader is looking at on screen right now, or the
-// candidate's own base), falling back to `base` only when a changed doc isn't
-// on `reference` at all (class 4: it was never there, or has since been
-// removed).
+// Everything compares the head against `base`, the diff base's merge base, so
+// a redline shows only the branch's own edits: what main changed after the
+// fork never reads as the branch reverting it. `live` (live main, for a base
+// other than live main itself) then drops what main already has: a document is
+// a change only if it differs from the merge base AND from live main. An edit
+// main already made, a document main already added with the same UUID, and a
+// removal main already made are not changes, since merging them changes nothing.
+// What that drops is recorded (`alreadyOnMain`), so the reader can say so
+// rather than show the document as untouched. A merged PR gets no `live`
+// (diff-base-write.ts): everything it changed is on main by then, and its
+// preview must keep showing what it did.
 
 import fs from "node:fs";
 import path from "node:path";
-import { contentDiff } from "./patch-diff.ts";
-import { diffSnapshots, type Snapshot } from "./snapshot.ts";
+import { diffSnapshots, docDiffers, type Snapshot, type SnapshotDiff } from "./snapshot.ts";
 import { typeChanged } from "../../../scripts/lib/history-events.ts";
-import type { DiffLine } from "../../lib/history";
+import type { BeforeEntry, RemovedDoc } from "../../lib/previewPatch.ts";
 import { detectIdentitySwaps, type IdentitySwap, type FormerUuid } from "./identity.ts";
 import { diffSides, findRenumberedOnly } from "./renumber-only.ts";
+import { removedDocs } from "./removed-docs.ts";
 
 export interface PreviewDiffJson {
   added: string[];
@@ -37,94 +41,115 @@ export interface PreviewDiffJson {
   retitled: Record<string, [string, string]>;
   /** Changed docs whose `[Type]` differs: id → [before, after]. Absent on bundles built before it was recorded. */
   retyped?: Record<string, [string, string]>;
+  /** Docs the branch changed whose change live main already has, so they are
+   *  not listed above. Absent when no live-main rule applied. */
+  alreadyOnMain?: string[];
+  /** Listed docs that main has also changed since the branch was cut (see
+   *  mainAlsoChanged). Absent when no live-main rule applied. */
+  mainAlsoChanged?: string[];
   reusedSlot: Record<string, { title: string; movedTo?: string }>;
   identitySwap: Record<string, IdentitySwap>;
   formerUuid: Record<string, FormerUuid>;
 }
 
-function pureAdditions(ids: Iterable<string>, head: Snapshot, patches: Record<string, DiffLine[]>) {
-  for (const id of ids) {
-    const dl = contentDiff("", head.get(id)?.content ?? "");
-    if (dl.length) patches[id] = dl;
-  }
+export interface DiffArtifacts {
+  diff: PreviewDiffJson;
+  before: Record<string, BeforeEntry>;
+  removed: RemovedDoc[];
 }
 
-function changedSides(changed: string[], base: Snapshot, head: Snapshot, reference: Snapshot, patches: Record<string, DiffLine[]>) {
+/** Drop what live main already has (see the header), and say what was dropped. */
+function ownChanges(d: SnapshotDiff, head: Snapshot, live: Snapshot | undefined): SnapshotDiff & { alreadyOnMain?: string[] } {
+  if (!live) return d;
+  const differsFromLive = (id: string) => {
+    const l = live.get(id);
+    const h = head.get(id);
+    return !l || !h || docDiffers(l, h);
+  };
+  const kept = {
+    added: d.added.filter(differsFromLive),
+    changed: d.changed.filter(differsFromLive),
+    removed: d.removed.filter((id) => live.has(id)),
+  };
+  const all = [...d.added, ...d.changed, ...d.removed];
+  const keptIds = new Set([...kept.added, ...kept.changed, ...kept.removed]);
+  return { ...kept, alreadyOnMain: all.filter((id) => !keptIds.has(id)) };
+}
+
+/** Listed docs main has also moved on since the fork: one the branch changes
+ *  or removes that live main has since edited or deleted, or one the branch
+ *  adds whose UUID main has since added too. The redline shows only the
+ *  branch's own edits, so this flag is what tells the reader that main's
+ *  current text differs from the redline's old side. */
+function mainAlsoChanged(ids: string[], base: Snapshot, live: Snapshot): string[] {
+  return ids.filter((id) => {
+    const b = base.get(id);
+    const l = live.get(id);
+    if (!b) return !!l;
+    return !l || docDiffers(b, l);
+  });
+}
+
+function headingChanges(changed: string[], base: Snapshot, head: Snapshot) {
   const renumbered: Record<string, [string, string]> = {};
   const retitled: Record<string, [string, string]> = {};
   const retyped: Record<string, [string, string]> = {};
-  for (const id of changed) noteChanged(id, base, head, reference, patches, renumbered, retitled, retyped);
+  for (const id of changed) {
+    const b = base.get(id)!;
+    const h = head.get(id)!;
+    if (b.doc_no !== h.doc_no) renumbered[id] = [b.doc_no, h.doc_no];
+    if (b.title !== h.title) retitled[id] = [b.title ?? "", h.title ?? ""];
+    if (typeChanged(b, h)) retyped[id] = [b.type!, h.type!];
+  }
   return { renumbered, retitled, retyped };
 }
 
-function noteChanged(
-  id: string,
-  base: Snapshot,
-  head: Snapshot,
-  reference: Snapshot,
-  patches: Record<string, DiffLine[]>,
-  renumbered: Record<string, [string, string]>,
-  retitled: Record<string, [string, string]>,
-  retyped: Record<string, [string, string]>,
-) {
-  const beforeNode = reference.get(id) ?? base.get(id);
-  const afterNode = head.get(id);
-  if (!beforeNode || !afterNode) return;
-  const dl = contentDiff(beforeNode.content ?? "", afterNode.content ?? "");
-  if (dl.length) patches[id] = dl;
-  if (beforeNode.doc_no !== afterNode.doc_no) renumbered[id] = [beforeNode.doc_no, afterNode.doc_no];
-  if (beforeNode.title !== afterNode.title) retitled[id] = [beforeNode.title ?? "", afterNode.title ?? ""];
-  if (typeChanged(beforeNode, afterNode)) retyped[id] = [beforeNode.type!, afterNode.type!];
+/** Each changed document's old heading fields, and its old body when that changed. */
+function beforeEntries(changed: string[], base: Snapshot, head: Snapshot): Record<string, BeforeEntry> {
+  const out: Record<string, BeforeEntry> = {};
+  for (const id of changed) {
+    const b = base.get(id)!;
+    const body = (b.content ?? "") === (head.get(id)?.content ?? "") ? {} : { content: b.content ?? "" };
+    out[id] = { doc_no: b.doc_no, title: b.title, type: b.type, ...body };
+  }
+  return out;
 }
 
-function reusedSlots(added: string[], head: Snapshot, reference: Snapshot, patches: Record<string, DiffLine[]>) {
-  const referenceDocNos = new Map<string, string>();
-  for (const [rid, rnode] of reference) referenceDocNos.set(rnode.doc_no, rid);
+/** Added docs that take a doc number another document held on the base. */
+function reusedSlots(added: string[], base: Snapshot, head: Snapshot) {
+  const baseDocNos = new Map<string, string>();
+  for (const [id, node] of base) baseDocNos.set(node.doc_no, id);
   const reusedSlot: Record<string, { title: string; movedTo?: string }> = {};
-  for (const id of added) noteReuse(id, head, reference, referenceDocNos, reusedSlot, patches);
+  for (const id of added) {
+    const occupant = baseDocNos.get(head.get(id)?.doc_no ?? "");
+    if (!occupant || occupant === id) continue;
+    reusedSlot[id] = { title: base.get(occupant)?.title ?? occupant.slice(0, 8), movedTo: head.get(occupant)?.doc_no };
+  }
   return reusedSlot;
 }
 
-function noteReuse(
-  id: string,
-  head: Snapshot,
-  reference: Snapshot,
-  referenceDocNos: Map<string, string>,
-  reusedSlot: Record<string, { title: string; movedTo?: string }>,
-  patches: Record<string, DiffLine[]>,
-) {
-  const node = head.get(id);
-  if (!node) return;
-  const occupant = referenceDocNos.get(node.doc_no);
-  if (!occupant || occupant === id) return;
-  reusedSlot[id] = { title: reference.get(occupant)?.title ?? occupant.slice(0, 8), movedTo: head.get(occupant)?.doc_no };
-  const dl = contentDiff("", node.content ?? "");
-  if (dl.length) patches[id] = dl;
-  else delete patches[id];
-}
-
-export function computeDiffArtifacts(
-  base: Snapshot,
-  head: Snapshot,
-  reference: Snapshot,
-): { diff: PreviewDiffJson; patches: Record<string, DiffLine[]> } {
-  const { added, changed, removed } = diffSnapshots(base, head);
-  const patches: Record<string, DiffLine[]> = {};
-  pureAdditions(added, head, patches);
-  const { renumbered, retitled, retyped } = changedSides(changed, base, head, reference, patches);
-  const reusedSlot = reusedSlots(added, head, reference, patches);
-  const { identitySwap, formerUuid } = detectIdentitySwaps({ changed, added, mainById: reference, previewById: head });
-  const renumberedOnly = findRenumberedOnly(changed, diffSides(base, head, reference));
-  return {
-    diff: { added, changed, removed, renumbered, renumberedOnly, retitled, retyped, reusedSlot, identitySwap, formerUuid },
-    patches,
+export function computeDiffArtifacts(base: Snapshot, head: Snapshot, live?: Snapshot): DiffArtifacts {
+  const { added, changed, removed, alreadyOnMain } = ownChanges(diffSnapshots(base, head), head, live);
+  const { identitySwap, formerUuid } = detectIdentitySwaps({ changed, added, mainById: base, previewById: head });
+  const diff: PreviewDiffJson = {
+    added,
+    changed,
+    removed,
+    ...headingChanges(changed, base, head),
+    renumberedOnly: findRenumberedOnly(changed, diffSides(base, head)),
+    reusedSlot: reusedSlots(added, base, head),
+    identitySwap,
+    formerUuid,
+    ...(alreadyOnMain ? { alreadyOnMain } : {}),
+    ...(live ? { mainAlsoChanged: mainAlsoChanged([...added, ...changed, ...removed], base, live) } : {}),
   };
+  return { diff, before: beforeEntries(changed, base, head), removed: removedDocs(removed, base, head) };
 }
 
-export function writeDiffArtifacts(
-  outDir: string,
-  a: { diff: PreviewDiffJson; patches: Record<string, DiffLine[]> },
-): void {
-  fs.writeFileSync(path.join(outDir, "diff.json"), JSON.stringify(a.diff));
-  fs.writeFileSync(path.join(outDir, "patches.json"), JSON.stringify(a.patches));
+/** The diff set's file stems, in the order they are written. */
+export const DIFF_FILES = ["diff", "before", "removed"] as const;
+
+/** The three files under one name: "" for the plain auto set, ".sky" / ".repo" for a candidate's. */
+export function writeDiffArtifacts(outDir: string, a: DiffArtifacts, suffix = ""): void {
+  for (const name of DIFF_FILES) fs.writeFileSync(path.join(outDir, `${name}${suffix}.json`), JSON.stringify(a[name]));
 }

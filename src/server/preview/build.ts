@@ -425,11 +425,11 @@ async function runBuild(f: Inflight, resolved: Resolved, deps: BuildDeps = realB
       // branch.
       if (fork && !priv && !candidates.compareOk) return fail(f, sha, "not-derived");
 
-      // Doc-level diff + per-doc patches, written into the bundle as artifacts:
-      // diff.json / patches.json (the `auto` candidate's pair — added/changed
-      // ids and id → DiffLine[], driving markers + preview history), plus one
-      // diff.<key>.json / patches.<key>.json pair per candidate that resolved
-      // (the reader's base switcher). Soft end to end: nothing in here can
+      // Doc-level diff, written into the bundle as artifacts: diff.json,
+      // before.json and removed.json (the `auto` candidate's set — what
+      // changed, the old side of each redline, and the removed documents),
+      // plus one diff.<key>.json / before.<key>.json / removed.<key>.json set
+      // per candidate that resolved (the reader's base switcher). Soft end to end: nothing in here can
       // change the build outcome by itself — a skipped artifact just means the
       // reader falls back to the serve-time vs-main diff. The head's docs.json
       // must already be on disk, so this can only run after the build above.

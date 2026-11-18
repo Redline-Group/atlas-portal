@@ -1,7 +1,7 @@
 // Shared diff core — the single implementation of the LCS / word-diff /
 // line-pairing machinery used by BOTH history pipelines:
 //   scripts/required/build-history.mjs  (live atlas history → Postgres; Bun)
-//   src/server/preview/patch-diff.ts    (preview diffs: GitHub patches + identity diffs)
+//   src/lib/previewPatch.ts             (preview redlines, in the reader and the chat/MCP preview tools)
 //   src/components/preview/BuildErrorDetail.tsx (char-level build-error highlight)
 // Pure functions, no imports beyond types — safe in scripts, server, and client.
 // Output shapes match lib/history's DiffLine/WordSegment exactly; build-history

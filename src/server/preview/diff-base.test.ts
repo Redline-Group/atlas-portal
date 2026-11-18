@@ -114,7 +114,7 @@ describe("writeDiffBases", () => {
     }
   });
 
-  test("no candidate resolved: writes only diff.json/patches.json, warns with the given reason", async () => {
+  test("no candidate resolved: writes only the plain diff set, warns with the given reason", async () => {
     const root = mkTmp();
     dirs.push(root);
     const paths = previewPaths("nolm1", root);
@@ -130,7 +130,8 @@ describe("writeDiffBases", () => {
         // One job for the one diff written, under the `auto` name.
         expect(result.refine.map((j) => j.files)).toEqual([["identity.json"]]);
         expect(fs.existsSync(path.join(paths.outDir, "diff.json"))).toBe(true);
-        expect(fs.existsSync(path.join(paths.outDir, "patches.json"))).toBe(true);
+        expect(fs.existsSync(path.join(paths.outDir, "before.json"))).toBe(true);
+        expect(fs.existsSync(path.join(paths.outDir, "removed.json"))).toBe(true);
         expect(fs.existsSync(path.join(paths.outDir, "diff.sky.json"))).toBe(false);
         expect(fs.existsSync(path.join(paths.outDir, "diff.repo.json"))).toBe(false);
       } finally {
@@ -139,7 +140,7 @@ describe("writeDiffBases", () => {
     });
   });
 
-  test("both candidates: writes diff.sky.json + diff.repo.json, sky renders vs live, repo renders vs its own base, auto pair copied byte-for-byte", async () => {
+  test("both candidates: writes a diff set per candidate, each against its own merge base, auto set copied byte-for-byte", async () => {
     const root = mkTmp();
     dirs.push(root);
     const paths = previewPaths("both1", root);
@@ -192,27 +193,18 @@ describe("writeDiffBases", () => {
         // stripKey: the internal `key` discriminator never leaks into meta.bases.
         expect((result.bases.sky as unknown as { key?: string }).key).toBeUndefined();
 
-        const skyPatch = JSON.stringify(
-          JSON.parse(fs.readFileSync(path.join(paths.outDir, "patches.sky.json"), "utf8"))[ID],
-        );
-        // sky's rendered patch is vs LIVE, never its own base.
-        expect(skyPatch).toContain("LIVE");
-        expect(skyPatch).not.toContain("SKY-BASE");
+        const oldSide = (name: string) => JSON.parse(fs.readFileSync(path.join(paths.outDir, name), "utf8"))[ID].content;
+        // Each candidate's old side is its OWN merge base, never live main, so
+        // nothing main did after the fork reads as the branch undoing it.
+        expect(oldSide("before.sky.json")).toContain("SKY-BASE");
+        expect(oldSide("before.repo.json")).toContain("REPO-BASE");
 
-        const repoPatch = JSON.stringify(
-          JSON.parse(fs.readFileSync(path.join(paths.outDir, "patches.repo.json"), "utf8"))[ID],
-        );
-        // repo's rendered patch is vs its OWN base, never live (no upstream drift leak).
-        expect(repoPatch).toContain("REPO-BASE");
-        expect(repoPatch).not.toContain("LIVE");
-
-        // diff.json / patches.json are the `auto` ("repo") pair, byte-for-byte.
-        expect(fs.readFileSync(path.join(paths.outDir, "diff.json"), "utf8")).toBe(
-          fs.readFileSync(path.join(paths.outDir, "diff.repo.json"), "utf8"),
-        );
-        expect(fs.readFileSync(path.join(paths.outDir, "patches.json"), "utf8")).toBe(
-          fs.readFileSync(path.join(paths.outDir, "patches.repo.json"), "utf8"),
-        );
+        // The plain set is the `auto` ("repo") one, byte-for-byte.
+        for (const name of ["diff", "before", "removed"]) {
+          expect(fs.readFileSync(path.join(paths.outDir, `${name}.json`), "utf8")).toBe(
+            fs.readFileSync(path.join(paths.outDir, `${name}.repo.json`), "utf8"),
+          );
+        }
         expect(fetchCalls.sort()).toEqual(["repo-mb", "sky-mb"]);
       });
     } finally {
@@ -300,11 +292,10 @@ describe("writeDiffBases", () => {
         expect(fs.existsSync(path.join(paths.outDir, "diff.sky.json"))).toBe(false);
         expect(fs.existsSync(path.join(paths.outDir, "diff.json"))).toBe(true);
         expect(warnings.some((w) => w.includes("unavailable") && w.includes("diffing against live main"))).toBe(true);
-        // Fell back to live main as the base — the patch is LIVE-X → HEAD-X,
-        // never anything from the unreachable base tree.
-        const rendered = JSON.stringify(JSON.parse(fs.readFileSync(path.join(paths.outDir, "patches.json"), "utf8"))[ID]);
-        expect(rendered).toContain("LIVE");
-        expect(rendered).toContain("HEAD");
+        // Fell back to live main as the base — the old side is LIVE-X, never
+        // anything from the unreachable base tree.
+        const before = JSON.parse(fs.readFileSync(path.join(paths.outDir, "before.json"), "utf8"));
+        expect(before[ID].content).toContain("LIVE");
       } finally {
         console.warn = origWarn;
       }
@@ -353,5 +344,44 @@ describe("startCandidates", () => {
     } finally {
       globalThis.fetch = origFetch;
     }
+  });
+});
+
+// The sky base drops what live main already has, and says so; a merged PR
+// keeps everything it changed, since all of it is on main by then.
+describe("writeDiffBases: changes main already has", () => {
+  const dirs: string[] = [];
+  afterAll(() => {
+    for (const d of dirs) fs.rmSync(d, { recursive: true, force: true });
+  });
+  const sky: Candidates = {
+    auto: "sky",
+    sky: { key: "sky", repo: "sky-ecosystem/next-gen-atlas", ref: "main", mergeBase: "fork-mb" },
+    compareOk: true,
+  };
+
+  async function build(name: string, resolved: Resolved) {
+    const root = mkTmp();
+    dirs.push(root);
+    const paths = previewPaths(name, root);
+    writeDocsJson(paths.outDir, { [ID]: { id: ID, doc_no: "A.1", title: "One", content: "EDITED" } });
+    const fork = mkTmp();
+    writeAtlasCheckout(fork, "FORK-POINT");
+    await withLiveDocMap("live-sha", "EDITED", () =>
+      writeDiffBases(Promise.resolve(sky), { resolved, token: "t", priv: false, sha: name, paths, fetchTree: async () => ({ srcDir: fork }) }),
+    );
+    return JSON.parse(fs.readFileSync(path.join(paths.outDir, "diff.json"), "utf8"));
+  }
+
+  test("an open PR's edit main already has is listed as already on main, not as a change", async () => {
+    const diff = await build("open1", { ...RESOLVED, kind: "pr", pr: { number: 7, title: "t", author: "a", state: "open" } });
+    expect(diff.changed).toEqual([]);
+    expect(diff.alreadyOnMain).toEqual([ID]);
+  });
+
+  test("a merged PR keeps the edit as a change", async () => {
+    const diff = await build("merged1", { ...RESOLVED, kind: "pr", pr: { number: 7, title: "t", author: "a", state: "merged" } });
+    expect(diff.changed).toEqual([ID]);
+    expect(diff.alreadyOnMain).toBeUndefined();
   });
 });

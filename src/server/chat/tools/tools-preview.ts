@@ -81,7 +81,7 @@ export const PREVIEW_TOOLS: AtlasTool[] = [
     annotations: annotations("Atlas Open PRs"),
     description:
       "Open (unmerged) pull requests against sky-ecosystem/next-gen-atlas, most recently updated first: number, title, " +
-      "author, draft flag, URL, and — when a preview of it has been built — how many documents it adds and changes.",
+      "author, draft flag, URL, and — when a preview of it has been built — how many documents it adds, changes and removes.",
     shape: {
       include_drafts: z.boolean().optional().default(true).describe("Include draft PRs (default true)."),
       limit: z.number().int().min(1).max(100).optional().default(30),
@@ -94,9 +94,9 @@ export const PREVIEW_TOOLS: AtlasTool[] = [
       "The question is about an UNMERGED change — review this PR, what would PR #N change, which documents does this proposal touch. For a merged PR use atlas_pr.",
     annotations: annotations("Atlas Preview Diff"),
     description:
-      "What a PR preview adds, changes and removes in the Atlas, against the base its redline uses (the PR's own base " +
-      "branch, or the live Atlas). Returns the PR and base (the first page adds the PR's GitHub description), counts, and a page of documents " +
-      "sorted by doc_no, each with its doc_no, title, type, parent, renumber/retitle flags, a short patch, and a `cite` " +
+      "What a PR preview adds, changes and removes in the Atlas, against its base branch as the branch left it (the merge " +
+      "base, so only the PR's own edits show; the live Atlas when no base resolved). Returns the PR and base (the first page adds the PR's GitHub description), counts, and a page of documents " +
+      "sorted by doc_no, each with its doc_no, title, type, parent, renumber/retitle flags, a main_also_changed flag when main has edited it since, a short patch, and a `cite` " +
       "link. In chat it builds a preview nobody has built yet; if the build fails it still returns the PR's description.",
     shape: {
       preview_id: PREVIEW_ID,
@@ -120,13 +120,14 @@ export const PREVIEW_TOOLS: AtlasTool[] = [
       "You need the full proposed text of documents in an unmerged PR — to review it closely or to check it reads like similar live documents (then fetch those with atlas_filter / atlas_get).",
     annotations: annotations("Atlas Preview Get"),
     description:
-      "Full text of up to 50 documents as a PR preview has them (by uuid or the preview's doc_no), with each one's " +
-      "change status, parent and ancestors, the live Atlas's text of the same document for comparison, its patch, " +
+      "Full text of up to 50 documents as a PR preview has them (by uuid or the preview's doc_no), including documents it " +
+      "removes, with each one's change status, parent and ancestors, a changed document's text where the branch left " +
+      "its base (the patch's old side, not main today), a main_also_changed flag when main has edited it since, its patch, " +
       "and optionally its children.",
     shape: {
       preview_id: PREVIEW_ID,
       ids: z.array(z.string()).min(1).max(50).describe("UUIDs or doc_nos as numbered in the preview. Ask for 5 or fewer unless this turn can read large previews."),
-      include_base: z.boolean().optional().default(true).describe("Include the live Atlas's text of each document (default true)."),
+      include_base: z.boolean().optional().default(true).describe("Include each changed document's text where the branch left its base (default true)."),
       include_children: z.boolean().optional().default(false),
     },
     largeResult: true,

@@ -13,6 +13,8 @@ export interface DocTree {
   /** parentId → children sorted by `order`; roots are keyed by null. */
   byParent: Map<string | null, AtlasNode[]>;
   docNoToId: Map<string, string>;
+  /** id → the parent byParent files it under (null for a root). */
+  parentOf: Map<string, string | null>;
 }
 
 function parentDocNo(dn: string, has: (dn: string) => boolean): string {
@@ -40,7 +42,12 @@ export function docTree(docs: Record<string, AtlasNode>): DocTree {
     return docNoToId.get(parentDocNo(node.doc_no, (dn) => docNoToId.has(dn))) ?? node.parentId;
   };
   const byParent = new Map<string | null, AtlasNode[]>();
-  for (const node of Object.values(docs)) pushTo(byParent, parentOf(node), node);
+  const parents = new Map<string, string | null>();
+  for (const node of Object.values(docs)) {
+    const parent = parentOf(node);
+    parents.set(node.id, parent);
+    pushTo(byParent, parent, node);
+  }
   for (const bucket of byParent.values()) bucket.sort((a, b) => a.order - b.order);
-  return { byParent, docNoToId };
+  return { byParent, docNoToId, parentOf: parents };
 }

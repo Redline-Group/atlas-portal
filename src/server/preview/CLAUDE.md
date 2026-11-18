@@ -7,7 +7,7 @@ A preview builds the atlas from another ref (an nga PR, a fork branch, a private
 `/api/preview/*` → `handler.ts` `drive()`: rate limit → resolve the id to a sha (`resolve.ts`) → private-access check → blocked-sha check → serve the ready bundle or `getOrStartBuild`. `build.ts` `runBuild`: takedown → trust/quota (`trust.ts`) → tarball fetch (`tarball.ts`) → `build-index`, then graph and glossary concurrently → diff bases → `meta.json` → DB upsert → LRU eviction → detached identity refine. Phases: fetching → building → ready | failed.
 
 - **Diff base**: `pr-diff.ts` (candidates `sky` and `repo`), `pr-diff-auto.ts` (`pickAuto`), `diff-base*.ts`, `base-drift.ts`.
-- **Diff artifacts**: `snapshot.ts`, `diff-artifacts.ts` (`diff.json` lists added, changed and removed docs), `patch-diff.ts`.
+- **Diff artifacts**: `snapshot.ts`, `diff-artifacts.ts` (`diff.json` lists added, changed and removed docs; `before.json` holds each changed doc's old side; `removed.json` each removed doc with its placement, from `removed-docs.ts`). No line diff is stored: the reader and the chat/MCP tools build each redline from those files and the preview's own docs with `src/lib/previewPatch.ts`.
 - **Identity gate** (does a kept UUID still point at the same document?): `identity.ts` re-exports `identity-*.ts`; `embeddings*.ts` and `vector-cache.ts` back the refine step.
 - **Private access**: `access.ts`, `github-app.ts`. **Persistence**: `db.ts`. **Eviction**: `sweeper.ts`, `cache.ts`.
 - **Frontend**: `apps/web/src/components/preview/`, `apps/web/src/lib/preview*.ts`, and `dataSource.tsx`, which points artifact fetches at `/api/preview/<sha>/`.

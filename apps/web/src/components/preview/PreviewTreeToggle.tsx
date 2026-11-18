@@ -3,6 +3,7 @@ import { useDataSource } from "../../lib/dataSource";
 import { usePreviewView } from "../../lib/previewView";
 import { usePreviewDiff } from "../../lib/previewDiff";
 import { describeFilters, filterPreviewDocs } from "../../lib/previewFilters";
+import { changedIds } from "../../lib/previewChangeKind";
 import { track } from "../../lib/analytics";
 import { useDismissiblePopover } from "../chat/useLightDismiss";
 import { TREE_TOGGLE_BAR_CLASS, TREE_TOGGLE_PILL_CLASS, togglePillStyle, treeToggleBarStyle } from "../tree/togglePill";
@@ -22,7 +23,7 @@ export function PreviewTreeToggle() {
   const barRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useDismissiblePopover(barRef, { claimEscape: true });
   if (!preview) return null;
-  const changedCount = diff.added.size + diff.changed.size;
+  const changedCount = changedIds(diff).size;
 
   const showAll = (via: "all" | "clear") => {
     track("preview_view_toggle", { view: "all", changed_count: changedCount, via });

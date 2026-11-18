@@ -1,14 +1,15 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useDataSource } from "./dataSource";
 import { usePreviewView } from "./previewView";
-import type { ActiveBase, PreviewBaseKey } from "./previewMetaCopy";
-import type { DiffLine } from "@/lib/history";
+import type { ActiveBase } from "./previewMetaCopy";
+import type { RemovedDoc } from "@/lib/previewPatch";
 import { fetchPreviewDiff } from "./previewDiffLoad";
 import { loadIdentityVerdict } from "./previewIdentity";
 
-// Doc ids the preview adds / changes vs current main (from GET diff.json).
-// Drives the green new/changed redline indicators. `renumbered` maps a changed
-// doc id to its [live, preview] doc numbers when the change includes a move.
+// Doc ids the preview adds / changes / removes against its diff base — the
+// branch's merge base, so only its own edits count (from GET diff.json).
+// Drives the new/changed/removed redline indicators. `renumbered` maps a changed
+// doc id to its [base, preview] doc numbers when the change includes a move.
 // Empty (and no fetch) outside preview mode, so the default context works
 // everywhere without a provider.
 /** UUID-identity reassignment value: id → old/new titles and (best-effort)
@@ -30,17 +31,30 @@ export interface FormerUuid {
 export interface PreviewDiff {
   added: Set<string>;
   changed: Set<string>;
+  /** On the diff base, gone from the preview. Absent on bundles built before it was recorded. */
+  removed?: Set<string>;
+  /** removed.json: each removed document in full, with where it stood, in
+   *  base order. The tree and reader show them in place (previewRemoved.ts). */
+  removedDocs?: RemovedDoc[];
+  /** Docs the branch changed whose change live main already has, so they are
+   *  not marked as changes. Absent when the build applied no such rule (a
+   *  merged PR, a repo base) or predates it. */
+  alreadyOnMain?: Set<string>;
+  /** Listed docs main has also changed since the branch was cut, so main's
+   *  version may differ from the redline's old side. Absent when the build
+   *  applied no live-main rule. */
+  mainAlsoChanged?: Set<string>;
   renumbered: Record<string, [string, string]>;
   /** Changed docs whose only change is the doc number. Absent on bundles
    *  built before the build recorded it. */
   renumberedOnly?: Set<string>;
-  /** Changed docs whose title differs from the live atlas (title-only or
-   *  title+content edits). id → [live title, preview title]. */
+  /** Changed docs whose title differs from the diff base (title-only or
+   *  title+content edits). id → [base title, preview title]. */
   retitled: Record<string, [string, string]>;
-  /** Changed docs whose `[Type]` differs from the live atlas: id → [live type,
+  /** Changed docs whose `[Type]` differs from the diff base: id → [base type,
    *  preview type]. */
   retyped: Record<string, [string, string]>;
-  /** Added docs whose doc number exists on the live atlas under another uuid:
+  /** Added docs whose doc number the diff base gave another uuid:
    *  id → the old occupant's title + where it sits in this preview (absent =
    *  removed by the preview). */
   reusedSlot: Record<string, { title?: string; movedTo?: string }>;
@@ -115,60 +129,8 @@ function showPreviewDiff(
       return;
     }
     setDiff(loaded.diff);
+    loaded.removedDocs.then((removedDocs) => live() && setDiff((now) => ({ ...now, removedDocs })));
     const verdict = await loadIdentityVerdict(base, loaded.usedKey, { signal });
     if (live() && verdict) setDiff((now) => ({ ...now, ...verdict }));
   });
-}
-
-// ---------------------------------------------------------------------------
-// Lazy per-doc patches (GET patches.json). Larger than diff.json, so it's NOT
-// loaded by the eager provider above — only fetched the first time a preview
-// history tab mounts (usePreviewPatch), then cached per base+key. Maps doc id
-// → rendered line diff in the same DiffLine[] shape the live history uses.
-// ---------------------------------------------------------------------------
-
-const patchCache = new Map<string, Promise<Record<string, DiffLine[]>>>();
-
-function loadPreviewPatches(base: string, key: PreviewBaseKey | null): Promise<Record<string, DiffLine[]>> {
-  const cacheKey = `${base}${key ?? ""}`;
-  let p = patchCache.get(cacheKey);
-  if (!p) {
-    const url = key ? `${base}patches.${key}.json` : `${base}patches.json`;
-    p = fetch(url)
-      .then((r) => {
-        if (r.ok) return r.json();
-        // Keyed 404 (bundle predates per-base patches, or the key is stale) —
-        // fall back to the auto pair every bundle always ships.
-        if (key) return fetch(`${base}patches.json`).then((r2) => (r2.ok ? r2.json() : {}));
-        return {};
-      })
-      .catch(() => ({}));
-    patchCache.set(cacheKey, p);
-  }
-  return p;
-}
-
-export function usePreviewPatch(nodeId: string): DiffLine[] | null {
-  const { base, preview } = useDataSource();
-  // Same key the diff provider resolved (an override reconciled against what
-  // the bundle actually has) — read from context rather than re-resolving
-  // independently, so the patch shown always matches the diff shown.
-  const { activeBase } = usePreviewDiff();
-  const key: PreviewBaseKey | null =
-    activeBase?.key === "sky" || activeBase?.key === "repo" ? activeBase.key : null;
-  const [lines, setLines] = useState<DiffLine[] | null>(null);
-  useEffect(() => {
-    if (!preview) {
-      setLines(null);
-      return;
-    }
-    let live = true;
-    loadPreviewPatches(base, key).then((m) => {
-      if (live) setLines(m[nodeId] ?? null);
-    });
-    return () => {
-      live = false;
-    };
-  }, [base, preview, nodeId, key]);
-  return lines;
 }

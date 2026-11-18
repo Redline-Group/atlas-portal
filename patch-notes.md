@@ -33,6 +33,13 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
+## 2026-11-18
+
+- Preview diffs now show the whole old and new document, starting with its heading line (number, title, type and UUID).
+- Preview diffs now show only the branch's own edits, not changes made on main after it was cut, and the banner counts any changes main already has.
+- Previews now show removed documents in place, faint and marked with a −, with a Removed option in the Filter menu.
+- Previews now name the commit and date where the branch left main, and mark documents main has changed since with a ≠.
+
 ## 2026-11-17
 
 - Shift-clicking a document link now opens it in Splitview, and shift-clicking inside Splitview highlights that document in the main reader.

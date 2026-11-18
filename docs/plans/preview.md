@@ -142,6 +142,16 @@ win. Work is on branch **`futures`**. Build order is the "Build sequencing" sect
 - **Dockerfile** `python3` removal; `subscribeBuild` double-`fetching` event (cosmetic).
 
 ### Superseded decisions (the design prose still mentions the old plan — these win)
+- **The redline is built in the browser from the old side, and compares against the merge base**
+  (2026-11, supersedes `patches.json` everywhere below). The build writes three files per diff
+  base: `diff.json` (what changed), `before.json` (each changed doc's base heading fields, and its
+  base body when that changed) and `removed.json` (each removed doc in full, with its parent and
+  the sibling it followed). The reader holds the preview's own docs already, so it builds the
+  whole-document redline for the one doc it shows (`src/lib/previewPatch.ts`, also used by the
+  chat/MCP preview tools). Every candidate compares against its own merge base, so main's edits
+  after the fork never read as the branch reverting them; the `sky` base also drops anything live
+  main already has. Removed docs are drawn in place, faint, with a `−`, in the tree and reader
+  only (never search, the graph or doc-number lookups).
 - **Diff is now GitHub PR-files, not the vs-main hash diff, for PRs** (supersedes "Visual
   indicators" + the P2 "merge-base diff baseline"). GitHub computes head-vs-base, so we get
   merge-base accuracy *for free* without git history — the P2 item is effectively done for PRs.

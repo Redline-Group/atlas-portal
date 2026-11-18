@@ -31,6 +31,10 @@ export interface SnapshotDoc {
   type?: string;
   content?: string;
   contentHash?: string;
+  /** Where the document stands: needed only to place a removed document. */
+  parentId?: string | null;
+  order?: number;
+  depth?: number;
 }
 
 export type Snapshot = Map<string, SnapshotDoc>;
@@ -41,14 +45,23 @@ export interface SnapshotDiff {
   removed: string[];
 }
 
+const pick = (n: SnapshotDoc): SnapshotDoc => ({
+  id: n.id,
+  doc_no: n.doc_no,
+  title: n.title,
+  type: n.type,
+  content: n.content,
+  contentHash: n.contentHash,
+  parentId: n.parentId,
+  order: n.order,
+  depth: n.depth,
+});
+
 /** Parse an extracted atlas checkout (any layout) into a uuid-keyed snapshot. */
 export function snapshotFromSrcDir(srcDir: string): Snapshot {
   const { nodes } = loadAtlasSource(srcDir);
   return new Map(
-    nodes.map((n: SnapshotDoc) => [
-      n.id,
-      { id: n.id, doc_no: n.doc_no, title: n.title, type: n.type, content: n.content, contentHash: n.contentHash },
-    ]),
+    nodes.map((n: SnapshotDoc) => [n.id, pick(n)]),
   );
 }
 
@@ -58,10 +71,7 @@ export function snapshotFromDocsJson(outDir: string): Snapshot {
     JSON.parse(fs.readFileSync(path.join(outDir, "docs.json"), "utf8")).nodes,
   ) as SnapshotDoc[];
   return new Map(
-    nodes.map((n) => [
-      n.id,
-      { id: n.id, doc_no: n.doc_no, title: n.title, type: n.type, content: n.content, contentHash: n.contentHash },
-    ]),
+    nodes.map((n) => [n.id, pick(n)]),
   );
 }
 
@@ -96,6 +106,16 @@ export async function loadBaseSnapshot(
   }
 }
 
+/** Whether a document differs between two snapshots: body, title, doc number
+ *  or type. Bodies compare like with like: hashes when BOTH sides have one (the
+ *  production case — docs.json carries it and loadAtlasSource computes it),
+ *  else the text. Mixing a hash against raw content would report every doc changed. */
+export function docDiffers(b: SnapshotDoc, h: SnapshotDoc): boolean {
+  const bodyDiffers =
+    h.contentHash && b.contentHash ? h.contentHash !== b.contentHash : (h.content ?? "") !== (b.content ?? "");
+  return bodyDiffers || h.title !== b.title || h.doc_no !== b.doc_no || typeChanged(b, h);
+}
+
 /**
  * Compare two snapshots by document identity.
  *
@@ -116,14 +136,7 @@ export function diffSnapshots(base: Snapshot, head: Snapshot): SnapshotDiff {
       added.push(id);
       continue;
     }
-    // Compare like with like: hashes when BOTH sides have one (the production
-    // case — docs.json carries it and loadAtlasSource computes it), else the
-    // bodies. Mixing a hash against raw content would report every doc changed.
-    const bodyDiffers =
-      h.contentHash && b.contentHash
-        ? h.contentHash !== b.contentHash
-        : (h.content ?? "") !== (b.content ?? "");
-    if (bodyDiffers || h.title !== b.title || h.doc_no !== b.doc_no || typeChanged(b, h)) changed.push(id);
+    if (docDiffers(b, h)) changed.push(id);
   }
   for (const id of base.keys()) if (!head.has(id)) removed.push(id);
 
