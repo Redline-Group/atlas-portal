@@ -14,15 +14,17 @@ export function useBundleWithRemoved(bundle: AtlasBundle | null): AtlasBundle | 
 }
 
 /** The reader's data with the removed documents in place. Until a preview's
- *  diff has loaded, the data does not count as complete: a link to a removed
- *  document would otherwise read "not found" for the moment before it arrives. */
+ *  diff and its removed records have loaded, the data does not count as
+ *  complete: a link to a removed document would otherwise read "not found"
+ *  for the moment before it arrives. */
 export function useDataWithRemoved(data: LoadedData | null): LoadedData | null {
-  const { removedDocs, pending } = usePreviewDiff();
+  const { removedDocs, removed, pending } = usePreviewDiff();
   return useMemo(() => {
     if (!data) return data;
-    if (pending) return data.complete ? { ...data, complete: false } : data;
+    const waiting = pending || (!!removed?.size && !removedDocs);
+    if (waiting) return data.complete ? { ...data, complete: false } : data;
     if (!removedDocs?.length) return data;
     const atlas = withRemovedDocs(data.atlas, removedDocs);
     return { ...data, atlas, flatNodes: flattenTree(atlas.byParent) };
-  }, [data, removedDocs, pending]);
+  }, [data, removedDocs, removed, pending]);
 }

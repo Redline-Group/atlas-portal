@@ -1,7 +1,7 @@
 import type { ActiveBase, PreviewBaseKey, PreviewBases } from "./previewMetaCopy";
 import { loadPreviewMeta } from "./previewMeta";
 import type { PreviewDiff } from "./previewDiff";
-import { loadPreviewRemoved } from "./previewOldSide";
+import { fetchKeyed, loadPreviewRemoved } from "./previewOldSide";
 
 function resolveBase(baseKey: PreviewBaseKey | null, bases: PreviewBases | undefined) {
   if (!bases) return { fetchKey: null, activeBase: null };
@@ -23,16 +23,7 @@ function autoBase(bases: PreviewBases): { fetchKey: null; activeBase: ActiveBase
 }
 
 async function fetchDiff(base: string, fetchKey: PreviewBaseKey | null) {
-  const url = fetchKey ? `${base}diff.${fetchKey}.json` : `${base}diff.json`;
-  let usedKey = fetchKey;
-  const doc = await fetch(url)
-    .then((r) => {
-      if (r.ok) return r.json();
-      if (!fetchKey) return null;
-      usedKey = null;
-      return fetch(`${base}diff.json`).then((r2) => (r2.ok ? r2.json() : null));
-    })
-    .catch(() => null);
+  const { value: doc, usedKey } = await fetchKeyed<Record<string, unknown>>(base, "diff", fetchKey);
   return { doc, usedKey };
 }
 
@@ -66,6 +57,8 @@ export async function fetchPreviewDiff(base: string, baseKey: PreviewBaseKey | n
   const { fetchKey, activeBase } = resolveBase(baseKey, meta?.bases);
   const { doc, usedKey } = await fetchDiff(base, fetchKey);
   if (!doc) return null;
-  const removedDocs = doc.removed?.length ? await loadPreviewRemoved(base, usedKey) : [];
-  return { diff: { ...diffFromDoc(doc, activeBase), removedDocs }, usedKey };
+  // The removed documents' full records come after: the marks, filters and
+  // counts need only diff.json, and removed.json can be large.
+  const removedDocs = (doc.removed as unknown[] | undefined)?.length ? loadPreviewRemoved(base, usedKey) : Promise.resolve([]);
+  return { diff: diffFromDoc(doc, activeBase), usedKey, removedDocs };
 }

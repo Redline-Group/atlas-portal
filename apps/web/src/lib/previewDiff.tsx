@@ -129,6 +129,7 @@ function showPreviewDiff(
       return;
     }
     setDiff(loaded.diff);
+    loaded.removedDocs.then((removedDocs) => live() && setDiff((now) => ({ ...now, removedDocs })));
     const verdict = await loadIdentityVerdict(base, loaded.usedKey, { signal });
     if (live() && verdict) setDiff((now) => ({ ...now, ...verdict }));
   });

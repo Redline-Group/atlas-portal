@@ -8,6 +8,7 @@ import type { ToolResult } from "./tools.ts";
 import type { ToolOpen } from "../../preview/tool-access.ts";
 import { baseDocOf, loadPreviewDocs, previewCite, previewPatchFor, readPreviewDiff, readPreviewOldSide, removedNode, renderPatch, type PreviewDocs, type PreviewOldSide } from "../../preview/bundle-read.ts";
 import { CITATION_NOTE, PREVIEW_SOURCE_CLASS, previewHeader } from "./tools-preview-common.ts";
+import { forkPointOf } from "../../../lib/previewForkPoint.ts";
 import { previewCaps } from "../large-read.ts";
 
 export interface PreviewGetArgs {
@@ -45,9 +46,8 @@ function resolveDoc(c: GetCtx, ref: string): AtlasNode | undefined {
 
 /** What `base` is labelled with: the merge base the redline compares against, or live main when none resolved. */
 function baseLabelOf(meta: Extract<ToolOpen, { status: "ready" }>["meta"], ix: Indexes): string {
-  const auto = meta.bases?.auto;
-  const cand = auto === "sky" || auto === "repo" ? meta.bases?.[auto] : undefined;
-  if (cand) return `${cand.repo}:${cand.ref} where this branch left it (${cand.mergeBase.slice(0, 7)}${cand.mergeBaseDate ? `, ${cand.mergeBaseDate.slice(0, 10)}` : ""})`;
+  const fork = forkPointOf(meta.bases);
+  if (fork) return `${fork.repo}:${fork.ref} where this branch left it (${fork.sha}${fork.date ? `, ${fork.date.slice(0, 10)}` : ""})`;
   return `live atlas ${(ix.meta.atlasCommit ?? "").slice(0, 7)}`.trim();
 }
 

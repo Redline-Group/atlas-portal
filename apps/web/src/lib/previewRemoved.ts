@@ -10,21 +10,9 @@ import type { AtlasBundle } from "./docs";
 import type { AtlasNode } from "@/types";
 import type { RemovedDoc } from "@/lib/previewPatch";
 import { cmpDocNo } from "@/lib/docNo";
+import { removedDocNode } from "@/lib/previewRemovedNode";
 import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
 
-function toNode(d: RemovedDoc, order: number): AtlasNode {
-  return {
-    id: d.id,
-    doc_no: d.doc_no,
-    title: d.title ?? "",
-    type: d.type ?? "",
-    depth: d.depth,
-    parentId: d.parentId,
-    content: d.content ?? "",
-    order,
-    addressRefs: [],
-  };
-}
 
 /** Where a removed document goes among its siblings: right after its anchor;
  *  first when it had no earlier sibling; and, should the anchor be missing
@@ -44,7 +32,7 @@ function place(d: RemovedDoc, docs: AtlasBundle["docs"], byParent: AtlasBundle["
   const siblings = [...(byParent.get(d.parentId) ?? [])];
   const at = indexFor(d, siblings);
   const order = at > 0 ? siblings[at - 1].order : d.parentId ? docs[d.parentId].order : -1;
-  const node = toNode(d, order);
+  const node = removedDocNode(d, order);
   siblings.splice(at, 0, node);
   byParent.set(d.parentId, siblings);
   docs[d.id] = node;

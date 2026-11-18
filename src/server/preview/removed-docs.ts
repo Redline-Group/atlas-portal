@@ -42,6 +42,15 @@ function anchor(id: string, siblings: AtlasNode[], parentId: string | null, remo
   return null;
 }
 
+/** The nearest base ancestor the reader shows: kept by the head, or removed
+ *  too. A parent can be neither when main already removed it (so it is not a
+ *  change, diff-artifacts.ts) while the child is still on main. */
+function shownParent(id: string, parentOf: Map<string, string | null>, removed: Set<string>, head: Snapshot): string | null {
+  let p = parentOf.get(id) ?? null;
+  while (p && !head.has(p) && !removed.has(p)) p = parentOf.get(p) ?? null;
+  return p;
+}
+
 /** The removed documents in base tree order (parents before children), each with its placement. */
 export function removedDocs(ids: string[], base: Snapshot, head: Snapshot): RemovedDoc[] {
   const removed = new Set(ids);
@@ -49,7 +58,7 @@ export function removedDocs(ids: string[], base: Snapshot, head: Snapshot): Remo
   const headParentOf = treeOf(head).parentOf;
   const docs = ids.map((id) => base.get(id)!).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   return docs.map((d) => {
-    const parentId = baseTree.parentOf.get(d.id) ?? null;
+    const parentId = shownParent(d.id, baseTree.parentOf, removed, head);
     return {
       id: d.id,
       doc_no: d.doc_no,

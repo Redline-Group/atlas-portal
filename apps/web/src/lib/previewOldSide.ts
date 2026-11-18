@@ -7,15 +7,16 @@
 import type { PreviewBaseKey } from "./previewMetaCopy";
 import type { BeforeEntry, RemovedDoc } from "@/lib/previewPatch";
 
-/** `<stem>.<key>.json`, else `<stem>.json`, else null. */
-export async function fetchKeyed<T>(base: string, stem: string, key: PreviewBaseKey | null): Promise<T | null> {
-  const plain = () => fetch(`${base}${stem}.json`).then((r) => (r.ok ? (r.json() as Promise<T>) : null));
+/** `<stem>.<key>.json`, else `<stem>.json`, else null; `usedKey` is the key
+ *  of the file that answered (null for the plain one). */
+export async function fetchKeyed<T>(base: string, stem: string, key: PreviewBaseKey | null): Promise<{ value: T | null; usedKey: PreviewBaseKey | null }> {
+  const plain = () => fetch(`${base}${stem}.json`).then((r) => ({ value: r.ok ? (r.json() as Promise<T>) : null, usedKey: null }));
   try {
-    if (!key) return await plain();
-    const keyed = await fetch(`${base}${stem}.${key}.json`);
-    return keyed.ok ? ((await keyed.json()) as T) : await plain();
+    const keyed = key ? await fetch(`${base}${stem}.${key}.json`) : null;
+    const answered = keyed?.ok ? { value: keyed.json() as Promise<T>, usedKey: key } : await plain();
+    return { value: await answered.value, usedKey: answered.usedKey };
   } catch {
-    return null;
+    return { value: null, usedKey: null };
   }
 }
 
@@ -26,7 +27,7 @@ export function loadPreviewBefore(base: string, key: PreviewBaseKey | null): Pro
   const cacheKey = `${base}${key ?? ""}`;
   let p = beforeCache.get(cacheKey);
   if (!p) {
-    p = fetchKeyed<Record<string, BeforeEntry>>(base, "before", key).then((b) => b ?? {});
+    p = fetchKeyed<Record<string, BeforeEntry>>(base, "before", key).then((b) => b.value ?? {});
     beforeCache.set(cacheKey, p);
   }
   return p;
@@ -34,6 +35,6 @@ export function loadPreviewBefore(base: string, key: PreviewBaseKey | null): Pro
 
 /** removed.json for one base. Empty when the bundle has none (built before it was written). */
 export async function loadPreviewRemoved(base: string, key: PreviewBaseKey | null): Promise<RemovedDoc[]> {
-  const docs = await fetchKeyed<RemovedDoc[]>(base, "removed", key);
-  return Array.isArray(docs) ? docs : [];
+  const { value } = await fetchKeyed<RemovedDoc[]>(base, "removed", key);
+  return Array.isArray(value) ? value : [];
 }

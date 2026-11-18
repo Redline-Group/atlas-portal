@@ -36,8 +36,8 @@ vi.mock("../../hooks/usePulseDom", () => ({ usePulseDom: () => {} }));
 vi.mock("../../hooks/useRevealFlash", () => ({ useRevealFlash: () => new Set<string>() }));
 vi.mock("../../lib/previewFilter", () => ({
   usePreviewChangedSet: () => mocks.changedSet,
-  usePreviewDim: () => false,
   usePreviewFade: () => undefined,
+  useAnnotatedId: () => undefined,
 }));
 vi.mock("../../lib/previewDiff", () => ({ usePreviewDiff: () => mocks.diff }));
 vi.mock("../../lib/selectionFilter", () => ({ useSelectionSet: () => mocks.selectionSet }));

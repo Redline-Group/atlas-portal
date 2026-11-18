@@ -5,13 +5,15 @@ import { usePreviewView } from "./previewView";
 import { filterPreviewDocs } from "./previewFilters";
 import { changeKind } from "./previewChangeKind";
 
-// In preview mode, true for docs the branch did NOT touch — so the reader/tree
-// can very slightly dim them, making the changed/added docs (full strength)
-// subtly stand out even in "All" view. No-op outside preview.
-export function usePreviewDim(nodeId: string): boolean {
-  const { preview } = useDataSource();
-  const diff = usePreviewDiff();
-  return !!preview && !changeKind(diff, nodeId);
+/** The id of the document an Annotation annotates, given its target doc
+ *  number. The target is known by NUMBER; a removed annotation's number is the
+ *  base's, which the preview's numbering may give to another document, so it
+ *  takes the parent it was placed under instead: the tree hangs an annotation
+ *  on the document it annotates (atlasTree.ts). */
+export function useAnnotatedId(node: { id: string; parentId: string | null }, annotates: string | null, docNoToId?: Map<string, string>): string | undefined {
+  const { removed } = usePreviewDiff();
+  if (!annotates) return undefined;
+  return removed?.has(node.id) ? (node.parentId ?? undefined) : docNoToId?.get(annotates);
 }
 
 /** A removed document is drawn this faint, whole: number, title, body and metadata. */

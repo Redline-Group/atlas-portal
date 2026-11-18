@@ -4,6 +4,7 @@
 // dismissed-repo storage in previewAccessDismissed.ts; this module re-exports
 // all three so importers keep one path.
 import type { ActiveBase, CompareParts, PreviewBaseKey, PreviewMeta } from "./previewMetaTypes";
+import { forkPointOf } from "@/lib/previewForkPoint";
 
 export type {
   ActiveBase,
@@ -21,10 +22,8 @@ export { dismissAccessRepo, readDismissedAccessRepos } from "./previewAccessDism
  *  (short) and its date. Null for the live-main fallback, which compares to
  *  main as it is now, and for a bundle that recorded no merge base. */
 export function forkPoint(meta: PreviewMeta, active: ActiveBase | null): { sha: string; date?: string } | null {
-  const key = active?.key ?? meta.bases?.auto ?? null;
-  if (key !== "sky" && key !== "repo") return null;
-  const cand = meta.bases?.[key];
-  return cand?.mergeBase ? { sha: cand.mergeBase.slice(0, 7), date: cand.mergeBaseDate } : null;
+  const fork = forkPointOf(meta.bases, active?.key);
+  return fork ? { sha: fork.sha, date: fork.date } : null;
 }
 
 /** The PR number digits in a `pull-N` ref (a Contents-only private PR), else null. */

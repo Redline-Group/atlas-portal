@@ -38,16 +38,18 @@ export function usePreviewPatch(nodeId: string): DiffLine[] | null {
   const diff = usePreviewDiff();
   const key: PreviewBaseKey | null =
     diff.activeBase?.key === "sky" || diff.activeBase?.key === "repo" ? diff.activeBase.key : null;
-  const [lines, setLines] = useState<DiffLine[] | null>(null);
+  // Keyed by the document they belong to, so another document's lines are
+  // never shown while this one's load.
+  const [state, setState] = useState<{ id: string; lines: DiffLine[] | null } | null>(null);
   useEffect(() => {
-    if (!preview || !changeKind(diff, nodeId)) return setLines(null);
+    if (!preview || !changeKind(diff, nodeId)) return setState(null);
     let live = true;
     Promise.all([loadPreviewBefore(base, key), loadAtlas(base)])
-      .then(([before, atlas]) => live && setLines(patchOf(nodeId, diff, before, atlas.docs)))
-      .catch(() => live && setLines(null));
+      .then(([before, atlas]) => live && setState({ id: nodeId, lines: patchOf(nodeId, diff, before, atlas.docs) }))
+      .catch(() => live && setState(null));
     return () => {
       live = false;
     };
   }, [base, preview, nodeId, key, diff]);
-  return lines;
+  return state?.id === nodeId ? state.lines : null;
 }

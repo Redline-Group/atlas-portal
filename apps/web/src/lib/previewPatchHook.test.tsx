@@ -67,6 +67,16 @@ describe("usePreviewPatch", () => {
     expect(result.current![1][0]).toBe("~");
   });
 
+  it("never shows the previous document's lines while the next one loads", async () => {
+    diff = base({ changed: new Set(["n1", "n2"]) });
+    loadBefore.mockResolvedValueOnce({ n1: { doc_no: "A.1", title: "One", type: "Core", content: "old body" } });
+    const { result, rerender } = renderHook(({ id }) => usePreviewPatch(id), { initialProps: { id: "n1" } });
+    await waitFor(() => expect(result.current).not.toBeNull());
+    loadBefore.mockReturnValueOnce(new Promise(() => {}));
+    rerender({ id: "n2" });
+    expect(result.current).toBeNull();
+  });
+
   it("reads the keyed before file for the active base", async () => {
     diff = base({ changed: new Set(["n1"]), activeBase: { key: "repo", repo: "a/b", ref: "main", auto: true } });
     loadBefore.mockResolvedValue({});

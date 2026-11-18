@@ -10,6 +10,7 @@ import type { DiffLine, WordSegment } from "../../lib/history";
 import { previewPaths } from "./cache.ts";
 import type { PreviewDiffJson } from "./diff-artifacts.ts";
 import { beforeDoc, previewPatch, type BeforeEntry, type PatchDoc, type RemovedDoc } from "../../lib/previewPatch.ts";
+import { removedDocNode } from "../../lib/previewRemovedNode.ts";
 
 export interface PreviewDocs {
   byId: Map<string, AtlasNode>;
@@ -48,7 +49,15 @@ export function loadPreviewDocs(sha: string): PreviewDocs {
   return docs;
 }
 
-export const readPreviewDiff = (sha: string): PreviewDiffJson | null => readJson<PreviewDiffJson>(sha, "diff.json");
+/** diff.json with the identity verdict by meaning (identity.json, written
+ *  after the build) laid over it, as the reader lays it, so the tools and the
+ *  reader mark and redline the same swaps. */
+export function readPreviewDiff(sha: string): PreviewDiffJson | null {
+  const diff = readJson<PreviewDiffJson>(sha, "diff.json");
+  const verdict = diff && readJson<Partial<Pick<PreviewDiffJson, "identitySwap" | "formerUuid">>>(sha, "identity.json");
+  if (!diff || !verdict) return diff;
+  return { ...diff, identitySwap: verdict.identitySwap ?? diff.identitySwap, formerUuid: verdict.formerUuid ?? diff.formerUuid };
+}
 
 /** The old side of the auto diff: each changed document's base fields and each removed document. */
 export interface PreviewOldSide {
@@ -56,16 +65,22 @@ export interface PreviewOldSide {
   removed: Map<string, RemovedDoc>;
 }
 
+// before.json and removed.json can run to megabytes, and a review asks about
+// one preview several times in a row: keep the last couple parsed, like docs.json.
+const oldSideCache = createCache<PreviewOldSide>({ max: DOCS_CACHE_MAX, lru: true });
+
 export function readPreviewOldSide(sha: string): PreviewOldSide {
+  const hit = oldSideCache.get(sha);
+  if (hit) return hit;
   const removed = readJson<RemovedDoc[]>(sha, "removed.json") ?? [];
-  return { before: readJson<Record<string, BeforeEntry>>(sha, "before.json") ?? {}, removed: new Map(removed.map((d) => [d.id, d])) };
+  const old = { before: readJson<Record<string, BeforeEntry>>(sha, "before.json") ?? {}, removed: new Map(removed.map((d) => [d.id, d])) };
+  oldSideCache.set(sha, old);
+  return old;
 }
 
 /** A removed document as a node, so a tool can read it the way the reader
  *  shows it: in place under its parent, which may itself be removed. */
-export function removedNode(d: RemovedDoc): AtlasNode {
-  return { id: d.id, doc_no: d.doc_no, title: d.title ?? "", type: d.type ?? "", depth: d.depth, parentId: d.parentId, content: d.content ?? "", order: 0, addressRefs: [] };
-}
+export const removedNode = (d: RemovedDoc): AtlasNode => removedDocNode(d, 0);
 
 /** A changed document's text on the diff base (where the branch left it), or
  *  undefined when before.json has no entry for it. */

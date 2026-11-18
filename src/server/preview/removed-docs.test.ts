@@ -54,6 +54,11 @@ describe("removedDocs", () => {
     expect(removedDocs(["y"], deep, head)[0]).toMatchObject({ parentId: "m", after: "x" });
   });
 
+  test("a removed doc whose parent is not shown (main already removed it) hangs on the nearest shown ancestor", () => {
+    const tree = snap(node("p", "A.1.1", 0), node("x", "A.1.1.1", 1, "p"), node("y", "A.1.1.1.1", 2, "x"));
+    expect(removedDocs(["y"], tree, snap(node("p", "A.1.1", 0)))[0].parentId).toBe("p");
+  });
+
   test("a removed subtree keeps its removed parent", () => {
     const tree = snap(node("p", "A.1.1", 0), node("x", "A.1.1.1", 1, "p"), node("y", "A.1.1.1.1", 2, "x"));
     const out = removedDocs(["y", "x"], tree, snap(node("p", "A.1.1", 0)));
