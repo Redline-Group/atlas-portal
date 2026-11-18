@@ -14,7 +14,14 @@ export const PREVIEW_SOURCE_CLASS = "preview";
 export const CITATION_NOTE =
   "This is PROPOSED text from a PR preview, not the live Atlas. Cite a preview document with its `cite` link " +
   "([title](/preview/<sha>/atlas?id=<uuid>)), never /atlas/<uuid> — an added document does not exist in the live Atlas. " +
-  "Cite live documents (removed ones, or live siblings you compare against) with /atlas/<uuid> as usual.";
+  "A document the PR removes has a preview `cite` link too: the preview shows it where it stood. " +
+  "Cite live documents you compare against (siblings you read with atlas_get) with /atlas/<uuid> as usual.";
+
+/** What `main_also_changed` means, for both preview tools. */
+export const MAIN_ALSO_CHANGED_NOTE =
+  "main_also_changed marks a document main has changed since the branch was cut: main's current text " +
+  "differs from the patch's old side (and `base`), which is where the branch left it. Each patch shows only " +
+  "this PR's own edits; read main's current text with atlas_get.";
 
 export function previewHeader(meta: PreviewMeta, id: string) {
   return {

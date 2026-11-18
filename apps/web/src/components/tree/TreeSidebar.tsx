@@ -8,7 +8,7 @@ import { realDepth, segmentDepths, depthColor } from "@/lib/depth";
 import { CASCADE_LEVELS } from "../../lib/treeCascade";
 import { revealStore } from "../../lib/revealStore";
 import { scrollRequestStore } from "../../lib/scrollRequestStore";
-import { usePreviewChangedSet } from "../../lib/previewFilter";
+import { changedIds, usePreviewChangedSet } from "../../lib/previewFilter";
 import { usePreviewDiff } from "../../lib/previewDiff";
 import { useSelectionSet } from "../../lib/selectionFilter";
 import { buildSelectedOnlyNodes, selectedDescendantRunEnd } from "../../lib/selectedTree";
@@ -173,7 +173,7 @@ export function TreeSidebar({ nodeId, onNavigate, onShiftNavigate }: Props) {
   const rollup = useMemo(() => {
     const m = new Map<string, { count: number; depth: number }>();
     if (!bundle || !isPreview || changedSet) return m;
-    for (const id of [...diff.added, ...diff.changed]) {
+    for (const id of changedIds(diff)) {
       const node = bundle.docs[id];
       if (!node) continue;
       // Colour depth must match the chiclet the row shows. NR-X nodes carry no
@@ -204,7 +204,7 @@ export function TreeSidebar({ nodeId, onNavigate, onShiftNavigate }: Props) {
 
   // Flash each changed/new doc when it becomes visible because an ancestor was
   // expanded (manual toggle or the staggered reveal) — see useRevealFlash.
-  const flashIds = useMemo(() => new Set([...diff.added, ...diff.changed]), [diff]);
+  const flashIds = useMemo(() => changedIds(diff), [diff]);
   const flashing = useRevealFlash(flashIds, parentOf, expandedIds, isPreview && !!bundle && !changedSet);
 
   const visibleNodes = useMemo(() => {

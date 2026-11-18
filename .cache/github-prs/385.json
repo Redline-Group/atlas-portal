@@ -1,0 +1,10 @@
+{
+  "number": 385,
+  "title": "Prime Artifact Housekeeping - Add Spark's, Grove's, and Keel's Starguard addresses",
+  "body": "Add Spark's and Grove's Starguard addresses as per:\n\n- https://vote.sky.money/executive/template-executive-vote-launch-starguards-october-monthly-settlement-cycle-and-treasury-management-function-october-ranked-delegate-compensation-atlas-core-development-compensation-payment-to-gnosis-add-allocator-obex-a-to-sp-beam-prime-agent-proxy-spells-november-27-2025\n- https://vote.sky.money/executive/template-executive-vote-initialize-kicker-recalibrate-smart-burn-engine-initialize-lssky-to-sky-farm-initialize-spark-starguard-fund-core-council-multisigs-fund-integration-boost-multisig-adjust-stusds-beam-step-parameters-execute-prime-agent-proxy-spells-october-30-2025\n- https://vote.sky.money/executive/template-executive-vote-launch-starguards-october-monthly-settlement-cycle-and-treasury-management-function-october-ranked-delegate-compensation-atlas-core-development-compensation-payment-to-gnosis-add-allocator-obex-a-to-sp-beam-prime-agent-proxy-spells-november-27-2025\n\n@VoteWizard ",
+  "author": "blimpa",
+  "url": "https://github.com/sky-ecosystem/next-gen-atlas/pull/385",
+  "commentCount": 0,
+  "reviewCount": 1,
+  "approvalCount": 1
+}

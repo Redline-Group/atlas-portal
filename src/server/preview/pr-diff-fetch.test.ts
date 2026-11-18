@@ -51,6 +51,17 @@ test("skyCandidate public: compares the served atlasCommit against the bare head
   expect(canonicalGh.calls).toEqual(["/repos/sky-ecosystem/next-gen-atlas/compare/atlas123...headsha"]);
 });
 
+test("skyCandidate: records the merge-base commit's date from the same compare", async () => {
+  const canonicalGh = fakeGh({
+    "/repos/sky-ecosystem/next-gen-atlas/compare/atlas123...headsha": {
+      json: { merge_base_commit: { sha: "mb", commit: { committer: { date: "2026-10-01T12:00:00Z" } } } },
+    },
+  });
+  const resolved: Resolved = { repo: "r", sha: "headsha", kind: "branch", ref: "spark" };
+  const c = await skyCandidate(resolved, { canonicalGh, repoGh: fakeGh({}), priv: false, atlasCommit: "atlas123" });
+  expect(c?.mergeBaseDate).toBe("2026-10-01T12:00:00Z");
+});
+
 test("skyCandidate public: no atlasCommit falls back to COMPARE_BASE (main)", async () => {
   const canonicalGh = fakeGh({
     "/repos/sky-ecosystem/next-gen-atlas/compare/main...headsha": { json: { merge_base_commit: { sha: "mb" } } },

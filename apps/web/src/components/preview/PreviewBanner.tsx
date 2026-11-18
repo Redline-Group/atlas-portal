@@ -4,6 +4,7 @@ import { usePreviewMeta } from "../../lib/previewMeta";
 import { previewKind, previewTabTitle, type PreviewMeta } from "../../lib/previewMetaCopy";
 import { PreviewExitLink, PreviewIndexLink, PreviewSourceLink } from "./PreviewBannerLinks";
 import { PreviewBaseSwitchLink, PreviewCompareStatement } from "./PreviewCompare";
+import { PreviewAlreadyOnMain } from "./PreviewAlreadyOnMain";
 import { PreviewKindChip } from "./PreviewKindChip";
 import { PreviewNotices, usePreviewNotices } from "./PreviewNotices";
 import {
@@ -37,6 +38,7 @@ export function PreviewBanner({ onTabTitle }: { onTabTitle?: (title: string | nu
         <PreviewIndexLink />
         <PreviewKindChip meta={meta} />
         <PreviewCompareStatement meta={meta} />
+        <PreviewAlreadyOnMain />
         <PreviewBaseSwitchLink meta={meta} />
         <PreviewTrustWarning meta={meta} />
         <PreviewNewAddressesWarning meta={meta} />

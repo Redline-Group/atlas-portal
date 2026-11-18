@@ -1,4 +1,5 @@
 import type { PreviewDiff } from "./previewDiff";
+import { changedIds } from "./previewChangeKind";
 
 // The preview tree filters: one self-describing entry per filter. The filter
 // menu, its counts, the `?change=` URL param and the filtered doc set all read
@@ -6,16 +7,16 @@ import type { PreviewDiff } from "./previewDiff";
 //
 // Filters in the same group combine by OR, groups combine by AND, and a group
 // with nothing ticked does not narrow. Nothing ticked at all is "Changed only":
-// every doc the preview adds or changes.
+// every doc the preview adds, changes or removes.
 //
-// New and Edited split that set in two, so the kind group is `exhaustive`:
-// the menu shows both ticked when neither is stored (previewFilterTicks.ts).
+// New, Edited and Removed split that set, so the kind group is `exhaustive`:
+// the menu shows them all ticked when none is stored (previewFilterTicks.ts).
 //
 // An `exclude` filter, ticked, removes its docs from whatever the rest keep.
 // "Renumber-only changes" is one, so the doc-number-only changes Edited counts
 // can be hidden.
 
-export const PREVIEW_FILTER_IDS = ["new", "edited", "no-renumbered", "retitled", "identity-swap", "reused-slot"] as const;
+export const PREVIEW_FILTER_IDS = ["new", "edited", "removed", "no-renumbered", "retitled", "identity-swap", "reused-slot", "main-also-changed"] as const;
 export type PreviewFilterId = (typeof PREVIEW_FILTER_IDS)[number];
 
 export const PREVIEW_FILTER_GROUPS = [
@@ -54,6 +55,14 @@ export const PREVIEW_FILTERS: readonly PreviewFilterDef[] = [
     ids: (d) => d.changed,
   },
   {
+    id: "removed",
+    group: "kind",
+    label: "Removed",
+    glyph: "−",
+    description: "Documents this preview removes, shown faint where they stood",
+    ids: (d) => d.removed ?? null,
+  },
+  {
     id: "no-renumbered",
     group: "exclude",
     exclude: true,
@@ -80,6 +89,14 @@ export const PREVIEW_FILTERS: readonly PreviewFilterDef[] = [
     description: "A new document at a doc number another document held",
     ids: (d) => keys(d.reusedSlot),
   },
+  {
+    id: "main-also-changed",
+    group: "flag",
+    label: "Main also changed",
+    glyph: "≠",
+    description: "Main has changed the document since the branch was cut",
+    ids: (d) => d.mainAlsoChanged ?? null,
+  },
 ];
 
 export interface PreviewFilterPreset {
@@ -89,7 +106,7 @@ export interface PreviewFilterPreset {
 }
 
 export const PREVIEW_FILTER_PRESETS: readonly PreviewFilterPreset[] = [
-  { label: "Changed only", description: "Every document this preview adds or changes", filters: [] },
+  { label: "Changed only", description: "Every document this preview adds, changes or removes", filters: [] },
 ];
 
 function sameFilters(a: readonly PreviewFilterId[], b: readonly PreviewFilterId[]): boolean {
@@ -117,7 +134,7 @@ export function describeFilters(selected: readonly PreviewFilterId[]): string {
 
 /** The doc ids the selected filters keep, in no particular order. */
 export function filterPreviewDocs(diff: PreviewDiff, selected: readonly PreviewFilterId[]): Set<string> {
-  let kept = new Set<string>([...diff.added, ...diff.changed]);
+  let kept = changedIds(diff);
   for (const group of PREVIEW_FILTER_GROUPS) {
     const picked = PREVIEW_FILTERS.filter((f) => f.group === group.id && !f.exclude && selected.includes(f.id));
     if (!picked.length) continue;

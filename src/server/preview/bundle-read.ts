@@ -7,8 +7,10 @@ import path from "node:path";
 import type { AtlasNode } from "../../types.ts";
 import { createCache } from "../ttl-cache.ts";
 import type { DiffLine, WordSegment } from "../../lib/history";
+import { trimContext } from "../../lib/diffCore.ts";
 import { previewPaths } from "./cache.ts";
 import type { PreviewDiffJson } from "./diff-artifacts.ts";
+import { previewPatch, type BeforeEntry, type RemovedDoc } from "../../lib/previewPatch.ts";
 
 export interface PreviewDocs {
   byId: Map<string, AtlasNode>;
@@ -47,28 +49,73 @@ export function loadPreviewDocs(sha: string): PreviewDocs {
   return docs;
 }
 
-export const readPreviewDiff = (sha: string): PreviewDiffJson | null => readJson<PreviewDiffJson>(sha, "diff.json");
+/** diff.json with the identity verdict by meaning (identity.json, written
+ *  after the build) laid over it, as the reader lays it, so the tools and the
+ *  reader mark and redline the same swaps. */
+export function readPreviewDiff(sha: string): PreviewDiffJson | null {
+  const diff = readJson<PreviewDiffJson>(sha, "diff.json");
+  const verdict = diff && readJson<Partial<Pick<PreviewDiffJson, "identitySwap" | "formerUuid">>>(sha, "identity.json");
+  if (!diff || !verdict) return diff;
+  return { ...diff, identitySwap: verdict.identitySwap ?? diff.identitySwap, formerUuid: verdict.formerUuid ?? diff.formerUuid };
+}
 
-export const readPreviewPatches = (sha: string): Record<string, DiffLine[]> =>
-  readJson<Record<string, DiffLine[]>>(sha, "patches.json") ?? {};
+/** The old side of the auto diff: each changed document's base fields and each removed document. */
+export interface PreviewOldSide {
+  before: Record<string, BeforeEntry>;
+  removed: Map<string, RemovedDoc>;
+}
+
+// before.json and removed.json can run to megabytes, and a review asks about
+// one preview several times in a row: keep the last couple parsed, like docs.json.
+const oldSideCache = createCache<PreviewOldSide>({ max: DOCS_CACHE_MAX, lru: true });
+
+export function readPreviewOldSide(sha: string): PreviewOldSide {
+  const hit = oldSideCache.get(sha);
+  if (hit) return hit;
+  const removed = readJson<RemovedDoc[]>(sha, "removed.json") ?? [];
+  const old = { before: readJson<Record<string, BeforeEntry>>(sha, "before.json") ?? {}, removed: new Map(removed.map((d) => [d.id, d])) };
+  oldSideCache.set(sha, old);
+  return old;
+}
+
+/** One document's redline, built the way the reader builds it (src/lib/previewPatch.ts). */
+export function previewPatchFor(
+  id: string,
+  kind: "added" | "changed" | "removed",
+  diff: PreviewDiffJson,
+  docs: PreviewDocs,
+  old: PreviewOldSide,
+): DiffLine[] {
+  const { formerUuid, identitySwap } = diff;
+  return previewPatch(id, kind, { formerUuid, identitySwap, before: old.before, doc: (d) => docs.byId.get(d), removed: (d) => old.removed.get(d) });
+}
 
 /** A patch as plain text lines a model reads: "+ added", "- removed", "…" for
- *  elided context. An in-line edit is written as the whole old line then the
- *  whole new line: word-level markup splits values ("2,[-504-]{+693+}" reads as
- *  504 → 693 when the value went 2,504 → 2,693), and a model quotes what it reads. */
+ *  a run of unchanged lines between two changes (a patch carries the whole
+ *  document; a model needs only what changed). An in-line edit is written as
+ *  the whole old line then the whole new line: word-level markup splits values
+ *  ("2,[-504-]{+693+}" reads as 504 → 693 when the value went 2,504 → 2,693),
+ *  and a model quotes what it reads. Past `max` rendered lines, the rest is
+ *  summarised as a count of the changed lines left out. */
 export function renderPatch(lines: DiffLine[], max: number): string[] {
+  // Changed lines only, "…" between separate changes (diffCore's trimContext with no context).
+  const changes = trimContext(lines, 0);
   const out: string[] = [];
-  for (const l of lines) {
+  for (let i = 0; i < changes.length; i++) {
+    const l = changes[i];
     if (out.length >= max) {
-      out.push(`… (${lines.length - max} more lines)`);
+      out.push(`… (${changedLines(changes.slice(i))} more lines)`);
       break;
     }
     if (l[0] === "…") out.push("…");
     else if (l[0] === "~") out.push(`- ${sideOf(l[1], "-")}`, `+ ${sideOf(l[1], "+")}`);
-    else if (l[0] !== "=") out.push(`${l[0]} ${l[1]}`);
+    else out.push(`${l[0]} ${l[1]}`);
   }
   return out;
 }
+
+const changedLines = (lines: DiffLine[]): number =>
+  lines.reduce((n, l) => n + (l[0] === "~" ? 2 : l[0] === "+" || l[0] === "-" ? 1 : 0), 0);
 
 /** One side of an in-line edit: the unchanged words plus that side's own. */
 function sideOf(segments: WordSegment[], side: "-" | "+"): string {

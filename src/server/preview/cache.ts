@@ -84,14 +84,15 @@ export interface PreviewMeta {
    *  `sky` = merge base with sky-ecosystem/next-gen-atlas:main (the fork
    *  point); `repo` = merge base with the head repo's own base (the PR's base
    *  branch, or the fork's default branch). The build writes one
-   *  diff.<key>.json + patches.<key>.json pair per candidate; `auto` names the
-   *  pair also copied to diff.json / patches.json. "live-main" = degraded: no
+   *  diff/before/removed.<key>.json set per candidate; `auto` names the set
+   *  also copied to the plain diff.json / before.json / removed.json. "live-main" = degraded: no
    *  candidate could be resolved and the redline is vs the served atlas. */
   bases?: PreviewBases;
-  /** Size of the automatic pair's doc list (diff.json). Persisted to the
+  /** Size of the auto diff set's doc lists (diff.json). Persisted to the
    *  previews row with the base it was computed against — see
-   *  diff-base-record.ts. Absent when the diff artifacts were skipped. */
-  diffCounts?: { added: number; changed: number };
+   *  diff-base-record.ts. Absent when the diff artifacts were skipped;
+   *  `removed` is absent on bundles built before it was counted. */
+  diffCounts?: { added: number; changed: number; removed?: number };
 }
 
 export type BaseKey = "sky" | "repo";
@@ -100,6 +101,9 @@ export interface BaseCandidateMeta {
   repo: string;
   ref: string;
   mergeBase: string;
+  /** The merge-base commit's committer date (ISO 8601), from the same compare.
+   *  Absent when the compare gave none. */
+  mergeBaseDate?: string;
   /** From GitHub's compare of the base ref vs the head (commits the head adds /
    *  commits on the base the head lacks). Absent when the compare gave none. */
   aheadBy?: number;

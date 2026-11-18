@@ -35,6 +35,10 @@
 
 ## 2026-11-18
 
+- Preview diffs now show the whole old and new document, starting with its heading line (number, title, type and UUID).
+- Preview diffs now show only the branch's own edits, not changes made on main after it was cut, and the banner counts any changes main already has.
+- Previews now show removed documents in place, faint and marked with a −, with a Removed option in the Filter menu.
+- Previews now name the commit and date where the branch left main, and mark documents main has changed since with a ≠.
 - Added Scope and Executor agent filters to the Potential Mistakes report.
 - Hid Potential Mistakes findings whose quoted text has since been changed in the Atlas.
 

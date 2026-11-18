@@ -172,19 +172,12 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
-          # public/addresses.json + .cache/etherscan are refreshed by the
-          # address step above (no-op when ETHERSCAN_API_KEY is absent, so the
-          # add is harmless then). Keeping them in the bump commit prevents
-          # addresses.json from drifting out of sync with docs.json over time.
-          # .cache/github-prs holds the PR records fetched by the step above
-          # (nothing to add when that step was skipped or found none). They are
-          # committed because build:history must also run where nothing can
-          # fetch them: a `pnpm dev` preflight offline, and the canary job.
-          git add vendor/next-gen-atlas graph-snapshots/__snapshots__ \
-            .github/atlas-census-baseline.json .github/govops-census-baseline.json \
-            .github/risk-census-baseline.json .github/concepts-census-baseline.json \
-            .github/chains-census-baseline.json \
-            public/addresses.json .cache/etherscan .cache/github-prs
+          # The paths a bump commits are declared once, in
+          # scripts/lib/atlas-bump.ts, which says why each is here. The E2E
+          # gate and atlas-bump-merge.yml read the same list to recognise a
+          # pull request that is only a bump. Adding an unchanged path is a
+          # no-op (the address refresh writes nothing without ETHERSCAN_API_KEY).
+          bun scripts/aux/atlas-bump-paths.ts | xargs git add --
           git commit -m "chore: bump atlas submodule → ${SHORT}"
           git push origin "$BRANCH" --force
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
@@ -213,6 +206,10 @@ jobs:
               --base main \
               --head "$BRANCH"
             PR_NUM=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+            # Auto-merge waits on every required check, the Railway deployment
+            # included, which a bump never gets; atlas-bump-merge.yml merges it
+            # once CI passes. Auto-merge stays on so a bump still merges by
+            # itself wherever nothing requires that deployment.
             gh pr merge "$PR_NUM" --auto --rebase
             echo "Opened PR #${PR_NUM} with auto-merge (rebase) enabled."
           fi

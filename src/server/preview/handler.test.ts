@@ -1463,7 +1463,7 @@ test("identity.json: 202 while the verdict is being made, the file once written,
     expect(pending.headers.get("retry-after")).toBe("2");
     expect(await pending.json()).toEqual({ status: "pending" });
     // Only the identity files answer 202. Any other missing file is a 404.
-    expect((await call(`/api/preview/${SHA_IDENTITY}/patches.json`)).status).toBe(404);
+    expect((await call(`/api/preview/${SHA_IDENTITY}/before.json`)).status).toBe(404);
 
     fs.writeFileSync(path.join(previewPaths(SHA_IDENTITY).outDir, "identity.json"), JSON.stringify({ identitySwap: { x: { oldTitle: "A", newTitle: "B" } }, formerUuid: {} }));
     const done = await call(url);

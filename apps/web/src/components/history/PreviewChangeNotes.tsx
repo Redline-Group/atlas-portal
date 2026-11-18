@@ -3,6 +3,7 @@ import { isReassigned } from "../../lib/identitySwap";
 import { diffBaseLabel, type PreviewMeta } from "../../lib/previewMetaCopy";
 import { CHANGE_LABEL } from "@/lib/changeTypes";
 import { DocNoDiff, TypeDiff } from "./ChangePair";
+import { MAIN_ALSO_CHANGED } from "../preview/PreviewMainAlsoChanged";
 
 // The ⚠ glyph renders small for its weight next to 11px mono — size it up 25%.
 export const WARN_GLYPH = { fontSize: "1.25em" };
@@ -12,7 +13,7 @@ interface PreviewChangeNotesProps {
   meta: PreviewMeta | null;
   source: string;
   hasPatch: boolean;
-  status: "Added" | "Changed";
+  status: "Added" | "Changed" | "Removed";
 }
 
 /** What the preview diff says about one doc's identity, number and title. */
@@ -22,11 +23,11 @@ function docChanges(diff: PreviewDiff, nodeId: string) {
     // this doc holds content that used to live under another UUID (former).
     swap: diff.identitySwap[nodeId],
     former: diff.formerUuid[nodeId],
-    // A changed doc that moved: same UUID, new doc number ([live, preview]).
+    // A changed doc that moved: same UUID, new doc number ([base, preview]).
     renumber: diff.renumbered[nodeId],
-    // A changed doc whose title differs from the live atlas.
+    // A changed doc whose title differs from the diff base.
     retitle: diff.retitled[nodeId],
-    // A changed doc whose [Type] differs ([live, preview]).
+    // A changed doc whose [Type] differs ([base, preview]).
     retype: diff.retyped[nodeId],
   };
 }
@@ -38,12 +39,12 @@ function docChanges(diff: PreviewDiff, nodeId: string) {
 // on purpose: the cause may be main having caught up with the branch's edit,
 // a raw-only edit the parser normalises away, or a hash-only change — the
 // client can't tell these apart, and a bare "Changed" heading with nothing
-// under it reads as a bug. A title change is not a note: PreviewDocDiff
-// shows it as a word diff above the body diff.
+// under it reads as a bug. A title change is not a note: the patch's heading
+// line shows it inside the diff box.
 export function PreviewChangeNotes({ nodeId, meta, source, hasPatch, status }: PreviewChangeNotesProps) {
   const diff = usePreviewDiff();
   const { swap, former, renumber, retitle, retype } = docChanges(diff, nodeId);
-  // "the live atlas" or "{repo}:{ref}": what the redlines are compared against.
+  // "{repo}:{ref}" or "the live atlas": what the redlines are compared against.
   const label = diffBaseLabel(meta ?? {}, diff.activeBase ?? null);
   const silent = status === "Changed" && !hasPatch && !renumber && !retitle && !retype && !swap;
   return (
@@ -57,6 +58,11 @@ export function PreviewChangeNotes({ nodeId, meta, source, hasPatch, status }: P
       {retype && (
         <p className="mt-1" style={{ color: "var(--lilac)" }}>
           {CHANGE_LABEL.retyped} <TypeDiff prev={retype[0]} next={retype[1]} />
+        </p>
+      )}
+      {diff.mainAlsoChanged?.has(nodeId) && (
+        <p className="mt-1" style={{ color: "var(--tan-3)" }}>
+          ≠ {MAIN_ALSO_CHANGED}
         </p>
       )}
       {silent && (

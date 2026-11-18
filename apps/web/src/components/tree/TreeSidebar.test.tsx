@@ -34,9 +34,10 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../../hooks/useAtlasTree", () => ({ useAtlasTree: () => mocks.bundle }));
 vi.mock("../../hooks/usePulseDom", () => ({ usePulseDom: () => {} }));
 vi.mock("../../hooks/useRevealFlash", () => ({ useRevealFlash: () => new Set<string>() }));
-vi.mock("../../lib/previewFilter", () => ({
+vi.mock("../../lib/previewFilter", async () => ({
+  changedIds: (await import("../../lib/previewChangeKind")).changedIds,
   usePreviewChangedSet: () => mocks.changedSet,
-  usePreviewDim: () => false,
+  usePreviewFade: () => undefined,
 }));
 vi.mock("../../lib/previewDiff", () => ({ usePreviewDiff: () => mocks.diff }));
 vi.mock("../../lib/selectionFilter", () => ({ useSelectionSet: () => mocks.selectionSet }));

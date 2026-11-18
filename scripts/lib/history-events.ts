@@ -8,7 +8,7 @@
  * where the commit came from, not to what it changed.
  */
 
-import { lineDiff } from "../../src/lib/diffCore.ts";
+import { capDiff, lineDiff } from "../../src/lib/diffCore.ts";
 import { CHANGE_TYPES, type ChangeType } from "../../src/lib/changeTypes.ts";
 import type { DiffLine } from "../../src/lib/history.ts";
 import type { GitSnapshot, GitSnapshotEntry } from "./atlas-git-parse.ts";
@@ -42,7 +42,9 @@ export interface EventDiff {
   movedTo?: string;
 }
 
-/** Lines past this are cut to a single "…" in an added or removed body. */
+/** Lines past this are cut to a single "…" in an added or removed body, unless
+ *  the caller passes its own `bodyMaxLines` (a preview's commit walk shows the
+ *  whole body). */
 const WHOLE_BODY_MAX_LINES = 20;
 
 /** prev → curr as seven lists. Only `added` and `removed` exclude the rest: a
@@ -73,9 +75,8 @@ export function snapshotEvents(d: ReturnType<typeof diffSnapshots>): SnapshotEve
   return CHANGE_TYPES.flatMap((changeType) => d[changeType].map((node) => ({ node, changeType })));
 }
 
-function wholeBody(text: string, sign: "+" | "-"): DiffLine[] {
-  const lines: DiffLine[] = text.split("\n").map((l) => [sign, l]);
-  return lines.length > WHOLE_BODY_MAX_LINES ? [...lines.slice(0, WHOLE_BODY_MAX_LINES), ["…"]] : lines;
+function wholeBody(text: string, sign: "+" | "-", max: number): DiffLine[] {
+  return capDiff(text.split("\n").map((l): DiffLine => [sign, l]), max);
 }
 
 function modifiedDiff(before: GitSnapshotEntry | undefined, after: GitSnapshotEntry | undefined, kindHint?: string | null): EventDiff {
@@ -96,17 +97,18 @@ export function eventDiff(
   ev: SnapshotEvent,
   prev: GitSnapshot,
   curr: GitSnapshot,
-  opts: { midHistory: boolean; kindHint?: string | null },
+  opts: { midHistory: boolean; kindHint?: string | null; bodyMaxLines?: number },
 ): EventDiff {
   const id = ev.node.id;
+  const max = opts.bodyMaxLines ?? WHOLE_BODY_MAX_LINES;
   if (ev.changeType === "modified") return modifiedDiff(prev.get(id), curr.get(id), opts.kindHint);
   if (ev.changeType === "added") {
     const body = curr.get(id)?.content ?? "";
-    return opts.midHistory && body ? { diff: wholeBody(body, "+") } : {};
+    return opts.midHistory && body ? { diff: wholeBody(body, "+", max) } : {};
   }
   if (ev.changeType === "removed") {
     const body = prev.get(id)?.content ?? "";
-    return body ? { diff: wholeBody(body, "-") } : {};
+    return body ? { diff: wholeBody(body, "-", max) } : {};
   }
   return { movedFrom: ev.node.movedFrom, movedTo: ev.node.movedTo };
 }

@@ -17,6 +17,10 @@ export interface AtlasNode {
   contentHash?: string;
   order: number; // parse order, used for sorting within a scope
   addressRefs: string[]; // normalized address keys; resolved via loadAddresses()
+  // A document a preview removes, put back in place (previewRemovedNode.ts).
+  // Its doc_no is the base's, which the preview's numbering may give to another
+  // document, so lookups go by parentId, which is placed from the reader's tree.
+  removed?: true;
 }
 
 export interface AddressInfo {

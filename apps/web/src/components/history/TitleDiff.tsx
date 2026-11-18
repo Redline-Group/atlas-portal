@@ -1,9 +1,7 @@
 import { useMemo } from "react";
-import type { DiffLine, WordSegment } from "@/lib/history";
+import type { WordSegment } from "@/lib/history";
 import { wordDiff } from "@/lib/diffCore";
 import { refineProseDiff } from "../../lib/diffProse";
-import { usePreviewDiff } from "../../lib/previewDiff";
-import { DiffView } from "./DiffView";
 import { IntralineDiff } from "./IntralineDiff";
 
 /** The title pair as one modified line, refined the way DiffView refines a
@@ -24,19 +22,5 @@ export function TitleDiff({ prev, next }: { prev: string; next: string }) {
       <span className="sr-only">Title changed: </span>
       <IntralineDiff segments={segments} className="whitespace-pre-wrap break-words" />
     </p>
-  );
-}
-
-/** The preview entry's diff: the title change, when there is one, right above
- *  the body diff box. An identity swap's paragraph already names both titles,
- *  so a swapped doc shows only the box. */
-export function PreviewDocDiff({ nodeId, patch }: { nodeId: string; patch: DiffLine[] | null | undefined }) {
-  const diff = usePreviewDiff();
-  const retitle = diff.retitled[nodeId];
-  return (
-    <>
-      {retitle && !diff.identitySwap[nodeId] && <TitleDiff prev={retitle[0]} next={retitle[1]} />}
-      {patch && patch.length > 0 && <DiffView lines={patch} />}
-    </>
   );
 }

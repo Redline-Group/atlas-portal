@@ -38,6 +38,19 @@ describe("PreviewMark", () => {
     expect(mark).toHaveTextContent("+");
   });
 
+  it("adds ≠ beside the change mark when main has also changed the doc", () => {
+    setDiff({ changed: new Set(["x"]), mainAlsoChanged: new Set(["x"]) });
+    render(<PreviewMark nodeId="x" />);
+    expect(screen.getByLabelText("changed in this preview")).toHaveTextContent("Δ");
+    expect(screen.getByLabelText("also changed on main since the branch was cut")).toHaveTextContent("≠");
+  });
+
+  it("renders − for a removed doc", () => {
+    setDiff({ removed: new Set(["x"]) });
+    render(<PreviewMark nodeId="x" />);
+    expect(screen.getByLabelText("removed in this preview")).toHaveTextContent("−");
+  });
+
   it("renders Δ for a changed doc", () => {
     setDiff({ changed: new Set(["x"]) });
     render(<PreviewMark nodeId="x" />);

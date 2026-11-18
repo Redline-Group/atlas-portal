@@ -28,6 +28,19 @@ export function annotatedDocNo(doc_no: string): string | null {
 }
 
 /** Type + numbering both have to agree before a row gets annotation treatment. */
+/** The id of the document an Annotation annotates, or undefined. Resolved by
+ *  its target doc number, except for a removed annotation, whose number is the
+ *  base's: the tree hangs an annotation on what it annotates, so it is the
+ *  parent it was placed under (AtlasNode.removed). */
+export function annotatedId(
+  node: { type: string; doc_no: string; parentId: string | null; removed?: true },
+  docNoToId?: Map<string, string>,
+): string | undefined {
+  const target = annotationTarget(node);
+  if (!target) return undefined;
+  return node.removed ? (node.parentId ?? undefined) : docNoToId?.get(target);
+}
+
 export function annotationTarget(node: { type: string; doc_no: string }): string | null {
   return node.type === "Annotation" ? annotatedDocNo(node.doc_no) : null;
 }

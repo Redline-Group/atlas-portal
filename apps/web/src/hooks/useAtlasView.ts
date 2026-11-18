@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useAtlasData, useLoaded } from "./useAtlasData";
+import { useDataWithRemoved } from "./usePreviewRemoved";
 import { useAtlasSelection } from "./useAtlasSelection";
 import { useNodeAnnotations } from "./useNodeAnnotations";
 import { useDocViewTracking } from "./useDocViewTracking";
@@ -24,8 +25,10 @@ function useReaderGraph(): GraphData | null {
 // load state, the graph-backed annotations, the breadcrumb chain, the per-doc
 // owning-agent pills, plus the doc_view analytics and the window title.
 export function useAtlasView(id: string, onNavigate: (id: string) => void) {
-  const load = useAtlasData();
-  const { data } = load;
+  const loaded = useAtlasData();
+  // In a preview, the documents it removed are read in place, faint (previewRemoved.ts).
+  const data = useDataWithRemoved(loaded.data);
+  const load = { ...loaded, data };
   const graph = useReaderGraph();
   const selection = useAtlasSelection(id, onNavigate);
   const annotations = useNodeAnnotations(id, data, graph);

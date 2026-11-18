@@ -1,7 +1,8 @@
 // What one branch commit did to each document, as rows the reader's history
 // tab renders. Built on the live history's own engine (history-events.ts), so a
-// commit row here means what it means on the live atlas, with one addition a
-// branch needs: a merge commit keeps only the documents where both sides' edits met.
+// commit row here means what it means on the live atlas, with two differences a
+// branch needs: a merge commit keeps only the documents where both sides' edits
+// met, and an added or removed document shows its whole body, never capped.
 
 import { diffSnapshots, eventDiff, snapshotEvents, type ChangeType, type EventDiff, type SnapshotEvent } from "../../../scripts/lib/history-events.ts";
 import type { GitSnapshot, GitSnapshotEntry } from "../../../scripts/lib/atlas-git-parse.ts";
@@ -36,7 +37,7 @@ function entryOf(ev: SnapshotEvent, prev: GitSnapshot, curr: GitSnapshot): Commi
   if (ev.changeType === "retitled") return { ...base, prevTitle: movedFrom };
   if (ev.changeType === "renumbered") return { ...base, prevDocNo: movedFrom };
   if (ev.changeType === "retyped") return { ...base, docType: type, prevDocType: movedFrom };
-  return { ...base, ...eventDiff(ev, prev, curr, { midHistory: true }) };
+  return { ...base, ...eventDiff(ev, prev, curr, { midHistory: true, bodyMaxLines: Infinity }) };
 }
 
 /** Every document event from `prev` to `curr`. */
