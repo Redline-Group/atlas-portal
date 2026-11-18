@@ -161,7 +161,7 @@ Review calls on top of the reviewers' verdicts:
 | 138 | A.6.1.1.6.2.6.1.3.1.2 River | grammar | Real | kept, severity high | A.6.1.1.6.2.6.1.3.1.2 has a stray 'deals' that breaks the sentence; sibling A.6.1.1.6.2.6.1.3.1.1 reads '... of the Maple Protocol with `Active` Status are stored herein.' |
 | 139 | A.6.1.1.7.2.1.1.4 In Progress Invocations Directory | structural | Real, re-filed | re-filed as `naming` | A.6.1.1.7.2.1.1.4 is titled like hub doc A.6.1.1.7.2.1.1.1.4; parallel A.6.1.1.7.2.1.2.4 is 'In Progress Invocations' (Osero's .1.3 already uses 'Completed Instances'). Title-only defect. |
 | 140 | A.6.1.1.7.2.5.1.2.2.2.1 Routine Protocol | copy-paste | False positive | rejected | 'customized to <Agent>' names the Agent, not the Instance, across every Prime. A.6.1.1.1.2.5.1.2.1.2.1 says 'customized to Spark' and all Osero instances say 'Osero', so 'Osero' is correct here. |
-| 141 | A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 Token | naming | Real | kept, severity low | Mainnet Token identifier A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 is all-lowercase 'ogusdcp' while the parallel Base Instance A.6.1.1.7.2.6.1.3.2.1.1.2.1.4 writes 'ogUSDCb'; on-chain symbol casing not verifiable from text. |
+| 141 | A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 Token | naming | Real → false positive (see addendum) | rejected | Mainnet Token identifier A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 is all-lowercase 'ogusdcp' while the parallel Base Instance A.6.1.1.7.2.6.1.3.2.1.1.2.1.4 writes 'ogUSDCb'; on-chain symbol casing not verifiable from text. |
 | 142 | A.6.1.1.8.2.1.1.1.3 Completed Instances | structural | Real, re-filed | re-filed as `naming`, severity high | Hub doc A.6.1.1.8.2.1.1.1.3 describes itself as a Directory yet is titled 'Completed Instances'; every other agent's hub slot (e.g. A.6.1.1.7.2.1.1.1.3) is 'Completed Instances Directory'. |
 | 143 | A.6.1.1.8.2.1.1.3 Completed Instances Directory | structural | Real, re-filed | re-filed as `naming` | A.6.1.1.8.2.1.1.3 holds the Instances (child is the Single Instance Configuration Document) but is titled 'Completed Instances Directory'; parallel A.6.1.1.8.2.1.2.3 is 'Completed Instances'. |
 | 144 | NR-7 Defining “Severe Actions Or Violations" And “Governance Attack” | markdown | Real | kept | The NR-7 title opens "Severe Actions Or Violations" with a curly quote and closes it with a straight quote; "Governance Attack" is correctly paired. |
@@ -1561,7 +1561,7 @@ Routine Protocol · A.6.1.1.1.2.5.1.2.1.2.1:
 
 **Action:** rejected.
 
-### 141. A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 Token — real
+### 141. A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 Token — false positive (see addendum)
 
 Sweep id `A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming` (`be9ca01f-1675-4d83-80af-b80789c3bd6f`), factual pass, category `naming`. Mainnet Token identifier A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 is all-lowercase 'ogusdcp' while the parallel Base Instance A.6.1.1.7.2.6.1.3.2.1.1.2.1.4 writes 'ogUSDCb'; on-chain symbol casing not verifiable from text.
 
@@ -1573,7 +1573,7 @@ Token · A.6.1.1.7.2.6.1.3.2.1.1.2.1.4:
 
 > ogUSDCb
 
-**Action:** kept, severity low.
+**Action:** rejected on human review — see the addendum.
 
 ### 142. A.6.1.1.8.2.1.1.1.3 Completed Instances — real, re-filed
 
@@ -1605,6 +1605,12 @@ Completed Instances · A.6.1.1.8.2.1.2.3:
 
 ---
 
-## Addendum — row 129 rejected on human review
+## Addendum — rows rejected on human review
+
+### Row 129 — shared Integration Partner Reward Address
 
 The reviewer kept row 129 as real at `low`, reading the shared address as likely copy-paste. On human review it is a false positive: the Morpho (A.6.1.1.4.2.5.2.2.3.1.2) and Curve (A.6.1.1.4.2.5.2.2.2.1.2) Integration Boost Instances name the same Integration Partner Reward Address because one address does receive the rewards for both integrations. Nothing in either Instance requires the address to be unique to one partner, so a shared address is not a defect. The row is moved to `rejected`, so a later sweep cannot re-add it while the quoted text is unchanged.
+
+### Row 141 — Osero Mainnet token symbol `ogusdcp`
+
+The reviewer kept row 141 as real at `low`, reading the all-lowercase Token identifier in A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 as an inconsistency with the Base Instance's `ogUSDCb` (A.6.1.1.7.2.6.1.3.2.1.1.2.1.4). On human review it is a false positive: the Mainnet vault contract (`0x802148d518a6de2af866f9a61ffb5e5c39156db2`) reports its symbol as `ogusdcp` itself, so the Atlas records the token exactly as deployed. The two Instances differ because the deployed tokens differ; the suggested fix `ogUSDCp` would make the Atlas wrong. This is the one verdict in these reviews that rests on on-chain state rather than Atlas text, supplied by the human reviewer. The row is moved to `rejected`; its low-severity twin was already rejected as its duplicate.

@@ -3437,18 +3437,6 @@
       "quote": "Inflow Rate Limit",
       "issue": "Title says 'Inflow Rate Limit' while the body describes 'deposit rate limit parameters' and the paired sibling is titled 'Withdrawal Rate Limit'; the sibling convention elsewhere is 'Deposit Rate Limit'.",
       "fix": "Deposit Rate Limit"
-    },
-    {
-      "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming",
-      "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4",
-      "uuid": "be9ca01f-1675-4d83-80af-b80789c3bd6f",
-      "file": "A.6.1.1.7 - Osero.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "ogusdcp",
-      "issue": "The Mainnet vault token symbol is given entirely in lowercase, while the sibling Base Instance gives its token as \"ogUSDCb\" with the same template, so the casing looks inconsistent.",
-      "fix": "ogUSDCp"
     }
   ],
   "rejected": [
@@ -5274,6 +5262,21 @@
       "issue": "This is byte-for-byte the same address given as the Curve Integration Boost reward address in A.6.1.1.4.2.5.2.2.2.1.2 (fa241343-8f00-454b-9b95-726cbcbb7b9d), so two distinct Integration Partners are recorded with an identical, partner-specific 'Integration Partner Reward Address' — every other Instance in the chunk has a unique address.",
       "fix": "unclear — needs author; one of the two partner reward addresses is almost certainly a copy-paste of the other",
       "rejectedReason": "Morpho and Curve (A.6.1.1.4.2.5.2.2.2.1.2) share one Integration Partner Reward Address because that address receives the rewards for both integrations; nothing requires it to be unique.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming",
+      "docNo": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4",
+      "uuid": "be9ca01f-1675-4d83-80af-b80789c3bd6f",
+      "file": "A.6.1.1.7 - Osero.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "ogusdcp",
+      "issue": "The Mainnet vault token symbol is given entirely in lowercase, while the sibling Base Instance gives its token as \"ogUSDCb\" with the same template, so the casing looks inconsistent.",
+      "fix": "ogUSDCp",
+      "rejectedReason": "The Mainnet vault contract 0x802148d518a6de2af866f9a61ffb5e5c39156db2 reports its symbol as `ogusdcp`, so the Atlas records the deployed token exactly; Base's ogUSDCb is a different token.",
       "rejectedOn": "2026-11-18",
       "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
     }
