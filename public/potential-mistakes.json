@@ -82,18 +82,6 @@
       "fix": "or if new perspectives or new external events make it possible and useful to modify the Original Context Data Document"
     },
     {
-      "id": "A.1.2.2.2.25#contradiction",
-      "docNo": "A.1.2.2.2.25",
-      "uuid": "fe9164c5-423c-41e8-b8a8-34f8a5d8d6b7",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
-      "severity": "high",
-      "pass": "factual",
-      "quote": "Navigation Hub Documents must be located at the .0.0 position of an Immutable or Primary Document.",
-      "issue": "Two different Supporting Document types are both mandated to occupy the identical reserved slot: A.1.2.2.2.21 (Definition Directory) says 'Definition Directory Documents must always be located at the .0.0 position of their Target Document', so a document needing both is unsatisfiable; the collision also extends to their children (Definitions vs Focus Hubs both at .0.0.X per A.1.2.2.2.26).",
-      "fix": "Assign one of the two types a different reserved position (e.g. move Definition Directory to the free .0.2 slot), or state explicitly which takes precedence."
-    },
-    {
       "id": "A.1.2.2.2.29#typo",
       "docNo": "A.1.2.2.2.29",
       "uuid": "935bd219-df68-4466-99fe-0f9c5b328032",
@@ -202,28 +190,16 @@
       "fix": "[https://vote.sky.money/executive/create](https://vote.sky.money/executive/create)"
     },
     {
-      "id": "A.1.10.2.4.11.2.3#contradiction",
+      "id": "A.1.10.2.4.11.2.3#wrong-word",
       "docNo": "A.1.10.2.4.11.2.3",
       "uuid": "77583ed9-933e-477b-85be-1458e83586d3",
       "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
+      "category": "wrong-word",
       "severity": "high",
       "pass": "factual",
       "quote": "the Governance Point must merge it into the master branch of the executive-votes GitHub repository.",
-      "issue": "Names the target as the 'master' branch, while A.1.10.2.4.8.5.2 and A.1.10.2.4.11.1.5 say the same executive-votes repository merges into the 'main' branch, and the proposals.json URL in A.1.10.2.4.11.2.1 itself is on blob/main.",
+      "issue": "A.1.10.2.4.11.2.3 says the 'master' branch of executive-votes; siblings A.1.10.2.4.8.5.2 and A.1.10.2.4.11.1.5 and the A.1.10.2.4.11.2.1 URL (blob/main) say 'main'.",
       "fix": "merge it into the main branch of the executive-votes GitHub repository"
-    },
-    {
-      "id": "A.1.10.2.4.12.4.2#contradiction",
-      "docNo": "A.1.10.2.4.12.4.2",
-      "uuid": "66a80a93-fcfa-48d5-819e-99489288fa83",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
-      "severity": "high",
-      "pass": "factual",
-      "quote": "A Spell is classified as failing validation when: 1. One or more issues are identified during validation, or 2. Reported issues remain unresolved",
-      "issue": "Criterion 1 makes any Spell with an identified issue fail, yet the adjacent A.1.10.2.4.12.4.1 says a Spell passes when 'All reported issues have been resolved to the satisfaction of the Spell validator' — a Spell with identified-then-resolved issues satisfies both the pass and fail definitions.",
-      "fix": "Failing criterion 1 should read 'One or more issues are identified during validation and remain unresolved' (or drop criterion 1, leaving only the unresolved-issues criterion)."
     },
     {
       "id": "A.1.11.2.3#contradiction",
@@ -670,15 +646,15 @@
       "fix": "Arrangers are generally prohibited from occupying any position where they could cause damage or loss to the Sky Ecosystem, notwithstanding delays or inconveniences."
     },
     {
-      "id": "A.3.5.2.2.1.2#contradiction",
+      "id": "A.3.5.2.2.1.2#wrong-word",
       "docNo": "A.3.5.2.2.1.2",
       "uuid": "fc9cece1-84bf-4133-a2ef-ef2182a23a35",
       "file": "A.3 - The-Stability-Scope.md",
-      "category": "contradiction",
+      "category": "wrong-word",
       "severity": "high",
       "pass": "factual",
       "quote": "The `kbump` parameter is the amount of funds transferred from the Surplus Buffer to the Splitter every `splitter.hop` interval when the Surplus Buffer is greater than `kbump`.",
-      "issue": "The transfer condition names the lot-size parameter `kbump` (6,000 USDS, a positive amount) instead of the threshold `khump` (-200,000,000 USDS); this contradicts A.3.5.2.2.1.1, which defines `khump` as 'the minimum value of the Surplus Buffer for funds to be transferred', and A.3.5.2.2, which states transfers occur 'even when the Surplus Buffer is negative' - impossible if the gate were a positive kbump.",
+      "issue": "A.3.5.2.2.1.2 gates transfers on Surplus Buffer > `kbump` (the lot size), where sibling A.3.5.2.2.1.1 and parent A.3.5.2.2 make the signed threshold `khump` the gate.",
       "fix": "'...when the Surplus Buffer is greater than `khump`.'"
     },
     {
@@ -704,18 +680,6 @@
       "quote": "as defined in [A.1.9.1.1 - Definition Of Emergency Situations](5eafb29e-84a0-4a53-a798-3f958c880225)**.**",
       "issue": "Stray bold markdown wraps only the closing period after the link.",
       "fix": "as defined in [A.1.9.1.1 - Definition Of Emergency Situations](5eafb29e-84a0-4a53-a798-3f958c880225)."
-    },
-    {
-      "id": "A.4.4.1.3.8.5.1#contradiction",
-      "docNo": "A.4.4.1.3.8.5.1",
-      "uuid": "13c51e11-8ea3-4d4e-b631-2e99c559a914",
-      "file": "A.4 - The-Protocol-Scope.md",
-      "category": "contradiction",
-      "severity": "high",
-      "pass": "factual",
-      "quote": "The initial parameters set by the stUSDS BEAM in the Executive Vote deploying stUSDS and the stUSDS BEAM are: - `str` - 0 basis points - `duty` - 2,000 basis points",
-      "issue": "The initial `str` is given as 0 basis points, but A.4.4.1.3.8.6.1.1 (Initial Supply Rate, c4523493-97ba-4f57-ae2f-d407ab6e0f98) states the initial `str` 'must be set extraordinarily high to a value of approximately 40%' (4,000 bps) to incentivize deposits — the two initial values cannot both hold.",
-      "fix": "State the initial `str` as approximately 4,000 basis points (40%), or reconcile A.4.4.1.3.8.6.1.1 to the 0 bps deployment value"
     },
     {
       "id": "A.6.1.1.*.2.2.1.1.4#structural-a6112212",
@@ -1352,15 +1316,15 @@
       "fix": "Replace with the actual Pendle PT-sUSDe token address; it must differ from the USDC underlying address 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48."
     },
     {
-      "id": "A.6.1.1.2.2.6.1.3.1.4.4.2.3#contradiction",
+      "id": "A.6.1.1.2.2.6.1.3.1.4.4.2.3#stale",
       "docNo": "A.6.1.1.2.2.6.1.3.1.4.4.2.3",
       "uuid": "3af5241e-5b72-4466-9e69-dccb8a8d203b",
       "file": "A.6.1.1.2 - Grove.md",
-      "category": "contradiction",
+      "category": "stale",
       "severity": "high",
       "pass": "factual",
       "quote": "The specific `RateLimitID`(s) for this conduit’s inflow and outflow will be specified in a future iteration of the Grove Artifact.",
-      "issue": "This document states the RateLimitIDs are not yet specified, but its own two child documents specify them concretely (A.6.1.1.2.2.6.1.3.1.4.4.2.3.1 inflow 0x098ad67d..., A.6.1.1.2.2.6.1.3.1.4.4.2.3.2 outflow 0x027191d7...); both cannot be true.",
+      "issue": "A.6.1.1.2.2.6.1.3.1.4.4.2.3 says the RateLimitIDs will come in a future iteration, but its children .3.1/.3.2 already give both IDs; stale placeholder text, not two rules.",
       "fix": "Use the wording of the sibling instances: 'The specific RateLimitID(s) for this conduit's inflow and outflow are defined in the subdocuments herein.'"
     },
     {
@@ -1472,18 +1436,6 @@
       "fix": "are moved to [A.6.1.1.3.2.6.1.1.2 - Active Instances Directory]"
     },
     {
-      "id": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2#contradiction",
-      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2",
-      "uuid": "06081a43-075d-48c1-a26d-6578c1aa2fd3",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "contradiction",
-      "severity": "high",
-      "pass": "factual",
-      "quote": "USDC For USDS Swap Maximum ... The maximum amount of USDC that can be swapped for USDC by the Keel Liquidity Layer on Solana is specified in the document herein.",
-      "issue": "The body names USDC on both sides of the swap, contradicting the document title 'USDC For USDS Swap Maximum'; every sibling swap document (USDC For USDT, USDC For USDG, USDC For PYUSD, USDT For USDC) correctly names the destination asset in its body.",
-      "fix": "The maximum amount of USDC that can be swapped for USDS by the Keel Liquidity Layer on Solana."
-    },
-    {
       "id": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2#copy-paste",
       "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2",
       "uuid": "06081a43-075d-48c1-a26d-6578c1aa2fd3",
@@ -1494,6 +1446,18 @@
       "quote": "The maximum amount of USDC that can be swapped for USDC by the Keel Liquidity Layer on Solana is specified in the document herein.",
       "issue": "Heading is titled \"USDC For USDS Swap Maximum\" but the body says USDC can be swapped for USDC (should be USDS), contradicting its own title; every sibling swap-maximum doc in this section correctly names the target token in its body.",
       "fix": "The maximum amount of USDC that can be swapped for USDS by the Keel Liquidity Layer on Solana is specified in the document herein."
+    },
+    {
+      "id": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2#wrong-word",
+      "docNo": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2",
+      "uuid": "06081a43-075d-48c1-a26d-6578c1aa2fd3",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "wrong-word",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "USDC For USDS Swap Maximum ... The maximum amount of USDC that can be swapped for USDC by the Keel Liquidity Layer on Solana is specified in the document herein.",
+      "issue": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2 is titled 'USDC For USDS' but its body says 'swapped for USDC'; every sibling (.2.3-.2.5) names the destination asset. A one-word slip, not a clash of rules.",
+      "fix": "The maximum amount of USDC that can be swapped for USDS by the Keel Liquidity Layer on Solana."
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.1.2.1#grammar",
@@ -1532,6 +1496,18 @@
       "fix": "must use it to exercise the [A.6.1.1.3.2.6.1.2.2.2.1.1.2 - Relayer Role]"
     },
     {
+      "id": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.3.2.1#copy-paste",
+      "docNo": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.3.2.1",
+      "uuid": "37c09b7c-6aa0-4c3c-861e-984de4e3ba4d",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "copy-paste",
+      "severity": "high",
+      "pass": "deterministic",
+      "quote": "holds at least the amount of the underlying asset specified for withdrawal",
+      "issue": "Keel A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.3.2.1 requires the Proxy to hold the underlying asset, yet its own steps burn Proxy-held shares and send assets to the Proxy; precondition copied from depositERC4626 (.3.1.1).",
+      "fix": "holds at least the amount of vault shares required for the withdrawal"
+    },
+    {
       "id": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.6.2#entity",
       "docNo": "A.6.1.1.3.2.6.1.2.2.1.1.2.1.2.6.2",
       "uuid": "d239ba22-9a09-49f1-9fdc-a1d306ffe697",
@@ -1542,18 +1518,6 @@
       "quote": "Bridge USDS / sUSDS Using SkyBridge (LayerZero OFT) Token Bridge ... This document defines the process for an operator to bridge USDS or sUSDS using the OP Token Bridge.",
       "issue": "The title names SkyBridge / LayerZero OFT but the body names the OP Token Bridge — two different, incompatible bridging systems for the same document.",
       "fix": "Body should read 'using the SkyBridge (LayerZero OFT) Token Bridge' to match the title (or the title corrected if OP Token Bridge is meant)."
-    },
-    {
-      "id": "A.6.1.1.3.2.6.1.2.2.1.2.1.2.3.2.1#contradiction",
-      "docNo": "A.6.1.1.3.2.6.1.2.2.1.2.1.2.3.2.1",
-      "uuid": "37c09b7c-6aa0-4c3c-861e-984de4e3ba4d",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "contradiction",
-      "severity": "high",
-      "pass": "deterministic",
-      "quote": "holds at least the amount of the underlying asset specified for withdrawal",
-      "issue": "Same withdrawERC4626 precondition defect the agents found in Obex and Pattern: the precondition requires the ALM Proxy to hold the UNDERLYING ASSET, but the operation burns vault SHARES and sends the asset to the Proxy. Corpus-wide scan shows the identical wording in exactly 3 artifacts (Keel, Obex, Pattern); Keel's copy was not separately reported by an agent.",
-      "fix": "holds at least the amount of vault shares required for the withdrawal"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.2.2.1.3.2.1#structural",
@@ -1628,27 +1592,27 @@
       "fix": "The documents herein define roles (Admin, Relayer, ALM Controller and Freezer) and their responsibilities/permissions for managing the Obex Liquidity Layer."
     },
     {
-      "id": "A.6.1.1.5.2.6.1.2.2.1.2.1.2.3.2.1#contradiction",
+      "id": "A.6.1.1.5.2.6.1.2.2.1.2.1.2.3.2.1#copy-paste",
       "docNo": "A.6.1.1.5.2.6.1.2.2.1.2.1.2.3.2.1",
       "uuid": "d545d2f1-5973-4a93-889c-9d558ff79be7",
       "file": "A.6.1.1.5 - Obex.md",
-      "category": "contradiction",
+      "category": "copy-paste",
       "severity": "high",
       "pass": "factual",
       "quote": "The operation will only succeed if the ALM Proxy holds at least the amount of the underlying asset specified for withdrawal; otherwise, the transaction will revert. ... The withdrawn assets will be sent to the ALM Proxy.",
-      "issue": "The stated precondition for withdrawERC4626 (ALM Proxy must already hold the underlying asset) contradicts the operation itself, which burns vault SHARES held by the Proxy and then sends the underlying asset to the Proxy; the sibling redeemERC4626 doc correctly states the precondition in shares.",
+      "issue": "A.6.1.1.5.2.6.1.2.2.1.2.1.2.3.2.1 requires the Proxy to already hold the underlying asset, though its steps burn Proxy-held shares and send assets to the Proxy; the line is copied from depositERC4626 (.3.1.1).",
       "fix": "Precondition should be that the ALM Proxy holds at least the number of vault shares needed to cover the requested withdrawal amount (copy-paste from depositERC4626)."
     },
     {
-      "id": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1#contradiction",
+      "id": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1#copy-paste",
       "docNo": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1",
       "uuid": "40875283-48ec-48f0-8b61-e45d33f976ab",
       "file": "A.6.1.1.6 - Pattern.md",
-      "category": "contradiction",
+      "category": "copy-paste",
       "severity": "high",
       "pass": "factual",
       "quote": "providing the vault token address and the amount of the underlying asset to withdraw. The operation will only succeed if the ALM Proxy holds at least the amount of the underlying asset specified for withdrawal; otherwise, the transaction will revert.",
-      "issue": "The stated precondition for withdrawERC4626 is that the ALM Proxy already holds the underlying asset it is withdrawing, which contradicts the same document's next bullet ('burning the necessary number of vault shares held by the ALM Proxy') and the sibling redeemERC4626 doc (037d3def), which correctly conditions on the Proxy holding enough shares; it appears copied from the depositERC4626 doc (04ac423a).",
+      "issue": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1 requires the Proxy to hold the underlying asset, but its next bullets burn Proxy-held shares and send assets to the Proxy; the line is copied from depositERC4626 (.3.1.1).",
       "fix": "Should read that the operation only succeeds if the ALM Proxy holds enough vault shares to cover the requested underlying-asset withdrawal."
     },
     {
@@ -1688,18 +1652,6 @@
       "fix": "can have a variable number of components, and different characteristics of each component, for each instance of the Type"
     },
     {
-      "id": "A.1.2.2.1.3#contradiction",
-      "docNo": "A.1.2.2.1.3",
-      "uuid": "e87b6850-3792-495d-9460-0ac069a217e6",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Supporting Documents always have Document Identifiers that contain at least one 0.",
-      "issue": "Contradicted by A.1.2.2.2.30 (Needed Research), whose Type Category is 'Supporting Document' but whose identifiers are 'NR-' plus an incremented number; the actual instances NR-1, NR-2 and NR-3 contain no 0 and do not begin with the capital A that A.1.2.1.1 requires of all Document Identifiers.",
-      "fix": "Add the Needed Research exception to this rule (and to A.1.2.1.1), as A.1.2.2.2.30 itself does for the Supporting Root derivation."
-    },
-    {
       "id": "A.1.2.2.2.22#markdown",
       "docNo": "A.1.2.2.2.22",
       "uuid": "6eceace8-f499-4954-9ecc-1ada12a02c18",
@@ -1710,6 +1662,18 @@
       "quote": "The Definition Type is used for documents that define unique concepts contained in subdocuments to the Target Document of the Definition Document",
       "issue": "Sentence is missing its terminal period.",
       "fix": "The Definition Type is used for documents that define unique concepts contained in subdocuments to the Target Document of the Definition Document."
+    },
+    {
+      "id": "A.1.2.2.2.25#contradiction",
+      "docNo": "A.1.2.2.2.25",
+      "uuid": "fe9164c5-423c-41e8-b8a8-34f8a5d8d6b7",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Navigation Hub Documents must be located at the .0.0 position of an Immutable or Primary Document.",
+      "issue": "Two different Supporting Document types are both mandated to occupy the identical reserved slot: A.1.2.2.2.21 (Definition Directory) says 'Definition Directory Documents must always be located at the .0.0 position of their Target Document', so a document needing both is unsatisfiable; the collision also extends to their children (Definitions vs Focus Hubs both at .0.0.X per A.1.2.2.2.26).",
+      "fix": "Assign one of the two types a different reserved position (e.g. move Definition Directory to the free .0.2 slot), or state explicitly which takes precedence."
     },
     {
       "id": "A.1.2.2.2.26#grammar",
@@ -1808,18 +1772,6 @@
       "fix": "Align the subdocument with its parent: the Core Facilitator renders the RD ineligible for RD income (and, for a Level 3 RD, transfers the rank), rather than 'removing them from RD status'."
     },
     {
-      "id": "A.1.6.10#contradiction",
-      "docNo": "A.1.6.10",
-      "uuid": "d5d4cc4a-8877-4931-861f-056793387b92",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "ADs must strictly adhere to all onboarding procedures and usage instructions associated with this emergency contact mechanism. ADs that fail to do so will be considered in misalignment and will be derecognized.",
-      "issue": "Mandates automatic derecognition for what is by description an administrative/procedural failure, contradicting the Graduated Response Framework, which states that 'Breaches of Aligned Delegate requirements are categorized into two (2) tiers' (A.1.6.6.1), puts 'minor communication lapses, and similar administrative failures' in Tier 1 (a public notice, not derecognition — A.1.6.6.1.1), reserves immediate derecognition for the seven enumerated Tier 2 integrity breaches (A.1.6.6.1.2), none of which covers this, and which A.1.5.9.2.1 says 'should be applied' to AD breaches.",
-      "fix": "Route the failure through the Graduated Response Framework (Tier 1 notice, escalating to Tier 2), or state explicitly why this requirement is carved out of A.1.6.6.1 the way A.1.6.1.4.1 carves out the Probationary Period."
-    },
-    {
       "id": "A.1.9.1.3.2#governance",
       "docNo": "A.1.9.1.3.2",
       "uuid": "3efb0238-aaae-4351-9ec9-31902f3a1394",
@@ -1854,18 +1806,6 @@
       "quote": "Unreasonable delay in submitting the Report, or failure to thoroughly and accurately complete it (including omission of relevant facts), as determined by the Core Council, constitutes a separate Prime Spell Security Incident",
       "issue": "A.1.10.2.3.2.2.1.3.3 (b3cd3112) gives the Core Facilitator and Core GovOps 'full discretion to determine whether a Prime Spell Security Incident has occurred and to impose appropriate penalties', but this document (and the escalation multiplier in A.1.10.2.3.2.2.1.4.2.3.2) assign that determination to the Core Council instead.",
       "fix": "Use one determining authority consistently (e.g. 'as determined by the Core Facilitator and Core GovOps') or state that the Core Council acts through them"
-    },
-    {
-      "id": "A.1.10.2.4.8.2.6#contradiction",
-      "docNo": "A.1.10.2.4.8.2.6",
-      "uuid": "3de17a79-145a-4ec5-b43d-d8c371ee598e",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The \"Authorization\" link may lead to an Atlas document, a Governance Poll or a Forum Post, while the \"Proposal\" link is usually a Forum Post.",
-      "issue": "A.1.10.2.4.5.1.1 (4140df92) classifies forum posts as 'weak comment type' provenance that 'must not be used to authorize Executive actions', yet this document permits a Forum Post as the Authorization link (and A.1.10.2.3.2.1.3.1 makes the Core Facilitator's forum reply the Derived Action's Authority URL).",
-      "fix": "Either narrow the Authorization link to Atlas documents / Governance Polls, or carve out in A.1.10.2.4.5.1.1 which forum posts (e.g. by a party holding Atlas authority) count as sufficient provenance"
     },
     {
       "id": "A.1.10.2.4.8.5.3#markdown",
@@ -1916,27 +1856,27 @@
       "fix": "run: `git clone https://github.com/sky-ecosystem/Spells-mainnet`."
     },
     {
-      "id": "A.1.10.2.4.12.3.2.1#contradiction",
+      "id": "A.1.10.2.4.12.3.2.1#wrong-word",
       "docNo": "A.1.10.2.4.12.3.2.1",
       "uuid": "fb60b182-3ac9-4593-b9c7-8e1eaaeaa099",
       "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
+      "category": "wrong-word",
       "severity": "medium",
       "pass": "factual",
       "quote": "Spell Validators Must Check Deployed Spell License [...] While the Spell should use the correct license to pass validation, this is not considered a strict requirement.",
-      "issue": "The title states the check as a 'Must', but the document sits under A.1.10.2.4.12.3.2 'Recommended Spell Validation Checks' (defined in A.1.10.2.4.12.3 as 'not mandatory') and its own body says it is not a strict requirement.",
+      "issue": "Title 'Must' copies the Required-check naming pattern (A.1.10.2.4.12.3.1.x) under the Recommended list; the body and A.1.10.2.4.12.3 both say not mandatory. Wrong word, not a rule clash.",
       "fix": "Retitle to 'Spell Validators Should Check Deployed Spell License'."
     },
     {
-      "id": "A.1.10.2.4.12.3.2.2#contradiction",
+      "id": "A.1.10.2.4.12.3.2.2#wrong-word",
       "docNo": "A.1.10.2.4.12.3.2.2",
       "uuid": "83f53a73-7e2f-4dc9-a371-e19238924bf3",
       "file": "A.1 - The-Governance-Scope.md",
-      "category": "contradiction",
+      "category": "wrong-word",
       "severity": "medium",
       "pass": "factual",
       "quote": "Spell Validators Must Check Compiler Version [...] While the Spell should use the correct version to pass validation, this is not considered a strict requirement.",
-      "issue": "The title states the check as a 'Must', but the document sits under A.1.10.2.4.12.3.2 'Recommended Spell Validation Checks' (defined in A.1.10.2.4.12.3 as 'not mandatory') and its own body says it is not a strict requirement.",
+      "issue": "Same as the license sibling: title 'Must' under Recommended checks (A.1.10.2.4.12.3.2), while the body and A.1.10.2.4.12.3 say not a strict requirement. Title wording slip.",
       "fix": "Retitle to 'Spell Validators Should Check Compiler Version'."
     },
     {
@@ -1950,6 +1890,18 @@
       "quote": "Group this with general constant validations (e.g., ensuring hardcoded values like fees or ceilings are computed accurately).",
       "issue": "This sentence reads as a leftover drafting/editorial note (an instruction about document organization) rather than published guidance to Spell validators, breaking the second-person instructional voice of the rest of the paragraph.",
       "fix": "Remove the sentence, or rewrite as guidance to validators, e.g. \"Validators should also apply the same care to general constant validations, ensuring hardcoded values like fees or ceilings are computed accurately.\""
+    },
+    {
+      "id": "A.1.10.2.4.12.4.2#contradiction",
+      "docNo": "A.1.10.2.4.12.4.2",
+      "uuid": "66a80a93-fcfa-48d5-819e-99489288fa83",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "A Spell is classified as failing validation when: 1. One or more issues are identified during validation, or 2. Reported issues remain unresolved",
+      "issue": "Criterion 1 makes any Spell with an identified issue fail, yet the adjacent A.1.10.2.4.12.4.1 says a Spell passes when 'All reported issues have been resolved to the satisfaction of the Spell validator' — a Spell with identified-then-resolved issues satisfies both the pass and fail definitions.",
+      "fix": "Failing criterion 1 should read 'One or more issues are identified during validation and remain unresolved' (or drop criterion 1, leaving only the unresolved-issues criterion)."
     },
     {
       "id": "A.1.10.4.1#stale",
@@ -1988,18 +1940,6 @@
       "fix": "The element \"document is appealed\" means that a formal request has been made to the Core Facilitator to review an Atlas document"
     },
     {
-      "id": "A.2.2.1.2.4.1.2#contradiction",
-      "docNo": "A.2.2.1.2.4.1.2",
-      "uuid": "7b25b220-92f9-4936-8296-31c0f3d8ddbc",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "contradiction",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "the Agent must Activate and Invoke (1) the Agent Token Primitive, then (2) the Executor Accord Primitive, and finally (3) the Root Edit Primitive ... assuming that these Primitives were not already Globally Activated during the \"Pre Transformation\" S",
-      "issue": "The conditional is unsatisfiable: A.2.2.5.1.1.1.2 and A.2.2.5.2.1.1.2 both make Core GovOps validation of the Agent Creation and Transformation Primitives conditional on all six Primitives (Agent Creation, Prime/Executor Transformation, Agent Token, Executor Accord, Root Edit, Ecosystem Upkeep Fee) already being Activated — i.e. before the Pre Root Edit stage begins — while A.2.2.1.2.4.1.1 mandates only the Ecosystem Upkeep Fee Primitive during the Pre Transformation stage.",
-      "fix": "unclear — needs author: either drop the six-primitive activation precondition from the Agent Creation/Transformation validation docs, or state that Agent Token, Executor Accord and Root Edit are only Invoked (not Activated) during the Pre Root Edit stage."
-    },
-    {
       "id": "A.2.2.1.2.4.2.1.1#structural",
       "docNo": "A.2.2.1.2.4.2.1.1",
       "uuid": "04bbf091-b2a8-47e4-ad03-f3fd66e70279",
@@ -2010,18 +1950,6 @@
       "quote": "These Primitives are deployed once, and thereafter their Global Status is `Completed` and cannot be altered.",
       "issue": "`Completed` is defined in A.2.2.1.3.2.3 as a Primitive *Instance* Status value, and A.2.2.1.3.1 expressly states that instance Status 'is independent of the Primitive's Global Activation Status'; Global Activation Status takes only Active/Inactive (A.2.2.1.2.2). Applying `Completed` to Global Status uses a defined term against its own definition.",
       "fix": "Should say the Primitive's *Instance* Status is `Completed` while its Global Activation Status remains Active (and cannot be deactivated)."
-    },
-    {
-      "id": "A.2.2.5.4.1.1.3#contradiction",
-      "docNo": "A.2.2.5.4.1.1.3",
-      "uuid": "309e17ed-c75a-48f5-859f-70a5cb29a1f8",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "contradiction",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The Agent Artifact is officially upgraded to reflect an Agent Token Primitive Instance, with a Status of `Active`.",
-      "issue": "A.2.2.1.3.2.3 defines `Completed` as the status for 'an Instance designed for a single Invocation [that] has achieved its intended outcome and requires no further management', and A.2.2.5.4.1.2.1 says exactly that of the Agent Token Primitive ('deployed solely to create a one-off Token ... no further management process is needed post-deployment'); A.2.2.1.2.4.2.1.1 likewise groups Agent Token with the primitives whose status becomes `Completed`. The sibling one-shot primitives (A.2.2.5.1.1.1.3, A.2.2.5.2.1.1.3) are set to `Completed`.",
-      "fix": "Status should be `Completed`, matching the Agent Creation and Prime Transformation Primitive Instances."
     },
     {
       "id": "A.2.2.6.2.1.2.2#entity",
@@ -2084,15 +2012,15 @@
       "fix": "Using the finalized `Artifact Edit Proposal` content"
     },
     {
-      "id": "A.2.2.9.1.2.4.1.1#contradiction",
+      "id": "A.2.2.9.1.2.4.1.1#stale",
       "docNo": "A.2.2.9.1.2.4.1.1",
       "uuid": "27229032-ddb6-41a5-a5d5-6168ccc3142f",
       "file": "A.2 - The-Support-Scope.md",
-      "category": "contradiction",
+      "category": "stale",
       "severity": "medium",
       "pass": "factual",
       "quote": "The Distribution Reward Calculation includes the calculation of the Fees for Unrewarded USDS Balances, the Fees for Rewarded USDS Balances, and the Prime Agent Management Fee.",
-      "issue": "None of these three components exists anywhere in the Distribution Reward Primitive: A.2.2.9.1.2.1.2 and A.2.2.9.1.2.1.3.2 define the Distribution Reward solely as average monthly balance x 0.2% annual rate / 12, and this process's own Process Flow (A.2.2.9.1.2.4.1.1.2) calculates only eligible USDS/sUSDS balances; 'Unrewarded USDS balances' is the Integration Boost's calculation base (A.2.2.9.2.2.1.1).",
+      "issue": "The three fee components named in A.2.2.9.1.2.4.1.1 are defined nowhere; A.2.2.9.1.2.1.3.2 and the doc's own Process Flow A.2.2.9.1.2.4.1.1.2 compute balance x rate / 12. Stale leftover, not a rule clash.",
       "fix": "Describe the calculation as eligible USDS and sUSDS balances times the Distribution Reward rate divided by twelve, or move these fee components to the Primitive that actually defines them."
     },
     {
@@ -2166,18 +2094,6 @@
       "quote": "both are held by Sky Governance through the Prime Agent's SubProxy",
       "issue": "The linked Default Admin Role (A.2.2.10.1.1.1.2.2.1) says it is held through the SubProxy on Ethereum Mainnet but through the Prime Agent's Executor on other networks, so 'through the Prime Agent's SubProxy' is only true on Mainnet.",
       "fix": ""
-    },
-    {
-      "id": "A.2.2.10.1.1.1.2.5.2.5.3.3#contradiction",
-      "docNo": "A.2.2.10.1.1.1.2.5.2.5.3.3",
-      "uuid": "3986fe17-e84d-407a-9192-61e6b842426a",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "contradiction",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The maximum tick deviation is the only governance-configured control on the swap's execution quality; the minimum amount received has no equivalent governance floor beyond being non-zero.",
-      "issue": "Contradicts A.2.2.10.1.1.1.2.1.6, which defines `maxSlippage` as the configured maximum 'deviation from expected output when executing trades or liquidity operations in a pool', and the two sibling Uniswap v3 operations (A.2.2.10.1.1.1.2.5.2.5.1.3 and A.2.2.10.1.1.1.2.5.2.5.2.3), which both require the specified minimums to 'satisfy the configured maximum slippage for the pool'.",
-      "fix": "unclear — needs author: either state that swaps are also bounded by the pool's configured maxSlippage, or amend A.2.2.10.1.1.1.2.1.6 so `maxSlippage` is scoped to liquidity operations only"
     },
     {
       "id": "A.2.2.10.1.1.3.2.1.2.3.1#grammar",
@@ -2264,27 +2180,15 @@
       "fix": "the ban on users approved for unbanning will be lifted across all communication channels"
     },
     {
-      "id": "A.2.8.1.1.1.2#contradiction",
-      "docNo": "A.2.8.1.1.1.2",
-      "uuid": "cf7e0654-f9a6-45e4-9984-14387067cb17",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "contradiction",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "The Core Facilitator is isolated from the parties to maintain impartiality. The Core Facilitator exclusively reviews the information prepared by Core GovOps and delivers a decision to Core GovOps, which communicates it to the parties.",
-      "issue": "'Exclusively reviews the information prepared by Core GovOps' conflicts with A.2.8.1.1.2.3.2, which says 'The Core Facilitator reviews the analysis prepared by Core GovOps along with the arguments presented by the parties and reaches a decision'.",
-      "fix": "Either drop 'exclusively' here, or in A.2.8.1.1.2.3.2 say the parties' arguments reach the Facilitator only through the Core GovOps analysis"
-    },
-    {
-      "id": "A.2.8.2.2#contradiction",
+      "id": "A.2.8.2.2#entity",
       "docNo": "A.2.8.2.2",
       "uuid": "aa3b8e65-0ded-48c2-9c40-812debf99f32",
       "file": "A.2 - The-Support-Scope.md",
-      "category": "contradiction",
+      "category": "entity",
       "severity": "medium",
       "pass": "factual",
       "quote": "The subdocuments herein record the terms of agreement between Sky, Grove, and Spark as agreed in Ecosystem Accord 2.",
-      "issue": "This names three parties to Ecosystem Accord 2, but its own subdocument A.2.8.2.2.1.1 states 'The parties to Ecosystem Accord 2 are Sky, Spark, Grove, and Moonbow' and a Moonbow Details document (A.2.8.2.2.1.1.4) is provided.",
+      "issue": "A.2.8.2.2 lists three parties to Ecosystem Accord 2, but A.2.8.2.2.1.1 names four (adds Moonbow, detailed in A.2.8.2.2.1.1.4); an incomplete party list, not two operative rules.",
       "fix": "Add Moonbow to the parent sentence: 'between Sky, Grove, Spark, and Moonbow'"
     },
     {
@@ -2738,6 +2642,18 @@
       "quote": "A.6.1.1.1.2.1.1.4 - In Progress Invocations Directory [Core]",
       "issue": "Same slot in every other primitive is titled 'In Progress Invocations' (A.6.1.1.1.2.1.2.4, A.6.1.1.1.2.1.3.4, A.6.1.1.1.2.1.4.4); here it duplicates the title of the hub's directory document A.6.1.1.1.2.1.1.1.4 (UUID 5c48cc46-...), making the two documents indistinguishable by title.",
       "fix": "Rename to 'In Progress Invocations'."
+    },
+    {
+      "id": "A.6.1.1.1.2.3.2.2.1.2.1.3#contradiction",
+      "docNo": "A.6.1.1.1.2.3.2.2.1.2.1.3",
+      "uuid": "93503e51-089a-4c63-a353-7c12574ea5b9",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Operational GovOps reviews Spark’s calculation of the rebate before executing a return of surplus to token holders.",
+      "issue": "This Upkeep Rebate routine step describes the rebate as a 'return of surplus to token holders' that Operational GovOps executes or withholds, but the preceding step A.6.1.1.1.2.3.2.2.1.2.1.2 says Spark realizes the rebate by deducting it from the Ecosystem Upkeep fees it pays — there is no distribution for Operational GovOps to execute or withhold.",
+      "fix": "Describe the review as gating the deduction Spark applies to its Ecosystem Upkeep fee payment, not a surplus distribution to token holders"
     },
     {
       "id": "A.6.1.1.1.2.6.1.1.2.1.4.4#naming",
@@ -3304,15 +3220,15 @@
       "fix": ""
     },
     {
-      "id": "A.6.1.1.3.3.2#contradiction",
+      "id": "A.6.1.1.3.3.2#stale",
       "docNo": "A.6.1.1.3.3.2",
       "uuid": "41ad175e-48c8-4caf-8cb7-638f90ff0ad6",
       "file": "A.6.1.1.3 - Keel.md",
-      "category": "contradiction",
+      "category": "stale",
       "severity": "medium",
       "pass": "factual",
       "quote": "In the short term prior to Keel's implementation of the Allocation System Primitive, Keel may invest idle funds in low-risk decentralized finance opportunities, including providing liquidity to established lending protocols on Solana.",
-      "issue": "The transitionary framing 'prior to Keel's implementation of the Allocation System Primitive' is contradicted within the same artifact: A.6.1.1.3.2.6.1.3 already lists nine Active Instances of the Allocation System Primitive, all of them lending deployments on Solana (Kamino USDS/USDC/USDT/USDG/PYUSD, Drift USDS/USDC/USDT/PYUSD) with live rate limits.",
+      "issue": "A.6.1.1.3.3.2 is a transitional rule for the period before Keel implements the Allocation System Primitive; A.6.1.1.3.2.6.1.3 now lists nine Active Solana Instances, so the clause is stale, not in conflict.",
       "fix": "Either retire this transitionary clause or restate it to cover only funds outside the now-active Allocation System Primitive Instances."
     },
     {
@@ -3484,6 +3400,18 @@
       "fix": "Rename the document to 'In Progress Invocations'."
     },
     {
+      "id": "A.6.1.1.6.2.3.2.2.1.2.1.3#contradiction",
+      "docNo": "A.6.1.1.6.2.3.2.2.1.2.1.3",
+      "uuid": "3e913724-ce5a-41a5-b9db-27ba25c35c06",
+      "file": "A.6.1.1.6 - Pattern.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Operational GovOps reviews Pattern's calculation of the rebate before executing a return of surplus to token holders.",
+      "issue": "This Upkeep Rebate routine step describes the rebate as a 'return of surplus to token holders' that Operational GovOps executes or withholds, but the preceding step A.6.1.1.6.2.3.2.2.1.2.1.2 says Pattern realizes the rebate by deducting it from the Ecosystem Upkeep fees it pays — there is no distribution for Operational GovOps to execute or withhold.",
+      "fix": "Describe the review as gating the deduction Pattern applies to its Ecosystem Upkeep fee payment, not a surplus distribution to token holders"
+    },
+    {
       "id": "A.6.1.1.6.2.6.1.1.2.1.2#grammar",
       "docNo": "A.6.1.1.6.2.6.1.1.2.1.2",
       "uuid": "efa428ed-6e6b-433a-a7e0-2ae781167940",
@@ -3530,6 +3458,18 @@
       "quote": "##### A.6.1.1.7.2.1.1.4 - In Progress Invocations Directory",
       "issue": "In the Primitive skeleton the '.4' slot directly under a Primitive is 'In Progress Invocations' (the '.1.4' slot under the Primitive Hub Document is the 'Directory'); every other Primitive in this Artifact follows that (e.g. A.6.1.1.7.2.1.2.4, A.6.1.1.7.2.1.3.4, A.6.1.1.7.2.1.4.4, A.6.1.1.7.2.2.1.4 are all 'In Progress Invocations'), so this node duplicates the title of its own sibling A.6.1.1.7.2.1.1.1.4 (383eb03a) and mislabels the slot.",
       "fix": "Retitle to 'A.6.1.1.7.2.1.1.4 - In Progress Invocations'."
+    },
+    {
+      "id": "A.6.1.1.7.2.3.2.2.1.2.1.3#contradiction",
+      "docNo": "A.6.1.1.7.2.3.2.2.1.2.1.3",
+      "uuid": "e7058972-4fa4-4a85-967b-965afede3a23",
+      "file": "A.6.1.1.7 - Osero.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Operational GovOps reviews Osero's calculation of the rebate before executing a return of surplus to token holders.",
+      "issue": "This Upkeep Rebate routine step describes the rebate as a 'return of surplus to token holders' that Operational GovOps executes or withholds, but the preceding step A.6.1.1.7.2.3.2.2.1.2.1.2 says Osero realizes the rebate by deducting it from the Ecosystem Upkeep fees it pays — there is no distribution for Operational GovOps to execute or withhold.",
+      "fix": "Describe the review as gating the deduction Osero applies to its Ecosystem Upkeep fee payment, not a surplus distribution to token holders"
     },
     {
       "id": "A.6.1.1.7.2.5.1.2.2.2.1#copy-paste",
@@ -3650,6 +3590,18 @@
       "quote": "If there are two conflicting Atlas Edit Weekly Proposals",
       "issue": "Everywhere else in the document the term is \"Atlas Edit Weekly Cycle Proposals\"; \"Cycle\" is missing here.",
       "fix": "If there are two conflicting Atlas Edit Weekly Cycle Proposals"
+    },
+    {
+      "id": "A.2.2.1.2.4.1.2#stale",
+      "docNo": "A.2.2.1.2.4.1.2",
+      "uuid": "7b25b220-92f9-4936-8296-31c0f3d8ddbc",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "stale",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "assuming that these Primitives were not already Globally Activated during the \"Pre Transformation Primitive\" Stage",
+      "issue": "Not fixed (only the stage name changed). A.2.2.5.1.1.1.2 / A.2.2.5.2.1.1.2 require all six Primitives Activated before Creation/Transformation is Invoked, so A.2.2.1.2.4.1.2's 'assuming not already Activated' branch is dead.",
+      "fix": "unclear — needs author: either drop the six-primitive activation precondition from the Agent Creation/Transformation validation docs, or state that Agent Token, Executor Accord and Root Edit are only Invoked (not Activated) during the Pre Root Edit stage."
     },
     {
       "id": "A.2.2.8.1.1.1.2#grammar",
@@ -5015,6 +4967,111 @@
       "rejectedReason": "General operational sentence beside the Default Admin Role (A.6.1.1.1.2.6.1.2.2.1.1.1), which covers admin functions; loose wording, not incompatible rules.",
       "rejectedOn": "2026-11-18",
       "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+    },
+    {
+      "id": "A.4.4.1.3.8.5.1#contradiction",
+      "docNo": "A.4.4.1.3.8.5.1",
+      "uuid": "13c51e11-8ea3-4d4e-b631-2e99c559a914",
+      "file": "A.4 - The-Protocol-Scope.md",
+      "category": "contradiction",
+      "severity": "high",
+      "pass": "factual",
+      "quote": "The initial parameters set by the stUSDS BEAM in the Executive Vote deploying stUSDS and the stUSDS BEAM are: - `str` - 0 basis points - `duty` - 2,000 basis points",
+      "issue": "The initial `str` is given as 0 basis points, but A.4.4.1.3.8.6.1.1 (Initial Supply Rate, c4523493-97ba-4f57-ae2f-d407ab6e0f98) states the initial `str` 'must be set extraordinarily high to a value of approximately 40%' (4,000 bps) to incentivize deposits — the two initial values cannot both hold.",
+      "fix": "State the initial `str` as approximately 4,000 basis points (40%), or reconcile A.4.4.1.3.8.6.1.1 to the 0 bps deployment value",
+      "rejectedReason": "Fixed upstream: The counterpart A.4.4.1.3.8.6.1.1 (uuid c4523493, initial `str` of about 40%) is no longer in the Atlas, so only the 0 bps value in A.4.4.1.3.8.5.1 remains.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+    },
+    {
+      "id": "A.1.2.2.1.3#contradiction",
+      "docNo": "A.1.2.2.1.3",
+      "uuid": "e87b6850-3792-495d-9460-0ac069a217e6",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Supporting Documents always have Document Identifiers that contain at least one 0.",
+      "issue": "Contradicted by A.1.2.2.2.30 (Needed Research), whose Type Category is 'Supporting Document' but whose identifiers are 'NR-' plus an incremented number; the actual instances NR-1, NR-2 and NR-3 contain no 0 and do not begin with the capital A that A.1.2.1.1 requires of all Document Identifiers.",
+      "fix": "Add the Needed Research exception to this rule (and to A.1.2.1.1), as A.1.2.2.2.30 itself does for the Supporting Root derivation.",
+      "rejectedReason": "A.1.2.2.2.30 explicitly sets Needed Research apart ('Unlike other Supporting Documents') with its own NR- numbering; a named type-level exception to the general identifier rules in A.1.2.2.1.3 / A.1.2.1.1.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+    },
+    {
+      "id": "A.1.6.10#contradiction",
+      "docNo": "A.1.6.10",
+      "uuid": "d5d4cc4a-8877-4931-861f-056793387b92",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "ADs must strictly adhere to all onboarding procedures and usage instructions associated with this emergency contact mechanism. ADs that fail to do so will be considered in misalignment and will be derecognized.",
+      "issue": "Mandates automatic derecognition for what is by description an administrative/procedural failure, contradicting the Graduated Response Framework, which states that 'Breaches of Aligned Delegate requirements are categorized into two (2) tiers' (A.1.6.6.1), puts 'minor communication lapses, and similar administrative failures' in Tier 1 (a public notice, not derecognition — A.1.6.6.1.1), reserves immediate derecognition for the seven enumerated Tier 2 integrity breaches (A.1.6.6.1.2), none of which covers this, and which A.1.5.9.2.1 says 'should be applied' to AD breaches.",
+      "fix": "Route the failure through the Graduated Response Framework (Tier 1 notice, escalating to Tier 2), or state explicitly why this requirement is carved out of A.1.6.6.1 the way A.1.6.1.4.1 carves out the Probationary Period.",
+      "rejectedReason": "A.1.6.10 is a named rule for one security mechanism tied to AD opsec (A.1.6.7), and opsec breaches are already Tier 2 derecognition in A.1.6.6.1.2; lex specialis beside the general tiers in A.1.6.6.1.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+    },
+    {
+      "id": "A.1.10.2.4.8.2.6#contradiction",
+      "docNo": "A.1.10.2.4.8.2.6",
+      "uuid": "3de17a79-145a-4ec5-b43d-d8c371ee598e",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The \"Authorization\" link may lead to an Atlas document, a Governance Poll or a Forum Post, while the \"Proposal\" link is usually a Forum Post.",
+      "issue": "A.1.10.2.4.5.1.1 (4140df92) classifies forum posts as 'weak comment type' provenance that 'must not be used to authorize Executive actions', yet this document permits a Forum Post as the Authorization link (and A.1.10.2.3.2.1.3.1 makes the Core Facilitator's forum reply the Derived Action's Authority URL).",
+      "fix": "Either narrow the Authorization link to Atlas documents / Governance Polls, or carve out in A.1.10.2.4.5.1.1 which forum posts (e.g. by a party holding Atlas authority) count as sufficient provenance",
+      "rejectedReason": "A.1.10.2.4.5.1.1 bars informal stakeholder comments; A.1.10.2.4.5.1.5 says provenance comments authorize via authority the Atlas gives the commenter, and A.1.10.2.3.2.1.2.1.3 names the Core Facilitator's forum approval.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+    },
+    {
+      "id": "A.2.2.5.4.1.1.3#contradiction",
+      "docNo": "A.2.2.5.4.1.1.3",
+      "uuid": "309e17ed-c75a-48f5-859f-70a5cb29a1f8",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The Agent Artifact is officially upgraded to reflect an Agent Token Primitive Instance, with a Status of `Active`.",
+      "issue": "A.2.2.1.3.2.3 defines `Completed` as the status for 'an Instance designed for a single Invocation [that] has achieved its intended outcome and requires no further management', and A.2.2.5.4.1.2.1 says exactly that of the Agent Token Primitive ('deployed solely to create a one-off Token ... no further management process is needed post-deployment'); A.2.2.1.2.4.2.1.1 likewise groups Agent Token with the primitives whose status becomes `Completed`. The sibling one-shot primitives (A.2.2.5.1.1.1.3, A.2.2.5.2.1.1.3) are set to `Completed`.",
+      "fix": "Status should be `Completed`, matching the Agent Creation and Prime Transformation Primitive Instances.",
+      "rejectedReason": "A token remains in use, which fits `Active` (A.2.2.1.3.2.1); the Agent Token doc names its own status (lex specialis), and A.2.2.1.2.4.2.1.1's `Completed` is the Global Status, a separate field.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+    },
+    {
+      "id": "A.2.2.10.1.1.1.2.5.2.5.3.3#contradiction",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.5.3.3",
+      "uuid": "3986fe17-e84d-407a-9192-61e6b842426a",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The maximum tick deviation is the only governance-configured control on the swap's execution quality; the minimum amount received has no equivalent governance floor beyond being non-zero.",
+      "issue": "Contradicts A.2.2.10.1.1.1.2.1.6, which defines `maxSlippage` as the configured maximum 'deviation from expected output when executing trades or liquidity operations in a pool', and the two sibling Uniswap v3 operations (A.2.2.10.1.1.1.2.5.2.5.1.3 and A.2.2.10.1.1.1.2.5.2.5.2.3), which both require the specified minimums to 'satisfy the configured maximum slippage for the pool'.",
+      "fix": "unclear — needs author: either state that swaps are also bounded by the pool's configured maxSlippage, or amend A.2.2.10.1.1.1.2.1.6 so `maxSlippage` is scoped to liquidity operations only",
+      "rejectedReason": "A.2.2.10.1.1.1.2.1.6 is a generic parameter gloss; the Uniswap v3 swap doc states precisely that its control is the max tick deviation. The specific facet text governs (lex specialis); sibling liquidity ops are different functions.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+    },
+    {
+      "id": "A.2.8.1.1.1.2#contradiction",
+      "docNo": "A.2.8.1.1.1.2",
+      "uuid": "cf7e0654-f9a6-45e4-9984-14387067cb17",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "contradiction",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "The Core Facilitator is isolated from the parties to maintain impartiality. The Core Facilitator exclusively reviews the information prepared by Core GovOps and delivers a decision to Core GovOps, which communicates it to the parties.",
+      "issue": "'Exclusively reviews the information prepared by Core GovOps' conflicts with A.2.8.1.1.2.3.2, which says 'The Core Facilitator reviews the analysis prepared by Core GovOps along with the arguments presented by the parties and reaches a decision'.",
+      "fix": "Either drop 'exclusively' here, or in A.2.8.1.1.2.3.2 say the parties' arguments reach the Facilitator only through the Core GovOps analysis",
+      "rejectedReason": "The GovOps analysis must include 'a structured presentation of the arguments in favor of each party' (A.2.8.1.1.2.3.1), so the parties' arguments reach the Facilitator through GovOps-prepared material. The texts fit together.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
     }
   ]
 }

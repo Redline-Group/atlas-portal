@@ -41,3 +41,11 @@ describe("quoteInDoc", () => {
     expect(quoteInDoc("The documents herein [...] Curve Instance", "A.1", doc({}))).toBe(false);
   });
 });
+
+describe("quoteInDoc typography", () => {
+  it("treats curly and straight quotes alike and ignores a fragment's trailing punctuation", () => {
+    const d = doc({ content: "the surplus held in Keel’s SubProxy" });
+    expect(quoteInDoc("the surplus held in Keel's SubProxy.", "A.1", d)).toBe(true);
+    expect(quoteInDoc("the surplus held in Grove's SubProxy.", "A.1", d)).toBe(false);
+  });
+});
