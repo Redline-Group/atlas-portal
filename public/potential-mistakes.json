@@ -1702,6 +1702,18 @@
       "fix": "Drop 'in the upcoming Allocation System' and the sentence 'SparkLend will be adopted by Spark once Agents are launched.', since the document already calls Spark an Agent."
     },
     {
+      "id": "A.1.11.2.5.2#naming",
+      "docNo": "A.1.11.2.5.2",
+      "uuid": "edb3b979-b7b6-4728-9c26-cf768d8827ea",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "If there are two conflicting Atlas Edit Weekly Proposals",
+      "issue": "Every other mention in this document uses \"Atlas Edit Weekly Cycle Proposals\"; this one drops \"Cycle\".",
+      "fix": "If there are two conflicting Atlas Edit Weekly Cycle Proposals"
+    },
+    {
       "id": "A.2.1.1.1.0.3.3#copy-paste",
       "docNo": "A.2.1.1.1.0.3.3",
       "uuid": "b5be838e-23a8-4ed4-b713-d5a57fe1864d",
@@ -1736,6 +1748,18 @@
       "quote": "These Primitives are deployed once, and thereafter their Global Status is `Completed` and cannot be altered.",
       "issue": "`Completed` is defined in A.2.2.1.3.2.3 as a Primitive *Instance* Status value, and A.2.2.1.3.1 expressly states that instance Status 'is independent of the Primitive's Global Activation Status'; Global Activation Status takes only Active/Inactive (A.2.2.1.2.2). Applying `Completed` to Global Status uses a defined term against its own definition.",
       "fix": "Should say the Primitive's *Instance* Status is `Completed` while its Global Activation Status remains Active (and cannot be deactivated)."
+    },
+    {
+      "id": "A.2.2.8.1.1.1.2#grammar",
+      "docNo": "A.2.2.8.1.1.1.2",
+      "uuid": "18ce8e21-898d-4bf9-9bf8-ef1c1e7266ee",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "grammar",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "how agreements to setup an Instance",
+      "issue": "\"setup\" is the noun; the verb phrase should be \"set up\".",
+      "fix": "how agreements to set up an Instance"
     },
     {
       "id": "A.2.2.9.1.2.2.3#wrong-word",
@@ -1798,6 +1822,30 @@
       "fix": "State that data is submitted weekly but payment occurs at the end of each occurrence of the Instance's configured Cadence."
     },
     {
+      "id": "A.2.2.9.2.2.3.1.4.2#naming",
+      "docNo": "A.2.2.9.2.2.3.1.4.2",
+      "uuid": "d86e5f9f-7b1c-4605-9253-4281a6bdbc13",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "`Primitive Hub Document/In Progress Invocations/Instance Name`",
+      "issue": "The first bullet refers to the 'In Progress Invocations Directory' field; this bullet drops 'Directory' for the same field.",
+      "fix": "`Primitive Hub Document/In Progress Invocations Directory/Instance Name`"
+    },
+    {
+      "id": "A.2.2.9.2.2.3.2.4.2.1#entity",
+      "docNo": "A.2.2.9.2.2.3.2.4.2.1",
+      "uuid": "09ddd2c5-3768-4538-b979-629e1b369299",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "entity",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Active instances/Instance name/Instance status -",
+      "issue": "At this point the Invocation is still in progress (tracked under the Hub's In Progress Invocations Directory with an Invocation Status field per A.2.2.9.2.2.3.1.4.2), yet this update targets the Active instances section and an Instance status field.",
+      "fix": "Replace `Active instances/Instance name/Instance status -` with `In Progress Invocations Directory/Instance Name/Invocation Status`"
+    },
+    {
       "id": "A.2.2.9.2.2.3.6.4.1.2#copy-paste",
       "docNo": "A.2.2.9.2.2.3.6.4.1.2",
       "uuid": "1b03bc85-a7f4-4cc5-be41-d13a16b8c379",
@@ -1820,6 +1868,18 @@
       "quote": "both are held by Sky Governance through the Prime Agent's SubProxy",
       "issue": "The linked Default Admin Role (A.2.2.10.1.1.1.2.2.1) says it is held through the SubProxy on Ethereum Mainnet but through the Prime Agent's Executor on other networks, so 'through the Prime Agent's SubProxy' is only true on Mainnet.",
       "fix": ""
+    },
+    {
+      "id": "A.2.2.10.1.1.3.2.1.2.2#grammar",
+      "docNo": "A.2.2.10.1.1.3.2.1.2.2",
+      "uuid": "d034533f-9b6f-411c-8b60-3bccb374765f",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "grammar",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "should define a RRC-incident",
+      "issue": "Wrong article: 'an RRC' (pronounced 'are-are-see').",
+      "fix": "should define an RRC-incident"
     },
     {
       "id": "A.2.2.10.1.1.3.2.1.2.3.1#grammar",
@@ -1894,6 +1954,18 @@
       "fix": "State that the grant covers only the un-ramped portion, i.e. (Base_Rate - SOFR) * (1 - T/24), or reconcile the two documents"
     },
     {
+      "id": "A.2.8.2.7.2.2.2.2#naming",
+      "docNo": "A.2.8.2.7.2.2.2.2",
+      "uuid": "be600bf6-c0f2-42c5-ad5c-fd0cb429b628",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "USDS Demand Subsidies Multisig",
+      "issue": "The heading calls the recipient the \"USDS Demand Multisig\" while the body names it the \"USDS Demand Subsidies Multisig\".",
+      "fix": "Retitle A.2.8.2.7.2.2.2.2 as: Transfer Of Genesis Capital Allocation To USDS Demand Subsidies Multisig"
+    },
+    {
       "id": "A.2.11.1.1.1#stale",
       "docNo": "A.2.11.1.1.1",
       "uuid": "54134f24-84a2-4130-80a5-a519f291c918",
@@ -1928,6 +2000,18 @@
       "quote": "| Capital Allocation | High | Time-Sensitive | 3/5 |",
       "issue": "The recommended standard threshold for a Capital Allocation Multisig is 3/5 (five signers), but High Impact Classification is defined as $1M-$10M exposure and A.2.11.1.3.2.1.1.2.3.2 mandates that Multisigs with custodial control of assets worth $1,000,000 or more have no fewer than seven (7) signers - the other two rows classified High (Treasury - Large, Protocol Parameters) are both 4/7, so only this row breaches the rule.",
       "fix": "Change the Capital Allocation standard threshold to a 7-signer configuration (e.g. 4/7), or state explicitly that the 7-signer High-Value Asset requirement does not apply to Capital Allocation Multisigs."
+    },
+    {
+      "id": "A.2.11.1.3.2.2.1.2.3#governance",
+      "docNo": "A.2.11.1.3.2.2.1.2.3",
+      "uuid": "ec4cd423-74ba-4e74-82d9-46ba5f6cf526",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "governance",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- Follow-up with the Protocol Security Workstream Lead if no acknowledgment is received within 48 hours.",
+      "issue": "This follow-up step names no one responsible for it. In the parallel emergency process, the Multisig Administrator must ensure the reporting signer follows up.",
+      "fix": "- The Multisig Administrator must ensure that the reporting signer follows up with the Protocol Security Workstream Lead if no acknowledgment is received within 48 hours."
     },
     {
       "id": "A.2.11.1.3.4.1#structural",
@@ -2024,6 +2108,18 @@
       "quote": "Cash income over the reporting period. Any income over $20,000 in value should be broken out as its own line item, and an explanation provided for any non-recurring or non-ordinary expenses.",
       "issue": "The income bullet in A.3.4.3.3.1 ends with the expense bullet's wording ('non-ordinary expenses'), a copy-paste slip; the fix 'income' is right.",
       "fix": "'...and an explanation provided for any non-recurring or non-ordinary income.'"
+    },
+    {
+      "id": "A.3.5.2.2.1.2.1#markdown",
+      "docNo": "A.3.5.2.2.1.2.1",
+      "uuid": "443e0ae4-11d6-43f9-9988-f0e73926bf60",
+      "file": "A.3 - The-Stability-Scope.md",
+      "category": "markdown",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "The current value of the kbump parameter",
+      "issue": "Parameter name lacks backticks, unlike sibling documents (`hop`, `burn`, `khump`).",
+      "fix": "The current value of the `kbump` parameter"
     },
     {
       "id": "A.3.7.1.1.2.5.1.1#grammar",
@@ -2251,6 +2347,30 @@
       "fix": "Rename A.6.1.1.1.2.6.1.3.1.4.4 to \"Ethereum Mainnet - Spark Savings v2 PYUSD Instance Configuration Document\" (siblings .4.1-.4.3 name the underlying token) and update the link text in A.6.1.1.1.2.6.1.1.2.1.4.4."
     },
     {
+      "id": "A.6.1.1.1.2.6.1.1.2.1.9.1#naming",
+      "docNo": "A.6.1.1.1.2.6.1.1.2.1.9.1",
+      "uuid": "fddc6d87-9d31-4234-995d-08fac2f23ef9",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "Ethereum Mainnet - Transfer USDC to Binance (receive USDT) Instance Configuration Document",
+      "issue": "The heading names the instance 'Binance Transfer USDC to Binance (receive USDT)' but the linked document is 'Transfer USDC to Binance (receive USDT)'.",
+      "fix": "Retitle A.6.1.1.1.2.6.1.1.2.1.9.1 as: Ethereum Mainnet - Transfer USDC to Binance (receive USDT) Instance Configuration Document Location"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.1.2.1.9.2#naming",
+      "docNo": "A.6.1.1.1.2.6.1.1.2.1.9.2",
+      "uuid": "9b9d6744-b3b4-4cc8-9649-ae60a8db20a6",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "Ethereum Mainnet - Transfer USDT to Binance (receive USDC) Instance Configuration Document",
+      "issue": "The heading names the instance 'Binance Transfer USDT to Binance (receive USDC)' but the linked document is 'Transfer USDT to Binance (receive USDC)'.",
+      "fix": "Retitle A.6.1.1.1.2.6.1.1.2.1.9.2 as: Ethereum Mainnet - Transfer USDT to Binance (receive USDC) Instance Configuration Document Location"
+    },
+    {
       "id": "A.6.1.1.1.2.6.1.2.1.1.1.2.6.1#grammar",
       "docNo": "A.6.1.1.1.2.6.1.2.1.1.1.2.6.1",
       "uuid": "2a9bf1bb-81f7-40d2-a26d-2cc7e729913f",
@@ -2347,6 +2467,18 @@
       "fix": "For more detailed instructions on the code to execute this, see"
     },
     {
+      "id": "A.6.1.1.1.2.6.1.3.2.1.1.3#grammar",
+      "docNo": "A.6.1.1.1.2.6.1.3.2.1.1.3",
+      "uuid": "9b849363-5380-406f-888a-d533f6ec69de",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "grammar",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "The Instance follows the general ERC4626 procedures see [",
+      "issue": "Run-on sentence: the clause 'follows the general ERC4626 procedures' runs straight into 'see' with no punctuation or conjunction, and the later 'and for emergency procedures see' is similarly unpunctuated.",
+      "fix": "The Instance follows the general ERC4626 procedures specified in [...] and, for emergency procedures, [...]"
+    },
+    {
       "id": "A.6.1.1.1.2.6.1.3.2.1.1.3#xref",
       "docNo": "A.6.1.1.1.2.6.1.3.2.1.1.3",
       "uuid": "9b849363-5380-406f-888a-d533f6ec69de",
@@ -2369,6 +2501,42 @@
       "quote": "| Spark | `0x50c770E6dC6CfdEE33509273FA9a215bfAffF9B2` |",
       "issue": "The Sentinel table attributes 0x50c770E6dC6CfdEE33509273FA9a215bfAffF9B2 to Spark, but the sibling Curator Role Address document lists that same address as the Soter Labs co-curator Safe (Spark's co-curator Safe there is 0xAB5710211458FC8d7E0Be628202F47DdbD3F38Eb). One of the two entity attributions is likely wrong.",
       "fix": "Leave this Sentinel row as is. Swap the Soter Labs/Spark rows in the sibling Curator doc A.6.1.1.1.2.6.1.3.5.2.1.4.1.1 (Soter Labs 0xAB57...38Eb, Spark 0x50c7...F9B2), as in every other Spark curator table."
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.4.1.4.1.3.3#naming",
+      "docNo": "A.6.1.1.1.2.6.1.4.1.4.1.3.3",
+      "uuid": "40d3f261-a7f3-4cd9-b92b-3a79872eb339",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "Remove A Delegated Signer In The Ethena Minter Contract",
+      "issue": "Title writes 'Ethena Minter' as two words while the body and the sibling documents use the contract name 'EthenaMinter'.",
+      "fix": "Remove A Delegated Signer In The EthenaMinter Contract"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.4.1.4.1.3.4#naming",
+      "docNo": "A.6.1.1.1.2.6.1.4.1.4.1.3.4",
+      "uuid": "43775285-0a42-44d8-bc3f-acc80f97a8f3",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "Approve Minting of USDe By Ethena Minter Contract",
+      "issue": "Title writes 'Ethena Minter' as two words while the body uses the contract name 'EthenaMinter'.",
+      "fix": "Approve Minting of USDe By EthenaMinter Contract"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.4.1.4.2.3#grammar",
+      "docNo": "A.6.1.1.1.2.6.1.4.1.4.2.3",
+      "uuid": "3c72575c-ce4e-4379-ba45-080f335851a1",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "grammar",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "For detailed logic specific for this instance",
+      "issue": "Wrong preposition; 'specific to' is the correct collocation.",
+      "fix": "For detailed logic specific to this instance"
     },
     {
       "id": "A.6.1.1.1.3.1.3.3.4.1#grammar",
@@ -2443,6 +2611,18 @@
       "fix": "[A.6.1.1.1.3.5.2.2.8 - Spark Savings USDT on X Layer](c6eb9203-a5af-4f9b-baaf-b70c4449d4a4)"
     },
     {
+      "id": "A.6.1.1.1.3.5.3.2.3.9#xref",
+      "docNo": "A.6.1.1.1.3.5.3.2.3.9",
+      "uuid": "fac0c3d0-03d4-4d0b-b1ef-50c14e126924",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "xref",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "[A.6.1.1.1.3.5.2.2.9 - Onchain Parameters]",
+      "issue": "The link label gives the title \"Onchain Parameters\", but the linked document A.6.1.1.1.3.5.2.2.9 is titled \"Spark Savings USDC on X Layer\" (its parent is \"Spark Savings Parameters Current Configuration\"); the same label pattern recurs in sibling Rewards Rate documents.",
+      "fix": "[A.6.1.1.1.3.5.2.2.9 - Spark Savings USDC on X Layer]"
+    },
+    {
       "id": "A.6.1.1.2.2.1.1.3#naming",
       "docNo": "A.6.1.1.2.2.1.1.3",
       "uuid": "994395c0-c61d-4fc9-8167-00ee3134bd5a",
@@ -2491,6 +2671,18 @@
       "fix": "The governance process to invoke a new Instance of the Allocation System Primitive follows the Root Edit process, see [A.6.1.1.2.2.2.2.2.1.2 - Operational Process Definition](40826926-adb2-4de3-936d-702e2d8cb3b9)."
     },
     {
+      "id": "A.6.1.1.2.2.6.1.2.2.1.1.1.1#typo",
+      "docNo": "A.6.1.1.2.2.6.1.2.2.1.1.1.1",
+      "uuid": "dc515367-2fa0-4f98-b3d1-1b82d7ce782f",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "typo",
+      "severity": "medium",
+      "pass": "language",
+      "quote": "constructor(address admin) {\n        _grantRole(DEFAULT_ADMIN_ROLE, admin);\n```",
+      "issue": "The constructor in A.6.1.1.2.2.6.1.2.2.1.1.1.1 is missing its closing brace before the fence. The equivalent blocks (e.g. A.6.1.1.3.2.6.1.2.2.1.1.1.1) close it. It is truncated code, not a markdown fault.",
+      "fix": "constructor(address admin) {\n        _grantRole(DEFAULT_ADMIN_ROLE, admin);\n}\n```"
+    },
+    {
       "id": "A.6.1.1.2.2.6.1.3.1.4.3.2.2.1#entity",
       "docNo": "A.6.1.1.2.2.6.1.3.1.4.3.2.2.1",
       "uuid": "9008b149-de3d-429d-824f-48524063d657",
@@ -2501,6 +2693,54 @@
       "quote": "`0x4c9EDD5852cd905f086C759E8383e09bff1E68B3`",
       "issue": "The Token Address of the Ethena PT-USDe Instance is the same address that the same chunk declares as the USDe Token Address (A.6.1.1.2.2.6.1.3.1.4.1.2.2.1) and as the USDe Underlying Asset Address of the sUSDe Instance (A.6.1.1.2.2.6.1.3.1.4.2.2.2.2), so one address is labelled as two different tokens (USDe and PT-USDe).",
       "fix": "Replace with the actual Pendle PT-USDe token address; 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3 is the USDe token."
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.1#numeric",
+      "docNo": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.1",
+      "uuid": "7a93740b-d794-4ca9-aece-6c7db42bebf2",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- `slope`: 50 million USDC",
+      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
+      "fix": "- `slope`: 50 million USDC per day"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.2#numeric",
+      "docNo": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.2",
+      "uuid": "e198f465-0b25-4f45-860f-66eacc575f9f",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- `slope`: 50 million USDC",
+      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
+      "fix": "- `slope`: 50 million USDC per day"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.1#numeric",
+      "docNo": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.1",
+      "uuid": "e66a0529-5419-46ef-8b9c-e6f6c255c3e3",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- `slope`: 50 million USDC",
+      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
+      "fix": "- `slope`: 50 million USDC per day"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.2#numeric",
+      "docNo": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.2",
+      "uuid": "c3fa15e7-7193-4e4d-9463-9dc6001f3d75",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "numeric",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "- `slope`: 50 million USDC",
+      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
+      "fix": "- `slope`: 50 million USDC per day"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.4.1.1.2.1.3#entity",
@@ -2839,16 +3079,16 @@
       "fix": "`A.1.1.0.4.1.1.1.var2`."
     },
     {
-      "id": "A.1.5.5.0.4.2#xref",
+      "id": "A.1.5.5.0.4.2#typo",
       "docNo": "A.1.5.5.0.4.2",
       "uuid": "56fd4055-b412-4058-a33a-57d4d1b54181",
       "file": "A.1 - The-Governance-Scope.md",
-      "category": "xref",
+      "category": "typo",
       "severity": "low",
       "pass": "deterministic",
       "quote": "[A.1.5.5.0.4.1 - Operationally Active - Whether An Entity Is \"Operationally Active\" In A Role Is Determined Purely On A Formal Basis](38c70e00-b5b8-4d1b-9f57-809ef284cb25)",
-      "issue": "link text title \"Operationally Active - Whether An Entity Is \"Operationally Active\" In A Role Is Determined Purely On A Formal Basis\" but target title is \"Operationally Active - Whether An Entity Is “Operationally Active\" In A Role Is Determined Purely On A Formal Basis\"",
-      "fix": null
+      "issue": "Link resolves by UUID; the mismatch comes from the target title A.1.5.5.0.4.1 mixing a curly opening quote with a straight closing quote around \"Operationally Active\".",
+      "fix": "In the A.1.5.5.0.4.1 title, replace “Operationally Active\" with \"Operationally Active\""
     },
     {
       "id": "A.1.6.4.3.1#grammar",
@@ -2899,30 +3139,6 @@
       "fix": "the Core Facilitator may temporarily grant an Operational Facilitator the sole authority to validate the authenticity of the Standby Spell pursuant to"
     },
     {
-      "id": "A.1.11.2.5.2#naming",
-      "docNo": "A.1.11.2.5.2",
-      "uuid": "edb3b979-b7b6-4728-9c26-cf768d8827ea",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "If there are two conflicting Atlas Edit Weekly Proposals",
-      "issue": "Every other mention in this document uses \"Atlas Edit Weekly Cycle Proposals\"; this one drops \"Cycle\".",
-      "fix": "If there are two conflicting Atlas Edit Weekly Cycle Proposals"
-    },
-    {
-      "id": "A.1.11.2.5.2#naming-2",
-      "docNo": "A.1.11.2.5.2",
-      "uuid": "edb3b979-b7b6-4728-9c26-cf768d8827ea",
-      "file": "A.1 - The-Governance-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "If there are two conflicting Atlas Edit Weekly Proposals",
-      "issue": "Everywhere else in the document the term is \"Atlas Edit Weekly Cycle Proposals\"; \"Cycle\" is missing here.",
-      "fix": "If there are two conflicting Atlas Edit Weekly Cycle Proposals"
-    },
-    {
       "id": "A.1.14.2.9.2#typo",
       "docNo": "A.1.14.2.9.2",
       "uuid": "1405d49c-8373-409e-a96b-e59f49e3aeb0",
@@ -2947,90 +3163,6 @@
       "fix": "unclear — needs author: either drop the six-primitive activation precondition from the Agent Creation/Transformation validation docs, or state that Agent Token, Executor Accord and Root Edit are only Invoked (not Activated) during the Pre Root Edit stage."
     },
     {
-      "id": "A.2.2.8.1.1.1.2#grammar",
-      "docNo": "A.2.2.8.1.1.1.2",
-      "uuid": "18ce8e21-898d-4bf9-9bf8-ef1c1e7266ee",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "grammar",
-      "severity": "low",
-      "pass": "language",
-      "quote": "how agreements to setup an Instance",
-      "issue": "\"setup\" is the noun; the verb phrase should be \"set up\".",
-      "fix": "how agreements to set up an Instance"
-    },
-    {
-      "id": "A.2.2.9.1.2.3.4.4.2#copy-paste",
-      "docNo": "A.2.2.9.1.2.3.4.4.2",
-      "uuid": "9cb3ab72-37f5-4501-8661-a204d0747dd8",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "copy-paste",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "fully complete the Process",
-      "issue": "The linked Required Primitive Inputs (A.2.2.9.1.2.3.4.3) edit an Artifact Edit Proposal and, on approval, trigger the Offchain Vote process, so they do not by themselves fully complete the Process; the sentence appears copied from the activation process's Agent Artifact Updates.",
-      "fix": ""
-    },
-    {
-      "id": "A.2.2.9.2.2.3.1.4.2#naming",
-      "docNo": "A.2.2.9.2.2.3.1.4.2",
-      "uuid": "d86e5f9f-7b1c-4605-9253-4281a6bdbc13",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "`Primitive Hub Document/In Progress Invocations/Instance Name`",
-      "issue": "The first bullet refers to the 'In Progress Invocations Directory' field; this bullet drops 'Directory' for the same field.",
-      "fix": "`Primitive Hub Document/In Progress Invocations Directory/Instance Name`"
-    },
-    {
-      "id": "A.2.2.9.2.2.3.1.4.2#naming-2",
-      "docNo": "A.2.2.9.2.2.3.1.4.2",
-      "uuid": "d86e5f9f-7b1c-4605-9253-4281a6bdbc13",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "Edit `Primitive Hub Document/In Progress Invocations/Instance Name`",
-      "issue": "The same Primitive Hub Document section is called `In Progress Invocations Directory` in the first stage of this document and `In Progress Invocations` in the second stage.",
-      "fix": "Edit `Primitive Hub Document/In Progress Invocations Directory/Instance Name`"
-    },
-    {
-      "id": "A.2.2.9.2.2.3.2.4.2.1#entity",
-      "docNo": "A.2.2.9.2.2.3.2.4.2.1",
-      "uuid": "09ddd2c5-3768-4538-b979-629e1b369299",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "Active instances/Instance name/Instance status -",
-      "issue": "At this point the Invocation is still in progress (tracked under the Hub's In Progress Invocations Directory with an Invocation Status field per A.2.2.9.2.2.3.1.4.2), yet this update targets the Active instances section and an Instance status field.",
-      "fix": ""
-    },
-    {
-      "id": "A.2.2.9.2.2.3.4.4.2#copy-paste",
-      "docNo": "A.2.2.9.2.2.3.4.4.2",
-      "uuid": "d5cce836-259e-48df-ba77-89d58d1476cc",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "copy-paste",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "fully complete the Process",
-      "issue": "The linked Required Primitive Inputs (A.2.2.9.2.2.3.4.3) edit an Artifact Edit Proposal and, on approval, trigger the Offchain Vote process, so they do not by themselves fully complete the Process; the sentence appears copied from the activation process's Agent Artifact Updates.",
-      "fix": ""
-    },
-    {
-      "id": "A.2.2.10.1.1.1.2.3.1.2.20.1#numeric",
-      "docNo": "A.2.2.10.1.1.1.2.3.1.2.20.1",
-      "uuid": "d9b04eda-c204-4bac-a2ec-7af1f9d0dd9c",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "numeric",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "    - `maxAmount`: 5,000,000 of the token sold\n    - `slope`: 25,000,000 of the token sold per day",
-      "issue": "The Swap limit's daily slope (25,000,000) is five times its maxAmount (5,000,000), while every other limit in this set has a slope at or below its maxAmount; the slope may have been copied from the Deposit limit's 25,000,000.",
-      "fix": ""
-    },
-    {
       "id": "A.2.2.10.1.1.1.3.2.3.2#entity",
       "docNo": "A.2.2.10.1.1.1.3.2.3.2",
       "uuid": "fe7c0ccf-c570-471a-815a-6b4b9cda5e29",
@@ -3043,30 +3175,6 @@
       "fix": ""
     },
     {
-      "id": "A.2.2.10.1.1.2.2.3#entity",
-      "docNo": "A.2.2.10.1.1.2.2.3",
-      "uuid": "2b1612b8-480c-49b3-a304-6a6f593340de",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "the Operational Executor Facilitator finalizes and publishes the update",
-      "issue": "'Operational Executor Facilitator' is not a role used elsewhere; the Atlas names an Operational Facilitator (and separately Operational Executor Agents), so the role responsible for publishing the Artifact update is ambiguous.",
-      "fix": ""
-    },
-    {
-      "id": "A.2.2.10.1.1.3.2.1.2.2#grammar",
-      "docNo": "A.2.2.10.1.1.3.2.1.2.2",
-      "uuid": "d034533f-9b6f-411c-8b60-3bccb374765f",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "grammar",
-      "severity": "low",
-      "pass": "language",
-      "quote": "should define a RRC-incident",
-      "issue": "Wrong article: 'an RRC' (pronounced 'are-are-see').",
-      "fix": "should define an RRC-incident"
-    },
-    {
       "id": "A.2.2.10.1.1.3.2.1.2.3.2#structural",
       "docNo": "A.2.2.10.1.1.3.2.1.2.3.2",
       "uuid": "4887e971-be6c-4f98-9137-7cdec3ed0fa0",
@@ -3077,18 +3185,6 @@
       "quote": "Key Ratio Inputs and Computed Totals (Prime Internal Calculation) As Of End Of Period",
       "issue": "This item is nested as a sub-bullet of 'Detailed Breakdown of TRC Components', alongside the four TRC component categories (IJRC, PEJRC, TEJRC, OSRC), but it is not a TRC component category; it reads as a separate top-level section of the report like 'Aggregate TRC Value' and 'Dynamic Period Attestation and Disclosures'.",
       "fix": ""
-    },
-    {
-      "id": "A.2.3.1.4#grammar",
-      "docNo": "A.2.3.1.4",
-      "uuid": "f67a5780-11d5-4014-8254-795080c77133",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "grammar",
-      "severity": "low",
-      "pass": "language",
-      "quote": "Changes to the documents herein define the intended operation of the Sky Treasury Management Function;",
-      "issue": "'Changes ... define' reads as a subject/verb mismatch; the documents define the intended operation, and changes to them alter it.",
-      "fix": "The documents herein define the intended operation of the Sky Treasury Management Function;"
     },
     {
       "id": "A.2.8.2.2.2.1.2.1#numeric",
@@ -3115,18 +3211,6 @@
       "fix": "2.4 million USDS transferred from the Sky Ecosystem Liquidity Bootstrapping Budget to Spark"
     },
     {
-      "id": "A.2.8.2.2.2.7.2.1#naming-2",
-      "docNo": "A.2.8.2.2.2.7.2.1",
-      "uuid": "e3ec99ec-54c9-4fe7-8104-aee20c57ec57",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "2.4 million USDS transferred from the Ecosystem Liquidity Bootstrapping Budget",
-      "issue": "The same budget is called the 'Sky Ecosystem Liquidity Bootstrapping Budget' earlier in the same sentence and 'Liquidity Bootstrapping Budget' in the linked titles, so it has three different names.",
-      "fix": "2.4 million USDS transferred from the Sky Ecosystem Liquidity Bootstrapping Budget"
-    },
-    {
       "id": "A.2.8.2.7.1.2#numeric",
       "docNo": "A.2.8.2.7.1.2",
       "uuid": "9d207eb3-955e-4b4d-af1b-056519d0235b",
@@ -3137,54 +3221,6 @@
       "quote": "The duration of Ecosystem Accord 7 is indefinite, commencing from September 1, 2024.",
       "issue": "Accord 7 (Sky-Skybase) commences Sept 1, 2024, before Accords 1-2 (May 29, 2025) and 17 months before Skybase's Jan 29, 2026 Genesis allocation (A.2.8.2.7.2.2.2.1); a likely wrong date, not stale content.",
       "fix": "Probably should be a 2025 or 2026 date consistent with Accord 6 and Accord 8, or be marked as retroactive as in A.2.8.2.10.1.2."
-    },
-    {
-      "id": "A.2.8.2.7.2.2.2.2#naming",
-      "docNo": "A.2.8.2.7.2.2.2.2",
-      "uuid": "be600bf6-c0f2-42c5-ad5c-fd0cb429b628",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "USDS Demand Subsidies Multisig",
-      "issue": "The heading calls the recipient the \"USDS Demand Multisig\" while the body names it the \"USDS Demand Subsidies Multisig\".",
-      "fix": ""
-    },
-    {
-      "id": "A.2.8.2.7.2.2.2.2#naming-2",
-      "docNo": "A.2.8.2.7.2.2.2.2",
-      "uuid": "be600bf6-c0f2-42c5-ad5c-fd0cb429b628",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "Transfer Of Genesis Capital Allocation To USDS Demand Multisig",
-      "issue": "The title names a 'USDS Demand Multisig', but the body and the linked document call it the 'USDS Demand Subsidies Multisig'.",
-      "fix": "Transfer Of Genesis Capital Allocation To USDS Demand Subsidies Multisig"
-    },
-    {
-      "id": "A.2.8.2.7.2.2.3.2#entity",
-      "docNo": "A.2.8.2.7.2.2.3.2",
-      "uuid": "6567f1e3-7c28-44ee-b46c-723f958b1817",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "in the Sky Core Spell unless otherwise agreed by Sky and Skybase",
-      "issue": "The grant is funded from Skybase's SubProxy, and the sibling transfer record for the July 2026 Skybase grant says the payment was made in a Skybase Spell. This document instead names the Sky Core Spell as the payment vehicle.",
-      "fix": ""
-    },
-    {
-      "id": "A.2.11.1.3.2.2.1.2.3#governance",
-      "docNo": "A.2.11.1.3.2.2.1.2.3",
-      "uuid": "ec4cd423-74ba-4e74-82d9-46ba5f6cf526",
-      "file": "A.2 - The-Support-Scope.md",
-      "category": "governance",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "- Follow-up with the Protocol Security Workstream Lead if no acknowledgment is received within 48 hours.",
-      "issue": "This follow-up step names no one responsible for it. In the parallel emergency process, the Multisig Administrator must ensure the reporting signer follows up.",
-      "fix": "- The Multisig Administrator must ensure that the reporting signer follows up with the Protocol Security Workstream Lead if no acknowledgment is received within 48 hours."
     },
     {
       "id": "A.3.2.2.1.2.3.4#numeric-2",
@@ -3211,30 +3247,6 @@
       "fix": "in % terms, e.g. 5%, 42.5%, 55%, etc."
     },
     {
-      "id": "A.3.5.2.2.1.2.1#markdown",
-      "docNo": "A.3.5.2.2.1.2.1",
-      "uuid": "443e0ae4-11d6-43f9-9988-f0e73926bf60",
-      "file": "A.3 - The-Stability-Scope.md",
-      "category": "markdown",
-      "severity": "low",
-      "pass": "language",
-      "quote": "The current value of the kbump parameter",
-      "issue": "Parameter name lacks backticks, unlike sibling documents (`hop`, `burn`, `khump`).",
-      "fix": "The current value of the `kbump` parameter"
-    },
-    {
-      "id": "A.4.4.1.3.8.5.3.5.1#entity",
-      "docNo": "A.4.4.1.3.8.5.3.5.1",
-      "uuid": "6c74b4fe-db22-46a4-b8d3-1ce48b9ce7ae",
-      "file": "A.4 - The-Protocol-Scope.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "The algorithm was specified by the Core Council Risk Advisor, implemented and tested by Ecosystem Actor Sidestream, and reviewed by the Core Council Risk Advisor.",
-      "issue": "The same entity (Core Council Risk Advisor) is named as both the specifier and the reviewer of the algorithm, so the review is not independent; one of the two roles may name the wrong party.",
-      "fix": ""
-    },
-    {
       "id": "A.5.3.1.1.1#entity",
       "docNo": "A.5.3.1.1.1",
       "uuid": "eaf8cf29-90fd-4b9b-b0a8-02ce8386908c",
@@ -3259,66 +3271,6 @@
       "fix": "Luhansk People’s Republic"
     },
     {
-      "id": "A.6.1.1.1.2.2.2.2.1.2.1.4#xref",
-      "docNo": "A.6.1.1.1.2.2.2.2.1.2.1.4",
-      "uuid": "a9cecbeb-6f07-46fa-b5ad-68dd8ae4b0f0",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "xref",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "update the Atlas GitHub repository located at [https://github.com/sky-ecosystem/next-gen-atlas/pulls](https://github.com/sky-ecosystem/next-gen-atlas/pulls)",
-      "issue": "The text names the Atlas GitHub repository but links to the repository's pull-requests page rather than the repository itself.",
-      "fix": "update the Atlas GitHub repository located at [https://github.com/sky-ecosystem/next-gen-atlas](https://github.com/sky-ecosystem/next-gen-atlas)"
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.2.1.9.1#naming",
-      "docNo": "A.6.1.1.1.2.6.1.1.2.1.9.1",
-      "uuid": "fddc6d87-9d31-4234-995d-08fac2f23ef9",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "Ethereum Mainnet - Transfer USDC to Binance (receive USDT) Instance Configuration Document",
-      "issue": "The heading names the instance 'Binance Transfer USDC to Binance (receive USDT)' but the linked document is 'Transfer USDC to Binance (receive USDT)'.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.2.1.9.1#naming-2",
-      "docNo": "A.6.1.1.1.2.6.1.1.2.1.9.1",
-      "uuid": "fddc6d87-9d31-4234-995d-08fac2f23ef9",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "Ethereum Mainnet - Binance Transfer USDC to Binance (receive USDT) Instance Configuration Document Location",
-      "issue": "The title repeats \"Binance\" (\"Binance Transfer USDC to Binance\") and does not match the linked Instance Configuration Document name \"Transfer USDC to Binance (receive USDT)\"; the sibling USDT document has the same mismatch.",
-      "fix": "Ethereum Mainnet - Transfer USDC to Binance (receive USDT) Instance Configuration Document Location"
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.2.1.9.2#naming",
-      "docNo": "A.6.1.1.1.2.6.1.1.2.1.9.2",
-      "uuid": "9b9d6744-b3b4-4cc8-9649-ae60a8db20a6",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "Ethereum Mainnet - Transfer USDT to Binance (receive USDC) Instance Configuration Document",
-      "issue": "The heading names the instance 'Binance Transfer USDT to Binance (receive USDC)' but the linked document is 'Transfer USDT to Binance (receive USDC)'.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.2.3.1#naming",
-      "docNo": "A.6.1.1.1.2.6.1.1.2.3.1",
-      "uuid": "7539e9b2-453b-46b7-8d7c-f776d485914a",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "Spark Savings V2",
-      "issue": "The title writes the protocol as \"Spark Savings V2\" while the body and the child Instance titles write \"Spark Savings v2\".",
-      "fix": "Spark Savings v2"
-    },
-    {
       "id": "A.6.1.1.1.2.6.1.1.3.2.1.1#naming",
       "docNo": "A.6.1.1.1.2.6.1.1.3.2.1.1",
       "uuid": "cb87926d-f011-47ff-a0ab-81a057016ed6",
@@ -3328,19 +3280,7 @@
       "pass": "language",
       "quote": "Base Mainnet - Fluid sUSDS ERC4626 Vault Instance Configuration Document",
       "issue": "The heading calls the chain 'Base' but the linked document title says 'Base Mainnet'.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.1.3.2.1.1#xref",
-      "docNo": "A.6.1.1.1.2.6.1.1.3.2.1.1",
-      "uuid": "cb87926d-f011-47ff-a0ab-81a057016ed6",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "xref",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "A.6.1.1.1.2.6.1.4.2.1.1 - Base Mainnet - Fluid sUSDS ERC4626 Vault Instance Configuration Document",
-      "issue": "The link label uses the chain name \"Base Mainnet\" while the document's own title and the sibling Base Aave location use \"Base\".",
-      "fix": ""
+      "fix": "Retitle A.6.1.1.1.2.6.1.4.2.1.1 as \"Base - Fluid sUSDS ERC4626 Vault Instance Configuration Document\" and update the link text in A.6.1.1.1.2.6.1.1.3.2.1.1 to match"
     },
     {
       "id": "A.6.1.1.1.2.6.1.1.3.4.2#grammar",
@@ -3353,18 +3293,6 @@
       "quote": "with `Completed` Status are stored herein",
       "issue": "Sentence lacks its closing period, unlike sibling directory documents.",
       "fix": "with `Completed` Status are stored herein."
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.2.1.1.3.6.3.1#entity",
-      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.6.3.1",
-      "uuid": "0de9f0f1-ccef-4f17-b699-7dedb79673b9",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "(`LIMIT_USDC_TO_CCTP_AVALANCHE`)",
-      "issue": "The CCTP bridging procedure (A.6.1.1.1.2.6.1.2.2.1.2.1.2.5.1) only uses a global `LIMIT_USDC_TO_CCTP` key and a per-destination `LIMIT_USDC_TO_DOMAIN` key; no Avalanche-specific `LIMIT_USDC_TO_CCTP_AVALANCHE` key exists in the described code, so this rate-limit identifier may be misnamed.",
-      "fix": ""
     },
     {
       "id": "A.6.1.1.1.2.6.1.2.1.1.3.7.2#entity",
@@ -3391,42 +3319,6 @@
       "fix": "Almost certainly should be `0x2E1b01adABB8D4981863394bEa23a1263CBaeDfC` like the other Spark Savings v2 instances — otherwise unclear, needs author."
     },
     {
-      "id": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3#entity",
-      "docNo": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3",
-      "uuid": "8efbce12-9417-4ab7-9e55-6194ee592bd4",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "`0x38464507E02c983F20428a6E8566693fE9e422a9`",
-      "issue": "The Pool Address is identical to the sibling Token Address (A.6.1.1.1.2.6.1.3.1.5.1.2.2.1); the same address is given for two different roles, which may be a copy-paste error.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.3.1.9.2.2.3.1#entity",
-      "docNo": "A.6.1.1.1.2.6.1.3.1.9.2.2.3.1",
-      "uuid": "1fffefe8-44db-435a-b180-c0bd13053807",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "The OTC swap RateLimitID is: `0x423505c71302bb78e1a7063ffe62b25e653a1d424d569e464f53694d683a969a`",
-      "issue": "The OTC swap RateLimitID for the USDT-to-Binance (receive USDC) Instance is identical to the one given for the USDC-to-Binance (receive USDT) Instance (A.6.1.1.1.2.6.1.3.1.9.1.2.3.1). This may be intentional if the limit is keyed per exchange, but it may also be a copy-paste of the sibling's ID.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.3.2.1.1.3#grammar",
-      "docNo": "A.6.1.1.1.2.6.1.3.2.1.1.3",
-      "uuid": "9b849363-5380-406f-888a-d533f6ec69de",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "grammar",
-      "severity": "low",
-      "pass": "language",
-      "quote": "The Instance follows the general ERC4626 procedures see [",
-      "issue": "Run-on sentence: the clause 'follows the general ERC4626 procedures' runs straight into 'see' with no punctuation or conjunction, and the later 'and for emergency procedures see' is similarly unpunctuated.",
-      "fix": "The Instance follows the general ERC4626 procedures, see ["
-    },
-    {
       "id": "A.6.1.1.1.2.6.1.3.5.1.2.4.2.2#grammar",
       "docNo": "A.6.1.1.1.2.6.1.3.5.1.2.4.2.2",
       "uuid": "6160b63f-6195-4be6-91e3-792ee9bc1c43",
@@ -3437,42 +3329,6 @@
       "quote": "The current `maxAmount` for this conduit's take and transfer operations are defined in the subdocuments herein.",
       "issue": "Singular subject `maxAmount` does not agree with plural verb 'are defined'; the sentence covers two operations (take and transfer).",
       "fix": "The current `maxAmount` values for this conduit's take and transfer operations are defined in the subdocuments herein."
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.4.1.4.1.3.3#naming",
-      "docNo": "A.6.1.1.1.2.6.1.4.1.4.1.3.3",
-      "uuid": "40d3f261-a7f3-4cd9-b92b-3a79872eb339",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "Remove A Delegated Signer In The Ethena Minter Contract",
-      "issue": "Title writes 'Ethena Minter' as two words while the body and the sibling documents use the contract name 'EthenaMinter'.",
-      "fix": "Remove A Delegated Signer In The EthenaMinter Contract"
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.4.1.4.1.3.4#naming",
-      "docNo": "A.6.1.1.1.2.6.1.4.1.4.1.3.4",
-      "uuid": "43775285-0a42-44d8-bc3f-acc80f97a8f3",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "naming",
-      "severity": "low",
-      "pass": "language",
-      "quote": "Approve Minting of USDe By Ethena Minter Contract",
-      "issue": "Title writes 'Ethena Minter' as two words while the body uses the contract name 'EthenaMinter'.",
-      "fix": "Approve Minting of USDe By EthenaMinter Contract"
-    },
-    {
-      "id": "A.6.1.1.1.2.6.1.4.1.4.2.3#grammar",
-      "docNo": "A.6.1.1.1.2.6.1.4.1.4.2.3",
-      "uuid": "3c72575c-ce4e-4379-ba45-080f335851a1",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "grammar",
-      "severity": "low",
-      "pass": "language",
-      "quote": "For detailed logic specific for this instance",
-      "issue": "Wrong preposition; 'specific to' is the correct collocation.",
-      "fix": "For detailed logic specific to this instance"
     },
     {
       "id": "A.6.1.1.1.3.5.3.2.3.7#xref",
@@ -3487,78 +3343,6 @@
       "fix": "Relabel to [A.6.1.1.1.3.5.2.2.7 - Spark Savings USDT on Arbitrum](5a2b0ec2-5358-4464-b6cb-0d39642a437d) (same pattern in A.6.1.1.1.3.5.3.2.3.2/.6/.8/.9)."
     },
     {
-      "id": "A.6.1.1.1.3.5.3.2.3.9#xref",
-      "docNo": "A.6.1.1.1.3.5.3.2.3.9",
-      "uuid": "fac0c3d0-03d4-4d0b-b1ef-50c14e126924",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "xref",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "[A.6.1.1.1.3.5.2.2.9 - Onchain Parameters]",
-      "issue": "The link label gives the title \"Onchain Parameters\", but the linked document A.6.1.1.1.3.5.2.2.9 is titled \"Spark Savings USDC on X Layer\" (its parent is \"Spark Savings Parameters Current Configuration\"); the same label pattern recurs in sibling Rewards Rate documents.",
-      "fix": "[A.6.1.1.1.3.5.2.2.9 - Spark Savings USDC on X Layer]"
-    },
-    {
-      "id": "A.6.1.1.1.3.9.7.2.4#entity",
-      "docNo": "A.6.1.1.1.3.9.7.2.4",
-      "uuid": "67d8abe9-a398-4c7c-9e0d-ee48e97489e1",
-      "file": "A.6.1.1.1 - Spark.md",
-      "category": "entity",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "a Sentora multisig at `0x9e396dE3312D373b87F9BD8763fb48184b42aac0`, requiring a 1 of 1 signer approval threshold",
-      "issue": "The same Sentora address is listed both as a Sentinel (cancellation authority) holder and as the Allocator, and Sentora is also part of the Curator; worth confirming the address is intended for both roles.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.2.2.2.2.2.1.2.1.5#xref",
-      "docNo": "A.6.1.1.2.2.2.2.2.1.2.1.5",
-      "uuid": "a3dcb3c9-7e5a-48b1-aac8-9af4b5dfcfc2",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "xref",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "the Atlas GitHub repository located at [https://github.com/sky-ecosystem/next-gen-atlas/pulls](https://github.com/sky-ecosystem/next-gen-atlas/pulls)",
-      "issue": "The text describes the repository location but the link points at the repository's pull-requests page rather than the repository itself.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.2.2.6.1.2.2.1.1.1.1#markdown",
-      "docNo": "A.6.1.1.2.2.6.1.2.2.1.1.1.1",
-      "uuid": "dc515367-2fa0-4f98-b3d1-1b82d7ce782f",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "markdown",
-      "severity": "low",
-      "pass": "language",
-      "quote": "constructor(address admin) {\n        _grantRole(DEFAULT_ADMIN_ROLE, admin);\n```",
-      "issue": "The code block is missing the closing brace of the constructor, unlike the equivalent Keel documents, which close it.",
-      "fix": "constructor(address admin) {\n        _grantRole(DEFAULT_ADMIN_ROLE, admin);\n}\n```"
-    },
-    {
-      "id": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.1#numeric",
-      "docNo": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.1",
-      "uuid": "7a93740b-d794-4ca9-aece-6c7db42bebf2",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "numeric",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "- `slope`: 50 million USDC",
-      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
-      "fix": "- `slope`: 50 million USDC per day"
-    },
-    {
-      "id": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.2#numeric",
-      "docNo": "A.6.1.1.2.2.6.1.3.1.4.3.2.4.2",
-      "uuid": "e198f465-0b25-4f45-860f-66eacc575f9f",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "numeric",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "- `slope`: 50 million USDC",
-      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
-      "fix": "- `slope`: 50 million USDC per day"
-    },
-    {
       "id": "A.6.1.1.2.2.6.1.3.1.4.4.2.2.1#entity",
       "docNo": "A.6.1.1.2.2.6.1.3.1.4.4.2.2.1",
       "uuid": "3b108b97-6f88-4d96-a55a-38c39191281e",
@@ -3571,30 +3355,6 @@
       "fix": "Replace with the actual Pendle PT-sUSDe token address; it must differ from the USDC underlying address 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48."
     },
     {
-      "id": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.1#numeric",
-      "docNo": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.1",
-      "uuid": "e66a0529-5419-46ef-8b9c-e6f6c255c3e3",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "numeric",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "- `slope`: 50 million USDC",
-      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
-      "fix": "- `slope`: 50 million USDC per day"
-    },
-    {
-      "id": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.2#numeric",
-      "docNo": "A.6.1.1.2.2.6.1.3.1.4.4.2.4.2",
-      "uuid": "c3fa15e7-7193-4e4d-9463-9dc6001f3d75",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "numeric",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "- `slope`: 50 million USDC",
-      "issue": "The slope is given as a bare amount with no time unit, while every sibling rate limit states its slope as an amount \"per day\".",
-      "fix": "- `slope`: 50 million USDC per day"
-    },
-    {
       "id": "A.6.1.1.2.2.6.1.3.1.7.5.2.2.6#entity",
       "docNo": "A.6.1.1.2.2.6.1.3.1.7.5.2.2.6",
       "uuid": "80038f9f-d01e-45c1-8f51-cfb73cff1f6f",
@@ -3604,31 +3364,7 @@
       "pass": "factual",
       "quote": "| Steakhouse Financial | `0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827` |",
       "issue": "The PYUSD vault's Allocator table lists five entries, while the sibling Grove x Steakhouse Ethereum Mainnet Morpho Vault V2 Instances (RLUSD, USDG) list the same addresses plus Steakhouse Financial `0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a`; that row may have been dropped here.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.2.2.6.1.3.1.11.1.2.3#structural",
-      "docNo": "A.6.1.1.2.2.6.1.3.1.11.1.2.3",
-      "uuid": "c5462c4a-eb73-40c3-bc66-6224fb0d7359",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "structural",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "The specific `RateLimitID`(s) for this conduit’s inflow, outflow, mint, and redeem operations are defined in the subdocuments herein.",
-      "issue": "The document names four operations (inflow, outflow, mint, redeem), but the sibling Rate Limits section for this conduit defines only deposit and withdrawal limits.",
-      "fix": ""
-    },
-    {
-      "id": "A.6.1.1.2.2.6.1.3.1.11.1.2.4#structural",
-      "docNo": "A.6.1.1.2.2.6.1.3.1.11.1.2.4",
-      "uuid": "d60717bb-c122-49b9-9617-d121c05f60cb",
-      "file": "A.6.1.1.2 - Grove.md",
-      "category": "structural",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "The current `maxAmount` and `slope` for this conduit’s inflow, outflow, mint, and redeem operations are defined in the subdocuments herein.",
-      "issue": "The document says its subdocuments cover four operations (inflow, outflow, mint, redeem), but its only children are a Deposit Rate Limit and a Withdrawal Rate Limit.",
-      "fix": ""
+      "fix": "Add the row \"| Steakhouse Financial | `0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a` |\" after the `0xfC580f…d827` row, if that allocator is set on the PYUSD vault."
     },
     {
       "id": "A.6.1.1.2.3.7.1.4#governance",
@@ -3641,18 +3377,6 @@
       "quote": "The Purchase Executor chooses it, names it in [A.6.1.1.2.3.7.4 - Parameters](76612d55-7c9a-45d6-8fea-8a949d869102)",
       "issue": "The Purchase Executor (the Grove Foundation) is said to name the Execution Agent in the Parameters document, but the GROVE Purchase Plan parent says changes to the plan are made through the Root Edit Primitive, which the Purchase Executor does not control; the Executor can choose the agent but cannot itself record it there.",
       "fix": ""
-    },
-    {
-      "id": "A.6.1.1.3.2.2.2.2.1.2.1.5#xref",
-      "docNo": "A.6.1.1.3.2.2.2.2.1.2.1.5",
-      "uuid": "293c49b9-48f4-433c-820f-4915696f742f",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "xref",
-      "severity": "low",
-      "pass": "factual",
-      "quote": "[https://github.com/sky-ecosystem/next-gen-atlas/pulls](https://github.com/sky-ecosystem/next-gen-atlas/pulls)",
-      "issue": "The text calls this the location of the Atlas GitHub repository, but the link points to the repository's pull-request list.",
-      "fix": "[https://github.com/sky-ecosystem/next-gen-atlas](https://github.com/sky-ecosystem/next-gen-atlas)"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.1.1.3.1.2.1#wrong-word",
@@ -5204,6 +4928,351 @@
       "rejectedReason": "'customized to <Agent>' names the Agent, not the Instance, across every Prime. A.6.1.1.1.2.5.1.2.1.2.1 says 'customized to Spark' and all Osero instances say 'Osero', so 'Osero' is correct here.",
       "rejectedOn": "2026-11-18",
       "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.1.11.2.5.2#naming-2",
+      "docNo": "A.1.11.2.5.2",
+      "uuid": "edb3b979-b7b6-4728-9c26-cf768d8827ea",
+      "file": "A.1 - The-Governance-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "If there are two conflicting Atlas Edit Weekly Proposals",
+      "issue": "Everywhere else in the document the term is \"Atlas Edit Weekly Cycle Proposals\"; \"Cycle\" is missing here.",
+      "fix": "If there are two conflicting Atlas Edit Weekly Cycle Proposals",
+      "rejectedReason": "Duplicate of the language-pass row on the same document (A.1.11.2.5.2), which reports the same defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.2.9.1.2.3.4.4.2#copy-paste",
+      "docNo": "A.2.2.9.1.2.3.4.4.2",
+      "uuid": "9cb3ab72-37f5-4501-8661-a204d0747dd8",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "copy-paste",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "fully complete the Process",
+      "issue": "The linked Required Primitive Inputs (A.2.2.9.1.2.3.4.3) edit an Artifact Edit Proposal and, on approval, trigger the Offchain Vote process, so they do not by themselves fully complete the Process; the sentence appears copied from the activation process's Agent Artifact Updates.",
+      "fix": "",
+      "rejectedReason": "'The Process' is the Operational Facilitator Review process (A.2.2.9.1.2.3.4), which its inputs do complete; triggering the next process is standard boilerplate used across every sibling Agent Artifact Updates doc.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.2.9.2.2.3.1.4.2#naming-2",
+      "docNo": "A.2.2.9.2.2.3.1.4.2",
+      "uuid": "d86e5f9f-7b1c-4605-9253-4281a6bdbc13",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "Edit `Primitive Hub Document/In Progress Invocations/Instance Name`",
+      "issue": "The same Primitive Hub Document section is called `In Progress Invocations Directory` in the first stage of this document and `In Progress Invocations` in the second stage.",
+      "fix": "Edit `Primitive Hub Document/In Progress Invocations Directory/Instance Name`",
+      "rejectedReason": "Duplicate of the language-pass row on the same document (A.2.2.9.2.2.3.1.4.2), which reports the same defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.2.9.2.2.3.4.4.2#copy-paste",
+      "docNo": "A.2.2.9.2.2.3.4.4.2",
+      "uuid": "d5cce836-259e-48df-ba77-89d58d1476cc",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "copy-paste",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "fully complete the Process",
+      "issue": "The linked Required Primitive Inputs (A.2.2.9.2.2.3.4.3) edit an Artifact Edit Proposal and, on approval, trigger the Offchain Vote process, so they do not by themselves fully complete the Process; the sentence appears copied from the activation process's Agent Artifact Updates.",
+      "fix": "",
+      "rejectedReason": "'The Process' here is the Operational Facilitator Review process (A.2.2.9.2.2.3.4), which its inputs complete; the same boilerplate sentence appears in every sibling Agent Artifact Updates doc.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.2.10.1.1.1.2.3.1.2.20.1#numeric",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.20.1",
+      "uuid": "d9b04eda-c204-4bac-a2ec-7af1f9d0dd9c",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "numeric",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "    - `maxAmount`: 5,000,000 of the token sold\n    - `slope`: 25,000,000 of the token sold per day",
+      "issue": "The Swap limit's daily slope (25,000,000) is five times its maxAmount (5,000,000), while every other limit in this set has a slope at or below its maxAmount; the slope may have been copied from the Deposit limit's 25,000,000.",
+      "fix": "",
+      "rejectedReason": "Per A.2.2.10.1.1.1.2.3.1.2 these are historical highs of maxAmount and slope, recorded separately; a slope above maxAmount is a valid fast refill, and nothing in the text shows the figure is wrong.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.2.10.1.1.2.2.3#entity",
+      "docNo": "A.2.2.10.1.1.2.2.3",
+      "uuid": "2b1612b8-480c-49b3-a304-6a6f593340de",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "the Operational Executor Facilitator finalizes and publishes the update",
+      "issue": "'Operational Executor Facilitator' is not a role used elsewhere; the Atlas names an Operational Facilitator (and separately Operational Executor Agents), so the role responsible for publishing the Artifact update is ambiguous.",
+      "fix": "",
+      "rejectedReason": "'Operational Executor Facilitator' is a defined Atlas term (A.0.1.1.50, A.1.7.1) and is used the same way in sibling steps A.2.2.10.1.1.2.2.1-2 and A.2.2.8.1.1.1.2.3.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.3.1.4#grammar",
+      "docNo": "A.2.3.1.4",
+      "uuid": "f67a5780-11d5-4014-8254-795080c77133",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "grammar",
+      "severity": "low",
+      "pass": "language",
+      "quote": "Changes to the documents herein define the intended operation of the Sky Treasury Management Function;",
+      "issue": "'Changes ... define' reads as a subject/verb mismatch; the documents define the intended operation, and changes to them alter it.",
+      "fix": "The documents herein define the intended operation of the Sky Treasury Management Function;",
+      "rejectedReason": "A.2.3.1.4 is grammatical: changes to the documents define the intended operation, while on-chain effect needs an Executive Vote. That contrast is deliberate.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.8.2.2.2.7.2.1#naming-2",
+      "docNo": "A.2.8.2.2.2.7.2.1",
+      "uuid": "e3ec99ec-54c9-4fe7-8104-aee20c57ec57",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "2.4 million USDS transferred from the Ecosystem Liquidity Bootstrapping Budget",
+      "issue": "The same budget is called the 'Sky Ecosystem Liquidity Bootstrapping Budget' earlier in the same sentence and 'Liquidity Bootstrapping Budget' in the linked titles, so it has three different names.",
+      "fix": "2.4 million USDS transferred from the Sky Ecosystem Liquidity Bootstrapping Budget",
+      "rejectedReason": "Duplicate of the language-pass row on the same document (A.2.8.2.2.2.7.2.1), which reports the same defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.8.2.7.2.2.2.2#naming-2",
+      "docNo": "A.2.8.2.7.2.2.2.2",
+      "uuid": "be600bf6-c0f2-42c5-ad5c-fd0cb429b628",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "Transfer Of Genesis Capital Allocation To USDS Demand Multisig",
+      "issue": "The title names a 'USDS Demand Multisig', but the body and the linked document call it the 'USDS Demand Subsidies Multisig'.",
+      "fix": "Transfer Of Genesis Capital Allocation To USDS Demand Subsidies Multisig",
+      "rejectedReason": "Duplicate of the language-pass row on the same document (A.2.8.2.7.2.2.2.2), which reports the same defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.2.8.2.7.2.2.3.2#entity",
+      "docNo": "A.2.8.2.7.2.2.3.2",
+      "uuid": "6567f1e3-7c28-44ee-b46c-723f958b1817",
+      "file": "A.2 - The-Support-Scope.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "in the Sky Core Spell unless otherwise agreed by Sky and Skybase",
+      "issue": "The grant is funded from Skybase's SubProxy, and the sibling transfer record for the July 2026 Skybase grant says the payment was made in a Skybase Spell. This document instead names the Sky Core Spell as the payment vehicle.",
+      "fix": "",
+      "rejectedReason": "The November grant is explicitly for the November Executive Vote, and a Sky Core Spell can execute SubProxy actions (A.1.10.2.3.2.3.2.1, A.4.6.2.1.3); a different vehicle from the July grant is not an error.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.4.4.1.3.8.5.3.5.1#entity",
+      "docNo": "A.4.4.1.3.8.5.3.5.1",
+      "uuid": "6c74b4fe-db22-46a4-b8d3-1ce48b9ce7ae",
+      "file": "A.4 - The-Protocol-Scope.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The algorithm was specified by the Core Council Risk Advisor, implemented and tested by Ecosystem Actor Sidestream, and reviewed by the Core Council Risk Advisor.",
+      "issue": "The same entity (Core Council Risk Advisor) is named as both the specifier and the reviewer of the algorithm, so the review is not independent; one of the two roles may name the wrong party.",
+      "fix": "",
+      "rejectedReason": "A.4.4.1.3.8.5.3.5.1 has the specifier review Sidestream's implementation, which is a coherent workflow; no Atlas rule requires an independent reviewer, so the claim is speculation.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.2.2.2.1.2.1.4#xref",
+      "docNo": "A.6.1.1.1.2.2.2.2.1.2.1.4",
+      "uuid": "a9cecbeb-6f07-46fa-b5ad-68dd8ae4b0f0",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "xref",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "update the Atlas GitHub repository located at [https://github.com/sky-ecosystem/next-gen-atlas/pulls](https://github.com/sky-ecosystem/next-gen-atlas/pulls)",
+      "issue": "The text names the Atlas GitHub repository but links to the repository's pull-requests page rather than the repository itself.",
+      "fix": "update the Atlas GitHub repository located at [https://github.com/sky-ecosystem/next-gen-atlas](https://github.com/sky-ecosystem/next-gen-atlas)",
+      "rejectedReason": "The link text is the URL itself, so label and target agree. The pulls page is part of the repository and is where Atlas updates are made. The same template text appears in every Prime artifact (e.g. A.6.1.1.2.2.2.2.2.1.2.1.5).",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.1.2.1.9.1#naming-2",
+      "docNo": "A.6.1.1.1.2.6.1.1.2.1.9.1",
+      "uuid": "fddc6d87-9d31-4234-995d-08fac2f23ef9",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "Ethereum Mainnet - Binance Transfer USDC to Binance (receive USDT) Instance Configuration Document Location",
+      "issue": "The title repeats \"Binance\" (\"Binance Transfer USDC to Binance\") and does not match the linked Instance Configuration Document name \"Transfer USDC to Binance (receive USDT)\"; the sibling USDT document has the same mismatch.",
+      "fix": "Ethereum Mainnet - Transfer USDC to Binance (receive USDT) Instance Configuration Document Location",
+      "rejectedReason": "Duplicate of the language-pass row on the same document (A.6.1.1.1.2.6.1.1.2.1.9.1), which reports the same defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.1.2.3.1#naming",
+      "docNo": "A.6.1.1.1.2.6.1.1.2.3.1",
+      "uuid": "7539e9b2-453b-46b7-8d7c-f776d485914a",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "naming",
+      "severity": "low",
+      "pass": "language",
+      "quote": "Spark Savings V2",
+      "issue": "The title writes the protocol as \"Spark Savings V2\" while the body and the child Instance titles write \"Spark Savings v2\".",
+      "fix": "Spark Savings v2",
+      "rejectedReason": "Every Spark Savings directory heading (e.g. A.6.1.1.1.2.6.1.1.2.1.4, A.6.1.1.1.2.6.1.3.1.4) writes \"V2\", so this is a consistent Title Case heading convention, not a one-off slip.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.1.3.2.1.1#xref",
+      "docNo": "A.6.1.1.1.2.6.1.1.3.2.1.1",
+      "uuid": "cb87926d-f011-47ff-a0ab-81a057016ed6",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "xref",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "A.6.1.1.1.2.6.1.4.2.1.1 - Base Mainnet - Fluid sUSDS ERC4626 Vault Instance Configuration Document",
+      "issue": "The link label uses the chain name \"Base Mainnet\" while the document's own title and the sibling Base Aave location use \"Base\".",
+      "fix": "",
+      "rejectedReason": "Duplicate of the language-pass row on the same document (A.6.1.1.1.2.6.1.1.3.2.1.1), which reports the same defect.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.2.1.1.3.6.3.1#entity",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.6.3.1",
+      "uuid": "0de9f0f1-ccef-4f17-b699-7dedb79673b9",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "(`LIMIT_USDC_TO_CCTP_AVALANCHE`)",
+      "issue": "The CCTP bridging procedure (A.6.1.1.1.2.6.1.2.2.1.2.1.2.5.1) only uses a global `LIMIT_USDC_TO_CCTP` key and a per-destination `LIMIT_USDC_TO_DOMAIN` key; no Avalanche-specific `LIMIT_USDC_TO_CCTP_AVALANCHE` key exists in the described code, so this rate-limit identifier may be misnamed.",
+      "fix": "",
+      "rejectedReason": "Spark labels its per-destination CCTP limits with a chain suffix throughout (`LIMIT_USDC_TO_CCTP_BASE` in A.6.1.1.1.2.6.1.2.1.1.3.2.7.1, `_ETH` in .3.1.4.1), so `_AVALANCHE` follows house style and is not a misnaming.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3#entity",
+      "docNo": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3",
+      "uuid": "8efbce12-9417-4ab7-9e55-6194ee592bd4",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "`0x38464507E02c983F20428a6E8566693fE9e422a9`",
+      "issue": "The Pool Address is identical to the sibling Token Address (A.6.1.1.1.2.6.1.3.1.5.1.2.2.1); the same address is given for two different roles, which may be a copy-paste error.",
+      "fix": "",
+      "rejectedReason": "A pool whose share token is the pool contract itself has the same Token and Pool Address; the Curve ICD (A.6.1.1.1.2.6.1.3.1.2.1.2.2.1/.4) shows the same identical pairing.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.2.6.1.3.1.9.2.2.3.1#entity",
+      "docNo": "A.6.1.1.1.2.6.1.3.1.9.2.2.3.1",
+      "uuid": "1fffefe8-44db-435a-b180-c0bd13053807",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The OTC swap RateLimitID is: `0x423505c71302bb78e1a7063ffe62b25e653a1d424d569e464f53694d683a969a`",
+      "issue": "The OTC swap RateLimitID for the USDT-to-Binance (receive USDC) Instance is identical to the one given for the USDC-to-Binance (receive USDT) Instance (A.6.1.1.1.2.6.1.3.1.9.1.2.3.1). This may be intentional if the limit is keyed per exchange, but it may also be a copy-paste of the sibling's ID.",
+      "fix": "",
+      "rejectedReason": "The two Binance ICDs state that their OTC swap rate limit is shared with each other (A.6.1.1.1.2.6.1.3.1.9.2.2.4.1 and 9.1.2.4.1), so an identical RateLimitID is intended.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.1.3.9.7.2.4#entity",
+      "docNo": "A.6.1.1.1.3.9.7.2.4",
+      "uuid": "67d8abe9-a398-4c7c-9e0d-ee48e97489e1",
+      "file": "A.6.1.1.1 - Spark.md",
+      "category": "entity",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "a Sentora multisig at `0x9e396dE3312D373b87F9BD8763fb48184b42aac0`, requiring a 1 of 1 signer approval threshold",
+      "issue": "The same Sentora address is listed both as a Sentinel (cancellation authority) holder and as the Allocator, and Sentora is also part of the Curator; worth confirming the address is intended for both roles.",
+      "fix": "",
+      "rejectedReason": "No Atlas rule bars one multisig from holding both the Sentinel and Allocator roles. A.6.1.1.1.3.9.7.2.4 lists both deliberately, and the finding only asks for confirmation.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.2.2.2.2.1.2.1.5#xref",
+      "docNo": "A.6.1.1.2.2.2.2.2.1.2.1.5",
+      "uuid": "a3dcb3c9-7e5a-48b1-aac8-9af4b5dfcfc2",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "xref",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "the Atlas GitHub repository located at [https://github.com/sky-ecosystem/next-gen-atlas/pulls](https://github.com/sky-ecosystem/next-gen-atlas/pulls)",
+      "issue": "The text describes the repository location but the link points at the repository's pull-requests page rather than the repository itself.",
+      "fix": "",
+      "rejectedReason": "This is the same template text as A.6.1.1.1.2.2.2.2.1.2.1.4. The link text is the URL itself, and the pulls page is part of the repository and is where Atlas updates are made.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.1.11.1.2.3#structural",
+      "docNo": "A.6.1.1.2.2.6.1.3.1.11.1.2.3",
+      "uuid": "c5462c4a-eb73-40c3-bc66-6224fb0d7359",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "structural",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The specific `RateLimitID`(s) for this conduit’s inflow, outflow, mint, and redeem operations are defined in the subdocuments herein.",
+      "issue": "The document names four operations (inflow, outflow, mint, redeem), but the sibling Rate Limits section for this conduit defines only deposit and withdrawal limits.",
+      "fix": "",
+      "rejectedReason": "A.6.1.1.2.2.6.1.3.1.11.1.2.3 has Inflow, Outflow, Mint and Redeem RateLimitID children, and sibling Rate Limits .4 has Deposit, Withdrawal, Mint and Redeem limits; all four operations are covered.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.2.2.6.1.3.1.11.1.2.4#structural",
+      "docNo": "A.6.1.1.2.2.6.1.3.1.11.1.2.4",
+      "uuid": "d60717bb-c122-49b9-9617-d121c05f60cb",
+      "file": "A.6.1.1.2 - Grove.md",
+      "category": "structural",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "The current `maxAmount` and `slope` for this conduit’s inflow, outflow, mint, and redeem operations are defined in the subdocuments herein.",
+      "issue": "The document says its subdocuments cover four operations (inflow, outflow, mint, redeem), but its only children are a Deposit Rate Limit and a Withdrawal Rate Limit.",
+      "fix": "",
+      "rejectedReason": "A.6.1.1.2.2.6.1.3.1.11.1.2.4 has four children: Deposit, Withdrawal, Mint (.4.3) and Redeem (.4.4) Rate Limits, matching the four operations named.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.3.2.2.2.2.1.2.1.5#xref",
+      "docNo": "A.6.1.1.3.2.2.2.2.1.2.1.5",
+      "uuid": "293c49b9-48f4-433c-820f-4915696f742f",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "xref",
+      "severity": "low",
+      "pass": "factual",
+      "quote": "[https://github.com/sky-ecosystem/next-gen-atlas/pulls](https://github.com/sky-ecosystem/next-gen-atlas/pulls)",
+      "issue": "The text calls this the location of the Atlas GitHub repository, but the link points to the repository's pull-request list.",
+      "fix": "[https://github.com/sky-ecosystem/next-gen-atlas](https://github.com/sky-ecosystem/next-gen-atlas)",
+      "rejectedReason": "Same Root Edit template as A.6.1.1.1.2.2.2.2.1.2.1.4 and A.6.1.1.2.2.2.2.2.1.2.1.5: the link text is the URL itself and the pulls page is where Atlas updates are made.",
+      "rejectedOn": "2026-11-18",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
     }
   ]
 }
