@@ -92,7 +92,7 @@
       "samples": []
     },
     "Core|addr,s:addr-of-is": {
-      "total": 204,
+      "total": 207,
       "uncovered": 0,
       "samples": []
     },
@@ -163,7 +163,7 @@
       "samples": []
     },
     "Core|plain": {
-      "total": 8298,
+      "total": 8301,
       "uncovered": 6325,
       "samples": [
         "A.0.1.1.1",

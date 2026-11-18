@@ -1929,6 +1929,22 @@
       "ethereum"
     ]
   },
+  "0x6605aa120fe8b656482903e7757babf56947e45e": {
+    "chain": "ethereum",
+    "chains": [
+      "ethereum"
+    ],
+    "chainlogId": "SPARK_STARGUARD",
+    "etherscanName": "StarGuard",
+    "isContract": true,
+    "isProxy": false,
+    "codeByChain": {
+      "ethereum": true
+    },
+    "presentOnChains": [
+      "ethereum"
+    ]
+  },
   "0xc20059e0317de91738d13af027dfc4a50781b066": {
     "chain": "ethereum",
     "chains": [
@@ -4444,6 +4460,22 @@
       "ethereum"
     ]
   },
+  "0xfc51caa049e8894becffb68c61095c3f3ec8a880": {
+    "chain": "ethereum",
+    "chains": [
+      "ethereum"
+    ],
+    "chainlogId": "GROVE_STARGUARD",
+    "etherscanName": "StarGuard",
+    "isContract": true,
+    "isProxy": false,
+    "codeByChain": {
+      "ethereum": true
+    },
+    "presentOnChains": [
+      "ethereum"
+    ]
+  },
   "0xb30fe1cf884b48a22a50d22a9282004f2c5e9406": {
     "chain": "ethereum",
     "chains": [
@@ -6207,6 +6239,22 @@
     ],
     "chainlogId": "KEEL_SUBPROXY",
     "etherscanName": "SubProxy",
+    "isContract": true,
+    "isProxy": false,
+    "codeByChain": {
+      "ethereum": true
+    },
+    "presentOnChains": [
+      "ethereum"
+    ]
+  },
+  "0xe8ff70481d653ec31ab9e0cb2a8b316aff8d84ee": {
+    "chain": "ethereum",
+    "chains": [
+      "ethereum"
+    ],
+    "chainlogId": "KEEL_STARGUARD",
+    "etherscanName": "StarGuard",
     "isContract": true,
     "isProxy": false,
     "codeByChain": {
