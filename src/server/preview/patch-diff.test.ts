@@ -23,11 +23,12 @@ test("contentDiff: word edit → intraline with ±2 context and gaps", () => {
   ]);
 });
 
-test("contentDiff: caps long output with trailing …", () => {
+test("contentDiff: keeps every line of a long diff, with no trailing …", () => {
   const prev = "";
   const curr = Array.from({ length: 40 }, (_, i) => `line ${i}`).join("\n");
-  const out = contentDiff(prev, curr, 20);
-  expect(out.length).toBe(21);
-  expect(out[20]).toEqual(["…"]);
+  const out = contentDiff(prev, curr);
+  expect(out.length).toBe(40);
+  expect(out.every(([op]) => op === "+")).toBe(true);
+  expect(out[39]).toEqual(["+", "line 39"]);
 });
 
