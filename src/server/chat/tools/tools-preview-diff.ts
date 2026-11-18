@@ -84,6 +84,9 @@ function previewDocument(
   };
 }
 
+const ALREADY_ON_MAIN_NOTE =
+  "already_on_main counts documents this branch also changes whose change live main already has; they are not listed as changes.";
+
 function previewPage(meta: Extract<ToolOpen, { status: "ready" }>["meta"], id: string, diff: NonNullable<ReturnType<typeof readPreviewDiff>>, documents: unknown[], next: number, total: number): ToolResult {
   return {
     source_class: PREVIEW_SOURCE_CLASS,
@@ -95,11 +98,13 @@ function previewPage(meta: Extract<ToolOpen, { status: "ready" }>["meta"], id: s
       renumbered: Object.keys(diff.renumbered).length,
       retitled: Object.keys(diff.retitled).length,
       identity_swaps: Object.keys(diff.identitySwap).length,
+      ...(diff.alreadyOnMain?.length ? { already_on_main: diff.alreadyOnMain.length } : {}),
     },
     documents,
     has_more: next < total,
     ...(next < total ? { next_offset: next } : {}),
     ...(diff.removed ? {} : { removed_note: "Removed documents were not recorded for this build." }),
+    ...(diff.alreadyOnMain?.length ? { already_on_main_note: ALREADY_ON_MAIN_NOTE } : {}),
     citation_note: CITATION_NOTE,
   };
 }

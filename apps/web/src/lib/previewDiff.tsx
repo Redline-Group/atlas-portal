@@ -36,6 +36,10 @@ export interface PreviewDiff {
   /** removed.json: each removed document in full, with where it stood, in
    *  base order. The tree and reader show them in place (previewRemoved.ts). */
   removedDocs?: RemovedDoc[];
+  /** Docs the branch changed whose change live main already has, so they are
+   *  not marked as changes. Absent when the build applied no such rule (a
+   *  merged PR, a repo base) or predates it. */
+  alreadyOnMain?: Set<string>;
   renumbered: Record<string, [string, string]>;
   /** Changed docs whose only change is the doc number. Absent on bundles
    *  built before the build recorded it. */

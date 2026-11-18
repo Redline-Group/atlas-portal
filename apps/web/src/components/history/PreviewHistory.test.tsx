@@ -150,6 +150,13 @@ describe("PreviewHistory preview entry", () => {
     expect(screen.queryByText(/Title changed/)).toBeNull();
   });
 
+  it("says a change main already has is not shown, instead of calling the doc unchanged", () => {
+    setDiff({ alreadyOnMain: new Set(["n1"]) });
+    render(<PreviewHistory nodeId="n1" />);
+    expect(screen.getByText(/main already has the same change/)).toBeInTheDocument();
+    expect(screen.queryByText(/^Unchanged by this/)).toBeNull();
+  });
+
   it("heads a removed doc's entry Removed, with its all-removed box", () => {
     setDiff({ removed: new Set(["n1"]) });
     mockPatch.mockReturnValue([["-", "A.1 - Gone"], ["-", "body"]] as DiffLine[]);

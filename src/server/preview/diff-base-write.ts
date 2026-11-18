@@ -82,9 +82,9 @@ export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCan
   for (const key of kept) {
     const base = loaded.get(candidates[key]!.mergeBase)!;
     // Both compare against their own merge base. sky also drops what live
-    // main already has; repo's base is another repo's branch, which live main
-    // says nothing about.
-    const a = computeDiffArtifacts(base, head, key === "sky" ? mainDocs : undefined);
+    // main already has, unless the PR is merged (diff-artifacts.ts); repo's
+    // base is another repo's branch, which live main says nothing about.
+    const a = computeDiffArtifacts(base, head, key === "sky" && resolved.pr?.state !== "merged" ? mainDocs : undefined);
     writeDiffArtifacts(paths.outDir, a, `.${key}`);
     refine.push(refineJob([`identity.${key}.json`], base, head, a.diff));
   }

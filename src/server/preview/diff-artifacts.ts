@@ -15,6 +15,10 @@
 // a change only if it differs from the merge base AND from live main. An edit
 // main already made, a document main already added with the same UUID, and a
 // removal main already made are not changes, since merging them changes nothing.
+// What that drops is recorded (`alreadyOnMain`), so the reader can say so
+// rather than show the document as untouched. A merged PR gets no `live`
+// (diff-base-write.ts): everything it changed is on main by then, and its
+// preview must keep showing what it did.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -37,6 +41,9 @@ export interface PreviewDiffJson {
   retitled: Record<string, [string, string]>;
   /** Changed docs whose `[Type]` differs: id → [before, after]. Absent on bundles built before it was recorded. */
   retyped?: Record<string, [string, string]>;
+  /** Docs the branch changed whose change live main already has, so they are
+   *  not listed above. Absent when no live-main rule applied. */
+  alreadyOnMain?: string[];
   reusedSlot: Record<string, { title: string; movedTo?: string }>;
   identitySwap: Record<string, IdentitySwap>;
   formerUuid: Record<string, FormerUuid>;
@@ -48,19 +55,22 @@ export interface DiffArtifacts {
   removed: RemovedDoc[];
 }
 
-/** Drop what live main already has (see the header). */
-function ownChanges(d: SnapshotDiff, head: Snapshot, live: Snapshot | undefined): SnapshotDiff {
+/** Drop what live main already has (see the header), and say what was dropped. */
+function ownChanges(d: SnapshotDiff, head: Snapshot, live: Snapshot | undefined): SnapshotDiff & { alreadyOnMain?: string[] } {
   if (!live) return d;
   const differsFromLive = (id: string) => {
     const l = live.get(id);
     const h = head.get(id);
     return !l || !h || docDiffers(l, h);
   };
-  return {
+  const kept = {
     added: d.added.filter(differsFromLive),
     changed: d.changed.filter(differsFromLive),
     removed: d.removed.filter((id) => live.has(id)),
   };
+  const all = [...d.added, ...d.changed, ...d.removed];
+  const keptIds = new Set([...kept.added, ...kept.changed, ...kept.removed]);
+  return { ...kept, alreadyOnMain: all.filter((id) => !keptIds.has(id)) };
 }
 
 function headingChanges(changed: string[], base: Snapshot, head: Snapshot) {
@@ -102,7 +112,7 @@ function reusedSlots(added: string[], base: Snapshot, head: Snapshot) {
 }
 
 export function computeDiffArtifacts(base: Snapshot, head: Snapshot, live?: Snapshot): DiffArtifacts {
-  const { added, changed, removed } = ownChanges(diffSnapshots(base, head), head, live);
+  const { added, changed, removed, alreadyOnMain } = ownChanges(diffSnapshots(base, head), head, live);
   const { identitySwap, formerUuid } = detectIdentitySwaps({ changed, added, mainById: base, previewById: head });
   const diff: PreviewDiffJson = {
     added,
@@ -113,6 +123,7 @@ export function computeDiffArtifacts(base: Snapshot, head: Snapshot, live?: Snap
     reusedSlot: reusedSlots(added, base, head),
     identitySwap,
     formerUuid,
+    ...(alreadyOnMain ? { alreadyOnMain } : {}),
   };
   return { diff, before: beforeEntries(changed, base, head), removed: removedDocs(removed, base, head) };
 }

@@ -346,3 +346,42 @@ describe("startCandidates", () => {
     }
   });
 });
+
+// The sky base drops what live main already has, and says so; a merged PR
+// keeps everything it changed, since all of it is on main by then.
+describe("writeDiffBases: changes main already has", () => {
+  const dirs: string[] = [];
+  afterAll(() => {
+    for (const d of dirs) fs.rmSync(d, { recursive: true, force: true });
+  });
+  const sky: Candidates = {
+    auto: "sky",
+    sky: { key: "sky", repo: "sky-ecosystem/next-gen-atlas", ref: "main", mergeBase: "fork-mb" },
+    compareOk: true,
+  };
+
+  async function build(name: string, resolved: Resolved) {
+    const root = mkTmp();
+    dirs.push(root);
+    const paths = previewPaths(name, root);
+    writeDocsJson(paths.outDir, { [ID]: { id: ID, doc_no: "A.1", title: "One", content: "EDITED" } });
+    const fork = mkTmp();
+    writeAtlasCheckout(fork, "FORK-POINT");
+    await withLiveDocMap("live-sha", "EDITED", () =>
+      writeDiffBases(Promise.resolve(sky), { resolved, token: "t", priv: false, sha: name, paths, fetchTree: async () => ({ srcDir: fork }) }),
+    );
+    return JSON.parse(fs.readFileSync(path.join(paths.outDir, "diff.json"), "utf8"));
+  }
+
+  test("an open PR's edit main already has is listed as already on main, not as a change", async () => {
+    const diff = await build("open1", { ...RESOLVED, kind: "pr", pr: { number: 7, title: "t", author: "a", state: "open" } });
+    expect(diff.changed).toEqual([]);
+    expect(diff.alreadyOnMain).toEqual([ID]);
+  });
+
+  test("a merged PR keeps the edit as a change", async () => {
+    const diff = await build("merged1", { ...RESOLVED, kind: "pr", pr: { number: 7, title: "t", author: "a", state: "merged" } });
+    expect(diff.changed).toEqual([ID]);
+    expect(diff.alreadyOnMain).toBeUndefined();
+  });
+});

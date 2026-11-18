@@ -20,6 +20,12 @@ function previewStatus(diff: ReturnType<typeof usePreviewDiff>, nodeId: string) 
   return kind ? STATUS[kind] : null;
 }
 
+/** What the entry says for a document the preview does not mark as changed. */
+function unchangedNote(diff: ReturnType<typeof usePreviewDiff>, nodeId: string, source: string): string {
+  if (!diff.alreadyOnMain?.has(nodeId)) return `Unchanged by this ${source}.`;
+  return `This ${source} also changes this document, but main already has the same change, so it is not shown as one.`;
+}
+
 // History tab in preview mode. The real per-doc history lives in Postgres for
 // the *live* atlas, which is meaningless for an unmerged branch — so instead we
 // synthesize "this preview adds/changes this doc" from the accurate diff, with a
@@ -66,7 +72,7 @@ export function PreviewHistory({ nodeId }: { nodeId: string }) {
           </TimelineRow>
         </>
       ) : (
-        <p style={{ marginLeft: CONTENT_INDENT }}>Unchanged by this {source}.</p>
+        <p style={{ marginLeft: CONTENT_INDENT }}>{unchangedNote(diff, nodeId, source)}</p>
       )}
       <PreviewCommits nodeId={nodeId} changed={!!status} />
       {/* Below the preview pseudo-entry, the doc's real main-branch history.

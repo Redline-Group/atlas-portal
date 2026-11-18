@@ -51,11 +51,17 @@ describe("computeDiffArtifacts: what counts as a change", () => {
     expect(computeDiffArtifacts(base, head, live).diff.renumbered).toEqual({});
   });
 
-  test("an edit main already has is not a change", () => {
-    const base = snap([doc(ID1, "A.1", "old")]);
-    const live = snap([doc(ID1, "A.1", "new")]);
-    const head = snap([doc(ID1, "A.1", "new")]);
-    expect(computeDiffArtifacts(base, head, live).diff.changed).toEqual([]);
+  test("an edit main already has is not a change, and is listed as already on main", () => {
+    const base = snap([doc(ID1, "A.1", "old"), doc(ID2, "A.2", "old")]);
+    const live = snap([doc(ID1, "A.1", "new"), doc(ID2, "A.2", "old")]);
+    const head = snap([doc(ID1, "A.1", "new"), doc(ID2, "A.2", "mine")]);
+    const { diff } = computeDiffArtifacts(base, head, live);
+    expect(diff.changed).toEqual([ID2]);
+    expect(diff.alreadyOnMain).toEqual([ID1]);
+  });
+
+  test("without live, nothing is listed as already on main", () => {
+    expect(computeDiffArtifacts(snap([doc(ID1, "A.1", "old")]), snap([doc(ID1, "A.1", "new")])).diff.alreadyOnMain).toBeUndefined();
   });
 
   test("a doc main already added with the same UUID and text is not a change", () => {
