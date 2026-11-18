@@ -12,8 +12,29 @@ import { loadPreviewBefore } from "./previewOldSide";
 import { removedIndex } from "./previewRemoved";
 import { candidateKey } from "@/lib/previewForkPoint";
 import type { DiffLine } from "@/lib/history";
-import { previewPatch } from "@/lib/previewPatch";
+import { previewPatch, type RemovedDoc } from "@/lib/previewPatch";
+import type { PreviewBaseKey } from "./previewMetaCopy";
 import { changeKind } from "./previewChangeKind";
+
+/** What one document's redline reads from the diff. */
+interface PatchFacts {
+  kind: "added" | "changed" | "removed";
+  previousId?: string;
+  swapped: boolean;
+  removed?: RemovedDoc;
+}
+
+/** Load the old side and the preview's docs, then build `nodeId`'s redline. */
+async function loadPatch(base: string, key: PreviewBaseKey | null, nodeId: string, f: PatchFacts): Promise<DiffLine[]> {
+  const [before, atlas] = await Promise.all([loadPreviewBefore(base, key), loadAtlas(base)]);
+  return previewPatch(nodeId, f.kind, {
+    formerUuid: f.previousId ? { [nodeId]: { previousId: f.previousId } } : {},
+    identitySwap: f.swapped ? { [nodeId]: { movedTo: true } } : {},
+    before,
+    doc: (id) => atlas.docs[id],
+    removed: (id) => (id === nodeId ? f.removed : undefined),
+  });
+}
 
 /** The redline for `nodeId`, or null outside preview, while loading, and for an unchanged document. */
 export function usePreviewPatch(nodeId: string): DiffLine[] | null {
@@ -27,23 +48,13 @@ export function usePreviewPatch(nodeId: string): DiffLine[] | null {
   const previousId = diff.formerUuid[nodeId]?.previousId;
   const swapped = !!diff.identitySwap[nodeId]?.movedTo;
   const removed = kind === "removed" ? removedIndex(diff.removedDocs).get(nodeId) : undefined;
-  // Keyed by the document they belong to, so another document's lines are
-  // never shown while this one's load.
+  // Keyed by the document they belong to, so another document's lines are never shown while this one's load.
   const [state, setState] = useState<{ id: string; lines: DiffLine[] | null } | null>(null);
   useEffect(() => {
     if (!preview || !kind) return setState(null);
     let live = true;
-    Promise.all([loadPreviewBefore(base, key), loadAtlas(base)])
-      .then(([before, atlas]) => {
-        const source = {
-          formerUuid: previousId ? { [nodeId]: { previousId } } : {},
-          identitySwap: swapped ? { [nodeId]: { movedTo: true } } : {},
-          before,
-          doc: (id: string) => atlas.docs[id],
-          removed: (id: string) => (id === nodeId ? removed : undefined),
-        };
-        if (live) setState({ id: nodeId, lines: previewPatch(nodeId, kind, source) });
-      })
+    loadPatch(base, key, nodeId, { kind, previousId, swapped, removed })
+      .then((lines) => live && setState({ id: nodeId, lines }))
       .catch(() => live && setState(null));
     return () => {
       live = false;
