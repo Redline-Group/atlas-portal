@@ -5,20 +5,14 @@
 // same lines.
 //
 // A patch is the WHOLE document on both sides, never trimmed to context or
-// capped, and opens on the heading line (doc number, title, type, UUID), so a
-// renumbering, retitling or type change shows in the same box as the body.
+// capped, and opens on the heading line (previewHeading.ts), so a renumbering,
+// retitling or type change shows in the same box as the body.
 
-import { lcsOps, mergeOps, pairAdjacentLines, wordDiff } from "./diffCore";
-import type { DiffLine, WordSegment } from "./history";
+import { lcsOps, pairAdjacentLines } from "./diffCore";
+import type { DiffLine } from "./history";
+import { headingDiff, headingLine, type PatchDoc } from "./previewHeading";
 
-/** The fields a patch is built from. */
-export interface PatchDoc {
-  id: string;
-  doc_no: string;
-  title?: string;
-  type?: string;
-  content?: string;
-}
+export { headingDiff, headingLine, isHeadingLine, type PatchDoc } from "./previewHeading";
 
 /** before.json entry: a changed document as it stood on the diff base. `content`
  *  is left out when the body did not change, so it reads from the new side. */
@@ -38,39 +32,22 @@ export interface RemovedDoc extends PatchDoc {
   depth: number;
 }
 
-/** The atlas heading without its `#` level, which is file-relative upstream and
- *  says nothing about the document: `A.1.2 - Title [Type] <!-- UUID: … -->`. */
-export function headingLine(doc: PatchDoc): string {
-  const type = doc.type ? ` [${doc.type}]` : "";
-  return `${doc.doc_no} - ${doc.title ?? ""}${type} <!-- UUID: ${doc.id} -->`;
-}
-
 /** "" is NO lines, not one empty line. */
 function linesOf(text: string | undefined): string[] {
   return text ? text.split("\n") : [];
 }
 
-/** One heading field: plain when unchanged; else a word diff (`words`) or the
- *  whole old value then the whole new one. */
-function field(a: string, b: string, words: boolean): WordSegment[] {
-  if (a === b) return a ? [["=", a]] : [];
-  if (words) return wordDiff(a, b);
-  return [...(a ? [["-", a] as WordSegment] : []), ...(b ? [["+", b] as WordSegment] : [])];
-}
-
-/** A changed heading, field by field, so only what changed is marked: the doc
- *  number and title by word, the type and UUID whole, the separators never. */
-export function headingDiff(a: PatchDoc, b: PatchDoc): DiffLine {
-  const type = (d: PatchDoc) => (d.type ? ` [${d.type}]` : "");
-  return ["~", mergeOps([
-    ...field(a.doc_no, b.doc_no, true),
-    ["=", " - "],
-    ...field(a.title ?? "", b.title ?? "", true),
-    ...field(type(a), type(b), false),
-    ["=", " <!-- UUID: "],
-    ...field(a.id, b.id, false),
-    ["=", " -->"],
-  ])];
+/** Line diff of two bodies. The lines they share at the start and the end stay
+ *  out of the LCS table: an edit is local, and a long document would otherwise
+ *  cost its length squared for every redline. */
+function bodyDiff(a: string[], b: string[]): DiffLine[] {
+  let head = 0;
+  while (head < a.length && head < b.length && a[head] === b[head]) head++;
+  let tail = 0;
+  while (tail < a.length - head && tail < b.length - head && a[a.length - 1 - tail] === b[b.length - 1 - tail]) tail++;
+  const same = (xs: string[]) => xs.map((l): [string, string] => ["=", l]);
+  const middle = lcsOps(a.slice(head, a.length - tail), b.slice(head, b.length - tail));
+  return pairAdjacentLines([...same(a.slice(0, head)), ...middle, ...same(a.slice(a.length - tail))]);
 }
 
 /** Heading then body, the whole of both sides. A missing side is a new or a
@@ -81,7 +58,7 @@ export function docPatch(before: PatchDoc | undefined, after: PatchDoc | undefin
     return doc ? [headingLine(doc), ...linesOf(doc.content)].map((l): DiffLine => [sign, l]) : [];
   }
   const h = headingLine(before) === headingLine(after) ? (["=", headingLine(after)] as DiffLine) : headingDiff(before, after);
-  const body = pairAdjacentLines(lcsOps(linesOf(before.content), linesOf(after.content)));
+  const body = bodyDiff(linesOf(before.content), linesOf(after.content));
   return h[0] === "=" && body.every((l) => l[0] === "=") ? [] : [h, ...body];
 }
 
@@ -92,31 +69,29 @@ export function beforeDoc(id: string, before: Record<string, BeforeEntry>, newSi
   return b ? { id, ...b, content: b.content ?? newSide?.content } : undefined;
 }
 
-/** What the reader and the tools need to know about one document's change. */
-export interface PatchInput {
-  id: string;
-  kind: "added" | "changed" | "removed";
-  /** The document in the preview; undefined for a removed one. */
-  doc?: PatchDoc;
+/** Where a redline reads its inputs: the identity verdict (diff.json with
+ *  identity.json laid over it), the old side, and the documents on both sides. */
+export interface PatchSource {
+  formerUuid: Record<string, { previousId: string }>;
+  identitySwap: Record<string, { movedTo?: unknown }>;
   before: Record<string, BeforeEntry>;
-  removed?: RemovedDoc;
-  /** formerUuid[id].previousId: the UUID this added document's content came from. */
-  previousId?: string;
-  /** The previous UUID's document in the preview, for its unchanged body. */
-  previousDoc?: PatchDoc;
-  /** An identity swap whose old content was found under a new UUID (the ⚠ case). */
-  corroboratedSwap?: boolean;
+  /** A document in the preview. */
+  doc: (id: string) => PatchDoc | undefined;
+  /** A document the preview removes. */
+  removed: (id: string) => RemovedDoc | undefined;
 }
 
-/** One document's patch, by kind of change. */
-export function previewPatch(p: PatchInput): DiffLine[] {
-  if (p.kind === "removed") return docPatch(p.removed, undefined);
-  if (p.kind === "added") {
-    const from = p.previousId ? beforeDoc(p.previousId, p.before, p.previousDoc) : undefined;
-    return docPatch(from, p.doc);
+/** One document's patch, by kind of change. Content that moved in from another
+ *  UUID diffs against that UUID's old text; an identity swap whose old content
+ *  was found elsewhere (the ⚠ case) shows only the new document; a changed
+ *  document with no old side (a bundle built before before.json) shows none. */
+export function previewPatch(id: string, kind: "added" | "changed" | "removed", s: PatchSource): DiffLine[] {
+  if (kind === "removed") return docPatch(s.removed(id), undefined);
+  if (kind === "added") {
+    const prev = s.formerUuid[id]?.previousId;
+    return docPatch(prev ? beforeDoc(prev, s.before, s.doc(prev)) : undefined, s.doc(id));
   }
-  if (p.corroboratedSwap) return docPatch(undefined, p.doc);
-  // No old side (a bundle built before before.json existed): no redline, never a false all-added one.
-  const old = beforeDoc(p.id, p.before, p.doc);
-  return old ? docPatch(old, p.doc) : [];
+  if (s.identitySwap[id]?.movedTo) return docPatch(undefined, s.doc(id));
+  const old = beforeDoc(id, s.before, s.doc(id));
+  return old ? docPatch(old, s.doc(id)) : [];
 }

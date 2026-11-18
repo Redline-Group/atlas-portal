@@ -2,7 +2,8 @@ import type { ComponentProps } from "react";
 import { useLocation, useSearch } from "wouter";
 import { useDataSource } from "../../lib/dataSource";
 import { usePreviewDiff } from "../../lib/previewDiff";
-import { baseSwitch, compareParts, forkPoint, type PreviewMeta } from "../../lib/previewMetaCopy";
+import { baseSwitch, compareParts, type PreviewMeta } from "../../lib/previewMetaCopy";
+import { forkPointOf } from "@/lib/previewForkPoint";
 import { timeAgo } from "../../lib/timeAgo";
 import { Link } from "../Link";
 
@@ -28,7 +29,7 @@ export function PreviewCompareStatement({ meta, ...props }: PreviewCompareStatem
   const id = head || title ? "" : preview?.id ?? "";
   const state = meta?.prState && meta.prState !== "open" ? meta.prState : "";
   // Redlines compare to the base as the branch left it, not as it is now: say which commit, and when.
-  const fork = meta && base ? forkPoint(meta, activeBase ?? null) : null;
+  const fork = base ? forkPointOf(meta?.bases, activeBase?.key) : null;
   const when = fork?.date ? `, ${timeAgo(Date.parse(fork.date))}` : "";
   return (
     <span {...props}>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { docPatch, headingDiff, headingLine, previewPatch, type BeforeEntry, type PatchDoc } from "./previewPatch";
+import { docPatch, headingDiff, headingLine, previewPatch, type BeforeEntry, type PatchDoc, type PatchSource } from "./previewPatch";
 
 const UUID = "11111111-2222-3333-4444-555555555555";
 const OTHER = "99999999-2222-3333-4444-555555555555";
@@ -71,35 +71,60 @@ describe("headingDiff", () => {
 
 describe("previewPatch", () => {
   const before: Record<string, BeforeEntry> = { [UUID]: { doc_no: "A.1.2", title: "Rate Limits", type: "Core" } };
+  /** A source over one preview document (and nothing removed) unless a test says otherwise. */
+  const source = (over: Partial<PatchSource> & { the?: PatchDoc } = {}): PatchSource => ({
+    formerUuid: {},
+    identitySwap: {},
+    before,
+    doc: (id) => (id === UUID ? (over.the ?? doc()) : undefined),
+    removed: () => undefined,
+    ...over,
+  });
 
   it("a changed doc whose body did not change reads its old body from the new side", () => {
-    const out = previewPatch({ id: UUID, kind: "changed", doc: doc({ title: "Rates" }), before });
+    const out = previewPatch(UUID, "changed", source({ the: doc({ title: "Rates" }) }));
     expect(out[0][0]).toBe("~");
     expect(out.slice(1)).toEqual([["=", "one"], ["=", "two"]]);
   });
 
   it("a changed doc with an old body diffs against it", () => {
-    const out = previewPatch({ id: UUID, kind: "changed", doc: doc(), before: { [UUID]: { ...before[UUID], content: "one\ntwo three" } } });
+    const out = previewPatch(UUID, "changed", source({ before: { [UUID]: { ...before[UUID], content: "one\ntwo three" } } }));
     expect(out.map((l) => l[0])).toEqual(["=", "=", "~"]);
   });
 
   it("a changed doc with no old side has no redline, never an all-added one", () => {
-    expect(previewPatch({ id: UUID, kind: "changed", doc: doc(), before: {} })).toEqual([]);
+    expect(previewPatch(UUID, "changed", source({ before: {} }))).toEqual([]);
   });
 
-  it("a corroborated identity swap shows only the new document", () => {
-    const out = previewPatch({ id: UUID, kind: "changed", doc: doc(), before, corroboratedSwap: true });
+  it("an identity swap whose old content was found elsewhere shows only the new document", () => {
+    const out = previewPatch(UUID, "changed", source({ identitySwap: { [UUID]: { movedTo: { id: OTHER } } } }));
     expect(out.every((l) => l[0] === "+")).toBe(true);
   });
 
   it("content that moved in from another UUID diffs against that UUID's old text", () => {
     const moved: Record<string, BeforeEntry> = { [OTHER]: { doc_no: "A.1.2", title: "Rate Limits", type: "Core", content: "one\ntwo" } };
-    const out = previewPatch({ id: UUID, kind: "added", doc: doc({ content: "one\ntwo\nthree" }), before: moved, previousId: OTHER });
+    const out = previewPatch(UUID, "added", source({ before: moved, formerUuid: { [UUID]: { previousId: OTHER } }, the: doc({ content: "one\ntwo\nthree" }) }));
     expect(out.slice(1)).toEqual([["=", "one"], ["=", "two"], ["+", "three"]]);
   });
 
   it("a removed doc is all removals", () => {
     const removed = { ...doc(), parentId: null, after: null, depth: 1 };
-    expect(previewPatch({ id: UUID, kind: "removed", before: {}, removed }).every((l) => l[0] === "-")).toBe(true);
+    expect(previewPatch(UUID, "removed", source({ removed: () => removed })).every((l) => l[0] === "-")).toBe(true);
+  });
+});
+
+describe("headingDiff: the doc number as one run", () => {
+  const changedOf = (a: string, b: string) => {
+    const [, segs] = headingDiff(doc({ doc_no: a }), doc({ doc_no: b })) as ["~", [string, string][]];
+    return segs.filter(([op]) => op !== "=").map(([op, t]) => op + t);
+  };
+
+  it("marks a shifted level as one changed run, not scattered digits", () => {
+    expect(changedOf("A.1.2.1", "A.1.1.2")).toEqual(["-2.1", "+1.2"]);
+  });
+
+  it("keeps the separator with a segment that is added or dropped", () => {
+    expect(changedOf("A.1", "A.1.2")).toEqual(["+.2"]);
+    expect(changedOf("A.1.2", "A.1")).toEqual(["-.2"]);
   });
 });

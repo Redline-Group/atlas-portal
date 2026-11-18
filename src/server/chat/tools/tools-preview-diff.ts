@@ -5,7 +5,7 @@ import type { AtlasNode } from "../../../types.ts";
 import type { ToolResult } from "./tools.ts";
 import type { ToolOpen } from "../../preview/tool-access.ts";
 import { loadPreviewDocs, previewCite, previewPatchFor, readPreviewDiff, readPreviewOldSide, renderPatch, type PreviewDocs, type PreviewOldSide } from "../../preview/bundle-read.ts";
-import { CITATION_NOTE, PREVIEW_SOURCE_CLASS, byDocNo, previewHeader } from "./tools-preview-common.ts";
+import { CITATION_NOTE, MAIN_ALSO_CHANGED_NOTE, PREVIEW_SOURCE_CLASS, byDocNo, previewHeader } from "./tools-preview-common.ts";
 import { previewCaps } from "../large-read.ts";
 
 export interface PreviewDiffArgs {
@@ -57,15 +57,16 @@ export function buildPreviewDiff(ix: Indexes, open: Extract<ToolOpen, { status: 
   const old = readPreviewOldSide(sha);
   const all = collectRows(ix, docs, diff, old).filter((r) => !a.change || r.change === a.change);
   const page = all.slice(a.offset, a.offset + a.limit);
-  const documents = page.map((row) => previewDocument(row, { sha, diff, docs, ix, old, patchLines: a.patch_lines }));
+  const mainAlso = new Set(diff.mainAlsoChanged ?? []);
+  const documents = page.map((row) => previewDocument(row, { sha, diff, docs, ix, old, mainAlso, patchLines: a.patch_lines }));
   return previewPage(meta, id, diff, documents, a.offset + page.length, all.length);
 }
 
 function previewDocument(
   { change, node }: Row,
-  ctx: { sha: string; diff: NonNullable<ReturnType<typeof readPreviewDiff>>; docs: PreviewDocs; ix: Indexes; old: PreviewOldSide; patchLines: number },
+  ctx: { sha: string; diff: NonNullable<ReturnType<typeof readPreviewDiff>>; docs: PreviewDocs; ix: Indexes; old: PreviewOldSide; mainAlso: Set<string>; patchLines: number },
 ) {
-  const { sha, diff, docs, ix, old, patchLines } = ctx;
+  const { sha, diff, docs, ix, old, mainAlso, patchLines } = ctx;
   const patch = patchLines > 0 ? previewPatchFor(node.id, change, diff, docs, old) : [];
   return {
     change,
@@ -79,15 +80,12 @@ function previewDocument(
     ...(diff.retyped?.[node.id] ? { retyped: diff.retyped[node.id] } : {}),
     ...(diff.reusedSlot[node.id] ? { reused_slot: diff.reusedSlot[node.id] } : {}),
     ...(diff.identitySwap[node.id] ? { identity_swap: diff.identitySwap[node.id] } : {}),
-    ...(diff.mainAlsoChanged?.includes(node.id) ? { main_also_changed: true } : {}),
+    ...(mainAlso.has(node.id) ? { main_also_changed: true } : {}),
     ...(patch.length ? { patch: renderPatch(patch, patchLines) } : {}),
     // A removed document opens in the preview too, faint where it stood; /atlas/<uuid> would be main's live copy.
     cite: previewCite(sha, node.id),
   };
 }
-
-const MAIN_ALSO_CHANGED_NOTE =
-  "Rows with main_also_changed: main has changed that document since the branch was cut. Each patch shows only this PR's own edits against where the branch left main, so main's current text may differ from the patch's old side; read it with atlas_get.";
 
 const ALREADY_ON_MAIN_NOTE =
   "already_on_main counts documents this branch also changes whose change live main already has; they are not listed as changes.";

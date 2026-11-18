@@ -25,11 +25,17 @@ export interface ForkPoint {
   date?: string;
 }
 
+/** `key` when it names a diff-base candidate with a merge base, else null
+ *  (live-main, or no base resolved). */
+export function candidateKey(key: string | null | undefined): "sky" | "repo" | null {
+  return key === "sky" || key === "repo" ? key : null;
+}
+
 /** The fork point of base `key` (defaulting to the auto base). Null for the
  *  live-main fallback, which compares to main as it is now, and for a bundle
  *  that recorded no merge base. */
 export function forkPointOf(bases: ForkBases | undefined, key?: string | null): ForkPoint | null {
-  const k = key ?? bases?.auto ?? null;
-  const cand = k === "sky" || k === "repo" ? bases?.[k] : undefined;
+  const k = candidateKey(key ?? bases?.auto);
+  const cand = k ? bases?.[k] : undefined;
   return cand?.mergeBase ? { repo: cand.repo, ref: cand.ref, sha: cand.mergeBase.slice(0, 7), date: cand.mergeBaseDate } : null;
 }

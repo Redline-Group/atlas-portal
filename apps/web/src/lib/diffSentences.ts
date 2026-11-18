@@ -2,6 +2,7 @@
 // prose diff refinement (src/lib/diffProse.ts). Pure, no React.
 
 import type { WordSegment } from "@/lib/history";
+import { isHeadingLine } from "@/lib/previewHeading";
 
 // Dual promotion thresholds, shared by sentence-pair and paragraph-level
 // promotion: a contiguous rewrite reads fine up to a much higher fraction of
@@ -109,10 +110,10 @@ export function isStructuredLine(line: string): boolean {
   if (trimmed.startsWith("|")) return true;
   if (trimmed.startsWith("#")) return true;
   if (trimmed.startsWith("```")) return true;
-  // An atlas heading line (`A.1.2 - Title [Type] <!-- UUID: … -->`): its diff
-  // is built field by field (src/lib/previewPatch.ts headingDiff); sentence
-  // refinement would split it at the doc number's dots.
-  if (/<!-- UUID: [0-9a-f-]+ -->\s*$/.test(trimmed)) return true;
+  // A preview redline's heading line: its diff is built field by field
+  // (src/lib/previewHeading.ts); sentence refinement would split it at the
+  // doc number's dots.
+  if (isHeadingLine(trimmed)) return true;
   if (/^(\t| {4})/.test(line)) return true;
 
   const nonSpace = line.replace(/\s/g, "");

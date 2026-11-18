@@ -69,3 +69,16 @@ describe("collectSubtree", () => {
     expect(collectSubtree(byParent, "root")).toEqual(["root", "a1", "a2", "a11"]);
   });
 });
+
+describe("buildAncestorsWithSelf: removed preview nodes", () => {
+  const n = (id: string, doc_no: string, parentId: string | null, removed?: true): AtlasNode => ({
+    id, doc_no, title: id, type: "Core", depth: 1, parentId, content: "", order: 0, addressRefs: [], ...(removed ? { removed } : {}),
+  });
+
+  it("follows where a removed node was placed, not its old doc number", () => {
+    // The old number A.1.2.1 would resolve A.1.2 to another document in the preview's numbering.
+    const docs = { p: n("p", "A.1.3", null), x: n("x", "A.1.2.1", "p", true), y: n("y", "A.1.2.1.1", "x", true), o: n("o", "A.1.2", null) };
+    const docNoToId = new Map([["A.1.3", "p"], ["A.1.2", "o"]]);
+    expect(buildAncestorsWithSelf(docs, docNoToId, "y").map((d) => d.id)).toEqual(["p", "x", "y"]);
+  });
+});

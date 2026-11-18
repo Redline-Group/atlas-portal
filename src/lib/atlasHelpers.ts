@@ -39,6 +39,8 @@ export function buildAncestors(
   nodeId: string,
 ): AtlasNode[] {
   const node = docs[nodeId];
+  // A removed node's doc_no names the base's numbering: follow where it was placed.
+  if (node?.removed) return node.parentId && docs[node.parentId] ? buildAncestorsWithSelf(docs, docNoToId, node.parentId) : [];
   if (!node || node.doc_no.startsWith("NR-")) return [];
   const ancestors: AtlasNode[] = [];
   const parts = node.doc_no.split(".");

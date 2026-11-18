@@ -8,7 +8,7 @@
  * where the commit came from, not to what it changed.
  */
 
-import { lineDiff } from "../../src/lib/diffCore.ts";
+import { capDiff, lineDiff } from "../../src/lib/diffCore.ts";
 import { CHANGE_TYPES, type ChangeType } from "../../src/lib/changeTypes.ts";
 import type { DiffLine } from "../../src/lib/history.ts";
 import type { GitSnapshot, GitSnapshotEntry } from "./atlas-git-parse.ts";
@@ -76,8 +76,7 @@ export function snapshotEvents(d: ReturnType<typeof diffSnapshots>): SnapshotEve
 }
 
 function wholeBody(text: string, sign: "+" | "-", max: number): DiffLine[] {
-  const lines: DiffLine[] = text.split("\n").map((l) => [sign, l]);
-  return lines.length > max ? [...lines.slice(0, max), ["…"]] : lines;
+  return capDiff(text.split("\n").map((l): DiffLine => [sign, l]), max);
 }
 
 function modifiedDiff(before: GitSnapshotEntry | undefined, after: GitSnapshotEntry | undefined, kindHint?: string | null): EventDiff {

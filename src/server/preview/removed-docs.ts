@@ -12,7 +12,7 @@
 // there), so inserting each entry after its anchor, in list order, rebuilds
 // the base's order among the siblings that remain.
 
-import { docTree } from "../../lib/atlasTree.ts";
+import { docTree, type DocTree } from "../../lib/atlasTree.ts";
 import type { RemovedDoc } from "../../lib/previewPatch.ts";
 import type { AtlasNode } from "../../types.ts";
 import type { Snapshot } from "./snapshot.ts";
@@ -25,13 +25,9 @@ function asDocs(s: Snapshot): Record<string, AtlasNode> {
   return out;
 }
 
-/** child id → parent id, as the reader's tree has it, and each parent's children in order. */
-function treeOf(s: Snapshot) {
-  const { byParent } = docTree(asDocs(s));
-  const parentOf = new Map<string, string | null>();
-  for (const [p, kids] of byParent) for (const k of kids) parentOf.set(k.id, p);
-  return { byParent, parentOf };
-}
+/** The reader's tree of a snapshot. Not cached across calls: the live atlas's
+ *  docMap, which can serve as a base snapshot, is updated in place. */
+const treeOf = (s: Snapshot): DocTree => docTree(asDocs(s));
 
 /** The nearest earlier base sibling the reader will also show under `parentId`. */
 function anchor(id: string, siblings: AtlasNode[], parentId: string | null, removed: Set<string>, headParentOf: Map<string, string | null>): string | null {
@@ -53,6 +49,7 @@ function shownParent(id: string, parentOf: Map<string, string | null>, removed: 
 
 /** The removed documents in base tree order (parents before children), each with its placement. */
 export function removedDocs(ids: string[], base: Snapshot, head: Snapshot): RemovedDoc[] {
+  if (!ids.length) return [];
   const removed = new Set(ids);
   const baseTree = treeOf(base);
   const headParentOf = treeOf(head).parentOf;

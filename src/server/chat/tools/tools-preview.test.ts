@@ -95,7 +95,8 @@ test("get: by uuid or the preview's doc_no, with the text where the branch left 
   const [kept, added] = r.documents;
   expect(kept).toMatchObject({ status: "changed", content: "new text", base: { content: "old text", source: "live atlas abcdef1" } });
   expect(kept.ancestors).toEqual([{ doc_no: "A.1", title: "Parent" }]);
-  expect(kept.main_also_changed).toContain("atlas_get");
+  expect(kept.main_also_changed).toBe(true);
+  expect(r.main_also_changed_note).toContain("atlas_get");
   expect(added).toMatchObject({ status: "added", content: "hello", cite: `/preview/${SHA}/atlas?id=${ADDED}` });
   expect(added.base).toBeUndefined();
   expect(r.style_hint).toContain("atlas_filter");

@@ -10,7 +10,7 @@ vi.mock("./dataSource", () => ({ useDataSource: vi.fn() }));
 vi.mock("./previewDiff", () => ({ usePreviewDiff: vi.fn() }));
 vi.mock("./previewView", () => ({ usePreviewView: vi.fn() }));
 
-import { REMOVED_OPACITY, useAnnotatedId, usePreviewChangedSet, usePreviewFade } from "./previewFilter";
+import { REMOVED_OPACITY, usePreviewChangedSet, usePreviewFade } from "./previewFilter";
 import { useDataSource } from "./dataSource";
 import { usePreviewDiff } from "./previewDiff";
 import { usePreviewView } from "./previewView";
@@ -72,16 +72,6 @@ describe("usePreviewChangedSet", () => {
   });
 });
 
-
-describe("useAnnotatedId", () => {
-  it("resolves a kept annotation's target by doc number, a removed one's by the parent it was placed under", () => {
-    configure({ preview: true, removed: ["gone"] });
-    const docNoToId = new Map([["A.1.1", "renumbered-other"]]);
-    expect(renderHook(() => useAnnotatedId({ id: "kept", parentId: "p" }, "A.1.1", docNoToId)).result.current).toBe("renumbered-other");
-    expect(renderHook(() => useAnnotatedId({ id: "gone", parentId: "p" }, "A.1.1", docNoToId)).result.current).toBe("p");
-    expect(renderHook(() => useAnnotatedId({ id: "kept", parentId: "p" }, null, docNoToId)).result.current).toBeUndefined();
-  });
-});
 
 describe("usePreviewFade", () => {
   it("is full strength outside preview", () => {

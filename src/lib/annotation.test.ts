@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { annotatedDocNo, annotationTarget, ANNOTATION_TAIL_SEGMENTS } from "./annotation";
+import { annotatedDocNo, annotatedId, annotationTarget, ANNOTATION_TAIL_SEGMENTS } from "./annotation";
 
 describe("annotatedDocNo", () => {
   it("strips the .0.3.N suffix", () => {
@@ -31,5 +31,22 @@ describe("annotationTarget", () => {
     expect(annotationTarget({ type: "Annotation", doc_no: "A.2.8.0.3.2" })).toBe("A.2.8");
     expect(annotationTarget({ type: "Core", doc_no: "A.2.8.0.3.2" })).toBeNull();
     expect(annotationTarget({ type: "Annotation", doc_no: "A.2.8" })).toBeNull();
+  });
+});
+
+describe("annotatedId", () => {
+  const docNoToId = new Map([["A.1.10.2.3", "renumbered-other"]]);
+  const ann = { type: "Annotation", doc_no: "A.1.10.2.3.0.3.1", parentId: "placed-parent" };
+
+  it("resolves a kept annotation's target by doc number", () => {
+    expect(annotatedId(ann, docNoToId)).toBe("renumbered-other");
+  });
+
+  it("resolves a removed annotation by the parent it was placed under, not its old number", () => {
+    expect(annotatedId({ ...ann, removed: true }, docNoToId)).toBe("placed-parent");
+  });
+
+  it("is undefined for a document that annotates nothing", () => {
+    expect(annotatedId({ ...ann, type: "Core" }, docNoToId)).toBeUndefined();
   });
 });

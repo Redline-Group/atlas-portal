@@ -6,8 +6,10 @@ import type { Indexes } from "../../retrieval/indexes.ts";
 import type { AtlasNode } from "../../../types.ts";
 import type { ToolResult } from "./tools.ts";
 import type { ToolOpen } from "../../preview/tool-access.ts";
-import { baseDocOf, loadPreviewDocs, previewCite, previewPatchFor, readPreviewDiff, readPreviewOldSide, removedNode, renderPatch, type PreviewDocs, type PreviewOldSide } from "../../preview/bundle-read.ts";
-import { CITATION_NOTE, PREVIEW_SOURCE_CLASS, previewHeader } from "./tools-preview-common.ts";
+import { loadPreviewDocs, previewCite, previewPatchFor, readPreviewDiff, readPreviewOldSide, renderPatch, type PreviewDocs, type PreviewOldSide } from "../../preview/bundle-read.ts";
+import { beforeDoc } from "../../../lib/previewPatch.ts";
+import { removedDocNode } from "../../../lib/previewRemovedNode.ts";
+import { CITATION_NOTE, MAIN_ALSO_CHANGED_NOTE, PREVIEW_SOURCE_CLASS, previewHeader } from "./tools-preview-common.ts";
 import { forkPointOf } from "../../../lib/previewForkPoint.ts";
 import { previewCaps } from "../large-read.ts";
 
@@ -22,7 +24,7 @@ const PATCH_LINES = 60;
 /** A document the preview has, or one it removes (which the reader shows in place). */
 function nodeOf(c: GetCtx, id: string): AtlasNode | undefined {
   const removed = c.old.removed.get(id);
-  return c.docs.byId.get(id) ?? (removed ? removedNode(removed) : undefined);
+  return c.docs.byId.get(id) ?? (removed ? removedDocNode(removed, 0) : undefined);
 }
 
 function ancestors(c: GetCtx, node: AtlasNode) {
@@ -35,7 +37,7 @@ function ancestors(c: GetCtx, node: AtlasNode) {
 
 /** The text the patch's old side starts from: the diff base where the branch left it. */
 function baseText(c: GetCtx, id: string) {
-  const b = baseDocOf(id, c.docs, c.old);
+  const b = beforeDoc(id, c.old.before, c.docs.byId.get(id));
   return b ? { source: c.baseLabel, doc_no: b.doc_no, title: b.title ?? "", content: b.content ?? "" } : null;
 }
 
@@ -79,9 +81,6 @@ const summary = (n: AtlasNode) => ({ id: n.id, doc_no: n.doc_no, title: n.title,
 const statusOf = (c: GetCtx, id: string) =>
   c.added.has(id) ? "added" : c.changed.has(id) ? "changed" : c.old.removed.has(id) ? "removed" : "unchanged";
 
-const MAIN_ALSO_CHANGED_NOTE =
-  "Main has changed this document since the branch was cut, so its live text differs from `base`. The patch shows only this PR's own edits; read main's current text with atlas_get.";
-
 function documentOut(c: GetCtx, node: AtlasNode) {
   const status = statusOf(c, node.id);
   const parent = node.parentId ? nodeOf(c, node.parentId) : undefined;
@@ -93,7 +92,7 @@ function documentOut(c: GetCtx, node: AtlasNode) {
     ancestors: ancestors(c, node),
     content: node.content,
     ...(c.args.include_base && status === "changed" ? { base: baseText(c, node.id) } : {}),
-    ...(c.mainAlsoChanged.has(node.id) ? { main_also_changed: MAIN_ALSO_CHANGED_NOTE } : {}),
+    ...(c.mainAlsoChanged.has(node.id) ? { main_also_changed: true } : {}),
     ...(patch.length ? { patch: renderPatch(patch, PATCH_LINES) } : {}),
     ...(c.args.include_children ? { children: (c.docs.children.get(node.id) ?? []).map(summary) } : {}),
     cite: previewCite(c.sha, node.id),
@@ -115,6 +114,7 @@ export function buildPreviewGet(ix: Indexes, open: Extract<ToolOpen, { status: "
     preview: previewHeader(open.meta, open.id),
     documents: refs.flatMap((r) => (r.node ? [documentOut(c, r.node)] : [])),
     ...(missing.length ? { not_found: missing } : {}),
+    ...(refs.some((r) => r.node && c.mainAlsoChanged.has(r.node.id)) ? { main_also_changed_note: MAIN_ALSO_CHANGED_NOTE } : {}),
     ...(a.ids.length > max ? { ids_note: `Only the first ${max} ids were read. Ask again for the rest.` } : {}),
     style_hint: STYLE_HINT,
     citation_note: CITATION_NOTE,

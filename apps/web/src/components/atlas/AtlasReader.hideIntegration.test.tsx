@@ -38,7 +38,6 @@ beforeAll(() => {
 vi.mock("../../lib/previewFilter", () => ({
   usePreviewChangedSet: () => null,
   usePreviewFade: () => undefined,
-  useAnnotatedId: () => undefined,
 }));
 vi.mock("../../lib/selectionFilter", () => ({ useSelectionSet: () => null }));
 vi.mock("../../lib/selection", () => ({

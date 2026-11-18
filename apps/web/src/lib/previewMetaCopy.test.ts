@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { compareLine, compareParts, previewKind, previewTabTitle, baseSwitch, broadGrantCopy, diffBaseLabel, entrySourceUrl, forkPoint, pullsPermissionCopy, dismissAccessRepo, readDismissedAccessRepos, type PreviewMeta, type PreviewBases } from "./previewMetaCopy";
+import { compareLine, compareParts, previewKind, previewTabTitle, baseSwitch, broadGrantCopy, diffBaseLabel, entrySourceUrl, pullsPermissionCopy, dismissAccessRepo, readDismissedAccessRepos, type PreviewMeta, type PreviewBases } from "./previewMetaCopy";
 
 function meta(bases?: PreviewBases, extra: Partial<PreviewMeta> = {}): PreviewMeta {
   return { sha: "x", repo: "r", ref: "b", kind: "branch", ...extra, bases };
@@ -209,19 +209,6 @@ describe("broadGrantCopy", () => {
     expect(r?.href).toBeNull();
     expect(r?.body).toMatch(/Ask the person who installed the App/);
     expect(r?.body).not.toMatch(/If you own or administer/);
-  });
-});
-
-describe("forkPoint", () => {
-  it("is the active base's merge base, short, with its date", () => {
-    const m = meta({ auto: "sky", sky: { repo: "sky-ecosystem/next-gen-atlas", ref: "main", mergeBase: "abcdef1234567", mergeBaseDate: "2026-10-01T00:00:00Z" } });
-    expect(forkPoint(m, { key: "sky", auto: true })).toEqual({ sha: "abcdef1", date: "2026-10-01T00:00:00Z" });
-    expect(forkPoint(m, null)).toEqual({ sha: "abcdef1", date: "2026-10-01T00:00:00Z" });
-  });
-
-  it("is null when comparing to main as it is now, or with no merge base recorded", () => {
-    expect(forkPoint(meta({ auto: "live-main" }), { key: "live-main", auto: true })).toBeNull();
-    expect(forkPoint(meta(undefined), null)).toBeNull();
   });
 });
 

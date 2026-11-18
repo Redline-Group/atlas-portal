@@ -7,49 +7,47 @@
 import { useEffect, useState } from "react";
 import { useDataSource } from "./dataSource";
 import { loadAtlas } from "./docs";
-import { usePreviewDiff, type PreviewDiff } from "./previewDiff";
+import { usePreviewDiff } from "./previewDiff";
 import { loadPreviewBefore } from "./previewOldSide";
-import type { PreviewBaseKey } from "./previewMetaCopy";
+import { removedIndex } from "./previewRemoved";
+import { candidateKey } from "@/lib/previewForkPoint";
 import type { DiffLine } from "@/lib/history";
-import { previewPatch, type BeforeEntry } from "@/lib/previewPatch";
+import { previewPatch } from "@/lib/previewPatch";
 import { changeKind } from "./previewChangeKind";
-import type { AtlasNode } from "@/types";
-
-function patchOf(id: string, diff: PreviewDiff, before: Record<string, BeforeEntry>, docs: Record<string, AtlasNode>): DiffLine[] | null {
-  const kind = changeKind(diff, id);
-  if (!kind) return null;
-  const previousId = diff.formerUuid[id]?.previousId;
-  return previewPatch({
-    id,
-    kind,
-    doc: kind === "removed" ? undefined : docs[id],
-    before,
-    removed: diff.removedDocs?.find((d) => d.id === id),
-    previousId,
-    previousDoc: previousId ? docs[previousId] : undefined,
-    corroboratedSwap: !!diff.identitySwap[id]?.movedTo,
-  });
-}
 
 /** The redline for `nodeId`, or null outside preview, while loading, and for an unchanged document. */
 export function usePreviewPatch(nodeId: string): DiffLine[] | null {
   const { base, preview } = useDataSource();
   // The base the diff provider resolved, so the redline always matches the diff shown.
   const diff = usePreviewDiff();
-  const key: PreviewBaseKey | null =
-    diff.activeBase?.key === "sky" || diff.activeBase?.key === "repo" ? diff.activeBase.key : null;
+  const key = candidateKey(diff.activeBase?.key);
+  // Only what this document's redline reads, so a later diff update that does
+  // not touch it (removed records landing, the identity verdict) does not rebuild it.
+  const kind = changeKind(diff, nodeId);
+  const previousId = diff.formerUuid[nodeId]?.previousId;
+  const swapped = !!diff.identitySwap[nodeId]?.movedTo;
+  const removed = kind === "removed" ? removedIndex(diff.removedDocs).get(nodeId) : undefined;
   // Keyed by the document they belong to, so another document's lines are
   // never shown while this one's load.
   const [state, setState] = useState<{ id: string; lines: DiffLine[] | null } | null>(null);
   useEffect(() => {
-    if (!preview || !changeKind(diff, nodeId)) return setState(null);
+    if (!preview || !kind) return setState(null);
     let live = true;
     Promise.all([loadPreviewBefore(base, key), loadAtlas(base)])
-      .then(([before, atlas]) => live && setState({ id: nodeId, lines: patchOf(nodeId, diff, before, atlas.docs) }))
+      .then(([before, atlas]) => {
+        const source = {
+          formerUuid: previousId ? { [nodeId]: { previousId } } : {},
+          identitySwap: swapped ? { [nodeId]: { movedTo: true } } : {},
+          before,
+          doc: (id: string) => atlas.docs[id],
+          removed: (id: string) => (id === nodeId ? removed : undefined),
+        };
+        if (live) setState({ id: nodeId, lines: previewPatch(nodeId, kind, source) });
+      })
       .catch(() => live && setState(null));
     return () => {
       live = false;
     };
-  }, [base, preview, nodeId, key, diff]);
+  }, [base, preview, nodeId, key, kind, previousId, swapped, removed]);
   return state?.id === nodeId ? state.lines : null;
 }

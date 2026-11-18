@@ -122,7 +122,7 @@ export const PREVIEW_TOOLS: AtlasTool[] = [
     description:
       "Full text of up to 50 documents as a PR preview has them (by uuid or the preview's doc_no), including documents it " +
       "removes, with each one's change status, parent and ancestors, a changed document's text where the branch left " +
-      "its base (the patch's old side, not main today), a main_also_changed note when main has edited it since, its patch, " +
+      "its base (the patch's old side, not main today), a main_also_changed flag when main has edited it since, its patch, " +
       "and optionally its children.",
     shape: {
       preview_id: PREVIEW_ID,

@@ -7,10 +7,10 @@ import path from "node:path";
 import type { AtlasNode } from "../../types.ts";
 import { createCache } from "../ttl-cache.ts";
 import type { DiffLine, WordSegment } from "../../lib/history";
+import { trimContext } from "../../lib/diffCore.ts";
 import { previewPaths } from "./cache.ts";
 import type { PreviewDiffJson } from "./diff-artifacts.ts";
-import { beforeDoc, previewPatch, type BeforeEntry, type PatchDoc, type RemovedDoc } from "../../lib/previewPatch.ts";
-import { removedDocNode } from "../../lib/previewRemovedNode.ts";
+import { previewPatch, type BeforeEntry, type RemovedDoc } from "../../lib/previewPatch.ts";
 
 export interface PreviewDocs {
   byId: Map<string, AtlasNode>;
@@ -78,16 +78,6 @@ export function readPreviewOldSide(sha: string): PreviewOldSide {
   return old;
 }
 
-/** A removed document as a node, so a tool can read it the way the reader
- *  shows it: in place under its parent, which may itself be removed. */
-export const removedNode = (d: RemovedDoc): AtlasNode => removedDocNode(d, 0);
-
-/** A changed document's text on the diff base (where the branch left it), or
- *  undefined when before.json has no entry for it. */
-export function baseDocOf(id: string, docs: PreviewDocs, old: PreviewOldSide): PatchDoc | undefined {
-  return beforeDoc(id, old.before, docs.byId.get(id));
-}
-
 /** One document's redline, built the way the reader builds it (src/lib/previewPatch.ts). */
 export function previewPatchFor(
   id: string,
@@ -96,17 +86,8 @@ export function previewPatchFor(
   docs: PreviewDocs,
   old: PreviewOldSide,
 ): DiffLine[] {
-  const previousId = diff.formerUuid[id]?.previousId;
-  return previewPatch({
-    id,
-    kind,
-    doc: docs.byId.get(id),
-    before: old.before,
-    removed: old.removed.get(id),
-    previousId,
-    previousDoc: previousId ? docs.byId.get(previousId) : undefined,
-    corroboratedSwap: !!diff.identitySwap[id]?.movedTo,
-  });
+  const { formerUuid, identitySwap } = diff;
+  return previewPatch(id, kind, { formerUuid, identitySwap, before: old.before, doc: (d) => docs.byId.get(d), removed: (d) => old.removed.get(d) });
 }
 
 /** A patch as plain text lines a model reads: "+ added", "- removed", "…" for
@@ -117,21 +98,17 @@ export function previewPatchFor(
  *  and a model quotes what it reads. Past `max` rendered lines, the rest is
  *  summarised as a count of the changed lines left out. */
 export function renderPatch(lines: DiffLine[], max: number): string[] {
+  // Changed lines only, "…" between separate changes (diffCore's trimContext with no context).
+  const changes = trimContext(lines, 0);
   const out: string[] = [];
-  let gap = false;
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i];
-    if (l[0] === "=" || l[0] === "…") {
-      gap = out.length > 0;
-      continue;
-    }
+  for (let i = 0; i < changes.length; i++) {
+    const l = changes[i];
     if (out.length >= max) {
-      out.push(`… (${changedLines(lines.slice(i))} more lines)`);
+      out.push(`… (${changedLines(changes.slice(i))} more lines)`);
       break;
     }
-    if (gap) out.push("…");
-    gap = false;
-    if (l[0] === "~") out.push(`- ${sideOf(l[1], "-")}`, `+ ${sideOf(l[1], "+")}`);
+    if (l[0] === "…") out.push("…");
+    else if (l[0] === "~") out.push(`- ${sideOf(l[1], "-")}`, `+ ${sideOf(l[1], "+")}`);
     else out.push(`${l[0]} ${l[1]}`);
   }
   return out;

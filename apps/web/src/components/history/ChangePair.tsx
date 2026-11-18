@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from "react";
-import { docNoDiff, type DocNoSegment } from "../../lib/docNoDiff";
+import { docNoDiff, type DocNoSegment } from "@/lib/docNoDiff";
 import { WORD_ADDED_STYLE, WORD_REMOVED_STYLE } from "./IntralineDiff";
 
 // The two sides sit apart, either side of an arrow, so the removed side needs

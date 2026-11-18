@@ -10,11 +10,13 @@ import type { BeforeEntry, RemovedDoc } from "@/lib/previewPatch";
 /** `<stem>.<key>.json`, else `<stem>.json`, else null; `usedKey` is the key
  *  of the file that answered (null for the plain one). */
 export async function fetchKeyed<T>(base: string, stem: string, key: PreviewBaseKey | null): Promise<{ value: T | null; usedKey: PreviewBaseKey | null }> {
-  const plain = () => fetch(`${base}${stem}.json`).then((r) => ({ value: r.ok ? (r.json() as Promise<T>) : null, usedKey: null }));
   try {
-    const keyed = key ? await fetch(`${base}${stem}.${key}.json`) : null;
-    const answered = keyed?.ok ? { value: keyed.json() as Promise<T>, usedKey: key } : await plain();
-    return { value: await answered.value, usedKey: answered.usedKey };
+    if (key) {
+      const keyed = await fetch(`${base}${stem}.${key}.json`);
+      if (keyed.ok) return { value: (await keyed.json()) as T, usedKey: key };
+    }
+    const plain = await fetch(`${base}${stem}.json`);
+    return { value: plain.ok ? ((await plain.json()) as T) : null, usedKey: null };
   } catch {
     return { value: null, usedKey: null };
   }

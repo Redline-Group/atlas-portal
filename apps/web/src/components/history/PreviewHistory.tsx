@@ -37,7 +37,7 @@ export function PreviewHistory({ nodeId }: { nodeId: string }) {
   const patch = usePreviewPatch(nodeId);
   const meta: PreviewMeta | null = usePreviewMeta(base) ?? null;
   const status = previewStatus(diff, nodeId);
-  // Added doc whose doc number exists on the live atlas under another uuid
+  // Added doc whose doc number the diff base gave another uuid
   // (slot reuse, flagged server-side with the old occupant's title + where it
   // moved). The label gets an asterisk; the disclaimer below the live-history
   // heading explains it.

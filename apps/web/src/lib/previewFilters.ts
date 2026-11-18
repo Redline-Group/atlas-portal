@@ -1,4 +1,5 @@
 import type { PreviewDiff } from "./previewDiff";
+import { changedIds } from "./previewChangeKind";
 
 // The preview tree filters: one self-describing entry per filter. The filter
 // menu, its counts, the `?change=` URL param and the filtered doc set all read
@@ -133,7 +134,7 @@ export function describeFilters(selected: readonly PreviewFilterId[]): string {
 
 /** The doc ids the selected filters keep, in no particular order. */
 export function filterPreviewDocs(diff: PreviewDiff, selected: readonly PreviewFilterId[]): Set<string> {
-  let kept = new Set<string>([...diff.added, ...diff.changed, ...(diff.removed ?? [])]);
+  let kept = changedIds(diff);
   for (const group of PREVIEW_FILTER_GROUPS) {
     const picked = PREVIEW_FILTERS.filter((f) => f.group === group.id && !f.exclude && selected.includes(f.id));
     if (!picked.length) continue;

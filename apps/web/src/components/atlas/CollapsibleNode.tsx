@@ -1,6 +1,6 @@
 import { memo, useMemo, useRef, useEffect } from "react";
 import { segmentDepths, nrChiclets } from "@/lib/depth";
-import { annotationTarget, ANNOTATION_TAIL_SEGMENTS } from "@/lib/annotation";
+import { annotatedId, annotationTarget, ANNOTATION_TAIL_SEGMENTS } from "@/lib/annotation";
 import { type FlatEntry } from "@/lib/atlasHelpers";
 import { DocNoChiclets } from "../DocNoChiclets";
 import { NodeContent } from "../NodeContent";
@@ -10,7 +10,7 @@ import { NodeMeta } from "./NodeMeta";
 import { useAtlasActions } from "./AtlasActionsContext";
 import { revealStore } from "../../lib/revealStore";
 import { PreviewMark } from "../preview/PreviewMark";
-import { useAnnotatedId, usePreviewFade } from "../../lib/previewFilter";
+import { usePreviewFade } from "../../lib/previewFilter";
 import { useDataSource } from "../../lib/dataSource";
 import { NodeSelectBox } from "./NodeSelectBox";
 import { track } from "../../lib/analytics";
@@ -133,8 +133,8 @@ export const CollapsibleNode = memo(function CollapsibleNode({
   // The target is known by NUMBER; the route takes an id. Unresolvable (a
   // provider without the map, or a target still in the un-merged deep tier)
   // degrades to plain text rather than a dead link. A removed annotation
-  // resolves by where it was placed (useAnnotatedId).
-  const annotatesId = useAnnotatedId(node, annotates, docNoToId);
+  // resolves by where it was placed (annotatedId).
+  const annotatesId = annotatedId(node, docNoToId);
   const mouseDownRef = useRef<{ x: number; y: number } | null>(null);
   // In preview: faint when removed, slightly dimmed when untouched (unless selected).
   const fade = usePreviewFade(node.id, 0.92, isSelected);

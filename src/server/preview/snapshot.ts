@@ -106,15 +106,6 @@ export async function loadBaseSnapshot(
   }
 }
 
-/**
- * Compare two snapshots by document identity.
- *
- * `added` / `changed` split on uuid presence, not on any file status: a document
- * whose number changed is CHANGED (same uuid, new position), and a brand-new
- * uuid at an existing doc number is ADDED even though its file was "modified".
- * `title`, `doc_no` and `type` count as changes alongside content so a pure
- * rename, renumber or type change still surfaces a redline.
- */
 /** Whether a document differs between two snapshots: body, title, doc number
  *  or type. Bodies compare like with like: hashes when BOTH sides have one (the
  *  production case — docs.json carries it and loadAtlasSource computes it),
@@ -125,6 +116,15 @@ export function docDiffers(b: SnapshotDoc, h: SnapshotDoc): boolean {
   return bodyDiffers || h.title !== b.title || h.doc_no !== b.doc_no || typeChanged(b, h);
 }
 
+/**
+ * Compare two snapshots by document identity.
+ *
+ * `added` / `changed` split on uuid presence, not on any file status: a document
+ * whose number changed is CHANGED (same uuid, new position), and a brand-new
+ * uuid at an existing doc number is ADDED even though its file was "modified".
+ * `title`, `doc_no` and `type` count as changes alongside content so a pure
+ * rename, renumber or type change still surfaces a redline.
+ */
 export function diffSnapshots(base: Snapshot, head: Snapshot): SnapshotDiff {
   const added: string[] = [];
   const changed: string[] = [];

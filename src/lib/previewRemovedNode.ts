@@ -16,5 +16,6 @@ export function removedDocNode(d: RemovedDoc, order: number): AtlasNode {
     content: d.content ?? "",
     order,
     addressRefs: [],
+    removed: true,
   };
 }

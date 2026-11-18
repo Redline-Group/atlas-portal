@@ -4,7 +4,7 @@
 // dismissed-repo storage in previewAccessDismissed.ts; this module re-exports
 // all three so importers keep one path.
 import type { ActiveBase, CompareParts, PreviewBaseKey, PreviewMeta } from "./previewMetaTypes";
-import { forkPointOf } from "@/lib/previewForkPoint";
+import { candidateKey } from "@/lib/previewForkPoint";
 
 export type {
   ActiveBase,
@@ -17,14 +17,6 @@ export type {
 } from "./previewMetaTypes";
 export { broadGrantCopy, pullsPermissionCopy, type BannerNotice } from "./previewNoticeCopy";
 export { dismissAccessRepo, readDismissedAccessRepos } from "./previewAccessDismissed";
-
-/** Where the branch left the base it is compared to: the merge-base commit
- *  (short) and its date. Null for the live-main fallback, which compares to
- *  main as it is now, and for a bundle that recorded no merge base. */
-export function forkPoint(meta: PreviewMeta, active: ActiveBase | null): { sha: string; date?: string } | null {
-  const fork = forkPointOf(meta.bases, active?.key);
-  return fork ? { sha: fork.sha, date: fork.date } : null;
-}
 
 /** The PR number digits in a `pull-N` ref (a Contents-only private PR), else null. */
 function pullRefDigits(ref: string | undefined): string | null {
@@ -156,7 +148,7 @@ export function baseSwitch(
  *  branch whose merge base the redlines compare against, or the live atlas when
  *  no base resolved. */
 export function diffBaseLabel(meta: PreviewMeta, active: ActiveBase | null): string {
-  const key = active?.key === "repo" || active?.key === "sky" ? active.key : null;
+  const key = candidateKey(active?.key);
   const base = key ? meta.bases?.[key] : undefined;
   return base ? `${base.repo}:${base.ref}` : "the live atlas";
 }

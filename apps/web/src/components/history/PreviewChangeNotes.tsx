@@ -23,11 +23,11 @@ function docChanges(diff: PreviewDiff, nodeId: string) {
     // this doc holds content that used to live under another UUID (former).
     swap: diff.identitySwap[nodeId],
     former: diff.formerUuid[nodeId],
-    // A changed doc that moved: same UUID, new doc number ([live, preview]).
+    // A changed doc that moved: same UUID, new doc number ([base, preview]).
     renumber: diff.renumbered[nodeId],
     // A changed doc whose title differs from the diff base.
     retitle: diff.retitled[nodeId],
-    // A changed doc whose [Type] differs ([live, preview]).
+    // A changed doc whose [Type] differs ([base, preview]).
     retype: diff.retyped[nodeId],
   };
 }
