@@ -15,7 +15,7 @@ export function usePreviewDim(nodeId: string): boolean {
 }
 
 /** A removed document is drawn this faint, whole: number, title, body and metadata. */
-export const REMOVED_OPACITY = 0.45;
+export const REMOVED_OPACITY = 0.55;
 
 // The opacity a reader node or tree row takes in preview: faint for a removed
 // document (selected or not), `untouched` for a document the branch left alone
