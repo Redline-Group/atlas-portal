@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { docPatch, headingLine, previewPatch, type BeforeEntry, type PatchDoc } from "./previewPatch";
+import { docPatch, headingDiff, headingLine, previewPatch, type BeforeEntry, type PatchDoc } from "./previewPatch";
 
 const UUID = "11111111-2222-3333-4444-555555555555";
 const OTHER = "99999999-2222-3333-4444-555555555555";
@@ -47,6 +47,25 @@ describe("docPatch", () => {
 
   it("is empty when nothing differs", () => {
     expect(docPatch(doc(), doc())).toEqual([]);
+  });
+});
+
+describe("headingDiff", () => {
+  it("marks only the fields that changed: the doc number's last segment and the title's new words", () => {
+    const id = "09ddd2c5-3768-4538-b979-629e1b369299";
+    const a = { id, doc_no: "A.2.2.9.2.2.3.2.4.2.1", title: "Primitive Hub Document Update", type: "Core" };
+    const b = { id, doc_no: "A.2.2.9.2.2.3.2.4.2.2", title: "Primitive Hub Document/In Progress Invocations Directory/Instance Name Creation", type: "Core" };
+    const [, segs] = headingDiff(a, b) as ["~", [string, string][]];
+    const changed = segs.filter(([op]) => op !== "=").map(([op, t]) => op + t);
+    expect(changed).toEqual(["-1", "+2", "+/In", "-Update", "+Progress Invocations Directory/Instance Name Creation"]);
+    // Type and UUID are unchanged, so they sit in plain text.
+    expect(segs.at(-1)).toEqual(["=", ` [Core] <!-- UUID: ${id} -->`]);
+  });
+
+  it("marks a changed type or UUID whole, never piecewise", () => {
+    const [, segs] = headingDiff(doc(), doc({ id: OTHER, type: "Section" })) as ["~", [string, string][]];
+    const changed = segs.filter(([op]) => op !== "=").map(([op, t]) => op + t);
+    expect(changed).toEqual(["- [Core]", "+ [Section]", `-${UUID}`, `+${OTHER}`]);
   });
 });
 

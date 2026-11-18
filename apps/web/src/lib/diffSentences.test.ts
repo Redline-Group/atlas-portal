@@ -269,3 +269,9 @@ describe("shouldPromote", () => {
     expect(shouldPromote({ ratio: RATIO_SCATTERED + 0.01, runs: 2, removed: 5, added: 5 })).toBe(true);
   });
 });
+
+describe("isStructuredLine: atlas heading lines", () => {
+  it("treats a heading line ending in its UUID comment as structured, so prose refinement leaves its field diff alone", () => {
+    expect(isStructuredLine("A.2.2.9.2.2.3.2.4.2.1 - Primitive Hub Document Update [Core] <!-- UUID: 09ddd2c5-3768-4538-b979-629e1b369299 -->")).toBe(true);
+  });
+});

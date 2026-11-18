@@ -109,6 +109,10 @@ export function isStructuredLine(line: string): boolean {
   if (trimmed.startsWith("|")) return true;
   if (trimmed.startsWith("#")) return true;
   if (trimmed.startsWith("```")) return true;
+  // An atlas heading line (`A.1.2 - Title [Type] <!-- UUID: … -->`): its diff
+  // is built field by field (src/lib/previewPatch.ts headingDiff); sentence
+  // refinement would split it at the doc number's dots.
+  if (/<!-- UUID: [0-9a-f-]+ -->\s*$/.test(trimmed)) return true;
   if (/^(\t| {4})/.test(line)) return true;
 
   const nonSpace = line.replace(/\s/g, "");

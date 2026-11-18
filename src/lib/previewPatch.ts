@@ -8,8 +8,8 @@
 // capped, and opens on the heading line (doc number, title, type, UUID), so a
 // renumbering, retitling or type change shows in the same box as the body.
 
-import { lcsOps, pairAdjacentLines } from "./diffCore";
-import type { DiffLine } from "./history";
+import { lcsOps, mergeOps, pairAdjacentLines, wordDiff } from "./diffCore";
+import type { DiffLine, WordSegment } from "./history";
 
 /** The fields a patch is built from. */
 export interface PatchDoc {
@@ -50,15 +50,39 @@ function linesOf(text: string | undefined): string[] {
   return text ? text.split("\n") : [];
 }
 
-const sideOf = (doc: PatchDoc | undefined) => (doc ? [headingLine(doc), ...linesOf(doc.content)] : []);
+/** One heading field: plain when unchanged; else a word diff (`words`) or the
+ *  whole old value then the whole new one. */
+function field(a: string, b: string, words: boolean): WordSegment[] {
+  if (a === b) return a ? [["=", a]] : [];
+  if (words) return wordDiff(a, b);
+  return [...(a ? [["-", a] as WordSegment] : []), ...(b ? [["+", b] as WordSegment] : [])];
+}
+
+/** A changed heading, field by field, so only what changed is marked: the doc
+ *  number and title by word, the type and UUID whole, the separators never. */
+export function headingDiff(a: PatchDoc, b: PatchDoc): DiffLine {
+  const type = (d: PatchDoc) => (d.type ? ` [${d.type}]` : "");
+  return ["~", mergeOps([
+    ...field(a.doc_no, b.doc_no, true),
+    ["=", " - "],
+    ...field(a.title ?? "", b.title ?? "", true),
+    ...field(type(a), type(b), false),
+    ["=", " <!-- UUID: "],
+    ...field(a.id, b.id, false),
+    ["=", " -->"],
+  ])];
+}
 
 /** Heading then body, the whole of both sides. A missing side is a new or a
  *  removed document. [] when the two sides are identical. */
 export function docPatch(before: PatchDoc | undefined, after: PatchDoc | undefined): DiffLine[] {
-  const prev = sideOf(before);
-  const curr = sideOf(after);
-  if (prev.length === curr.length && prev.every((l, i) => l === curr[i])) return [];
-  return pairAdjacentLines(lcsOps(prev, curr));
+  if (!before || !after) {
+    const [sign, doc] = before ? (["-", before] as const) : (["+", after!] as const);
+    return doc ? [headingLine(doc), ...linesOf(doc.content)].map((l): DiffLine => [sign, l]) : [];
+  }
+  const h = headingLine(before) === headingLine(after) ? (["=", headingLine(after)] as DiffLine) : headingDiff(before, after);
+  const body = pairAdjacentLines(lcsOps(linesOf(before.content), linesOf(after.content)));
+  return h[0] === "=" && body.every((l) => l[0] === "=") ? [] : [h, ...body];
 }
 
 /** The changed document `id` as it stood on the diff base, or undefined when
