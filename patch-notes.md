@@ -35,7 +35,7 @@
 
 ## 2026-11-18
 
-- Previews now show every changed line of a document instead of cutting off after 20 lines.
+- Preview diffs now show the whole old and new document, starting with its heading line (number, title, type and UUID), with nothing cut off.
 
 ## 2026-11-17
 

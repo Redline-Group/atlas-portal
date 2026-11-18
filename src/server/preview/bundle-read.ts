@@ -53,22 +53,35 @@ export const readPreviewPatches = (sha: string): Record<string, DiffLine[]> =>
   readJson<Record<string, DiffLine[]>>(sha, "patches.json") ?? {};
 
 /** A patch as plain text lines a model reads: "+ added", "- removed", "…" for
- *  elided context. An in-line edit is written as the whole old line then the
- *  whole new line: word-level markup splits values ("2,[-504-]{+693+}" reads as
- *  504 → 693 when the value went 2,504 → 2,693), and a model quotes what it reads. */
+ *  a run of unchanged lines between two changes (a patch carries the whole
+ *  document; a model needs only what changed). An in-line edit is written as
+ *  the whole old line then the whole new line: word-level markup splits values
+ *  ("2,[-504-]{+693+}" reads as 504 → 693 when the value went 2,504 → 2,693),
+ *  and a model quotes what it reads. Past `max` rendered lines, the rest is
+ *  summarised as a count of the changed lines left out. */
 export function renderPatch(lines: DiffLine[], max: number): string[] {
   const out: string[] = [];
-  for (const l of lines) {
+  let gap = false;
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (l[0] === "=" || l[0] === "…") {
+      gap = out.length > 0;
+      continue;
+    }
     if (out.length >= max) {
-      out.push(`… (${lines.length - max} more lines)`);
+      out.push(`… (${changedLines(lines.slice(i))} more lines)`);
       break;
     }
-    if (l[0] === "…") out.push("…");
-    else if (l[0] === "~") out.push(`- ${sideOf(l[1], "-")}`, `+ ${sideOf(l[1], "+")}`);
-    else if (l[0] !== "=") out.push(`${l[0]} ${l[1]}`);
+    if (gap) out.push("…");
+    gap = false;
+    if (l[0] === "~") out.push(`- ${sideOf(l[1], "-")}`, `+ ${sideOf(l[1], "+")}`);
+    else out.push(`${l[0]} ${l[1]}`);
   }
   return out;
 }
+
+const changedLines = (lines: DiffLine[]): number =>
+  lines.reduce((n, l) => n + (l[0] === "~" ? 2 : l[0] === "+" || l[0] === "-" ? 1 : 0), 0);
 
 /** One side of an in-line edit: the unchanged words plus that side's own. */
 function sideOf(segments: WordSegment[], side: "-" | "+"): string {

@@ -11,6 +11,14 @@ const snap = (...docs: Doc[]): GitSnapshot =>
   new Map(docs.map(([id, docNo, body, title = `T${id}`, type = "Core"]) => [id, makeNodeEntry(docNo, title, type, body, "content/A.md")]));
 
 describe("commitEntries", () => {
+  test("an added or removed document shows its whole body, however long", () => {
+    const long = Array.from({ length: 60 }, (_, i) => `line ${i}`).join("\n");
+    const rows = commitEntries(snap(["c", "A.3", long]), snap(["d", "A.4", long]));
+    expect(rows.d[0].diff).toHaveLength(60);
+    expect(rows.c[0].diff).toHaveLength(60);
+    expect(rows.c[0].diff!.some((l) => l[0] === "…")).toBe(false);
+  });
+
   test("adds, edits, removes, and reports a renumbering as its own row", () => {
     const prev = snap(["a", "A.1", "same"], ["b", "A.2", "old"], ["c", "A.3", "gone"], ["r", "A.4", "kept"]);
     const curr = snap(["a", "A.1", "same"], ["b", "A.2", "new"], ["d", "A.9", "fresh"], ["r", "A.5", "kept"]);

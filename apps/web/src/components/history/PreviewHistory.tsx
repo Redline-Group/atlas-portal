@@ -7,7 +7,7 @@ import { DiffTitle } from "./DiffTitle";
 import { PreviewChangeNotes } from "./PreviewChangeNotes";
 import { PreviewCommits } from "./PreviewCommits";
 import { PreviewEntryLine1 } from "./PreviewEntryLine1";
-import { PreviewDocDiff } from "./TitleDiff";
+import { DiffView } from "./DiffView";
 import { CONTENT_INDENT, TimelineRow } from "./Timeline";
 
 // History tab in preview mode. The real per-doc history lives in Postgres for
@@ -52,7 +52,7 @@ export function PreviewHistory({ nodeId }: { nodeId: string }) {
               view on GitHub
             </a>
           )}
-          <PreviewDocDiff nodeId={nodeId} patch={patch} />
+          {patch && patch.length > 0 && <DiffView lines={patch} />}
           </TimelineRow>
         </>
       ) : (

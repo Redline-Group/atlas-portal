@@ -38,8 +38,8 @@ function docChanges(diff: PreviewDiff, nodeId: string) {
 // on purpose: the cause may be main having caught up with the branch's edit,
 // a raw-only edit the parser normalises away, or a hash-only change — the
 // client can't tell these apart, and a bare "Changed" heading with nothing
-// under it reads as a bug. A title change is not a note: PreviewDocDiff
-// shows it as a word diff above the body diff.
+// under it reads as a bug. A title change is not a note: the patch's heading
+// line shows it inside the diff box.
 export function PreviewChangeNotes({ nodeId, meta, source, hasPatch, status }: PreviewChangeNotesProps) {
   const diff = usePreviewDiff();
   const { swap, former, renumber, retitle, retype } = docChanges(diff, nodeId);

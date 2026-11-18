@@ -18,7 +18,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { contentDiff } from "./patch-diff.ts";
+import { docPatch } from "./patch-diff.ts";
 import { diffSnapshots, type Snapshot } from "./snapshot.ts";
 import { typeChanged } from "../../../scripts/lib/history-events.ts";
 import type { DiffLine } from "../../lib/history";
@@ -44,8 +44,8 @@ export interface PreviewDiffJson {
 
 function pureAdditions(ids: Iterable<string>, head: Snapshot, patches: Record<string, DiffLine[]>) {
   for (const id of ids) {
-    const dl = contentDiff("", head.get(id)?.content ?? "");
-    if (dl.length) patches[id] = dl;
+    const node = head.get(id);
+    if (node) patches[id] = docPatch(undefined, node);
   }
 }
 
@@ -70,18 +70,18 @@ function noteChanged(
   const beforeNode = reference.get(id) ?? base.get(id);
   const afterNode = head.get(id);
   if (!beforeNode || !afterNode) return;
-  const dl = contentDiff(beforeNode.content ?? "", afterNode.content ?? "");
+  const dl = docPatch(beforeNode, afterNode);
   if (dl.length) patches[id] = dl;
   if (beforeNode.doc_no !== afterNode.doc_no) renumbered[id] = [beforeNode.doc_no, afterNode.doc_no];
   if (beforeNode.title !== afterNode.title) retitled[id] = [beforeNode.title ?? "", afterNode.title ?? ""];
   if (typeChanged(beforeNode, afterNode)) retyped[id] = [beforeNode.type!, afterNode.type!];
 }
 
-function reusedSlots(added: string[], head: Snapshot, reference: Snapshot, patches: Record<string, DiffLine[]>) {
+function reusedSlots(added: string[], head: Snapshot, reference: Snapshot) {
   const referenceDocNos = new Map<string, string>();
   for (const [rid, rnode] of reference) referenceDocNos.set(rnode.doc_no, rid);
   const reusedSlot: Record<string, { title: string; movedTo?: string }> = {};
-  for (const id of added) noteReuse(id, head, reference, referenceDocNos, reusedSlot, patches);
+  for (const id of added) noteReuse(id, head, reference, referenceDocNos, reusedSlot);
   return reusedSlot;
 }
 
@@ -91,16 +91,12 @@ function noteReuse(
   reference: Snapshot,
   referenceDocNos: Map<string, string>,
   reusedSlot: Record<string, { title: string; movedTo?: string }>,
-  patches: Record<string, DiffLine[]>,
 ) {
   const node = head.get(id);
   if (!node) return;
   const occupant = referenceDocNos.get(node.doc_no);
   if (!occupant || occupant === id) return;
   reusedSlot[id] = { title: reference.get(occupant)?.title ?? occupant.slice(0, 8), movedTo: head.get(occupant)?.doc_no };
-  const dl = contentDiff("", node.content ?? "");
-  if (dl.length) patches[id] = dl;
-  else delete patches[id];
 }
 
 export function computeDiffArtifacts(
@@ -112,7 +108,7 @@ export function computeDiffArtifacts(
   const patches: Record<string, DiffLine[]> = {};
   pureAdditions(added, head, patches);
   const { renumbered, retitled, retyped } = changedSides(changed, base, head, reference, patches);
-  const reusedSlot = reusedSlots(added, head, reference, patches);
+  const reusedSlot = reusedSlots(added, head, reference);
   const { identitySwap, formerUuid } = detectIdentitySwaps({ changed, added, mainById: reference, previewById: head });
   const renumberedOnly = findRenumberedOnly(changed, diffSides(base, head, reference));
   return {

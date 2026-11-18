@@ -139,27 +139,12 @@ describe("PreviewHistory preview entry", () => {
     expect(screen.queryByText(/No visible difference/)).toBeNull();
   });
 
-  it("shows a changed title as a word diff right above the body diff box", () => {
+  it("shows a changed title only inside the diff box, on the patch's heading line", () => {
     setDiff({ changed: new Set(["n1"]), retitled: { n1: ["Old Name Rules", "New Name Rules"] } });
-    mockPatch.mockReturnValue([["+", "added line"]] as DiffLine[]);
-    const { container } = render(<PreviewHistory nodeId="n1" />);
-    expect(container.querySelector("del")?.textContent).toBe("Old");
-    expect(container.querySelector("ins")?.textContent).toBe("New");
-    const title = container.querySelector("del")!.closest("p")!;
-    expect(title.textContent).toBe("Title changed: OldNew Name Rules");
-    expect(title.nextElementSibling).toBe(screen.getByTestId("diff-view"));
-  });
-
-  it("omits the title diff under an identity swap (the swap paragraph already carries both titles)", () => {
-    setDiff({
-      changed: new Set(["n1"]),
-      retitled: { n1: ["Operational GovOps", "Sky Primitives"] },
-      identitySwap: { n1: { oldTitle: "Operational GovOps", newTitle: "Sky Primitives" } },
-    });
+    mockPatch.mockReturnValue([["~", [["-", "Old"], ["+", "New"], ["=", " Name Rules"]]]] as DiffLine[]);
     render(<PreviewHistory nodeId="n1" />);
-    expect(screen.getByText(/both the title and the body were replaced/)).toBeInTheDocument();
+    expect(screen.getByTestId("diff-view")).toBeInTheDocument();
     expect(screen.queryByText(/Title changed/)).toBeNull();
-    expect(document.querySelector("del")).toBeNull();
   });
 
   it("shows a neutral fallback sentence for a changed doc with no patch, renumber, retitle or swap", () => {

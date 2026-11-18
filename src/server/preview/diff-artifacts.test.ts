@@ -6,6 +6,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { computeDiffArtifacts, writeDiffArtifacts } from "./diff-artifacts.ts";
+import { headingLine } from "./patch-diff.ts";
 import type { Snapshot, SnapshotDoc } from "./snapshot.ts";
 
 function snap(docs: SnapshotDoc[]): Snapshot {
@@ -17,7 +18,7 @@ const ID2 = "00000000-0000-4000-8000-000000000002";
 const ID3 = "00000000-0000-4000-8000-000000000003";
 
 describe("computeDiffArtifacts", () => {
-  test("added doc: patch is all pure additions, no other fields touched", () => {
+  test("added doc: patch is the heading then the whole body, all additions", () => {
     const base: Snapshot = snap([]);
     const live: Snapshot = snap([]);
     const head = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "line one\nline two" }]);
@@ -26,7 +27,7 @@ describe("computeDiffArtifacts", () => {
     expect(diff.changed).toEqual([]);
     expect(patches[ID1]).toBeDefined();
     expect(patches[ID1].every((l) => l[0] === "+")).toBe(true);
-    expect(patches[ID1].map((l) => (l as ["+", string])[1])).toEqual(["line one", "line two"]);
+    expect(patches[ID1].map((l) => (l as ["+", string])[1])).toEqual([headingLine(head.get(ID1)!), "line one", "line two"]);
     expect(diff.renumbered).toEqual({});
     expect(diff.retitled).toEqual({});
   });
@@ -57,7 +58,7 @@ describe("computeDiffArtifacts", () => {
     expect(rendered).not.toContain("aaa");
   });
 
-  test("renumber-only: doc_no differs, content/title identical → renumbered, still a patch-worthy change if content differs; no patch when content is identical", () => {
+  test("renumber-only: doc_no differs, content/title identical → renumbered, and the patch shows the heading change over the whole unchanged body", () => {
     const base = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same content", contentHash: "h1" }]);
     const live = snap([{ id: ID1, doc_no: "A.1", title: "One", content: "same content", contentHash: "h1" }]);
     const head = snap([{ id: ID1, doc_no: "A.9", title: "One", content: "same content", contentHash: "h1" }]);
@@ -65,7 +66,8 @@ describe("computeDiffArtifacts", () => {
     expect(diff.changed).toEqual([ID1]); // doc_no differs → diffSnapshots flags it
     expect(diff.renumbered).toEqual({ [ID1]: ["A.1", "A.9"] });
     expect(diff.retitled).toEqual({});
-    expect(patches[ID1]).toBeUndefined(); // content identical vs live → no patch
+    expect(patches[ID1][0][0]).toBe("~"); // the heading line, A.1 → A.9
+    expect(patches[ID1].slice(1)).toEqual([["=", "same content"]]);
   });
 
   test("type-only edit: the doc is changed and retyped, not renumber-only", () => {
@@ -75,7 +77,8 @@ describe("computeDiffArtifacts", () => {
     expect(diff.changed).toEqual([ID1]);
     expect(diff.retyped).toEqual({ [ID1]: ["Core", "Section"] });
     expect(diff.renumberedOnly).toEqual([]);
-    expect(patches[ID1]).toBeUndefined();
+    expect(patches[ID1][0][0]).toBe("~");
+    expect(patches[ID1].slice(1)).toEqual([["=", "same"]]);
   });
 
   test("a side with no type is never a type change", () => {
@@ -86,7 +89,7 @@ describe("computeDiffArtifacts", () => {
     expect(diff.retyped).toEqual({});
   });
 
-  test("title-only edit: retitled set, no patch", () => {
+  test("title-only edit: retitled set, and the patch shows the heading change over the whole body", () => {
     const base = snap([{ id: ID1, doc_no: "A.1", title: "Old Title", content: "body", contentHash: "h1" }]);
     const live = snap([{ id: ID1, doc_no: "A.1", title: "Old Title", content: "body", contentHash: "h1" }]);
     const head = snap([{ id: ID1, doc_no: "A.1", title: "New Title", content: "body", contentHash: "h1" }]);
@@ -94,7 +97,8 @@ describe("computeDiffArtifacts", () => {
     expect(diff.changed).toEqual([ID1]); // title differs → diffSnapshots flags it
     expect(diff.retitled).toEqual({ [ID1]: ["Old Title", "New Title"] });
     expect(diff.renumbered).toEqual({});
-    expect(patches[ID1]).toBeUndefined();
+    expect(JSON.stringify(patches[ID1][0])).toContain("New");
+    expect(patches[ID1].slice(1)).toEqual([["=", "body"]]);
   });
 
   test("class 4: changed vs base but absent from live → patch computed vs base, not skipped", () => {

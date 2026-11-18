@@ -72,6 +72,12 @@ describe("eventDiff", () => {
     expect(diff![20]).toEqual(["…"]);
   });
 
+  it("a caller's bodyMaxLines replaces the 20-line cut", () => {
+    const { diff } = eventDiff(ev("removed", "c"), prev, curr, { midHistory: true, bodyMaxLines: Infinity });
+    expect(diff).toHaveLength(25);
+    expect(diff!.some((l) => l[0] === "…")).toBe(false);
+  });
+
   it("a move carries its paths", () => {
     expect(eventDiff(ev("moved", "b"), prev, curr, { midHistory: true })).toEqual({ movedFrom: "x.md", movedTo: "y.md" });
   });

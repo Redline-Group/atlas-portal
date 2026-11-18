@@ -13,3 +13,13 @@ test("added and removed lines keep their sign; the cap counts rendered lines", (
   expect(out[0]).toMatch(/^[-+] /);
   expect(out.at(-1)).toMatch(/more lines\)$/);
 });
+
+test("unchanged lines are left out, with … between separate changes", () => {
+  const lines = contentDiff("a\nb\nc\nd\ne", "A\nb\nc\nd\nE");
+  expect(renderPatch(lines, 10)).toEqual(["- a", "+ A", "…", "- e", "+ E"]);
+});
+
+test("the overflow count names only the changed lines left out", () => {
+  const lines = contentDiff("a\nx\nb\ny\nc", "a\nX\nb\nY\nc");
+  expect(renderPatch(lines, 2)).toEqual(["- x", "+ X", "… (2 more lines)"]);
+});
