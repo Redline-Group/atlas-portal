@@ -64,7 +64,12 @@ function useFilteredMistakes(all: MistakeRow[] | null, f: MistakeFilterState, rq
   const picks = FILTER_KEYS.map((k) => f[k]);
   return useMemo(() => {
     if (!all) return null;
-    const picked = all.filter((r) => FILTER_KEYS.every((k, i) => !picks[i] || r[k] === picks[i]));
+    // A finding whose quote is gone from the atlas is out of date, so it shows
+    // only when its own Doc status pill is picked.
+    const fixedShown = f.status === "fixed";
+    const picked = all.filter(
+      (r) => (fixedShown || r.status !== "fixed") && FILTER_KEYS.every((k, i) => !picks[i] || r[k] === picks[i]),
+    );
     return filterRows(picked, rq, mistakeSearchFields);
     // picks is rebuilt every render; its values are the real dependencies.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,6 +121,7 @@ export function usePotentialMistakesState(query: string, mode: ReportMode) {
     () => all?.filter((r) => r.status === "renumbered" || r.status === "missing").length ?? 0,
     [all],
   );
+  const fixed = useMemo(() => all?.filter((r) => r.status === "fixed").length ?? 0, [all]);
   const buckets = useMistakeBuckets(all);
-  return { file, all, filters, rq, rows, drifted, buckets };
+  return { file, all, filters, rq, rows, drifted, fixed, buckets };
 }

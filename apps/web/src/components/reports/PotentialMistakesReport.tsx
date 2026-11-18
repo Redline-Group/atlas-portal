@@ -47,7 +47,7 @@ function MistakesCsvButton({
 }
 
 export function PotentialMistakesReport({ query, mode }: { query: string; mode: ReportMode }) {
-  const { file, all, filters, rq, rows, drifted, buckets } = usePotentialMistakesState(query, mode);
+  const { file, all, filters, rq, rows, drifted, fixed, buckets } = usePotentialMistakesState(query, mode);
   return (
     <ReportShell
       report={REPORT}
@@ -60,10 +60,11 @@ export function PotentialMistakesReport({ query, mode }: { query: string; mode: 
       searches={MISTAKE_SEARCHES}
       filters={mistakeFilterSummary(filters, buckets)}
       controls={all && <MistakesFilters all={all} buckets={buckets} {...filters} />}
-      count={rows ? `${rows.length} of ${all?.length ?? 0} findings` : undefined}
+      // Out-of-date findings are hidden by default, so they leave the total too.
+      count={rows ? `${rows.length} of ${(all?.length ?? 0) - (filters.status === "fixed" ? 0 : fixed)} findings` : undefined}
       actions={all && rows ? <MistakesCsvButton all={all} rows={rows} query={query} filters={filters} /> : undefined}
       loading={!rows}
-      viewProps={{ row_count: all?.length ?? 0, drifted }}
+      viewProps={{ row_count: all?.length ?? 0, drifted, fixed }}
       noRows={!!rows && rows.length === 0}
       fullWidth={rows && rows.length > 0 ? <PotentialMistakesTable rows={rows} rq={rq} /> : undefined}
     >
@@ -74,6 +75,7 @@ export function PotentialMistakesReport({ query, mode }: { query: string; mode: 
           documentsScanned={file.documentsScanned}
           total={all.length}
           drifted={drifted}
+          fixed={fixed}
         />
       )}
     </ReportShell>

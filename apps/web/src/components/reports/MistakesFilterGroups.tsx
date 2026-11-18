@@ -13,7 +13,7 @@ import {
 import { CategoryPills } from "./CategoryPills";
 import type { MistakeBuckets, MistakeFilterState } from "./usePotentialMistakesState";
 
-const STATUSES: readonly MistakeStatus[] = ["current", "renumbered", "missing", "corpus"];
+const STATUSES: readonly MistakeStatus[] = ["current", "renumbered", "fixed", "missing", "corpus"];
 
 export type MistakeFilterProps = MistakeFilterState & { all: readonly MistakeRow[]; buckets: MistakeBuckets };
 
@@ -80,7 +80,7 @@ export function PlacePills({ all, buckets, scope, onScope, executor, onExecutor,
         active={status}
         onToggle={onStatus}
         label="Doc status"
-        labelTitle="Checked live against the Atlas being served right now — findings whose document moved or vanished since the sweep."
+        labelTitle="Checked live against the Atlas being served right now — findings whose document moved or vanished since the sweep, or whose quoted text is gone (likely fixed upstream; hidden unless picked here)."
         display={STATUS_LABELS}
         counts={countBy(all, (r) => r.status)}
       />

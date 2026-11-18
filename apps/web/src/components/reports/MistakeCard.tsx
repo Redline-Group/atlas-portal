@@ -25,7 +25,7 @@ export function StatusNote({ r }: { r: MistakeRow }) {
   return (
     <span className="mono text-[10px] block mt-0.5" style={{ color: tone }}>
       {STATUS_LABELS[r.status]}
-      {r.status === "renumbered" && ` → ${r.currentDocNo}`}
+      {r.currentDocNo && r.currentDocNo !== r.docNo && ` → ${r.currentDocNo}`}
     </span>
   );
 }

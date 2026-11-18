@@ -16,6 +16,7 @@
 
 import type { AtlasNode } from "../types";
 import { NO_OWNER, type Ownership } from "./mistakeOwnership";
+import { quoteInDoc } from "./mistakeQuote";
 import type { SearchField } from "./reportFilter";
 
 export type MistakeSeverity = "high" | "medium" | "low";
@@ -67,8 +68,9 @@ export interface MistakesFile {
 
 /** How a stored finding lines up with the atlas currently being served. */
 export type MistakeStatus =
-  | "current" // doc still exists at the recorded doc_no
-  | "renumbered" // doc still exists, but its doc_no changed since the sweep
+  | "current" // quote still in the doc, at the recorded doc_no
+  | "renumbered" // quote still in the doc, but its doc_no changed since the sweep
+  | "fixed" // doc still exists, but the quote is gone from it — likely fixed upstream
   | "missing" // UUID no longer in the atlas — doc deleted, or the finding is stale
   | "corpus"; // finding spans documents; nothing single to resolve
 
@@ -130,8 +132,9 @@ export const PASS_LABELS: Record<MistakePass, string> = {
 };
 
 export const STATUS_LABELS: Record<MistakeStatus, string> = {
-  current: "Doc unchanged",
+  current: "Quote still in doc",
   renumbered: "Renumbered since sweep",
+  fixed: "Quote no longer in doc",
   missing: "Doc no longer in atlas",
   corpus: "Spans documents",
 };
@@ -139,7 +142,8 @@ export const STATUS_LABELS: Record<MistakeStatus, string> = {
 /**
  * Joins stored findings to the atlas currently being served. This is the only
  * part of the report that is live — it is what stops a hand-run artifact from
- * quietly presenting findings about documents that have since moved or gone.
+ * quietly presenting findings about documents that have since moved or gone,
+ * or whose quoted text has since been rewritten (mistakeQuote.ts).
  */
 export function resolveMistakes(
   file: MistakesFile,
@@ -153,7 +157,7 @@ export function resolveMistakes(
     return {
       ...f,
       ...owner(f.uuid),
-      status: doc.doc_no === f.docNo ? "current" : "renumbered",
+      status: !quoteInDoc(f.quote, f.docNo, doc) ? "fixed" : doc.doc_no === f.docNo ? "current" : "renumbered",
       currentDocNo: doc.doc_no,
       title: doc.title,
     };

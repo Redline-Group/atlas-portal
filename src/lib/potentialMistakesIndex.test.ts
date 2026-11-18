@@ -30,8 +30,9 @@ const mistake = (over: Partial<Mistake> = {}): Mistake => ({
   ...over,
 });
 
-const doc = (id: string, doc_no: string, title: string): AtlasNode =>
-  ({ id, doc_no, title, type: "Core", depth: 3, parentId: null, content: "", order: 0, addressRefs: [] }) as AtlasNode;
+// Every fixture body still carries the default quote, so findings stay live.
+const doc = (id: string, doc_no: string, title: string, content = "The Sky Ecoystem is …"): AtlasNode =>
+  ({ id, doc_no, title, type: "Core", depth: 3, parentId: null, content, order: 0, addressRefs: [] }) as AtlasNode;
 
 const file = (findings: Mistake[]): MistakesFile => ({
   generatedAt: "2026-09-15",
@@ -48,6 +49,13 @@ const DOCS: Record<string, AtlasNode> = {
 };
 
 describe("resolveMistakes", () => {
+  it("marks a finding fixed when its quote is no longer in the document", () => {
+    const docs = { [UUID_A]: doc(UUID_A, "A.1.1", "Governance", "The Sky Ecosystem is …") };
+    const [row] = resolveMistakes(file([mistake()]), docs);
+    expect(row.status).toBe("fixed");
+    expect(row.currentDocNo).toBe("A.1.1");
+  });
+
   it("marks a finding current when the doc_no still matches", () => {
     const [row] = resolveMistakes(file([mistake()]), DOCS);
     expect(row.status).toBe("current");

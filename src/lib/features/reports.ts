@@ -52,7 +52,7 @@ export const reports: FeatureGroup = {
           "Open Potential Mistakes and filter by severity, category, which sweep pass found it, or Doc status.",
           "Read the quoted Atlas text next to the explanation, then follow the document link to check it at the source.",
           "On a phone, findings show one at a time — swipe left or right, or use the previous/next buttons (or [←][→]). Filters start folded; tap the truncated disclaimer to read it in full.",
-          "Use the Doc status pills to find findings whose document has been renumbered or removed since the sweep ran.",
+          "Use the Doc status pills to find findings whose document has been renumbered or removed since the sweep ran. Findings whose quoted text is no longer in the Atlas — usually fixed upstream — are hidden; pick Quote no longer in doc to see them.",
           "Use the Scope pills to narrow to one top-level Atlas Scope, or the Executor agent pills to see the findings in the Agent Artifacts an executor agent is accountable for (its Primes' artifacts and its own); each such row names its agent and executor under the doc number.",
         ],
         note: "LLM-generated and re-run by hand, not when the Atlas updates — so a finding may already be fixed upstream. Each row is a suspicion to check, not a confirmed defect.",

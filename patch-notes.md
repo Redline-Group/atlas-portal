@@ -36,6 +36,7 @@
 ## 2026-11-18
 
 - Added Scope and Executor agent filters to the Potential Mistakes report.
+- Hid Potential Mistakes findings whose quoted text has since been changed in the Atlas.
 
 ## 2026-11-17
 
