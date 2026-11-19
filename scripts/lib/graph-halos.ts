@@ -50,11 +50,16 @@ export function addSkyCoreHalos(allDocs: Doc[], childrenByDocNo: Children, addEn
   const halos = skyCoreHalos(allDocs, childrenByDocNo);
   for (const { doc, params } of halos) {
     const meta = { source: SKY_CORE_HALO_SOURCE, source_doc_no: doc.doc_no, params };
+    const mine = (e: ReturnType<AddEntity>) => e.defining_doc_id === doc.id && e.subtype === "halo";
     let entity = addEntity(slugify(doc.title), doc.title, "agent", "halo", doc.id, meta);
     // addEntity hands back the entity already holding the slug; a halo sharing another entity's name takes its own.
-    if (entity.defining_doc_id !== doc.id || entity.subtype !== "halo") {
+    if (!mine(entity)) {
       console.warn(`  [drift] Sky Core Halo "${doc.title}" (${doc.doc_no}) shares its name with another entity; added under the slug ${slugify(doc.title)}-halo`);
       entity = addEntity(`${slugify(doc.title)}-halo`, doc.title, "agent", "halo", doc.id, meta);
+    }
+    if (!mine(entity)) {
+      console.warn(`  [drift] Sky Core Halo "${doc.title}" (${doc.doc_no}) has no free slug; not added`);
+      continue;
     }
     entity.id = doc.id;
   }

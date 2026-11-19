@@ -11,7 +11,7 @@ export function abbreviateAgentName(name: string): string {
   return name.replace(/\bExecutor\b/g, "Exec.");
 }
 
-// Root doc id → agent for every agent participant (prime or executor). Every
+// Root doc id → agent for every agent participant, whatever its kind. Every
 // agent is a graph participant (et === "agent") whose `did` is its root doc.
 export function agentsByRootDoc(graph: Pick<GraphData, "participants"> | null): Map<string, GraphEntity> {
   const byDoc = new Map<string, GraphEntity>();
@@ -39,7 +39,7 @@ function nearestAgent(ancestors: AtlasNode[], byDoc: Map<string, GraphEntity>): 
   return agent ? abbreviateAgentName(agent.name) : null;
 }
 
-// The agent (prime or executor) whose subtree a doc lives under, or null: a doc
+// The agent whose subtree a doc lives under, or null: a doc
 // is "under" an agent when that agent's root doc is one of the doc's ancestors.
 // The doc_no ancestor chain is walked from nearest to furthest so the most
 // specific owner wins (an executor nested under a prime wins over the prime).

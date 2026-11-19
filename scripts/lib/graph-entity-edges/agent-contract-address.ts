@@ -21,12 +21,15 @@ function run(ctx: any) {
     for (const [key, [value, , srcDocNo]] of Object.entries(meta.params) as [string, [string, string, string]][]) {
       const m = key.match(CONTRACT_PARAM_RE);
       if (!m || !ETH_ADDR_EXACT_RE.test(value)) continue;
-      const { kind, chain } = classifyChainLabel(m[2]);
-      if (kind === "unknown") {
+      const address = normalizeAddress(value);
+      const label = classifyChainLabel(m[2]);
+      // The address pass's chain is the address node's id, which the mentions edge uses too; the label is for an address it has not seen.
+      const chain = ctx.addressesRaw?.[address]?.chain ?? (label.kind === "unknown" ? null : label.chain);
+      if (!chain) {
         console.warn(`  [drift] ${owner.name} ${key} (${srcDocNo}) names a network the chain registry does not list; no has_address edge`);
         continue;
       }
-      ctx.addEdge(owner.id, "entity", `${normalizeAddress(value)}:${chain}`, "address", "has_address", [srcDocNo], JSON.stringify({ param: key, role: ROLE[m[1]] }));
+      ctx.addEdge(owner.id, "entity", `${address}:${chain}`, "address", "has_address", [srcDocNo], JSON.stringify({ param: key, role: ROLE[m[1]] }));
     }
   }
 }

@@ -92,6 +92,18 @@ describe("Sky Core Halos", () => {
     warn.mockRestore();
   });
 
+  it("does not add a halo whose fallback slug is taken too", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { map, add } = entities();
+    const first = add("test-halo", "Test Halo", "ecosystem_actor", null as unknown as string, "other-doc", {});
+    const second = add("test-halo-halo", "Test Halo", "agent", "halo", "another-halo-doc", {});
+    const dedupe = (slug: string, ...rest: [string, string, string, string, object]) => map.get(slug) ?? add(slug, ...rest);
+    addSkyCoreHalos(docs, children, dedupe);
+    expect([first.id, second.id]).toEqual(["test-halo", "test-halo-halo"]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("no free slug"));
+    warn.mockRestore();
+  });
+
   it("applies the executor rule to Sky Core Halos only", () => {
     const { map, add } = entities();
     add("nested", "Nested Halo", "agent", "halo", "nested-doc", { source: "prime_artifact" });
@@ -129,6 +141,8 @@ describe("Sky Core Halos", () => {
     add("far", "Far Agent", "agent", "halo", "far-doc", { params: { "SubProxy Account / Zzyzx Network": [SUB, "s", "A.9"] } });
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const { ctx, edges } = context(map);
+    agentContractAddress.run({ ...ctx, addressesRaw: { [SUB.toLowerCase()]: { chain: "base" } } });
+    expect(edges.splice(0).map((e) => e.toId)).toEqual([`${SUB.toLowerCase()}:base`, `${GUARD.toLowerCase()}:ethereum`, `${GUARD.toLowerCase()}:ethereum`, `${SUB.toLowerCase()}:base`]);
     agentContractAddress.run(ctx);
     expect(edges.map((e) => [e.fromId, e.toId, JSON.parse(e.meta).role])).toEqual([
       ["halo", `${SUB.toLowerCase()}:ethereum`, "subproxy"],

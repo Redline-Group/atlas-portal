@@ -10,7 +10,7 @@ import { buildSidebarActors, buildActorProfile } from "./actorIndex";
 import { buildChainMap, buildActiveDataRows, type ActiveDataRow } from "@/lib/activeDataIndex";
 import { buildRewardsIndex } from "@/lib/rewardsIndex";
 import { EXEC_EDGES, FAC_EDGES, CHAIN_EDGES } from "@/lib/roleEdges";
-import { isExecutorSubtype } from "@/lib/agentKinds";
+import { AGENT_FAMILIES, UNLISTED_AGENT, isExecutorSubtype } from "@/lib/agentKinds";
 
 const ROOT = path.resolve(__dirname, "../../../..");
 const PUBLIC = path.join(ROOT, "public");
@@ -73,9 +73,16 @@ describe("buildSidebarActors", () => {
     const labels = groups.map((g) => g.label);
     expect(labels).toEqual([...labels].filter((l, i) => labels.indexOf(l) === i));
     for (const g of groups) expect(g.actors.length).toBeGreaterThan(0);
-    expect(["Prime Agents", "Executor Agents", "Halo Agents", "Facilitators", "GovOps"]).toEqual(
+    expect([...AGENT_FAMILIES.map((f) => f.plural), UNLISTED_AGENT.plural, "Facilitators", "GovOps"]).toEqual(
       expect.arrayContaining(labels),
     );
+  });
+
+  it("lists an agent whose subtype the registry does not list under Agents", () => {
+    const odd = { ...graph.participants.find((e) => e.et === "agent")!, id: "odd", slug: "odd", name: "Odd", st: "satellite" };
+    const withOdd = buildSidebarActors({ ...graph, participants: [...graph.participants, odd] }, docs);
+    expect(withOdd.find((g) => g.label === UNLISTED_AGENT.plural)?.actors.map((a) => a.slug)).toEqual(["odd"]);
+    expect(groups.some((g) => g.label === UNLISTED_AGENT.plural)).toBe(false);
   });
 
   it("sorts each group by defining-doc doc_no, numeric", () => {
