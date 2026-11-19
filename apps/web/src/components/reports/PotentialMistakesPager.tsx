@@ -1,13 +1,12 @@
 // Phone layout for Potential Mistakes: one finding at a time, stacked
 // vertically. Swipe left for the next row, right for the previous; the
 // previous/next buttons and arrow keys do the same for anyone who isn't swiping.
-import { useCallback, useRef, useState, type PointerEvent } from "react";
+import { useCallback, useState } from "react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import type { MistakeRow } from "@/lib/potentialMistakesIndex";
 import type { ReportQuery } from "@/lib/reportFilter";
 import { MistakeCard } from "./MistakeCard";
-
-const SWIPE_PX = 48;
+import { usePagerSwipe } from "./usePagerSwipe";
 
 export type PotentialMistakesPagerProps = {
   rows: readonly MistakeRow[];
@@ -17,8 +16,6 @@ export type PotentialMistakesPagerProps = {
 export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps) {
   const [id, setId] = useState(rows[0]?.id);
   const reduce = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const start = useRef<{ x: number; y: number; pointer: number } | null>(null);
-  const [dx, setDx] = useState(0);
 
   const index = Math.max(0, rows.findIndex((r) => r.id === id));
   const row = rows[index] ?? rows[0];
@@ -32,31 +29,9 @@ export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps
     [rows],
   );
 
-  if (!row) return null;
+  const swipe = usePagerSwipe((step) => go(index + step));
 
-  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    start.current = { x: e.clientX, y: e.clientY, pointer: e.pointerId };
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-  };
-  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    const s = start.current;
-    if (!s || e.pointerId !== s.pointer) return;
-    const x = e.clientX - s.x;
-    const y = e.clientY - s.y;
-    if (Math.abs(x) < 8 || Math.abs(x) < Math.abs(y)) return;
-    setDx(x);
-  };
-  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
-    const s = start.current;
-    start.current = null;
-    setDx(0);
-    if (!s || e.pointerId !== s.pointer) return;
-    const x = e.clientX - s.x;
-    const y = e.clientY - s.y;
-    if (Math.abs(x) < SWIPE_PX || Math.abs(x) < Math.abs(y)) return;
-    go(index + (x < 0 ? 1 : -1));
-  };
+  if (!row) return null;
 
   return (
     <section
@@ -101,14 +76,8 @@ export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps
       </div>
       <div
         className="touch-pan-y"
-        style={reduce || !dx ? undefined : { transform: `translateX(${dx}px)` }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={() => {
-          start.current = null;
-          setDx(0);
-        }}
+        style={reduce || !swipe.dx ? undefined : { transform: `translateX(${swipe.dx}px)` }}
+        {...swipe.handlers}
       >
         <MistakeCard r={row} rq={rq} />
       </div>

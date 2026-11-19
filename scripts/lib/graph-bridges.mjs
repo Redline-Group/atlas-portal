@@ -46,6 +46,50 @@ function childKind(title) {
   return null;
 }
 
+// Display name: the sentence subject collides across deployments
+// ("Governance Bridge" exists per network), so qualify from ancestry —
+// nearest ancestor titled "…Bridge" (SkyLink shape), else the root title
+// when it differs from the subject (SLL shape: root is the network doc),
+// agent-prefixed under the A.6.1.1.X subtree (like Pattern 17).
+function bridgeDisplayName(parentDocNo, root, subject, network, docByDocNo) {
+  let system = null;
+  for (let dn = parentDocNo; dn.includes(".");) {
+    dn = dn.split(".").slice(0, -1).join(".");
+    const anc = docByDocNo.get(dn);
+    if (anc && /bridge$/i.test(anc.title.trim()) && normalizeKey(anc.title) !== normalizeKey(subject)) {
+      system = anc.title.trim();
+      break;
+    }
+  }
+  let displayName = subject;
+  if (system) displayName = `${subject} (${system})`;
+  else if (network) displayName = `${subject} (${network})`;
+  const agentDoc = docByDocNo.get(root.doc_no.match(/^(A\.6\.1\.1\.\d+)\./)?.[1] ?? "");
+  if (agentDoc) displayName = `${agentDoc.title} ${displayName}`;
+  return displayName;
+}
+
+// One `validator_of` edge per roster name; a name no entity carries yet mints
+// an `ecosystem_actor` (st=bridge_validator) and joins the name index.
+function emitValidatorEdges(names, rosterDocNo, bridge, nameIndex, edges, addEntity, stats) {
+  for (const name of names) {
+    let v = nameIndex.get(normalizeKey(name));
+    if (!v) {
+      v = addEntity(slugify(name), name, "ecosystem_actor", "bridge_validator", null, {
+        source: "bridge_validator",
+        source_doc_no: rosterDocNo,
+      });
+      nameIndex.set(normalizeKey(name), v);
+      stats.created++;
+    }
+    edges.push({
+      fromId: v.id, fromType: "entity", toId: bridge.id, toType: "entity",
+      edgeType: "validator_of", sourceDocNos: [rosterDocNo],
+    });
+    stats.validatorEdges++;
+  }
+}
+
 export function extractBridges(allDocs, docById, docByDocNo, entityMap, edges, addEntity) {
   const nameIndex = buildNameIndex(entityMap);
   const stats = { roots: 0, validatorEdges: 0, created: 0, warnings: 0 };
@@ -76,26 +120,8 @@ export function extractBridges(allDocs, docById, docByDocNo, entityMap, edges, a
     }
     const quorum = `${quorumMatch[2]}/${quorumMatch[3]}`;
 
-    // Display name: the sentence subject collides across deployments
-    // ("Governance Bridge" exists per network), so qualify from ancestry —
-    // nearest ancestor titled "…Bridge" (SkyLink shape), else the root title
-    // when it differs from the subject (SLL shape: root is the network doc),
-    // agent-prefixed under the A.6.1.1.X subtree (like Pattern 17).
-    let system = null;
-    for (let dn = parentDocNo; dn.includes(".");) {
-      dn = dn.split(".").slice(0, -1).join(".");
-      const anc = docByDocNo.get(dn);
-      if (anc && /bridge$/i.test(anc.title.trim()) && normalizeKey(anc.title) !== normalizeKey(subject)) {
-        system = anc.title.trim();
-        break;
-      }
-    }
     const network = normalizeKey(root.title) !== normalizeKey(subject) ? root.title.trim() : null;
-    let displayName = subject;
-    if (system) displayName = `${subject} (${system})`;
-    else if (network) displayName = `${subject} (${network})`;
-    const agentDoc = docByDocNo.get(root.doc_no.match(/^(A\.6\.1\.1\.\d+)\./)?.[1] ?? "");
-    if (agentDoc) displayName = `${agentDoc.title} ${displayName}`;
+    const displayName = bridgeDisplayName(parentDocNo, root, subject, network, docByDocNo);
 
     const slug = slugify(displayName);
     if (entityMap.has(slug)) { warn(`slug collision, skipped: ${root.doc_no} (${slug})`); continue; }
@@ -115,22 +141,7 @@ export function extractBridges(allDocs, docById, docByDocNo, entityMap, edges, a
 
     const names = parseNameList(rosterMatch[2]);
     if (!names.length) warn(`roster yielded no names: ${slot.roster.doc_no}`);
-    for (const name of names) {
-      let v = nameIndex.get(normalizeKey(name));
-      if (!v) {
-        v = addEntity(slugify(name), name, "ecosystem_actor", "bridge_validator", null, {
-          source: "bridge_validator",
-          source_doc_no: slot.roster.doc_no,
-        });
-        nameIndex.set(normalizeKey(name), v);
-        stats.created++;
-      }
-      edges.push({
-        fromId: v.id, fromType: "entity", toId: ent.id, toType: "entity",
-        edgeType: "validator_of", sourceDocNos: [slot.roster.doc_no],
-      });
-      stats.validatorEdges++;
-    }
+    emitValidatorEdges(names, slot.roster.doc_no, ent, nameIndex, edges, addEntity, stats);
   }
 
   return stats;

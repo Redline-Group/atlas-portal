@@ -22,48 +22,15 @@
 // --detail   adds the score spreads, the combined rules and the group documents
 // --samples  prints the real retitles a rule flags, to read and judge by hand
 
-import { planEmbedRows, shippedPolicy } from "../../src/server/retrieval/embed-rows.ts";
 import { buildEmbedText } from "../../src/server/retrieval/embed-text.ts";
-import { bodyWhollyReplaced, bodyWordsKept, detectIdentitySwaps, lineOverlap, JUDGEABLE_MIN_WORDS, REPLACE_MAX_OVERLAP, SHORT_BODY_MAX_LINES, type SwapNode } from "../../src/server/preview/identity.ts";
-import { auc, dot, lineCount, parentOf, prng, quantile, qwenVectors, share, swappable, walkRetitles, wordCount, type HistoryNode } from "./identity-corpus.ts";
+import { bodyWhollyReplaced, bodyWordsKept, detectIdentitySwaps, lineOverlap, JUDGEABLE_MIN_WORDS, REPLACE_MAX_OVERLAP, type SwapNode } from "../../src/server/preview/identity.ts";
+import { auc, dot, parentOf, prng, quantile, qwenVectors, share, swappable, walkRetitles, wordCount } from "./identity-corpus.ts";
 import { groupBy } from "../../src/lib/collections.ts";
+import { band, med, pct, qs, rule, world, type Node, type Pair, type World } from "./identity-search-pairs.ts";
 
 const args = process.argv.slice(2);
 
-type Node = HistoryNode;
-// `anchors` holds every document whose stored text is NOT simply its own title
-// and body: a group anchor, and also a unit of one that carries a breadcrumb or
-// key:value form. A document can enter or leave that set between two commits,
-// and the two vectors are then texts of different shapes.
-interface World { byId: Map<string, Node>; stored: Map<string, string>; anchors: Set<string> }
-
-/** A snapshot as search would see it: every document's node, and the text
- *  stored under its id. The rows are production's own (planEmbedRows), so the
- *  script and the preview build agree on which documents are stored as a group. */
-function world(byId: Map<string, Node>): World {
-  const { rows } = planEmbedRows([...byId.values()] as any, shippedPolicy());
-  return {
-    byId,
-    stored: new Map(rows.map((r) => [r.id, r.text])),
-    anchors: new Set(rows.filter((r) => !r.plain).map((r) => r.id)),
-  };
-}
-
-interface Pair {
-  group: "retitle" | "sibling" | "unrelated";
-  band: "short" | "mid" | "long";
-  anchor: boolean;
-  shapeChanged: boolean;
-  oldTitle: string; newTitle: string;
-  bodyA: string; bodyB: string; searchA: string; searchB: string;
-  bodyTest: boolean; // bodyWhollyReplaced, the shipped body test
-  gate: boolean; // the whole shipped gate (retitles only)
-  note: string;
-  body: number; search: number;
-  word: number; line: number;
-}
 const pairs: Pair[] = [];
-const band = (t: string): Pair["band"] => { const n = lineCount(t); return n <= SHORT_BODY_MAX_LINES ? "short" : n <= 20 ? "mid" : "long"; };
 
 // ---- real retitles, from the atlas git history ------------------------------
 let lastWorld: { of: Map<string, Node>; world: World } | null = null;
@@ -139,11 +106,6 @@ if (scored.length < pairs.length) {
 }
 
 const DETAIL = args.includes("--detail");
-const med = (xs: number[]) => (xs.length ? quantile(xs, 0.5).toFixed(3) : "n/a");
-const qs = (xs: number[]) => (xs.length ? [0.05, 0.25, 0.5, 0.75, 0.95].map((p) => quantile(xs, p).toFixed(3)).join("  ") : "n/a");
-const pct = (n: number, d: number) => (d ? `${((100 * n) / d).toFixed(1)}%` : "n/a");
-const rule = (w: number) => "-".repeat(w);
-
 const count = (g: Pair["group"]) => scored.filter((p) => p.group === g).length;
 console.log(`
 QUESTION

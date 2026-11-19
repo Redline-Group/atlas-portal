@@ -29,6 +29,19 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { HEADING_RE, parse, parseTree } from "./atlas-parser.mjs";
+import { bucketFromFilename, bucketOrderKey, compareBuckets } from "./atlas-source-buckets.ts";
+import { MAX_HEADING_LEVEL, restoreAbsoluteLevels, structuralDepth } from "./atlas-source-levels.ts";
+
+// Pure ports of upstream's bucket-name and heading-level rules live in sibling
+// modules; re-exported so this stays the one entry point.
+export {
+  bucketFromFilename,
+  bucketOrderKey,
+  compareBuckets,
+  MAX_HEADING_LEVEL,
+  restoreAbsoluteLevels,
+  structuralDepth,
+};
 
 export const LAYOUT = {
   MONOLITH: "monolith",
@@ -52,37 +65,6 @@ export const CONTENT_REL = "content";
 // "is there any document.md" scan — that is both slow and true of a partially
 // written tree. Mirror of atlas_source.detect_layout.
 const ATOM_ROOT_REL = ["A", "0", "document.md"];
-
-// Mirror of sync/partition.py:FILENAME_RE — keep in sync with upstream.
-const BUCKET_FILE_RE = /^(A(?:\.\d+)*) - .*\.md$/;
-
-/** Recover a bucket's doc number from its filename, or null if not a bucket file. */
-export function bucketFromFilename(name) {
-  const m = BUCKET_FILE_RE.exec(name);
-  return m ? m[1] : null;
-}
-
-/** Sort key placing buckets in composed-Atlas order. Mirror of partition.order_key.
- *
- *  ⛔ DO NOT SUBSTITUTE FILENAME SORTING. It agrees today and diverges the moment
- *  a tenth Star is added: lexicographically `A.6.1.1.10` sorts between
- *  `A.6.1.1.1` and `A.6.1.1.2`, silently reordering ~2,000 documents. */
-export function bucketOrderKey(bucket) {
-  return bucket.split(".").slice(1).map((s) => Number.parseInt(s, 10));
-}
-
-/** Segment-wise compare over `bucketOrderKey`; a prefix sorts before its extensions. */
-export function compareBuckets(a, b) {
-  const ka = bucketOrderKey(a);
-  const kb = bucketOrderKey(b);
-  for (let i = 0; i < Math.max(ka.length, kb.length); i++) {
-    // -1 for a missing segment: `A.6` sorts before `A.6.1`, as Python tuples do.
-    const x = ka[i] ?? -1;
-    const y = kb[i] ?? -1;
-    if (x !== y) return x - y;
-  }
-  return 0;
-}
 
 /** Bucket files in reassembly order: [{ bucket, file }, …]. Duplicate bucket → throw. */
 export function listBuckets(contentRoot) {
@@ -211,54 +193,6 @@ export function orderDocuments(linesBySource) {
     last.set(b.source, b.index);
   }
   return ordered.flatMap((b) => b.lines);
-}
-
-// ---------------------------------------------------------------------------
-// Heading levels — port of sync/partition.py (structural_depth /
-// restore_absolute_levels). Bucket files store levels relative to their own root
-// document; the composed Atlas's absolute level is `min(structural_depth + 1, 6)`
-// and is RE-DERIVED from doc numbers, never adjusted from the stored hashes: the
-// hash count is lossy (10k+ docs sit at the cap), so subtracting a root level
-// would flatten every capped document onto the wrong level.
-// ---------------------------------------------------------------------------
-export const MAX_HEADING_LEVEL = 6;
-
-/** How many documents sit above `docNo`. Segment count is NOT depth: `0`
- *  extension segments (`A.1.4.5.0.4`) and the leading `A` are phantoms no
- *  document claims. An ancestor counts precisely when some document claims that
- *  prefix — the same real/phantom test upstream's canonical_sort_key applies. */
-export function structuralDepth(docNo, realDocNos) {
-  const parts = docNo.split(".");
-  let n = 0;
-  for (let i = 1; i < parts.length; i++) if (realDocNos.has(parts.slice(0, i).join("."))) n++;
-  return n;
-}
-
-/** Give every heading in a reassembled stream its level in the composed Atlas.
- *  Needed Research has no position of its own and takes the level of the
- *  numbered document it follows, plus one, under the same cap (matches compose).
- *  Only heading lines change; node content (and therefore contentHash) is
- *  byte-identical before and after. */
-export function restoreAbsoluteLevels(text) {
-  const lines = text.split("\n");
-  const heads = [];
-  for (let i = 0; i < lines.length; i++) {
-    const m = HEADING_RE.exec(lines[i]);
-    if (m) heads.push([i, m[2]]);
-  }
-  const real = new Set(heads.map(([, dn]) => dn).filter((dn) => !dn.startsWith("NR-")));
-  let previous = 0;
-  for (const [i, dn] of heads) {
-    let level;
-    if (dn.startsWith("NR-")) {
-      level = Math.min(previous + 1, MAX_HEADING_LEVEL);
-    } else {
-      level = Math.min(structuralDepth(dn, real) + 1, MAX_HEADING_LEVEL);
-      previous = level;
-    }
-    lines[i] = lines[i].replace(/^#+/, "#".repeat(level));
-  }
-  return lines.join("\n");
 }
 
 /** Classify an atlas checkout. Throws on ambiguity, emptiness, or an unreadable tree. */

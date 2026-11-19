@@ -158,90 +158,104 @@ export function templateDivergence(nodes) {
   for (const [slot, members] of bySlot) {
     if (new Set(members.map((m) => m.root)).size < MIN_ARTIFACTS) continue;
     if (new Set(members.map((m) => m.node.title.toLowerCase())).size > 1) continue;
-
-    // Every sentence in the slot, grouped by its exact normalized text. No
-    // positional key: bucketing on the opening and closing words (as the first
-    // version did) hid any divergence that fell in them, which is exactly where
-    // a trailing link target sits.
-    const variantsByText = new Map();
-    for (const m of members) {
-      for (const raw of splitSentences(m.node.content)) {
-        const text = normalizeForCompare(raw, m.name, docNoOf);
-        if (text.split(" ").length < MIN_SENTENCE_WORDS) continue;
-        if (!variantsByText.has(text)) variantsByText.set(text, []);
-        variantsByText.get(text).push({ ...m, raw });
-      }
-    }
-
-    // Group the variants into FAMILIES first: two readings belong to the same
-    // template sentence when they are within one small edit of each other. Only
-    // then is each family's majority compared against its other members.
-    //
-    // Both halves matter. Comparing every pair turns a three-way split into
-    // three rows saying everyone differs from everyone. Comparing against the
-    // SLOT's majority instead misses the real case entirely: a document holds
-    // several sentences, so the divergent pair are usually both minorities
-    // within their slot -- that is what made this stop seeing the Root Edit
-    // circulating/total defect it was written for.
-    const variants = [...variantsByText.entries()];
-    const family = variants.map((_, i) => i);
-    const find = (i) => (family[i] === i ? i : (family[i] = find(family[i])));
-    for (let i = 0; i < variants.length; i++) {
-      for (let j = i + 1; j < variants.length; j++) {
-        const d = wordDistance(variants[i][0], variants[j][0]);
-        if (d > 0 && d <= MAX_DIVERGENT_WORDS) family[find(i)] = find(j);
-      }
-    }
-    const families = new Map();
-    variants.forEach((v, i) => {
-      const root = find(i);
-      if (!families.has(root)) families.set(root, []);
-      families.get(root).push(v);
-    });
-
-    for (const members of families.values()) {
-      if (members.length < 2) continue;
-      const [major, ...minorities] = [...members].sort((a, b) => b[1].length - a[1].length);
+    for (const family of sentenceFamilies(slotVariants(members, docNoOf))) {
+      if (family.length < 2) continue;
+      const [major, ...minorities] = [...family].sort((a, b) => b[1].length - a[1].length);
       for (const minor of minorities) {
-        const majorRoots = new Set(major[1].map((m) => m.root));
-        const minorRoots = new Set(minor[1].map((m) => m.root));
-        // Two READINGS of one sentence are held by different artifacts. When the
-        // same artifact appears on both sides these are two different sentences
-        // that happen to be similar, and the finding reads absurdly: "Spark says
-        // X, while Spark says Y".
-        if ([...minorRoots].some((r) => majorRoots.has(r))) continue;
-        if (new Set([...majorRoots, ...minorRoots]).size < MIN_ARTIFACTS) continue;
-        const changed = wordDistance(major[0], minor[0]);
-        if (changed === 0 || changed > MAX_DIVERGENT_WORDS) continue;
-      const majorOnly = uniqueWords(major[0], minor[0]);
-      const minorOnly = uniqueWords(minor[0], major[0]);
-      if (!majorOnly.length && !minorOnly.length) continue; // reordering only
-
-      const say = (rows, words) =>
-        `${rows.map((r) => r.name).join(", ")} say "${words.join(" ")}"`;
-      // A slot can have more than one divergent sentence, so the differing word
-      // goes in the id: without it the rows collide and the report shows one.
-      const tag = (minorOnly[0] ?? majorOnly[0] ?? "").replace(/[^a-z0-9]+/gi, "").slice(0, 12);
-      findings.push({
-        id: `${slot}#structural${tag ? `-${tag}` : ""}`,
-        docNo: slot,
-        uuid: null,
-        file: "A.6.1.1.* (all prime artifacts)",
-        category: "structural",
-        severity: divergenceSeverity(majorOnly, minorOnly),
-        pass: "deterministic",
-        detector: "template-divergence",
-        quote: minor[1][0].raw,
-        issue:
-          `The same sentence at ${slot} does not say the same thing in every Prime Agent artifact: ` +
-          `${say(major[1], majorOnly)}, while ${say(minor[1], minorOnly)}. ` +
-          "Only visible corpus-wide; no single chunk of the sweep contains both.",
-          fix: "",
-        });
+        const finding = divergenceFinding(slot, major, minor);
+        if (finding) findings.push(finding);
       }
     }
   }
   return findings.sort((a, b) => a.docNo.localeCompare(b.docNo));
+}
+
+/**
+ * Every sentence in the slot, grouped by its exact normalized text. No
+ * positional key: bucketing on the opening and closing words (as the first
+ * version did) hid any divergence that fell in them, which is exactly where
+ * a trailing link target sits.
+ */
+function slotVariants(members, docNoOf) {
+  const variantsByText = new Map();
+  for (const m of members) {
+    for (const raw of splitSentences(m.node.content)) {
+      const text = normalizeForCompare(raw, m.name, docNoOf);
+      if (text.split(" ").length < MIN_SENTENCE_WORDS) continue;
+      if (!variantsByText.has(text)) variantsByText.set(text, []);
+      variantsByText.get(text).push({ ...m, raw });
+    }
+  }
+  return [...variantsByText.entries()];
+}
+
+/**
+ * Group the variants into FAMILIES first: two readings belong to the same
+ * template sentence when they are within one small edit of each other. Only
+ * then is each family's majority compared against its other members.
+ *
+ * Both halves matter. Comparing every pair turns a three-way split into
+ * three rows saying everyone differs from everyone. Comparing against the
+ * SLOT's majority instead misses the real case entirely: a document holds
+ * several sentences, so the divergent pair are usually both minorities
+ * within their slot -- that is what made this stop seeing the Root Edit
+ * circulating/total defect it was written for.
+ */
+function sentenceFamilies(variants) {
+  const family = variants.map((_, i) => i);
+  const find = (i) => (family[i] === i ? i : (family[i] = find(family[i])));
+  for (let i = 0; i < variants.length; i++) {
+    for (let j = i + 1; j < variants.length; j++) {
+      const d = wordDistance(variants[i][0], variants[j][0]);
+      if (d > 0 && d <= MAX_DIVERGENT_WORDS) family[find(i)] = find(j);
+    }
+  }
+  const families = new Map();
+  variants.forEach((v, i) => {
+    const root = find(i);
+    if (!families.has(root)) families.set(root, []);
+    families.get(root).push(v);
+  });
+  return families.values();
+}
+
+/** The finding for one minority reading against its family's majority, or null. */
+function divergenceFinding(slot, major, minor) {
+  const majorRoots = new Set(major[1].map((m) => m.root));
+  const minorRoots = new Set(minor[1].map((m) => m.root));
+  // Two READINGS of one sentence are held by different artifacts. When the
+  // same artifact appears on both sides these are two different sentences
+  // that happen to be similar, and the finding reads absurdly: "Spark says
+  // X, while Spark says Y".
+  if ([...minorRoots].some((r) => majorRoots.has(r))) return null;
+  if (new Set([...majorRoots, ...minorRoots]).size < MIN_ARTIFACTS) return null;
+  const changed = wordDistance(major[0], minor[0]);
+  if (changed === 0 || changed > MAX_DIVERGENT_WORDS) return null;
+  const majorOnly = uniqueWords(major[0], minor[0]);
+  const minorOnly = uniqueWords(minor[0], major[0]);
+  if (!majorOnly.length && !minorOnly.length) return null; // reordering only
+
+  const say = (rows, words) =>
+    `${rows.map((r) => r.name).join(", ")} say "${words.join(" ")}"`;
+  // A slot can have more than one divergent sentence, so the differing word
+  // goes in the id: without it the rows collide and the report shows one.
+  const tag = (minorOnly[0] ?? majorOnly[0] ?? "").replace(/[^a-z0-9]+/gi, "").slice(0, 12);
+  return {
+    id: `${slot}#structural${tag ? `-${tag}` : ""}`,
+    docNo: slot,
+    uuid: null,
+    file: "A.6.1.1.* (all prime artifacts)",
+    category: "structural",
+    severity: divergenceSeverity(majorOnly, minorOnly),
+    pass: "deterministic",
+    detector: "template-divergence",
+    quote: minor[1][0].raw,
+    issue:
+      `The same sentence at ${slot} does not say the same thing in every Prime Agent artifact: ` +
+      `${say(major[1], majorOnly)}, while ${say(minor[1], minorOnly)}. ` +
+      "Only visible corpus-wide; no single chunk of the sweep contains both.",
+    fix: "",
+  };
 }
 
 /** Every corpus detector, by the id its rows carry. */

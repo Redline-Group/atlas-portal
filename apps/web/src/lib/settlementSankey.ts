@@ -1,4 +1,5 @@
 import type { SettlementVenue } from "./settlements";
+import { NODE_W, PAD, buildFlows, buildLinks, buildSinkBars, spanOf } from "./settlementSankeyBuild";
 
 export interface SankeyVenue {
   id: string;
@@ -46,10 +47,6 @@ export interface SankeyLayout {
   links: SankeyLink[];
 }
 
-const NODE_W = 12;
-// PAD is what keeps single-line venue labels off each other: consecutive label
-// centres are at least PAD apart however thin the nodes get.
-const PAD = 11;
 const MIN_PX = 1.5;
 // Gutters are separate because the two sides carry different text: venue names
 // on the left, a name + a running total on the right.
@@ -65,8 +62,6 @@ const LABEL_LINE = 11;
 // Sink labels are two lines (name + figure); an out-bar's is two as well
 // (what went out, then the net the pair settles to).
 const SINK_LABEL_BLOCK = 24;
-// A sink's out-bar hugs its in-bar, so the pair reads as one sink.
-const PAIR_PAD = 4;
 
 export function collapseVenues(
   venues: readonly Pick<SettlementVenue, "id" | "label" | "synthetic" | "profitToSky" | "profitToGrove">[],
@@ -102,10 +97,11 @@ export function layoutVenueSankey(
   primeLabel = "Prime",
   width = WIDTH,
 ): SankeyLayout {
-  if (venues.length === 0) return { width, height: 0, nodes: [], links: [] };
+  const empty: SankeyLayout = { width, height: 0, nodes: [], links: [] };
+  if (venues.length === 0) return empty;
 
   const leftSum = venues.reduce((t, v) => t + Math.abs(v.profitToSky) + Math.abs(v.profitToGrove), 0);
-  if (leftSum <= 0) return { width, height: 0, nodes: [], links: [] };
+  if (leftSum <= 0) return empty;
 
   const px = INNER_H / leftSum;
   // Every ribbon is floored so the smallest venues stay visible at all. That
@@ -114,57 +110,21 @@ export function layoutVenueSankey(
   // bar they dock into overflowed by up to 6px. Nodes are sized FROM the
   // ribbons instead — bar length is the sum of what docks to it, by
   // construction, on both sides of the chart.
-  const hOf = (v: number) => Math.max(MIN_PX, v * px);
+  const flows = buildFlows(venues, (v) => Math.max(MIN_PX, v * px));
+  if (flows.length === 0) return empty;
 
-  // One bar per DIRECTION, not per sink: gains and losses are drawn separately
-  // so every bar's length is its own gross figure. (Drawing Σ|x| in a single
-  // bar made losses lengthen the bar they should shorten — 69% overlong for
-  // Spark, and a fat positive bar for months whose net was negative.)
-  const flows = venues.flatMap((v) =>
-    [
-      { from: v.id, sink: "sky", signed: v.profitToSky },
-      { from: v.id, sink: "prime", signed: v.profitToGrove },
-    ]
-      .filter((f) => Math.abs(f.signed) >= 1e-9)
-      .map((f) => ({
-        ...f,
-        to: f.signed < 0 ? `${f.sink}-out` : f.sink,
-        value: Math.abs(f.signed),
-        t: hOf(Math.abs(f.signed)),
-      })),
-  );
-  if (flows.length === 0) return { width, height: 0, nodes: [], links: [] };
-
-  const spanOf = (pick: (f: (typeof flows)[number]) => string, id: string) =>
-    flows.reduce((t, f) => (pick(f) === id ? t + f.t : t), 0);
-
-  const bars = [
-    { id: "sky", label: "Sky", kind: "sky" as const },
-    { id: "prime", label: primeLabel, kind: "prime" as const },
-  ].flatMap((b) => {
-    const inH = spanOf((f) => f.to, b.id);
-    const outH = spanOf((f) => f.to, `${b.id}-out`);
-    return [
-      ...(inH > 0 ? [{ ...b, flow: "in" as const, h: inH, gap: PAD }] : []),
-      ...(outH > 0
-        ? [{ ...b, id: `${b.id}-out`, flow: "out" as const, h: outH, gap: inH > 0 ? PAIR_PAD : PAD }]
-        : []),
-    ];
-  });
-
-  const leftX = LEFT_GUTTER;
   const rightX = width - RIGHT_GUTTER - NODE_W;
   const leftNodes = stack(
     venues.map((v) => ({
       id: v.id,
       label: v.label,
       kind: "venue" as const,
-      h: spanOf((f) => f.from, v.id),
+      h: spanOf(flows, (f) => f.from, v.id),
     })),
-    leftX,
+    LEFT_GUTTER,
     LABEL_LINE,
   );
-  const rightNodes = stack(bars, rightX, SINK_LABEL_BLOCK);
+  const rightNodes = stack(buildSinkBars(flows, primeLabel), rightX, SINK_LABEL_BLOCK);
   const nodes: SankeyNode[] = [...leftNodes, ...rightNodes];
 
   const colBottom = (ns: SankeyNode[]) => ns.reduce((t, n) => Math.max(t, n.y + n.height), 0);
@@ -172,24 +132,7 @@ export function layoutVenueSankey(
   const lowestLabel = Math.max(...nodes.map((n) => n.labelY + SINK_LABEL_BLOCK / 2));
   const height = Math.max(colBottom(leftNodes), colBottom(rightNodes), lowestLabel) + 8;
 
-  const leftCursor = new Map(leftNodes.map((n) => [n.id, n.y]));
-  const rightCursor = new Map(rightNodes.map((n) => [n.id, n.y]));
-  const x0 = leftX + NODE_W;
-  const links: SankeyLink[] = flows.map((f) => {
-    const y0 = leftCursor.get(f.from)!;
-    const y1 = rightCursor.get(f.to)!;
-    leftCursor.set(f.from, y0 + f.t);
-    rightCursor.set(f.to, y1 + f.t);
-    return {
-      from: f.from,
-      to: f.to,
-      value: f.value,
-      signed: f.signed,
-      path: ribbon(x0, y0, f.t, rightX, y1, f.t),
-    };
-  });
-
-  return { width, height, nodes, links };
+  return { width, height, nodes, links: buildLinks(flows, leftNodes, rightNodes, LEFT_GUTTER + NODE_W, rightX) };
 }
 
 function stack(
@@ -217,11 +160,4 @@ function stack(
     y += it.h;
     return n;
   });
-}
-
-function ribbon(x0: number, y0: number, t0: number, x1: number, y1: number, t1: number): string {
-  const cx = (x0 + x1) / 2;
-  const y0b = y0 + t0;
-  const y1b = y1 + t1;
-  return `M${x0},${y0} C${cx},${y0} ${cx},${y1} ${x1},${y1} L${x1},${y1b} C${cx},${y1b} ${cx},${y0b} ${x0},${y0b} Z`;
 }

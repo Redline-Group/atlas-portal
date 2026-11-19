@@ -61,22 +61,8 @@ async function loadAbi(addr) {
   } catch { return null; }
 }
 
-/**
- * Fetch the whole snapshot. Throws rather than returning a thin/empty result —
- * an empty snapshot is indistinguishable from "the chain has no state" once
- * stored, and would replace a good row with nothing (see upsertChainState's
- * matching refusal).
- *
- * @param {{ rpcUrl?: string, blockNumber?: bigint|string|number, log?: (msg: string) => void }} [opts]
- * @returns {Promise<{ block: string, values: Record<string, Record<string, unknown>> }>}
- */
-export async function fetchChainState(opts = {}) {
-  const log = opts.log ?? console.log;
-  const rpcUrl = opts.rpcUrl ?? process.env.ETH_RPC_URL?.trim() ?? CHAIN_RPC.ethereum;
-  if (!rpcUrl) throw new Error("CHAIN_RPC.ethereum is missing from scripts/lib/chains.mjs");
-
-  const client = createPublicClient({ chain: mainnet, transport: http(rpcUrl) });
-
+/** The ethereum chainlog entries of public/addresses.json; throws when there are none. */
+async function loadChainlogEntries(log, rpcUrl) {
   const addresses = JSON.parse(await fs.readFile(ADDRS_PATH, "utf8"));
   const chainlogEntries = Object.entries(addresses).filter(
     ([, info]) => info.chainlogId && info.chain === "ethereum",
@@ -90,7 +76,11 @@ export async function fetchChainState(opts = {}) {
       "chain-state snapshot (likely a failed chainlog/address build upstream).",
     );
   }
+  return chainlogEntries;
+}
 
+/** One call per zero-argument view/pure function of each contract, using the implementation ABI for proxies. */
+async function buildCalls(chainlogEntries, log) {
   const calls = [];
   let proxyUpgraded = 0;
   for (const [addr, info] of chainlogEntries) {
@@ -122,14 +112,11 @@ export async function fetchChainState(opts = {}) {
       "empty chain-state snapshot (run `pnpm build:addresses` with ETHERSCAN_API_KEY to populate the cache).",
     );
   }
+  return calls;
+}
 
-  const block = opts.blockNumber != null
-    ? BigInt(opts.blockNumber)
-    : process.env.BLOCK_NUMBER
-      ? BigInt(process.env.BLOCK_NUMBER)
-      : await client.getBlockNumber();
-  log(`Fetching at block ${block}${opts.blockNumber != null || process.env.BLOCK_NUMBER ? " (pinned)" : " (latest)"}`);
-
+/** Multicall every call in batches of 500 at one block; results line up with `calls`. */
+async function multicallAll(client, calls, block, log) {
   const BATCH = 500;
   const rawResults = [];
   for (let i = 0; i < calls.length; i += BATCH) {
@@ -142,6 +129,36 @@ export async function fetchChainState(opts = {}) {
     });
     rawResults.push(...batch);
   }
+  return rawResults;
+}
+
+/**
+ * Fetch the whole snapshot. Throws rather than returning a thin/empty result —
+ * an empty snapshot is indistinguishable from "the chain has no state" once
+ * stored, and would replace a good row with nothing (see upsertChainState's
+ * matching refusal).
+ *
+ * @param {{ rpcUrl?: string, blockNumber?: bigint|string|number, log?: (msg: string) => void }} [opts]
+ * @returns {Promise<{ block: string, values: Record<string, Record<string, unknown>> }>}
+ */
+export async function fetchChainState(opts = {}) {
+  const log = opts.log ?? console.log;
+  const rpcUrl = opts.rpcUrl ?? process.env.ETH_RPC_URL?.trim() ?? CHAIN_RPC.ethereum;
+  if (!rpcUrl) throw new Error("CHAIN_RPC.ethereum is missing from scripts/lib/chains.mjs");
+
+  const client = createPublicClient({ chain: mainnet, transport: http(rpcUrl) });
+
+  const chainlogEntries = await loadChainlogEntries(log, rpcUrl);
+  const calls = await buildCalls(chainlogEntries, log);
+
+  const block = opts.blockNumber != null
+    ? BigInt(opts.blockNumber)
+    : process.env.BLOCK_NUMBER
+      ? BigInt(process.env.BLOCK_NUMBER)
+      : await client.getBlockNumber();
+  log(`Fetching at block ${block}${opts.blockNumber != null || process.env.BLOCK_NUMBER ? " (pinned)" : " (latest)"}`);
+
+  const rawResults = await multicallAll(client, calls, block, log);
 
   const values = {};
   for (let i = 0; i < calls.length; i++) {

@@ -40,21 +40,13 @@ function stripKey(c: Candidate): BaseCandidateMeta {
 }
 
 
-/**
- * Load (deduped by mergeBase, so two candidates sharing one merge base fetch
- * it once) each present candidate's base snapshot, write a diff set (diff,
- * before, removed) for every candidate whose base actually loaded, copy the
- * `auto` set to the plain names, and compute base-drift for the `repo`
- * candidate. A candidate whose merge-base tree could not be fetched is
- * DROPPED from the advertised bases rather than silently redlined against
- * live main under its own name — the label and the bytes must agree; when
- * that was the `auto` candidate, `auto` moves to the other one, or to
- * "live-main" with a reason (and the vs-main set goes to the plain names).
- */
-export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCandidateDiffsOpts): Promise<{ bases: PreviewBases; refine: RefineJob[] }> {
-  const { resolved, token, priv, sha8, paths, fetchTree, head, mainDocs, live } = opts;
-
-  const present = (["sky", "repo"] as const).filter((k) => candidates[k]);
+/** Loads each distinct merge base once; a base that cannot be fetched lands in `failed` with its reason. */
+async function loadMergeBases(
+  candidates: Candidates,
+  present: readonly ("sky" | "repo")[],
+  opts: WriteCandidateDiffsOpts,
+) {
+  const { resolved, sha8, paths, fetchTree, mainDocs, live } = opts;
   const loaded = new Map<string, Snapshot>();
   const failed = new Map<string, string>();
   await Promise.all(
@@ -76,6 +68,46 @@ export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCan
       }
     }),
   );
+  return { loaded, failed };
+}
+
+/** Base-drift for the `repo` candidate; soft: banner meta, never build-blocking. */
+async function repoBaseDrift(repoCandidate: Candidate, mergeBaseSnapshot: Snapshot | undefined, opts: WriteCandidateDiffsOpts) {
+  const { resolved, token, priv, paths, fetchTree, mainDocs, live } = opts;
+  try {
+    return await computeBaseDrift({
+      candidate: repoCandidate,
+      prBaseSha: resolved.prBase?.sha,
+      priv,
+      repoGh: makeGhClient(token),
+      canonicalGh: makeGhClient(config.githubToken),
+      live: { atlasCommit: live.meta.atlasCommit ?? "", snapshot: () => mainDocs },
+      mergeBaseSnapshot,
+      fetchTree: (s, d) => fetchTree(repoCandidate.repo, s, d),
+      scratchDir: paths.dir,
+    });
+  } catch {
+    /* computeBaseDrift is already soft internally; guard anyway */
+    return undefined;
+  }
+}
+
+/**
+ * Load (deduped by mergeBase, so two candidates sharing one merge base fetch
+ * it once) each present candidate's base snapshot, write a diff set (diff,
+ * before, removed) for every candidate whose base actually loaded, copy the
+ * `auto` set to the plain names, and compute base-drift for the `repo`
+ * candidate. A candidate whose merge-base tree could not be fetched is
+ * DROPPED from the advertised bases rather than silently redlined against
+ * live main under its own name — the label and the bytes must agree; when
+ * that was the `auto` candidate, `auto` moves to the other one, or to
+ * "live-main" with a reason (and the vs-main set goes to the plain names).
+ */
+export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCandidateDiffsOpts): Promise<{ bases: PreviewBases; refine: RefineJob[] }> {
+  const { resolved, paths, head, mainDocs } = opts;
+
+  const present = (["sky", "repo"] as const).filter((k) => candidates[k]);
+  const { loaded, failed } = await loadMergeBases(candidates, present, opts);
 
   const kept = present.filter((k) => loaded.has(candidates[k]!.mergeBase));
   const refine: RefineJob[] = [];
@@ -113,22 +145,8 @@ export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCan
   if (kept.includes("repo")) {
     const repoCandidate = candidates.repo!;
     bases.repo = stripKey(repoCandidate);
-    try {
-      const drift = await computeBaseDrift({
-        candidate: repoCandidate,
-        prBaseSha: resolved.prBase?.sha,
-        priv,
-        repoGh: makeGhClient(token),
-        canonicalGh: makeGhClient(config.githubToken),
-        live: { atlasCommit: live.meta.atlasCommit ?? "", snapshot: () => mainDocs },
-        mergeBaseSnapshot: loaded.get(repoCandidate.mergeBase),
-        fetchTree: (s, d) => fetchTree(repoCandidate.repo, s, d),
-        scratchDir: paths.dir,
-      });
-      if (drift) bases.repo.drift = drift;
-    } catch {
-      /* computeBaseDrift is already soft internally; guard anyway — banner meta, never build-blocking */
-    }
+    const drift = await repoBaseDrift(repoCandidate, loaded.get(repoCandidate.mergeBase), opts);
+    if (drift) bases.repo.drift = drift;
   }
   return { bases, refine };
 }

@@ -123,62 +123,47 @@ async function fetchCreatePollTxs(startBlock) {
   return out;
 }
 
-async function main() {
-  if (!API_KEY) {
-    console.error("ETHERSCAN_API_KEY not set — run: bun scripts/aux/atlas-history/enumerate-onchain-polls.mjs");
-    process.exit(1);
+// One createPoll tx -> poll record, or null when it is not an Atlas Edit poll.
+function pollRecord(t, aeps) {
+  const dec = decodeCreatePoll(t.input);
+  if (!dec || !dec.url || !dec.multiHash) return null;
+  let url = dec.url;
+  try {
+    url = decodeURIComponent(dec.url);
+  } catch {
+    /* keep raw */
   }
-  const floorTs = Math.floor(Date.parse(`${FLOOR_DATE}T00:00:00Z`) / 1000);
-  const floor = await getJson(`${V2}&module=block&action=getblocknobytime&timestamp=${floorTs}&closest=before&apikey=${API_KEY}`);
-  const startBlock = Number(floor.result);
-
-  const txs = await fetchCreatePollTxs(startBlock);
-  const createPolls = txs.filter((t) => (t.input || "").toLowerCase().startsWith(CREATE_POLL_SELECTOR));
-
-  const aepBySlug = readRepoAeps();
-  const aeps = new Map(aepBySlug.map((a) => [a.aep, a]));
-
-  const polls = [];
-  for (const t of createPolls) {
-    const dec = decodeCreatePoll(t.input);
-    if (!dec || !dec.url || !dec.multiHash) continue;
-    let url = dec.url;
-    try {
-      url = decodeURIComponent(dec.url);
-    } catch {
-      /* keep raw */
-    }
-    if (!ATLAS_RE.test(url) && !ATLAS_RE.test(dec.url)) continue;
-    const multiHash = dec.multiHash.trim();
-    const title = (url.split("/").pop() || "").replace(/\.md$/i, "");
-    const date = isoDate(t.timeStamp);
-    const { kind, aep } = classify(title);
-    const rec = {
-      date,
-      window: date < TRUNCATION_DATE ? "severed" : "overlap",
-      kind,
-      aep,
-      title,
-      multiHash,
-      valid_cid: CID_RE.test(multiHash),
-      ipfs_url: `https://ipfs.io/ipfs/${multiHash}`,
-      poll_url: url,
-      start_date: isoDate(dec.start),
-      end_date: isoDate(dec.end),
-      tx: t.hash,
-      block: Number(t.blockNumber),
-      create_emitter: CREATE_EMITTER,
-    };
-    if (aep && aeps.has(aep)) {
-      const a = aeps.get(aep);
-      rec.repo_file = a.file;
-      rec.aep_poll_match = a.poll_slug ? multiHash.startsWith(a.poll_slug) : null;
-    }
-    polls.push(rec);
+  if (!ATLAS_RE.test(url) && !ATLAS_RE.test(dec.url)) return null;
+  const multiHash = dec.multiHash.trim();
+  const title = (url.split("/").pop() || "").replace(/\.md$/i, "");
+  const date = isoDate(t.timeStamp);
+  const { kind, aep } = classify(title);
+  const rec = {
+    date,
+    window: date < TRUNCATION_DATE ? "severed" : "overlap",
+    kind,
+    aep,
+    title,
+    multiHash,
+    valid_cid: CID_RE.test(multiHash),
+    ipfs_url: `https://ipfs.io/ipfs/${multiHash}`,
+    poll_url: url,
+    start_date: isoDate(dec.start),
+    end_date: isoDate(dec.end),
+    tx: t.hash,
+    block: Number(t.blockNumber),
+    create_emitter: CREATE_EMITTER,
+  };
+  if (aep && aeps.has(aep)) {
+    const a = aeps.get(aep);
+    rec.repo_file = a.file;
+    rec.aep_poll_match = a.poll_slug ? multiHash.startsWith(a.poll_slug) : null;
   }
-  polls.sort((a, b) => a.date.localeCompare(b.date) || a.block - b.block);
+  return rec;
+}
 
-  const manifest = {
+function buildManifest(createPolls, polls) {
+  return {
     source: "ethereum mainnet (Etherscan v2)",
     captured: new Date().toISOString().slice(0, 10),
     create_emitter: CREATE_EMITTER,
@@ -194,6 +179,25 @@ async function main() {
     },
     polls,
   };
+}
+
+async function main() {
+  if (!API_KEY) {
+    console.error("ETHERSCAN_API_KEY not set — run: bun scripts/aux/atlas-history/enumerate-onchain-polls.mjs");
+    process.exit(1);
+  }
+  const floorTs = Math.floor(Date.parse(`${FLOOR_DATE}T00:00:00Z`) / 1000);
+  const floor = await getJson(`${V2}&module=block&action=getblocknobytime&timestamp=${floorTs}&closest=before&apikey=${API_KEY}`);
+  const startBlock = Number(floor.result);
+
+  const txs = await fetchCreatePollTxs(startBlock);
+  const createPolls = txs.filter((t) => (t.input || "").toLowerCase().startsWith(CREATE_POLL_SELECTOR));
+
+  const aeps = new Map(readRepoAeps().map((a) => [a.aep, a]));
+  const polls = createPolls.map((t) => pollRecord(t, aeps)).filter(Boolean);
+  polls.sort((a, b) => a.date.localeCompare(b.date) || a.block - b.block);
+
+  const manifest = buildManifest(createPolls, polls);
   fs.writeFileSync(OUT, `${JSON.stringify(manifest, null, 2)}\n`);
 
   console.log(`wrote ${path.relative(process.cwd(), OUT)}`);

@@ -1,10 +1,7 @@
-import { Link } from "../Link";
 import { useArrivalTarget } from "../../hooks/useArrivalTarget";
-import { AtlasLink } from "../AtlasLink";
 import type { ActorProfile } from "../../lib/actorIndex";
-import { ENTITY_TYPE_LABEL, ENTITY_TYPE_COLOR } from "../../lib/entityGraph";
-import { atlasHref, actorHref } from "@/lib/routes";
 import { ActorChain } from "./ActorChain";
+import { ActorHeader } from "./ActorHeader";
 import { ActorContact } from "./ActorContact";
 import { ActorContracts } from "./ActorContracts";
 import { ActorResponsibilities } from "./ActorResponsibilities";
@@ -17,7 +14,6 @@ import { useSubpageAnchorForward } from "./useSubpageAnchorForward";
 import { CompositePartySection } from "./CompositePartySection";
 import { RADAR_SECTION } from "@/lib/radarAnchors";
 import { hasActorPages } from "@/lib/radarPages";
-import { UNLISTED_AGENT, agentFamily } from "@/lib/agentKinds";
 
 interface Props {
   profile: ActorProfile;
@@ -31,15 +27,11 @@ export function ActorDashboard({ profile }: Props) {
 
   const {
     entity,
-    definingDoc,
     chain,
     adRows,
     rewardsAgent,
     comprisesMembers,
-    partOfComposite,
   } = profile;
-  const color = ENTITY_TYPE_COLOR[entity.et] ?? "var(--entity-fallback)";
-  const typeLabel = entity.et === "agent" ? (agentFamily(entity.st) ?? UNLISTED_AGENT).label : (ENTITY_TYPE_LABEL[entity.et] ?? entity.et);
 
   return (
     <div className="flex-1 px-6 py-6 min-w-0">
@@ -47,39 +39,7 @@ export function ActorDashboard({ profile }: Props) {
         <div className="lg:col-span-2 min-w-0 flow-root">
           {/* Floated first → top-right of the agent header; null if no MSC workbook. */}
           <ActorSettlementTeaser slug={entity.slug} />
-          {/* Header */}
-          <div className="mb-6">
-            <p className="mono text-xs mb-1" style={{ color: "var(--tan-3)" }}>
-              radar
-            </p>
-            <h1 className="text-xl font-semibold" style={{ color: "var(--tan)" }}>
-              {entity.name}
-            </h1>
-            <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <span
-                className="mono text-[11px] px-1.5 py-0.5 rounded"
-                style={{ border: `1px solid ${color}`, color }}
-              >
-                {typeLabel}
-              </span>
-              {definingDoc && (
-                <AtlasLink
-                  to={atlasHref(definingDoc.id)}
-                  className="mono text-[10px] text-accent hover:underline"
-                >
-                  {definingDoc.doc_no} <span className="enlargen">→</span>
-                </AtlasLink>
-              )}
-              {partOfComposite?.slug && (
-                <Link
-                  to={actorHref(partOfComposite.slug)}
-                  className="mono text-[10px] text-tan-3 hover:text-accent hover:underline"
-                >
-                  part of {partOfComposite.name} <span className="enlargen">→</span>
-                </Link>
-              )}
-            </div>
-          </div>
+          <ActorHeader profile={profile} />
 
           {/* Chain — always shown */}
           <div className="mb-6">

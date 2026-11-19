@@ -15,7 +15,9 @@ interface Args {
   onSelect?: (query: string, rank: number) => void;
 }
 
-export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
+// Open/close, highlight and focus-timing state. The highlight resets whenever
+// the query changes under it.
+function useDropdownState(query: string) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1); // -1 = no highlight, focus on input
   // The input is autoFocus'd on load; swallow that one mount focus so the
@@ -28,8 +30,6 @@ export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
   // Reset the highlight whenever the visible suggestion set changes under it.
   useEffect(() => setActive(-1), [query]);
 
-  const visible = open && suggestions.length > 0;
-
   const close = useCallback(() => {
     setOpen(false);
     setActive(-1);
@@ -40,16 +40,6 @@ export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
     refreshRecent(); // prune anything past the TTL
     setOpen(true);
   }, []);
-
-  const select = useCallback(
-    (i: number) => {
-      const q = suggestions[i];
-      if (q === undefined || !onSelect) return;
-      close();
-      onSelect(q, i);
-    },
-    [suggestions, onSelect, close],
-  );
 
   const onFocus = useCallback(() => {
     if (skipMountFocus.current) {
@@ -62,6 +52,23 @@ export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
   const onBlur = useCallback(() => {
     blurTimer.current = setTimeout(close, 120);
   }, [close]);
+
+  return { open, active, setActive, close, openDropdown, onFocus, onBlur };
+}
+
+export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
+  const { open, active, setActive, close, openDropdown, onFocus, onBlur } = useDropdownState(query);
+  const visible = open && suggestions.length > 0;
+
+  const select = useCallback(
+    (i: number) => {
+      const q = suggestions[i];
+      if (q === undefined || !onSelect) return;
+      close();
+      onSelect(q, i);
+    },
+    [suggestions, onSelect, close],
+  );
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -90,13 +97,13 @@ export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
         select(active);
       }
     },
-    [visible, query, suggestions.length, active, close, openDropdown, select],
+    [visible, query, suggestions.length, active, close, openDropdown, select, setActive],
   );
 
   // Mouse hover writes the same `active` index the keyboard uses, so the two
   // can never both highlight a row — whichever moved last wins. setActive bails
   // on an unchanged value, so firing this on every mousemove is cheap.
-  const onOptionHover = useCallback((i: number) => setActive(i), []);
+  const onOptionHover = useCallback((i: number) => setActive(i), [setActive]);
 
   return {
     visible,

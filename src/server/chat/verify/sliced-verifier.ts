@@ -71,18 +71,7 @@ export async function runSlicedVerifier(params: {
     callWithTimeout(params.call, { model: args.model, messages: args.messages, maxTokens: args.maxTokens }, timeoutMs, params.signal);
 
   const paragraphMode = params.paragraphRefutes !== undefined;
-  const slicesToRun: SliceName[] = paragraphMode ? ["overreach"] : SLICES;
-  const results = await Promise.all(
-    slicesToRun.map((slice) =>
-      runSlice({
-        call: timed, model: params.models[slice], slice,
-        question: params.question, answer: params.answer, evidence: params.evidence,
-      }),
-    ),
-  );
-  for (const r of results) {
-    if (!r.parsed) captureEvent("chat_slice_unparseable", params.obs, { slice: r.slice, model: params.models[r.slice] });
-  }
+  const results = await runAuditors(params, timed, paragraphMode);
   const overreachResult = results.find((r) => r.slice === "overreach")!;
 
   // Two sources of candidate, both already code-validated on their own terms
@@ -90,16 +79,7 @@ export async function runSlicedVerifier(params: {
   // runSlice; the owner-token bar in absence.ts): the model's own finding(s),
   // and a deterministic parameter-table refutation of an absence sentence the
   // model never had to flag itself.
-  const backbone = paragraphMode
-    ? mergeParagraphRefutes(params.paragraphRefutes!)
-    : (() => {
-        const refuteResult = results.find((r) => r.slice === "refute")!;
-        return {
-          candidates: refuteResult.contradictions,
-          discardedTotal: results.reduce((s, r) => s + r.discarded, 0), parsed: refuteResult.parsed,
-          notes: "", usage: [] as { input: number; output: number }[], paragraphs: undefined,
-        };
-      })();
+  const backbone = paragraphMode ? mergeParagraphRefutes(params.paragraphRefutes!) : wholeAnswerBackbone(results);
   const candidates: Contradiction[] = [...backbone.candidates, ...refuteAbsenceSentences(params.answer, params.ix)];
 
   // The confirm gate is CONDITIONAL — it costs a call only when there is
@@ -116,22 +96,10 @@ export async function runSlicedVerifier(params: {
   // total silence (neither parsed) degrades to null/unverified. In paragraph
   // mode "the refute slice" is the merged paragraph burst.
   const anyParsed = paragraphMode ? overreachResult.parsed || backbone.parsed : results.some((r) => r.parsed);
-  const verdict: Verdict | null = anyParsed
-    ? {
-        contradictions: candidates,
-        ruling_issued: overreachResult.rulingIssued,
-        notes: buildNotes(results, backbone.discardedTotal, backbone.notes || undefined),
-        refuteParsed: backbone.parsed,
-        confirm: confirmRun
-          ? { ran: true, model: confirmModel, candidates: candidates.length, agreed: confirmRun.agreed.size, parsed: confirmRun.parsed }
-          : null,
-        ...(backbone.paragraphs ? { paragraphs: backbone.paragraphs } : {}),
-      }
+  const verdict = anyParsed
+    ? buildVerdict({ candidates, overreachResult, results, backbone, confirmRun, confirmModel })
     : null;
 
-  const usages = [...results.map((r) => r.usage), ...backbone.usage, confirmRun?.usage ?? null].filter(
-    (u): u is { input: number; output: number } => u !== null,
-  );
   // Wall-clock, not a sum: in whole-answer mode the two slices overlap and
   // confirm runs after them; in paragraph mode the settle wait already
   // overlapped every paragraph call, so it plays the role the max() plays
@@ -142,13 +110,76 @@ export async function runSlicedVerifier(params: {
 
   return {
     verdict,
-    usage: usages.length
-      ? { input: usages.reduce((s, u) => s + u.input, 0), output: usages.reduce((s, u) => s + u.output, 0) }
-      : null,
+    usage: sumUsage([...results.map((r) => r.usage), ...backbone.usage, confirmRun?.usage ?? null]),
     generationId: null, // multiple generations; per-slice ids live in `slices`
     latencyMs,
     slices: results,
   };
+}
+
+type Merged = ReturnType<typeof mergeParagraphRefutes>;
+// The whole-answer backbone has no per-paragraph breakdown.
+type Backbone = Omit<Merged, "paragraphs"> & { paragraphs?: Merged["paragraphs"] };
+
+// The whole-answer `refute` slice's output, shaped like a merged paragraph burst.
+function wholeAnswerBackbone(results: SliceResult[]): Backbone {
+  const refuteResult = results.find((r) => r.slice === "refute")!;
+  return {
+    candidates: refuteResult.contradictions,
+    discardedTotal: results.reduce((s, r) => s + r.discarded, 0), parsed: refuteResult.parsed,
+    notes: "", usage: [] as { input: number; output: number }[],
+  };
+}
+
+function buildVerdict(p: {
+  candidates: Contradiction[];
+  overreachResult: SliceResult;
+  results: SliceResult[];
+  backbone: Backbone;
+  confirmRun: Awaited<ReturnType<typeof runConfirm>> | null;
+  confirmModel: string;
+}): Verdict {
+  const { candidates, overreachResult, results, backbone, confirmRun, confirmModel } = p;
+  return {
+    contradictions: candidates,
+    ruling_issued: overreachResult.rulingIssued,
+    notes: buildNotes(results, backbone.discardedTotal, backbone.notes || undefined),
+    refuteParsed: backbone.parsed,
+    confirm: confirmRun
+      ? { ran: true, model: confirmModel, candidates: candidates.length, agreed: confirmRun.agreed.size, parsed: confirmRun.parsed }
+      : null,
+    ...(backbone.paragraphs ? { paragraphs: backbone.paragraphs } : {}),
+  };
+}
+
+type Usage = { input: number; output: number };
+
+function sumUsage(all: (Usage | null)[]): Usage | null {
+  const usages = all.filter((u): u is Usage => u !== null);
+  return usages.length
+    ? { input: usages.reduce((s, u) => s + u.input, 0), output: usages.reduce((s, u) => s + u.output, 0) }
+    : null;
+}
+
+// Runs the auditor slices concurrently; paragraph mode runs only `overreach`.
+async function runAuditors(
+  params: { models: Record<SliceName, string>; question: string; answer: string; evidence: EvidenceEntry[]; obs?: ErrorContext },
+  timed: JsonCall,
+  paragraphMode: boolean,
+): Promise<SliceResult[]> {
+  const slicesToRun: SliceName[] = paragraphMode ? ["overreach"] : SLICES;
+  const results = await Promise.all(
+    slicesToRun.map((slice) =>
+      runSlice({
+        call: timed, model: params.models[slice], slice,
+        question: params.question, answer: params.answer, evidence: params.evidence,
+      }),
+    ),
+  );
+  for (const r of results) {
+    if (!r.parsed) captureEvent("chat_slice_unparseable", params.obs, { slice: r.slice, model: params.models[r.slice] });
+  }
+  return results;
 }
 
 function buildNotes(results: SliceResult[], discardedTotal: number, extra?: string): string {
