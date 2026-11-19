@@ -20,8 +20,9 @@ describe("handleReportsSearch", () => {
     expect(wallet.status).toBe(200);
     expect(wallet.body.hits).toContain("onchain-addresses");
 
+    // Edit Candidates gathers stale dates too, so it may follow the report that is about them.
     const stale = await search("outdated dates");
-    expect(stale.body.hits).toEqual(["stale-dates"]);
+    expect(stale.body.hits[0]).toBe("stale-dates");
 
     const duties = await search("facilitator duties");
     expect(duties.body.hits).toContain("of-responsibilities");
@@ -33,6 +34,6 @@ describe("handleReportsSearch", () => {
 
 describe("reportIndexSemanticHits", () => {
   it("unwraps mode quotes the same way the client normalizer does", async () => {
-    expect(await reportIndexSemanticHits('"outdated dates"')).toEqual(["stale-dates"]);
+    expect((await reportIndexSemanticHits('"outdated dates"'))[0]).toBe("stale-dates");
   });
 });

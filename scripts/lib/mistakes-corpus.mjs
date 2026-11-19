@@ -1,4 +1,4 @@
-// Corpus-wide detectors for the Potential Mistakes sweep.
+// Corpus-wide detectors for the Edit Candidates sweep.
 //
 // The document sweep chunks the atlas and gives each chunk to one agent. That
 // makes a whole class of defect structurally invisible to it: one that exists

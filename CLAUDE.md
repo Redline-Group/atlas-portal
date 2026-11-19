@@ -16,6 +16,7 @@ Rules that matter only inside one subsystem live in a CLAUDE.md in that director
 - `scripts/CLAUDE.md`: the build pipeline pass by pass, the script folders, address extraction and the chain registry, and the full reference for the census, sweep, briefing, settlement and environment-pruning commands.
 - `src/server/chat/CLAUDE.md` and `apps/web/src/components/chat/CLAUDE.md`: the chat loop and its reliability harness.
 - `src/server/facts/CLAUDE.md`: chat facts and the on-device similarity lanes.
+- `src/server/edit-candidates/CLAUDE.md`: the Edit Candidates worker sweep (seed, veto, sweep), its monthly budget and `GET /api/edit-candidates`.
 - `src/server/preview/CLAUDE.md`: PR previews.
 - `src/server/pau/CLAUDE.md`: PAU admin-event history and live snapshots (`GET /api/pau`), the worker's `pau` step, and when to move it to an indexer.
 - `src/server/onchain/CLAUDE.md`: on-chain facts for chat and MCP (`redline_onchain`, `redline_liquidity_changes`, the `onchain` block on the param and address tools) and how a new source plugs in.
@@ -51,7 +52,8 @@ pnpm census:check | census:govops | census:risk | census:chains | census:concept
 pnpm census:embed-units # embedding-unit family census (histograms of ICD/directory/hub sizes; no fold/skip decisions)
 pnpm settlements:parse # Soter settlement workbooks → public/settlements.json; two automated callers, neither optional (scripts/CLAUDE.md, skill settlement-reports)
 pnpm votes:sync      # Sky executive votes + governance polls + vote.sky.money portal → public/votes.json, read by Stale Dates' vote evidence; off the build chain, fails loud on a truncated fetch (scripts/CLAUDE.md)
-pnpm mistakes:status | mistakes:plan | mistakes:merge | mistakes:bootstrap | mistakes:render  # the Potential Mistakes sweep (scripts/CLAUDE.md, skill mistakes-report)
+pnpm mistakes:status | mistakes:plan | mistakes:merge | mistakes:bootstrap | mistakes:render  # the hand-run whole-corpus sweep behind the Edit Candidates report (scripts/CLAUDE.md, skill mistakes-report)
+pnpm sync:edit-candidates # the atlas worker's Edit Candidates tail: seed the reviewed sweep, apply vetoes, read new and changed documents inside a monthly budget (src/server/edit-candidates/CLAUDE.md)
 pnpm briefings:status | briefings:plan | briefings:merge | briefings:pull  # document briefings, bulk pass and database pull (scripts/CLAUDE.md)
 pnpm sync:briefings  # the atlas worker's briefing tail: seed, write, embed (src/server/retrieval/CLAUDE.md)
 pnpm sync:vote-evidence # the atlas worker's Stale Dates vote-evidence tail: atlas history + Jev over the matching rules (scripts/CLAUDE.md)

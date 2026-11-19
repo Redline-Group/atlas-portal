@@ -33,3 +33,4 @@ export function makeEntity(
   is_active: number;
   meta: string | null;
 };
+export const UUID_LINK_RE: RegExp;

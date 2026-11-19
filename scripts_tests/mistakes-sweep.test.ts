@@ -18,6 +18,7 @@ import {
   mergeFindings,
   planSweep,
   sortFindings,
+  stampFirstSeen,
   suppressRejected,
   validateFinding,
   STATE_VERSION,
@@ -412,5 +413,19 @@ describe("advanceState", () => {
     const a = node({ id: "a" });
     const next = advanceState(stateOf([a]), { a }, [], ["a"]);
     expect(next.docs).toEqual({});
+  });
+});
+
+describe("stampFirstSeen", () => {
+  const row = (quote: string, firstSeen?: string) => ({ uuid: "u1", category: "typo", quote, ...(firstSeen ? { firstSeen } : {}) });
+
+  it("keeps the date of a finding that was already there and dates a new one today", () => {
+    const previous = [row("old text", "2026-09-15")];
+    const out = stampFirstSeen([row("old text"), row("new text")], previous, "2026-11-19");
+    expect(out.map((f) => f.firstSeen)).toEqual(["2026-09-15", "2026-11-19"]);
+  });
+
+  it("never moves a date a row already carries", () => {
+    expect(stampFirstSeen([row("x", "2026-10-01")], [row("x", "2026-09-15")], "2026-11-19")[0].firstSeen).toBe("2026-10-01");
   });
 });

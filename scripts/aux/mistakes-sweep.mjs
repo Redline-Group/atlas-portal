@@ -1,4 +1,4 @@
-// Incremental driver for the Potential Mistakes sweep.
+// Incremental driver for the hand-run Edit Candidates sweep.
 //
 //   pnpm mistakes:status               what changed since the last sweep
 //   pnpm mistakes:bootstrap            adopt the existing sweep as the baseline (one-off)
@@ -9,9 +9,9 @@
 //
 // The LLM judgement happens between `plan` and `merge` and is driven by
 // .claude/skills/mistakes-report — this script only decides what needs looking
-// at and merges what came back. Deliberately OFF the `pnpm build` chain: the
-// sweep is hand-run, and public/potential-mistakes.json is committed data, not
-// a build artifact (that is the whole point of the report's provenance banner).
+// at and merges what came back. Deliberately OFF the `pnpm build` chain:
+// public/potential-mistakes.json is committed data, not a build artifact, and
+// the atlas worker seeds from it (src/server/edit-candidates/CLAUDE.md).
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
@@ -27,6 +27,7 @@ import {
   isStateUsable,
   mergeFindings,
   planSweep,
+  stampFirstSeen,
   suppressRejected,
   validateFinding,
 } from "../lib/mistakes-sweep.mjs";
@@ -304,12 +305,13 @@ if (cmd === "merge") {
     corpusDetectors: ran,
   });
   const sha = plan.atlasSha ?? atlasSha();
+  const today = new Date().toISOString().slice(0, 10);
   const next = {
     ...artifact,
-    generatedAt: new Date().toISOString().slice(0, 10),
+    generatedAt: today,
     atlasSha: sha ?? artifact.atlasSha,
     documentsScanned: Object.keys(nodeMap).length,
-    findings: merged.findings,
+    findings: stampFirstSeen(merged.findings, artifact.findings, today),
   };
 
   console.log(`chunks processed ${plan.chunks.length - skipped.length}/${plan.chunks.length}`);

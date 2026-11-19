@@ -1,6 +1,6 @@
 # Scripts: build pipeline, censuses, sweeps and chain registry
 
-This file covers the `scripts/` tree. It holds the build pipeline and its step list, the atlas parser shape, on-chain address extraction, the chain registry, the atlas census and merge-gate commands, the Potential Mistakes sweep, document briefings, settlements, GitHub environment pruning and the graph snapshot tests. History scripts (`build:history`, `history:prs`, `build:doc-versions`, `prehist:*`) are in `src/server/history/CLAUDE.md`. The `eval:*` bakeoffs are in `scripts/eval/CLAUDE.md`.
+This file covers the `scripts/` tree. It holds the build pipeline and its step list, the atlas parser shape, on-chain address extraction, the chain registry, the atlas census and merge-gate commands, the Edit Candidates hand sweep, document briefings, settlements, GitHub environment pruning and the graph snapshot tests. History scripts (`build:history`, `history:prs`, `build:doc-versions`, `prehist:*`) are in `src/server/history/CLAUDE.md`. The `eval:*` bakeoffs are in `scripts/eval/CLAUDE.md`.
 
 ## Script directories
 
@@ -126,7 +126,9 @@ They were four separate lists until every one of them was shown to fail silently
   - It warns on a new mismatch or not-set (naming the side that moved as far as the baseline can tell: new in the atlas, atlas changed, chain changed, comparison changed, or chain or comparison changed for a value that matched before), a lost match, a value newly `unparsed` or `unknown-chain`, a deployment gone from the snapshots, and a prime whose stated values fell below half. Resolved disagreements are logged. It always exits 0.
   - Only `atlas-healer.yml` runs it, in verify mode: chain-side drift is not tied to an atlas bump, so `atlas-update.yml` never accepts its baseline. Nothing else reads the baseline; regenerate it with `pnpm census:pau --update` after a build.
 
-## Potential Mistakes sweep
+## Edit Candidates hand sweep
+
+These commands are the hand-run, whole-corpus path behind the Edit Candidates report (`/reports/edit-candidates`); they keep the `mistakes:*` names. The atlas worker reads new and changed documents on its own (`pnpm sync:edit-candidates`, `src/server/edit-candidates/CLAUDE.md`) and seeds from the two files these commands write, so commit them together.
 
 - `pnpm mistakes:plan` computes the INCREMENTAL work plan for the sweep. It writes `.cache/mistakes-sweep/{plan.json,chunks/NNN.md}` for subagents to read.
   - It queues documents whose title, type or body digest moved since `.github/mistakes-sweep-state.json`. `doc_no` is deliberately excluded, so a renumbering does not re-queue 11k docs.
@@ -140,8 +142,9 @@ They were four separate lists until every one of them was shown to fail silently
   - Findings a review rejected live in the artifact's `rejected` list, and `suppressRejected` keeps them from coming back. Each says who decided it in `rejectedBy` (`human`, or `ai-review` for an AI verdict no person has confirmed).
   - It validates every model-reported row (known UUID, verbatim quote, legal severity/pass) and drops the rest.
   - **A chunk with no output file, or a truncated one, is treated as UNPROCESSED and stays queued.** A killed agent's silence must never be recorded as "read it, found nothing".
+  - Each finding carries `firstSeen`, the day it was first found. `stampFirstSeen` keeps the date of a finding already in the file under the same (uuid, category, quote) and dates a new one today.
   - `--dry-run` prints the counts only.
-- `pnpm mistakes:status` shows how many atlas documents changed since the last hand-run sweep. It is read-only.
+- `pnpm mistakes:status` shows how many atlas documents changed since the last hand-run sweep. It is read-only, and it does not know what the worker has read since.
 - `pnpm mistakes:bootstrap` is a one-off. It adopts an existing whole-corpus sweep as the incremental baseline. It refuses unless the artifact's `atlasSha` matches the checked-out submodule.
 - `pnpm mistakes:render` re-renders the gitignored `ATLAS-FINDINGS.md` export from the JSON. Run `pnpm cite:check ATLAS-FINDINGS.md` after.
 

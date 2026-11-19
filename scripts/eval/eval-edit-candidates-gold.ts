@@ -5,7 +5,9 @@
 // have missed something there.
 import crypto from "node:crypto";
 import { quoteInDoc } from "../../src/lib/mistakeQuote.ts";
-import type { AtlasNode } from "../../src/types.ts";
+import type { AtlasNode as FullNode } from "../../src/types.ts";
+
+type AtlasNode = Pick<FullNode, "id" | "doc_no" | "title" | "type" | "content">;
 
 export interface GoldFinding {
   category: string;
@@ -40,7 +42,7 @@ function liveRows(rows: readonly Row[], byUuid: Map<string, AtlasNode>): Map<str
   const out = new Map<string, GoldFinding[]>();
   for (const r of rows) {
     const doc = r.uuid ? byUuid.get(r.uuid) : undefined;
-    if (!r.uuid || !doc || !quoteInDoc(r.quote, r.docNo, doc)) continue;
+    if (!r.uuid || !doc || !quoteInDoc(r.quote, r.docNo, doc as FullNode)) continue;
     out.set(r.uuid, [...(out.get(r.uuid) ?? []), { category: r.category, severity: r.severity, pass: r.pass, quote: r.quote }]);
   }
   return out;

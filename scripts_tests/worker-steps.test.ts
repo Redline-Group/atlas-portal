@@ -32,7 +32,7 @@ describe("worker step registry", () => {
 
   it("runs the tick steps and tail lanes in their declared order", () => {
     expect(stepsIn(WORKER_STEPS, "tick").map((s) => s.id)).toEqual(["pr-env-copy", "pr-state", "chain-state", "balances", "pau", "pau-origin", "pau-spell-sources", "vote-archive", "pr-spells", "forum"]);
-    expect(stepsIn(WORKER_STEPS, "tail").map((s) => s.id)).toEqual(["embeddings", "history", "doc-versions", "briefings", "pau-rpc", "vote-evidence"]);
+    expect(stepsIn(WORKER_STEPS, "tail").map((s) => s.id)).toEqual(["embeddings", "history", "doc-versions", "briefings", "pau-rpc", "vote-evidence", "edit-candidates"]);
   });
 
   it("every tick step has a failure label; only network steps skip under --no-fetch", () => {
@@ -88,6 +88,7 @@ describe("in a PR environment", () => {
     expect(log.mock.calls.map((c) => c[0])).toEqual([
       "atlas-worker: embeddings skipped (PR environment) — they call OpenRouter",
       "atlas-worker: briefings skipped (PR environment) — the embed pass calls OpenRouter even under --no-fetch",
+      "atlas-worker: edit candidates skipped (PR environment) — the sweep calls OpenRouter",
     ]);
   });
 });
@@ -165,6 +166,7 @@ describe("runTailSteps", () => {
     expect(byScript.get("src/server/sync-briefings.ts")?.env).toEqual({ GITHUB_TOKEN: "t", KEEP: "1", ATLAS_WORKER_NO_FETCH: "1" });
     expect(byScript.get("src/server/sync-pau-rpc.ts")?.env).toEqual({ GITHUB_TOKEN: "t", KEEP: "1", ATLAS_WORKER_NO_FETCH: "1" });
     expect(byScript.get("src/server/sync-vote-evidence.ts")?.env).toEqual({ GITHUB_TOKEN: "t", KEEP: "1", ATLAS_WORKER_NO_FETCH: "1" });
+    expect(byScript.get("src/server/sync-edit-candidates.ts")?.env).toEqual({ GITHUB_TOKEN: "t", KEEP: "1", ATLAS_WORKER_NO_FETCH: "1" });
   });
 
   it("without --full or --no-fetch passes neither flag", async () => {

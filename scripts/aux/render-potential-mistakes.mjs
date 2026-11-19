@@ -1,5 +1,5 @@
 // Renders ATLAS-FINDINGS.md from public/potential-mistakes.json — the JSON is
-// the single source of truth (it also backs the /reports/potential-mistakes
+// the single source of truth (it also backs the /reports/edit-candidates
 // page); this markdown is a derived, human-readable export.
 //
 // The output is gitignored and generated on demand (`pnpm mistakes:render`),
@@ -39,7 +39,7 @@ const n = (s) => data.findings.filter((f) => f.severity === s).length;
 // reference per the dictate; the UUID line under the heading is the stable id.
 const cite = (f) => `(${f.docNo})`;
 
-let md = `# Sky Atlas — Potential Mistakes\n\n`;
+let md = `# Sky Atlas — Edit Candidates\n\n`;
 md += `> **LLM-generated, hand-run.** These findings come from an automated language and\n`;
 md += `> consistency sweep of the Atlas source text. Each one is a *suspicion*, not a confirmed\n`;
 md += `> defect — read the quoted text against the linked document before acting on it.\n>\n`;
@@ -48,7 +48,7 @@ md += `> rows describe the Atlas at commit \`${data.atlasSha.slice(0, 8)}\` (${d
 md += `> ${data.documentsScanned.toLocaleString()} documents. Findings already fixed upstream stay\n`;
 md += `> listed until the next manual run.\n>\n`;
 md += `> Generated from \`public/potential-mistakes.json\`, which also backs the live\n`;
-md += `> [Potential Mistakes report](/reports/potential-mistakes) — edit the JSON, not this file.\n\n`;
+md += `> [Edit Candidates report](/reports/edit-candidates) — edit the JSON, not this file.\n\n`;
 md += `**${data.findings.length} findings** — ${n("high")} high confidence, ${n("medium")} medium, ${n("low")} low.\n\n`;
 md += `| Category | Findings |\n|---|---|\n`;
 for (const k of keys) md += `| ${CATEGORY_LABELS[k] ?? k} | ${groups[k].length} |\n`;
