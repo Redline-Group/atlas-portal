@@ -14,7 +14,7 @@ function node(overrides: Partial<ChainNode> = {}): ChainNode {
     slug: "prime-agent",
     name: "Prime Agent Co",
     et: "agent",
-    st: null,
+    st: "prime",
     docId: null,
     ...overrides,
   };
@@ -42,6 +42,14 @@ describe("ActorChain", () => {
 
     const link = screen.getByRole("link", { name: "Prime One" });
     expect(link).toHaveAttribute("href", expect.stringContaining("prime-1"));
+  });
+
+  it("lists the Halo Agents an executor serves apart from its Prime Agents", () => {
+    const chain: ActorChainData = { ...emptyChain(), primes: [node({ id: "p1", slug: "prime-1", name: "Prime One" }), node({ id: "h1", slug: "halo-1", name: "Halo One", st: "halo" })] };
+    render(<ActorChain chain={chain} currentSlug="ozone" />);
+    expect(screen.getByText("Prime Agent").closest("tr")).toHaveTextContent("Prime One");
+    expect(screen.getByText("Halo Agent").closest("tr")).toHaveTextContent("Halo One");
+    expect(screen.getByText("Prime Agent").closest("tr")).not.toHaveTextContent("Halo One");
   });
 
   it("filters out the node matching currentSlug", () => {

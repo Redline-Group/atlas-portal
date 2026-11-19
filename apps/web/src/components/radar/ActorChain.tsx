@@ -22,7 +22,7 @@ export function ActorChain({ chain, currentSlug }: Props) {
   const served = others(primes);
 
   const groups: ChainGroup[] = [
-    { role: "Prime Agent", nodes: served.filter((n) => n.st !== "halo") },
+    { role: "Prime Agent", nodes: served.filter((n) => n.st === "prime") },
     { role: "Halo Agent", nodes: served.filter((n) => n.st === "halo") },
     { role: "Executor Agent", nodes: others(executors) },
     { role: "Facilitator", nodes: others(facilitators) },
