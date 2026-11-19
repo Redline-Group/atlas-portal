@@ -2,7 +2,7 @@
 // schema (doc-type taxonomy, entity-type traversal graph) straight off the
 // in-memory indexes, plus the tool guide, citation rules, and the current page
 // context. Built per request so taxonomy + counts always match what's loaded.
-import { isExecutorSubtype } from "../../lib/roleEdges.ts";
+import { AGENT_FAMILIES, agentFamily, type AgentFamilyId } from "../../lib/agentKinds.ts";
 import { atlasDescribe } from "./tools/tools.ts";
 import { config } from "../config.ts";
 import type { Indexes } from "../retrieval/indexes.ts";
@@ -35,6 +35,11 @@ interface Describe {
 // template is instantiated once per agent, so twin wording elsewhere is not
 // evidence about this agent). Derived from entity → defining_doc so it tracks
 // the served atlas; empty when agents aren't loaded yet.
+/** A family whose roster line needs more than its plural: its documents sit outside the A.6 artifacts the roster opens with. */
+const ROSTER_HEADING: Partial<Record<AgentFamilyId, string>> = {
+  halo: "Sky Core Halos (Halo Agents with no Agent Artifact, specified outside A.6)",
+};
+
 export function agentArtifactRoster(ix: Indexes): string | null {
   type Row = { name: string; doc_no: string; subtype: string | null };
   const rows: Row[] = [];
@@ -46,15 +51,13 @@ export function agentArtifactRoster(ix: Indexes): string | null {
   if (rows.length === 0) return null;
   rows.sort((a, b) => a.doc_no.localeCompare(b.doc_no, undefined, { numeric: true }));
   const fmt = (rs: Row[]) => rs.map((r) => `${r.name} @ ${r.doc_no}`).join(", ");
-  const primes = rows.filter((r) => r.subtype === "prime");
-  const execs = rows.filter((r) => isExecutorSubtype(r.subtype));
   const parts = [
     "A.6 holds one artifact subtree per agent. Every document under an agent's root belongs to that agent — never answer a question about agent X from another agent's twin docs.",
   ];
-  if (primes.length) parts.push(`Prime Agents: ${fmt(primes)}.`);
-  if (execs.length) parts.push(`Executor Agents: ${fmt(execs)}.`);
-  const halos = rows.filter((r) => r.subtype === "halo");
-  if (halos.length) parts.push(`Sky Core Halos (Halo Agents with no Agent Artifact, specified outside A.6): ${fmt(halos)}.`);
+  for (const family of AGENT_FAMILIES) {
+    const members = rows.filter((r) => agentFamily(r.subtype) === family);
+    if (members.length) parts.push(`${ROSTER_HEADING[family.family] ?? family.plural}: ${fmt(members)}.`);
+  }
   return parts.join(" ");
 }
 

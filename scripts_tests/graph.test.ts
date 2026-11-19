@@ -5,6 +5,7 @@
 // artifacts — they don't re-run the build (too slow for every `pnpm test`).
 // Run `pnpm build:graph` first if stale.
 
+import { agentKind, isServedSubtype } from "../src/lib/agentKinds";
 import { describe, it, expect } from "vitest";
 import fs from "fs";
 import path from "path";
@@ -338,6 +339,11 @@ describe("Pattern 2 — Sky Primitives", () => {
 });
 
 describe("Pattern 3 — Executor Agent role assignment", () => {
+  it("every agent entity's subtype is a kind the registry lists (src/lib/agentKinds.ts)", () => {
+    const unlisted = [...entityById.values()].filter((e) => e.entity_type === "agent" && !agentKind(e.subtype)).map((e) => `${e.name} (${e.subtype})`);
+    expect(unlisted).toEqual([]);
+  });
+
   it("operational_executor_agent_for: source is agent/operational_executor, target is agent/prime or agent/halo", () => {
     const bad: string[] = [];
     for (const e of edgesOfType("operational_executor_agent_for")) {
@@ -346,7 +352,7 @@ describe("Pattern 3 — Executor Agent role assignment", () => {
       if (src?.entity_type !== "agent" || src?.subtype !== "operational_executor") {
         bad.push(`src ${src?.name} (${src?.entity_type}/${src?.subtype})`);
       }
-      if (tgt?.entity_type !== "agent" || (tgt?.subtype !== "prime" && tgt?.subtype !== "halo")) {
+      if (tgt?.entity_type !== "agent" || !isServedSubtype(tgt?.subtype)) {
         bad.push(`tgt ${tgt?.name} (${tgt?.entity_type}/${tgt?.subtype})`);
       }
     }

@@ -9,7 +9,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { isExecutorSubtype } from "../src/lib/roleEdges";
+import { isExecutorSubtype } from "../src/lib/agentKinds";
 
 const ROOT = path.resolve(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");

@@ -4,6 +4,9 @@ import { actorHref } from "@/lib/routes";
 import type { ActorChain, ChainNode } from "../../lib/actorIndex";
 import { SourceMark } from "../SourceMark";
 import { SectionTitle } from "./RadarSection";
+import { AGENT_FAMILIES, agentFamily } from "@/lib/agentKinds";
+
+const EXECUTOR_LABEL = AGENT_FAMILIES.find((f) => f.family === "executor")!.label;
 
 interface Props {
   chain: ActorChain;
@@ -18,13 +21,12 @@ interface ChainGroup {
 export function ActorChain({ chain, currentSlug }: Props) {
   const { primes, executors, facilitators, govops } = chain;
   const others = (nodes: ChainNode[]) => nodes.filter((n) => n.slug !== currentSlug);
-  // `primes` holds every agent an executor serves, Halo Agents included.
+  // `primes` holds every agent an executor serves, one row per family.
   const served = others(primes);
 
   const groups: ChainGroup[] = [
-    { role: "Prime Agent", nodes: served.filter((n) => n.st === "prime") },
-    { role: "Halo Agent", nodes: served.filter((n) => n.st === "halo") },
-    { role: "Executor Agent", nodes: others(executors) },
+    ...AGENT_FAMILIES.filter((f) => f.served).map((f) => ({ role: f.label, nodes: served.filter((n) => agentFamily(n.st) === f) })),
+    { role: EXECUTOR_LABEL, nodes: others(executors) },
     { role: "Facilitator", nodes: others(facilitators) },
     { role: "GovOps", nodes: others(govops) },
   ].filter((g) => g.nodes.length > 0);

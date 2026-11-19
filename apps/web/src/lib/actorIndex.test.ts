@@ -9,7 +9,8 @@ import type { GraphData } from "@/lib/graphData";
 import { buildSidebarActors, buildActorProfile } from "./actorIndex";
 import { buildChainMap, buildActiveDataRows, type ActiveDataRow } from "@/lib/activeDataIndex";
 import { buildRewardsIndex } from "@/lib/rewardsIndex";
-import { EXEC_EDGES, FAC_EDGES, CHAIN_EDGES, isExecutorSubtype } from "@/lib/roleEdges";
+import { EXEC_EDGES, FAC_EDGES, CHAIN_EDGES } from "@/lib/roleEdges";
+import { isExecutorSubtype } from "@/lib/agentKinds";
 
 const ROOT = path.resolve(__dirname, "../../../..");
 const PUBLIC = path.join(ROOT, "public");
