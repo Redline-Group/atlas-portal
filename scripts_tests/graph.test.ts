@@ -338,7 +338,7 @@ describe("Pattern 2 — Sky Primitives", () => {
 });
 
 describe("Pattern 3 — Executor Agent role assignment", () => {
-  it("operational_executor_agent_for: source is agent/operational_executor, target is agent/prime", () => {
+  it("operational_executor_agent_for: source is agent/operational_executor, target is agent/prime or agent/halo", () => {
     const bad: string[] = [];
     for (const e of edgesOfType("operational_executor_agent_for")) {
       const src = entityById.get(e.from_id),
@@ -346,7 +346,7 @@ describe("Pattern 3 — Executor Agent role assignment", () => {
       if (src?.entity_type !== "agent" || src?.subtype !== "operational_executor") {
         bad.push(`src ${src?.name} (${src?.entity_type}/${src?.subtype})`);
       }
-      if (tgt?.entity_type !== "agent" || tgt?.subtype !== "prime") {
+      if (tgt?.entity_type !== "agent" || (tgt?.subtype !== "prime" && tgt?.subtype !== "halo")) {
         bad.push(`tgt ${tgt?.name} (${tgt?.entity_type}/${tgt?.subtype})`);
       }
     }

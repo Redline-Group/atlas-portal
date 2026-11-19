@@ -6,6 +6,7 @@ import { ENTITY_TYPE_LABEL, ENTITY_TYPE_COLOR } from "../../lib/entityGraph";
 import { atlasHref, actorHref } from "@/lib/routes";
 import { ActorChain } from "./ActorChain";
 import { ActorContact } from "./ActorContact";
+import { ActorContracts } from "./ActorContracts";
 import { ActorResponsibilities } from "./ActorResponsibilities";
 import { ActorRewards } from "./ActorRewards";
 import { ActorHistory } from "./ActorHistory";
@@ -20,6 +21,8 @@ import { hasActorPages } from "@/lib/radarPages";
 interface Props {
   profile: ActorProfile;
 }
+
+const AGENT_LABEL: Record<string, string> = { prime: "Prime Agent", halo: "Halo Agent" };
 
 export function ActorDashboard({ profile }: Props) {
   const split = hasActorPages(profile.entity);
@@ -36,8 +39,7 @@ export function ActorDashboard({ profile }: Props) {
     partOfComposite,
   } = profile;
   const color = ENTITY_TYPE_COLOR[entity.et] ?? "var(--entity-fallback)";
-  const agentLabel = entity.st === "prime" ? "Prime Agent" : "Executor Agent";
-  const typeLabel = entity.et === "agent" ? agentLabel : (ENTITY_TYPE_LABEL[entity.et] ?? entity.et);
+  const typeLabel = entity.et === "agent" ? (AGENT_LABEL[entity.st ?? ""] ?? "Executor Agent") : (ENTITY_TYPE_LABEL[entity.et] ?? entity.et);
 
   return (
     <div className="flex-1 px-6 py-6 min-w-0">
@@ -88,6 +90,7 @@ export function ActorDashboard({ profile }: Props) {
         <div className="min-w-0">
           {/* Contact — governance channels + emergency response (Prime Agents) */}
           <ActorContact contact={profile.contact} />
+          <ActorContracts entity={entity} />
 
           {entity.et === "composite_party" && <CompositePartySection members={comprisesMembers} />}
           {/* Only Primes have primitives, and a Prime's instances, history and

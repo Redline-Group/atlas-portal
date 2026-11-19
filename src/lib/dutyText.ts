@@ -33,7 +33,10 @@ export function dutySnippet(content: string, preferRe: RegExp): string {
 // useless preview on its own. When firstLine() would return this, pull the
 // Responsible Party and Trigger bullets instead, which are the two facts a
 // reader actually wants (who, and when).
-const BOILERPLATE_HEADER_RE = /^the document(?:\s+in the agent artifact)? is updated as follows:?\.?$/i;
+// A condition may lead the header ("After Operational GovOps confirms…, the
+// Document is created as follows."). A header naming a linked list ("… List Of
+// Onboarding Integrators is updated as follows:") says what is updated and stays.
+const BOILERPLATE_HEADER_RE = /(?:^|,\s*)the document(?:\s+in the agent artifact)? is (?:updated|created) as follows:?\.?$/i;
 const RP_LINE_RE = /^\s*-\s*responsible part(?:y|ies):\s*(.+)$/im;
 const TRIGGER_LINE_RE = /^\s*-\s*trigger(?:s|\s*-\s*\w+)?:\s*(.+)$/im;
 

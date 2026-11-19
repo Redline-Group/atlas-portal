@@ -68,7 +68,7 @@ describe("entities", () => {
 
   it("executor agents", () => {
     const executors = relations.entities
-      .filter((e) => e.et === "agent" && e.st !== "prime" && e.st !== null)
+      .filter((e) => e.et === "agent" && e.st !== "prime" && e.st !== "halo" && e.st !== null)
       .map((e) => {
         const primeEdge = edgesOfType("operational_executor_agent_for").find((ed) => ed.f === e.id)
           ?? edgesOfType("core_executor_agent_for").find((ed) => ed.f === e.id);

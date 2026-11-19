@@ -46,7 +46,7 @@ describe("buildSidebarActors", () => {
   it("groups match the four role predicates over participants", () => {
     const primes = graph.participants.filter((e) => e.et === "agent" && e.st === "prime");
     const execs = graph.participants.filter(
-      (e) => e.et === "agent" && e.st !== "prime" && e.st !== null,
+      (e) => e.et === "agent" && e.st !== "prime" && e.st !== "halo" && e.st !== null,
     );
     const facs = graph.participants.filter((e) => e.et === "facilitator_org");
     const govs = graph.participants.filter((e) => e.et === "govops_org");
@@ -58,6 +58,8 @@ describe("buildSidebarActors", () => {
     expect((byLabel.get("Executor Agents") ?? []).map((a) => a.id).sort()).toEqual(
       execs.map((e) => e.id).sort(),
     );
+    const halos = graph.participants.filter((e) => e.et === "agent" && e.st === "halo");
+    expect((byLabel.get("Halo Agents") ?? []).map((a) => a.id).sort()).toEqual(halos.map((e) => e.id).sort());
     expect((byLabel.get("Facilitators") ?? []).map((a) => a.id).sort()).toEqual(
       facs.map((e) => e.id).sort(),
     );
@@ -70,7 +72,7 @@ describe("buildSidebarActors", () => {
     const labels = groups.map((g) => g.label);
     expect(labels).toEqual([...labels].filter((l, i) => labels.indexOf(l) === i));
     for (const g of groups) expect(g.actors.length).toBeGreaterThan(0);
-    expect(["Prime Agents", "Executor Agents", "Facilitators", "GovOps"]).toEqual(
+    expect(["Prime Agents", "Executor Agents", "Halo Agents", "Facilitators", "GovOps"]).toEqual(
       expect.arrayContaining(labels),
     );
   });
@@ -169,7 +171,7 @@ describe("buildActorProfile — prime agent branch", () => {
 describe("buildActorProfile — executor agent branch", () => {
   it("chain.executors is [self]; primes come from this executor's EXEC_EDGES targets", () => {
     const execs = graph.participants.filter(
-      (e) => e.et === "agent" && e.st !== "prime" && e.st !== null,
+      (e) => e.et === "agent" && e.st !== "prime" && e.st !== "halo" && e.st !== null,
     );
     expect(execs.length).toBeGreaterThan(0);
     for (const exec of execs) {
