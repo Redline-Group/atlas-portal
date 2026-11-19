@@ -45,7 +45,7 @@ export interface EditStore {
   loadDocStates(): Promise<Map<string, DocState>>;
   /** Replaces the candidates of `docs` with `rows` and records each document as read. */
   replace(docs: SweptDoc[], rows: CandidateWrite[], by: ReplaceBy): Promise<void>;
-  /** Removes the candidates of documents the atlas no longer has. */
+  /** Removes the candidates of documents that are gone from the atlas. */
   dropCandidatesOf(docIds: string[]): Promise<void>;
   /** Forgets that these documents were ever read. */
   forgetDocs(docIds: string[]): Promise<void>;
