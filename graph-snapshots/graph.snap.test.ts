@@ -9,6 +9,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import { isExecutorSubtype } from "../src/lib/agentKinds";
 
 const ROOT = path.resolve(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
@@ -68,7 +69,7 @@ describe("entities", () => {
 
   it("executor agents", () => {
     const executors = relations.entities
-      .filter((e) => e.et === "agent" && e.st !== "prime" && e.st !== null)
+      .filter((e) => e.et === "agent" && isExecutorSubtype(e.st))
       .map((e) => {
         const primeEdge = edgesOfType("operational_executor_agent_for").find((ed) => ed.f === e.id)
           ?? edgesOfType("core_executor_agent_for").find((ed) => ed.f === e.id);

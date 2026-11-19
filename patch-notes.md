@@ -35,9 +35,12 @@
 
 ## 2026-11-19
 
+- Added each Prime Agent's StarGuard contract address to its Agent Creation parameters, and linked each Prime Agent to its SubProxy and StarGuard addresses.
+- Added the Governance Poll process, the Morpho Vault Change Note Template update process and Grove's GROVE purchase process to the Processes report.
+- Added Scope and Executor agent filters to the Potential Mistakes report.
+- Hid Potential Mistakes findings whose quoted text has since been changed in the Atlas.
 - Renamed Potential Mistakes to Edit Candidates, which now also lists stale dates and Atlas-versus-chain mismatches and updates as the Atlas changes.
-- Added Source, First found and Doc changed filters to Edit Candidates, alongside Scope and Executor agent.
-- Hid Edit Candidates whose quoted text has since been changed in the Atlas.
+- Added Source, First found and Doc changed filters to Edit Candidates.
 
 ## 2026-11-18
 

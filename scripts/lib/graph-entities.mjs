@@ -48,6 +48,7 @@ import {
   extractInstanceParams,
 } from "./graph-instances.mjs";
 import { attachPrimeRateLimitParams } from "./graph-prime-rate-limits.ts";
+import { addSkyCoreHalos } from "./graph-halos.ts";
 
 export function extractEntities(allDocs, docById, docByDocNo, addressesRaw) {
   const entityMap = new Map(); // slug → entity record
@@ -105,11 +106,8 @@ export function extractEntities(allDocs, docById, docByDocNo, addressesRaw) {
   );
 
   // --- 1b. Prime Agents (Pattern 1) ---
-  for (const d of allDocs.filter(isPrimeAgent)) {
-    const s = slugify(d.title);
-    const ent = addEntity(s, d.title, "agent", "prime", d.id);
-    ent.id = d.id; // use atlas doc uuid as entity id
-  }
+  // The atlas doc uuid is the entity id.
+  for (const d of allDocs.filter(isPrimeAgent)) addEntity(slugify(d.title), d.title, "agent", "prime", d.id).id = d.id;
 
   // --- 1c. Executor Agents (Pattern 1) ---
   // Strip "Operational Executor Agent " prefix so the semantic short name survives
@@ -457,6 +455,7 @@ export function extractEntities(allDocs, docById, docByDocNo, addressesRaw) {
   const childrenByDocNo = buildChildrenIndex(allDocs);
   const knownPrimitives = buildKnownPrimitives(docById);
   attachPrimeRateLimitParams(entityMap, docById, childrenByDocNo);
+  addSkyCoreHalos(allDocs, childrenByDocNo, addEntity);
 
   // fragile: doc_no prefix — the Prime Agent artifacts root (A.6.1.1)
   for (const icd of allDocs.filter((d) => isICD(d) && d.doc_no.startsWith("A.6.1.1."))) {

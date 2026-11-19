@@ -7,6 +7,7 @@
 // is built in context.mjs) and listing it here.
 import { pattern as primeAgentFor } from "./prime-agent-for.mjs";
 import { pattern as executorAgentFor } from "./executor-agent-for.mjs";
+import { pattern as haloExecutorFor } from "./halo-executor-for.ts";
 import { pattern as facilitatorFor } from "./facilitator-for.mjs";
 import { pattern as govopsFor } from "./govops-for.mjs";
 import { pattern as alignedDelegateFor } from "./aligned-delegate-for.mjs";
@@ -21,6 +22,7 @@ import { pattern as processStepResponsiblePartyFor } from "./process-step-respon
 import { pattern as dutyFor } from "./duty-for.mjs";
 import { pattern as definesEntity } from "./defines-entity.mjs";
 import { pattern as hasAddress } from "./has-address.mjs";
+import { pattern as agentContractAddress } from "./agent-contract-address.ts";
 import { pattern as mentions } from "./mentions.mjs";
 import { pattern as orgProse } from "./org-prose.mjs";
 import { pattern as proxiesTo } from "./proxies-to.mjs";
@@ -28,6 +30,7 @@ import { pattern as proxiesTo } from "./proxies-to.mjs";
 export const ENTITY_EDGE_PATTERNS = [
   primeAgentFor,
   executorAgentFor,
+  haloExecutorFor,
   facilitatorFor,
   govopsFor,
   alignedDelegateFor,
@@ -42,6 +45,7 @@ export const ENTITY_EDGE_PATTERNS = [
   dutyFor,
   definesEntity,
   hasAddress,
+  agentContractAddress,
   mentions,
   orgProse,
   proxiesTo,

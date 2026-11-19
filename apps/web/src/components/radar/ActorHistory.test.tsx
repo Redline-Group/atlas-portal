@@ -61,7 +61,7 @@ function profile(): ActorProfile {
   return {
     entity: { id: "e1", slug: "spark", name: "Spark", et: "agent", st: "prime", did: "def-1" },
     definingDoc: docs["def-1"],
-    chain: { primes: [], executors: [], facilitators: [], govops: [] },
+    chain: { served: [], executors: [], facilitators: [], govops: [] },
     adRows: [], rewardsAgent: null, relations: [],
     instances: [instance()], invocations: [], primitives: [],
     recommendations: [], comprisesMembers: [], partOfComposite: null,

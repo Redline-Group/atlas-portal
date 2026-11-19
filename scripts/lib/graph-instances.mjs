@@ -193,18 +193,18 @@ function formatParam(title, raw) {
 // same source doc. Used when a single leaf embeds per-chain or per-variant
 // values (e.g. Agent Token's "Token Address" stuffs every deployed chain
 // address into one blob). Returns Array<[key, value]> or null to fall through.
+// "The address of X's SubProxy Account on (the) Network is `0xADDR`."
+// → "SubProxy Account / Network": "0xADDR"
+const addressOnNetwork = (label) => (content) => {
+  const m = content.match(/on (?:the )?(.+?) is `(0x[0-9a-fA-F]+)`/i);
+  return m ? [[`${label} / ${m[1].trim()}`, m[2]]] : null;
+};
 const PARAM_EXPANDERS = {
-  // "The address of X's SubProxy/Genesis Account on (the) Network is `0xADDR`."
-  // → "SubProxy Account / Network": "0xADDR"
-  "SubProxy Account": (content) => {
-    const m = content.match(/on (?:the )?(.+?) is `(0x[0-9a-fA-F]+)`/i);
-    return m ? [[`SubProxy Account / ${m[1].trim()}`, m[2]]] : null;
-  },
-  "Genesis Account": (content) => {
-    if (/will be specified/i.test(content)) return [["Genesis Account", "TBD"]];
-    const m = content.match(/on (?:the )?(.+?) is `(0x[0-9a-fA-F]+)`/i);
-    return m ? [[`Genesis Account / ${m[1].trim()}`, m[2]]] : null;
-  },
+  "SubProxy Account": addressOnNetwork("SubProxy Account"),
+  "StarGuard Contract": (content) =>
+    /will be specified/i.test(content) ? [["StarGuard Contract", "TBD"]] : addressOnNetwork("StarGuard Contract")(content),
+  "Genesis Account": (content) =>
+    /will be specified/i.test(content) ? [["Genesis Account", "TBD"]] : addressOnNetwork("Genesis Account")(content),
   "Token Address": (content) => {
     // "The address of X on (the) CHAIN is `ADDR`." — repeats per chain.
     const re = /The address of \S+ on (?:the )?([^.]+?) is `([^`\n]+)`/gi;
@@ -252,11 +252,11 @@ export function extractParamsFromRoot(rootDoc, childrenByDocNo) {
     const { doc, parents } = pending.shift();
     const kids = childrenByDocNo.get(doc.doc_no) ?? [];
     const content = (doc.content ?? "").trim();
+    const stated = content && !DIRECTORY_RE.test(content);
+    // Expansion order: per-title expander → generic bullet-list → formatter (leaves only).
+    const expanded = stated ? (PARAM_EXPANDERS[doc.title]?.(content) ?? expandBulletList(content, doc.title)) : null;
     if (kids.length === 0) {
-      if (!content || DIRECTORY_RE.test(content)) continue;
-      // Expansion order: per-title expander → generic bullet-list → formatter.
-      const expanded =
-        PARAM_EXPANDERS[doc.title]?.(content) ?? expandBulletList(content, doc.title);
+      if (!stated) continue;
       if (expanded) {
         for (const [key, value] of expanded) {
           const finalKey = key in params ? `${parents[parents.length - 1] ?? ""} / ${key}`.trim() : key;
@@ -271,11 +271,10 @@ export function extractParamsFromRoot(rootDoc, childrenByDocNo) {
       // Skip the "Custom Instance Parameters" subtree at any depth — it's a
       // reserved extension slot, almost always empty/placeholder in practice.
       if (/^custom instance parameters$/i.test(doc.title)) continue;
-      // A group that states its own `key`: value bullets and also has children
-      // (a "Deposit Rate Limits" leaf with a "Deposit Rate Limit Default" child)
-      // still states those values; the walk must not drop them.
-      if (content && !DIRECTORY_RE.test(content) && !PARAM_EXPANDERS[doc.title])
-        for (const [k, v] of expandBulletList(content, doc.title) ?? []) params[k] ??= [v, doc.id, doc.doc_no];
+      // A group with children still states its own values: `key`: value bullets
+      // (a "Deposit Rate Limits" group with a "Deposit Rate Limit Default" child)
+      // or an address sentence (a "StarGuard Contract" with a "StarGuard Max Delay" child).
+      for (const [k, v] of expanded ?? []) params[k] ??= [v, doc.id, doc.doc_no];
       for (const c of kids) pending.push({ doc: c, parents: [...parents, doc.title] });
     }
   }

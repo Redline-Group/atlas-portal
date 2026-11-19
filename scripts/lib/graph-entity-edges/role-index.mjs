@@ -10,12 +10,12 @@ const unique = (ids) => {
 };
 
 function edgeMaps(ctx) {
-  const opExecByPrime = new Map();
+  const opExecByAgent = new Map();
   const opFacByExec = new Map();
   const opGovByExec = new Map();
   const roleHolderByDocTitle = new Map(); // normalized title → holder entity id
   for (const e of ctx.edges) {
-    if (e.edgeType === "operational_executor_agent_for") opExecByPrime.set(e.toId, e.fromId);
+    if (e.edgeType === "operational_executor_agent_for") opExecByAgent.set(e.toId, e.fromId);
     else if (e.edgeType === "operational_facilitator_for") opFacByExec.set(e.toId, e.fromId);
     else if (e.edgeType === "operational_govops_for") opGovByExec.set(e.toId, e.fromId);
     else if (e.edgeType === "holds_role_for") {
@@ -23,7 +23,7 @@ function edgeMaps(ctx) {
       if (title) roleHolderByDocTitle.set(title.toLowerCase(), e.fromId);
     }
   }
-  return { opExecByPrime, opFacByExec, opGovByExec, roleHolderByDocTitle };
+  return { opExecByAgent, opFacByExec, opGovByExec, roleHolderByDocTitle };
 }
 
 function run(ctx) {
@@ -35,7 +35,7 @@ function run(ctx) {
   // unresolved rather than guessed.
   const opGov = unique(maps.opGovByExec.values());
   const opFac = unique(maps.opFacByExec.values());
-  const opExec = unique(maps.opExecByPrime.values());
+  const opExec = unique(maps.opExecByAgent.values());
   ctx.roles = {
     ...maps,
     // Core Facilitator / GovOps resolve to a single entity across the atlas.
@@ -61,7 +61,7 @@ export function artifactExecId(ctx, d) {
   const m = d.doc_no.match(ARTIFACT_RE);
   if (!m) return null;
   const primeEntity = ctx.entityByDocId.get(ctx.docByDocNo.get(`A.6.1.1.${m[1]}`)?.id);
-  return primeEntity ? (ctx.roles.opExecByPrime.get(primeEntity.id) ?? null) : null;
+  return primeEntity ? (ctx.roles.opExecByAgent.get(primeEntity.id) ?? null) : null;
 }
 
 export const pattern = { id: "role-index", run };

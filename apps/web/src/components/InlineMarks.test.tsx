@@ -23,7 +23,7 @@ describe("inline marks", () => {
   });
 
   it("shows a section heading's mark as a symbol too", () => {
-    const { container } = render(<ActorChain chain={{ primes: [{ id: "p", slug: "p2", name: "P", et: "agent", st: null, docId: null }], executors: [], facilitators: [], govops: [] }} currentSlug="me" />);
+    const { container } = render(<ActorChain chain={{ served: [{ id: "p", slug: "p2", name: "P", et: "agent", st: "prime", docId: null }], executors: [], facilitators: [], govops: [] }} currentSlug="me" />);
     expect(inline(container)[0].className).not.toContain("border");
   });
 

@@ -209,18 +209,6 @@
     "stepCount": 5
   },
   {
-    "uuid": "fa2520ac-4779-4aeb-abe4-2c1b89e7ca51",
-    "category": "Collateral & Asset Management",
-    "shape": "child",
-    "status": "active"
-  },
-  {
-    "uuid": "35e32620-a28c-4101-a881-2b7c2b9e42f2",
-    "category": "Collateral & Asset Management",
-    "shape": "child",
-    "status": "active"
-  },
-  {
     "uuid": "4876005c-31a8-4be8-8133-e239bd0ac53b",
     "category": "Collateral & Asset Management",
     "shape": "inline",
@@ -459,6 +447,13 @@
     "stepCount": 2
   },
   {
+    "uuid": "c99d8ec4-dda5-4340-9c2e-ad5e358ae00f",
+    "category": "Executive & Spell Processes",
+    "shape": "inline",
+    "status": "active",
+    "stepCount": 2
+  },
+  {
     "uuid": "3aa5bc98-91ce-4588-b345-a96af8ba2366",
     "category": "Executive & Spell Processes",
     "shape": "child",
@@ -489,6 +484,13 @@
     "category": "Executive & Spell Processes",
     "shape": "child",
     "status": "active"
+  },
+  {
+    "uuid": "a86cd594-a3ec-4eb6-aaee-58bfff907d84",
+    "category": "Governance & Voting Cycles",
+    "shape": "child",
+    "status": "active",
+    "stepCount": 5
   },
   {
     "uuid": "83edd4e1-692e-4566-a415-b8f272c33c5e",
@@ -869,5 +871,12 @@
     "category": "Settlement & Financial",
     "shape": "inline",
     "status": "active"
+  },
+  {
+    "uuid": "d79aed30-65e9-4eae-858c-1a1a63caa6d9",
+    "category": "Settlement & Financial",
+    "shape": "inline",
+    "status": "active",
+    "stepCount": 2
   }
 ]

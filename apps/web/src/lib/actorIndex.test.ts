@@ -10,6 +10,7 @@ import { buildSidebarActors, buildActorProfile } from "./actorIndex";
 import { buildChainMap, buildActiveDataRows, type ActiveDataRow } from "@/lib/activeDataIndex";
 import { buildRewardsIndex } from "@/lib/rewardsIndex";
 import { EXEC_EDGES, FAC_EDGES, CHAIN_EDGES } from "@/lib/roleEdges";
+import { AGENT_FAMILIES, UNLISTED_AGENT, isExecutorSubtype } from "@/lib/agentKinds";
 
 const ROOT = path.resolve(__dirname, "../../../..");
 const PUBLIC = path.join(ROOT, "public");
@@ -46,7 +47,7 @@ describe("buildSidebarActors", () => {
   it("groups match the four role predicates over participants", () => {
     const primes = graph.participants.filter((e) => e.et === "agent" && e.st === "prime");
     const execs = graph.participants.filter(
-      (e) => e.et === "agent" && e.st !== "prime" && e.st !== null,
+      (e) => e.et === "agent" && isExecutorSubtype(e.st),
     );
     const facs = graph.participants.filter((e) => e.et === "facilitator_org");
     const govs = graph.participants.filter((e) => e.et === "govops_org");
@@ -58,6 +59,8 @@ describe("buildSidebarActors", () => {
     expect((byLabel.get("Executor Agents") ?? []).map((a) => a.id).sort()).toEqual(
       execs.map((e) => e.id).sort(),
     );
+    const halos = graph.participants.filter((e) => e.et === "agent" && e.st === "halo");
+    expect((byLabel.get("Halo Agents") ?? []).map((a) => a.id).sort()).toEqual(halos.map((e) => e.id).sort());
     expect((byLabel.get("Facilitators") ?? []).map((a) => a.id).sort()).toEqual(
       facs.map((e) => e.id).sort(),
     );
@@ -70,9 +73,16 @@ describe("buildSidebarActors", () => {
     const labels = groups.map((g) => g.label);
     expect(labels).toEqual([...labels].filter((l, i) => labels.indexOf(l) === i));
     for (const g of groups) expect(g.actors.length).toBeGreaterThan(0);
-    expect(["Prime Agents", "Executor Agents", "Facilitators", "GovOps"]).toEqual(
+    expect([...AGENT_FAMILIES.map((f) => f.plural), UNLISTED_AGENT.plural, "Facilitators", "GovOps"]).toEqual(
       expect.arrayContaining(labels),
     );
+  });
+
+  it("lists an agent whose subtype the registry does not list under Agents", () => {
+    const odd = { ...graph.participants.find((e) => e.et === "agent")!, id: "odd", slug: "odd", name: "Odd", st: "satellite" };
+    const withOdd = buildSidebarActors({ ...graph, participants: [...graph.participants, odd] }, docs);
+    expect(withOdd.find((g) => g.label === UNLISTED_AGENT.plural)?.actors.map((a) => a.slug)).toEqual(["odd"]);
+    expect(groups.some((g) => g.label === UNLISTED_AGENT.plural)).toBe(false);
   });
 
   it("sorts each group by defining-doc doc_no, numeric", () => {
@@ -103,11 +113,11 @@ describe("buildActorProfile — prime agent branch", () => {
   const primes = graph.participants.filter((e) => e.et === "agent" && e.st === "prime");
   const chainMap = buildChainMap(graph.participants, graph.edges, docs, entityById);
 
-  it("chain.primes is exactly [self]; executor/facilitator/govops ids agree with buildChainMap", () => {
+  it("chain.served is exactly [self]; executor/facilitator/govops ids agree with buildChainMap", () => {
     expect(primes.length).toBeGreaterThan(0);
     for (const prime of primes) {
       const p = profile(prime.slug)!;
-      expect(p.chain.primes.map((n) => n.id)).toEqual([prime.id]);
+      expect(p.chain.served.map((n) => n.id)).toEqual([prime.id]);
       const expected = chainMap.get(prime.name);
       if (expected?.executorId) expect(p.chain.executors.map((n) => n.id)).toContain(expected.executorId);
       if (expected?.facilitatorId)
@@ -167,9 +177,9 @@ describe("buildActorProfile — prime agent branch", () => {
 });
 
 describe("buildActorProfile — executor agent branch", () => {
-  it("chain.executors is [self]; primes come from this executor's EXEC_EDGES targets", () => {
+  it("chain.executors is [self]; served agents come from this executor's EXEC_EDGES targets", () => {
     const execs = graph.participants.filter(
-      (e) => e.et === "agent" && e.st !== "prime" && e.st !== null,
+      (e) => e.et === "agent" && isExecutorSubtype(e.st),
     );
     expect(execs.length).toBeGreaterThan(0);
     for (const exec of execs) {
@@ -178,7 +188,7 @@ describe("buildActorProfile — executor agent branch", () => {
       const expectedPrimeIds = new Set(
         graph.edges.filter((e) => EXEC_EDGES.has(e.e) && e.f === exec.id).map((e) => e.t),
       );
-      expect(new Set(p.chain.primes.map((n) => n.id))).toEqual(expectedPrimeIds);
+      expect(new Set(p.chain.served.map((n) => n.id))).toEqual(expectedPrimeIds);
     }
   });
 });
@@ -342,10 +352,10 @@ describe("buildActorProfile — synthetic: zero-exec fallback, missing RP, no re
     expect(p.recommendations.map((r) => r.kind)).toEqual(["no-rewards"]);
   });
 
-  it("facilitator_org with zero FAC_EDGES falls back to itself as facilitator, with empty executors/primes/govops", () => {
+  it("facilitator_org with zero FAC_EDGES falls back to itself as facilitator, with empty executors/served/govops", () => {
     const p = buildActorProfile("facnoexec", synGraph, synDocs, { agents: [] }, [])!;
     expect(p.chain).toEqual({
-      primes: [],
+      served: [],
       executors: [],
       facilitators: [{ id: "syn-fac-no-exec", slug: "facnoexec", name: "FacNoExec", et: "facilitator_org", st: null, docId: "syn-fac-doc" }],
       govops: [],
