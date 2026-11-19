@@ -12,13 +12,16 @@ export const FAC_EDGES = new Set(["operational_facilitator_for", "core_facilitat
 export const GOV_EDGES = new Set(["operational_govops_for", "core_govops_for"]);
 export const CHAIN_EDGES = new Set([...EXEC_EDGES, ...FAC_EDGES, ...GOV_EDGES]);
 
+/** An agent subtype that is an Executor Agent; every other subtype (prime, halo) is not. */
+export const isExecutorSubtype = (st: string | null): boolean => st === "operational_executor" || st === "core_executor";
+
 /** Agent id → the executor agent accountable for it: a Prime's executor (the
  *  first EXEC_EDGES edge, as buildChainMap reads it), and each executor itself. */
 export function executorByAgent(participants: GraphEntity[], edges: RelationEdge[]): Map<string, GraphEntity> {
   const byId = new Map(participants.map((e) => [e.id, e]));
   const out = new Map<string, GraphEntity>();
   for (const e of participants) {
-    if (e.et === "agent" && (e.st === "operational_executor" || e.st === "core_executor")) out.set(e.id, e);
+    if (e.et === "agent" && isExecutorSubtype(e.st)) out.set(e.id, e);
   }
   for (const edge of edges) {
     const exec = EXEC_EDGES.has(edge.e) ? byId.get(edge.f) : undefined;

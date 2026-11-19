@@ -2,13 +2,15 @@
 // rule "Operational Executor Agent For Sky Core Halos", whose content cites the
 // executor's defining doc and applies to every Sky Core Halo.
 import { UUID_LINK_RE } from "../graph-patterns.mjs";
-import { SKY_CORE_HALO_SOURCE } from "../graph-halos.ts";
 
 const RULE_TITLE_RE = /^Operational Executor Agent For Sky Core Halos$/i;
 
 function run(ctx: any) {
-  const halos = [...ctx.entityMap.values()].filter((e: any) => e.subtype === "halo" && e.meta?.includes(SKY_CORE_HALO_SOURCE));
-  for (const rule of ctx.allDocs.filter((d: any) => RULE_TITLE_RE.test(d.title))) {
+  const halos = [...ctx.entityMap.values()].filter((e: any) => e.subtype === "halo");
+  const rules = ctx.allDocs.filter((d: any) => RULE_TITLE_RE.test(d.title));
+  if (halos.length > 0 && rules.length === 0)
+    console.warn("  [drift] tripwire: Sky Core Halos exist but no executor rule document was found — their operational_executor_agent_for edges will be empty (rule title in halo-executor-for.ts likely renamed)");
+  for (const rule of rules) {
     const cited = [...(rule.content ?? "").matchAll(UUID_LINK_RE)].map((m) => ctx.entityByDocId.get(m[2])).find((e) => e?.subtype === "operational_executor");
     if (!cited) {
       console.warn(`  [drift] Sky Core Halo executor rule (${rule.doc_no}) found but it cites no Operational Executor Agent`);

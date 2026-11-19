@@ -15,8 +15,9 @@ describe("ActorContracts", () => {
   it("lists a Halo Agent's own params with the document that states each", () => {
     render(<ActorContracts entity={entity("halo")} />);
     expect(screen.getByRole("heading", { name: "Contracts" })).toBeInTheDocument();
-    expect(screen.getByRole("rowheader", { name: "StarGuard Max Delay" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "A.1.14.6.3.1.2.1" })).toBeInTheDocument();
+    expect(screen.getByText("StarGuard Max Delay")).toBeInTheDocument();
+    expect(screen.getByText("Seven (7) days")).toHaveAttribute("title", params["StarGuard Max Delay"][0]);
+    expect(screen.getByRole("link", { name: "Open the document stating StarGuard Max Delay" })).toBeInTheDocument();
   });
 
   it("renders nothing for an agent that is not a Halo", () => {

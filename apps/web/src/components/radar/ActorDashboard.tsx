@@ -22,7 +22,7 @@ interface Props {
   profile: ActorProfile;
 }
 
-const AGENT_LABEL: Record<string, string> = { prime: "Prime Agent", halo: "Halo Agent" };
+const AGENT_LABEL: Record<string, string> = { prime: "Prime Agent", halo: "Halo Agent", operational_executor: "Executor Agent", core_executor: "Executor Agent" };
 
 export function ActorDashboard({ profile }: Props) {
   const split = hasActorPages(profile.entity);
@@ -39,7 +39,7 @@ export function ActorDashboard({ profile }: Props) {
     partOfComposite,
   } = profile;
   const color = ENTITY_TYPE_COLOR[entity.et] ?? "var(--entity-fallback)";
-  const typeLabel = entity.et === "agent" ? (AGENT_LABEL[entity.st ?? ""] ?? "Executor Agent") : (ENTITY_TYPE_LABEL[entity.et] ?? entity.et);
+  const typeLabel = entity.et === "agent" ? (AGENT_LABEL[entity.st ?? ""] ?? "Agent") : (ENTITY_TYPE_LABEL[entity.et] ?? entity.et);
 
   return (
     <div className="flex-1 px-6 py-6 min-w-0">

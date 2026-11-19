@@ -2,6 +2,7 @@
 // patterns, on the document shape of the Governance Scope's halo list.
 import { describe, it, expect, vi } from "vitest";
 import { buildChildrenIndex } from "../scripts/lib/graph-instances.mjs";
+import { makeEntity } from "../scripts/lib/graph-patterns.mjs";
 import { addSkyCoreHalos, skyCoreHaloParams } from "../scripts/lib/graph-halos.ts";
 import { pattern as haloExecutorFor } from "../scripts/lib/graph-entity-edges/halo-executor-for.ts";
 import { pattern as agentContractAddress } from "../scripts/lib/graph-entity-edges/agent-contract-address.ts";
@@ -25,7 +26,7 @@ const children = buildChildrenIndex(docs);
 function entities() {
   const map = new Map<string, any>();
   const add = (slug: string, name: string, entity_type: string, subtype: string, defining_doc_id: string, meta: object) => {
-    const e = { id: slug, slug, name, entity_type, subtype, defining_doc_id, meta: JSON.stringify(meta) };
+    const e = { ...makeEntity(slug, name, entity_type, { subtype, defining_doc_id, meta }), id: slug };
     map.set(slug, e);
     return e;
   };
@@ -72,6 +73,17 @@ describe("Sky Core Halos", () => {
     const { ctx, edges } = context(map);
     haloExecutorFor.run(ctx);
     expect(edges).toEqual([{ fromId: "ozone", toId: "halo", edgeType: "operational_executor_agent_for", sourceDocNos: ["A.1.14.6.2.2"], meta: null }]);
+  });
+
+  it("warns when halos exist but the executor rule is gone", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { map, add } = entities();
+    addSkyCoreHalos(docs, children, add);
+    const { ctx, edges } = context(map);
+    haloExecutorFor.run({ ...ctx, allDocs: docs.filter((d) => d.id !== "rule") });
+    expect(edges).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("[drift] tripwire"));
+    warn.mockRestore();
   });
 
   it("links an agent to its SubProxy and StarGuard, from its own params or its Agent Creation instance's", () => {

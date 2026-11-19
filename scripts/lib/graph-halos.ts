@@ -8,7 +8,6 @@ import { extractParamsFromRoot } from "./graph-instances.mjs";
 
 const LIST_TITLE_RE = /^List Of Sky Core Halos$/i;
 const HALO_SECTION_RE = /\bSky Core Halos?\b/i;
-export const SKY_CORE_HALO_SOURCE = "sky_core_halo";
 
 interface Doc {
   id: string;
@@ -20,23 +19,16 @@ type Children = Map<string, Doc[]>;
 type Params = Record<string, [string, string, string]>;
 type AddEntity = (slug: string, name: string, type: string, subtype: string, docId: string, meta: object) => { id: string };
 
-/** The halo's subtree with "<Halo> " dropped from each title, as a children index. */
-function unprefixedSubtree(halo: Doc, childrenByDocNo: Children): Children {
-  const out: Children = new Map();
-  const pending = [halo];
-  while (pending.length) {
-    const doc = pending.shift()!;
-    const kids = childrenByDocNo.get(doc.doc_no) ?? [];
-    const strip = (title: string) => (title.startsWith(`${halo.title} `) ? title.slice(halo.title.length + 1) : title);
-    out.set(doc.doc_no, kids.map((k) => ({ ...k, title: strip(k.title) })));
-    pending.push(...kids);
-  }
-  return out;
+/** The children index with "<Halo> " dropped from each title the param walk reads. */
+function unprefixed(halo: Doc, childrenByDocNo: Children): Children {
+  const prefix = `${halo.title} `;
+  const get = (docNo: string) => childrenByDocNo.get(docNo)?.map((k) => (k.title.startsWith(prefix) ? { ...k, title: k.title.slice(prefix.length) } : k));
+  return { get } as Children; // the param walk only reads `get`
 }
 
 /** Params a Sky Core Halo states: SubProxy Account, StarGuard Contract, StarGuard Max Delay. */
 export function skyCoreHaloParams(halo: Doc, childrenByDocNo: Children): Params {
-  return extractParamsFromRoot(halo, unprefixedSubtree(halo, childrenByDocNo)) as Params;
+  return extractParamsFromRoot(halo, unprefixed(halo, childrenByDocNo)) as Params;
 }
 
 /** Every Sky Core Halo document: the children of each list document. */
@@ -48,7 +40,7 @@ export function skyCoreHaloDocs(allDocs: Doc[], childrenByDocNo: Children): Doc[
 export function addSkyCoreHalos(allDocs: Doc[], childrenByDocNo: Children, addEntity: AddEntity): number {
   const halos = skyCoreHaloDocs(allDocs, childrenByDocNo);
   for (const d of halos) {
-    const meta = { source: SKY_CORE_HALO_SOURCE, source_doc_no: d.doc_no, params: skyCoreHaloParams(d, childrenByDocNo) };
+    const meta = { source: "sky_core_halo", source_doc_no: d.doc_no, params: skyCoreHaloParams(d, childrenByDocNo) };
     addEntity(slugify(d.title), d.title, "agent", "halo", d.id, meta).id = d.id;
   }
   if (halos.length === 0 && allDocs.some((d) => HALO_SECTION_RE.test(d.title)))

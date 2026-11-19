@@ -9,7 +9,7 @@ import type { GraphData } from "@/lib/graphData";
 import { buildSidebarActors, buildActorProfile } from "./actorIndex";
 import { buildChainMap, buildActiveDataRows, type ActiveDataRow } from "@/lib/activeDataIndex";
 import { buildRewardsIndex } from "@/lib/rewardsIndex";
-import { EXEC_EDGES, FAC_EDGES, CHAIN_EDGES } from "@/lib/roleEdges";
+import { EXEC_EDGES, FAC_EDGES, CHAIN_EDGES, isExecutorSubtype } from "@/lib/roleEdges";
 
 const ROOT = path.resolve(__dirname, "../../../..");
 const PUBLIC = path.join(ROOT, "public");
@@ -46,7 +46,7 @@ describe("buildSidebarActors", () => {
   it("groups match the four role predicates over participants", () => {
     const primes = graph.participants.filter((e) => e.et === "agent" && e.st === "prime");
     const execs = graph.participants.filter(
-      (e) => e.et === "agent" && e.st !== "prime" && e.st !== "halo" && e.st !== null,
+      (e) => e.et === "agent" && isExecutorSubtype(e.st),
     );
     const facs = graph.participants.filter((e) => e.et === "facilitator_org");
     const govs = graph.participants.filter((e) => e.et === "govops_org");
@@ -171,7 +171,7 @@ describe("buildActorProfile — prime agent branch", () => {
 describe("buildActorProfile — executor agent branch", () => {
   it("chain.executors is [self]; primes come from this executor's EXEC_EDGES targets", () => {
     const execs = graph.participants.filter(
-      (e) => e.et === "agent" && e.st !== "prime" && e.st !== "halo" && e.st !== null,
+      (e) => e.et === "agent" && isExecutorSubtype(e.st),
     );
     expect(execs.length).toBeGreaterThan(0);
     for (const exec of execs) {

@@ -3,7 +3,7 @@ import { ROUTES } from "@/lib/routes";
 import { pushTo, groupBy } from "@/lib/collections";
 import { cmpDocNo } from "@/lib/docNo";
 import { parseMeta } from "@/lib/meta";
-import { EXEC_EDGES, FAC_EDGES, GOV_EDGES } from "@/lib/roleEdges";
+import { EXEC_EDGES, FAC_EDGES, GOV_EDGES, isExecutorSubtype } from "@/lib/roleEdges";
 import type { GraphData } from "./graph";
 import type { InstanceMeta, InvocationMeta, RewardsAgent } from "@/lib/rewardsTypes";
 import type { ActiveDataRow } from "@/lib/activeDataIndex";
@@ -130,7 +130,7 @@ export function buildSidebarActors(
       .map((e) => ({ id: e.id, slug: e.slug, name: e.name, et: e.et, st: e.st, docId: e.did }));
   return [
     { label: "Prime Agents", actors: by((e) => e.et === "agent" && e.st === "prime") },
-    { label: "Executor Agents", actors: by((e) => e.et === "agent" && e.st !== "prime" && e.st !== "halo" && e.st !== null) },
+    { label: "Executor Agents", actors: by((e) => e.et === "agent" && isExecutorSubtype(e.st)) },
     { label: "Halo Agents", actors: by((e) => e.et === "agent" && e.st === "halo") },
     { label: "Facilitators", actors: by((e) => e.et === "facilitator_org") },
     { label: "GovOps", actors: by((e) => e.et === "govops_org") },

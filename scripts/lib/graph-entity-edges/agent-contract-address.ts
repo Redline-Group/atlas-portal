@@ -1,12 +1,11 @@
 // has_address, agent → its SubProxy Account and StarGuard Contract. A Prime
 // states them as params of its Agent Creation instance; a Sky Core Halo states
 // them on its own entity. The edge's meta names the param and the role.
-import { normalizeAddress } from "../address-chains.mjs";
+import { ETH_ADDR_EXACT_RE, normalizeAddress } from "../address-chains.mjs";
 import { normalizeChainLabel } from "../chains.mjs";
 
-const CONTRACT_PARAM_RE = /^(SubProxy Account|StarGuard Contract) \/ (.+)$/;
 const ROLE: Record<string, string> = { "SubProxy Account": "subproxy", "StarGuard Contract": "starguard" };
-const EVM_RE = /^0x[0-9a-fA-F]{40}$/;
+const CONTRACT_PARAM_RE = new RegExp(`^(${Object.keys(ROLE).join("|")}) / (.+)$`);
 
 /** The agent an entity's contract params belong to: itself, or its Agent Creation instance's agent. */
 function ownerOf(ctx: any, entity: any, meta: any) {
@@ -21,8 +20,8 @@ function run(ctx: any) {
     if (!owner) continue;
     for (const [key, [value, , srcDocNo]] of Object.entries(meta.params) as [string, [string, string, string]][]) {
       const m = key.match(CONTRACT_PARAM_RE);
-      if (!m || !EVM_RE.test(value)) continue;
-      const chain = normalizeChainLabel(m[2], "icd-chain") ?? "ethereum";
+      if (!m || !ETH_ADDR_EXACT_RE.test(value)) continue;
+      const chain = normalizeChainLabel(m[2], "icd-chain");
       ctx.addEdge(owner.id, "entity", `${normalizeAddress(value)}:${chain}`, "address", "has_address", [srcDocNo], JSON.stringify({ param: key, role: ROLE[m[1]] }));
     }
   }

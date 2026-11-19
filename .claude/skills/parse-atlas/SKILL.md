@@ -918,7 +918,7 @@ Derive category from the `implements` citation target's parent section:
 
 ```
 prime_agent_for                    entity  → entity   agent(prime)       → Sky Core  (see Editorial Decisions)
-operational_executor_agent_for     entity  → entity   agent(op-exec)     → agent(prime)
+operational_executor_agent_for     entity  → entity   agent(op-exec)     → agent(prime | halo)
 core_executor_agent_for            entity  → entity   agent(core-exec)   → agent(prime)
 operational_facilitator_for        entity  → entity   facilitator_org    → agent(executor)
 core_facilitator_for               entity  → entity   facilitator_org    → agent(executor)
