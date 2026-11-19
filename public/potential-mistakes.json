@@ -1450,18 +1450,6 @@
       "fix": "Precondition should be that the ALM Proxy holds at least the number of vault shares needed to cover the requested withdrawal amount (copy-paste from depositERC4626)."
     },
     {
-      "id": "A.6.1.1.6.2.6.1.1.2.1.2#grammar",
-      "docNo": "A.6.1.1.6.2.6.1.1.2.1.2",
-      "uuid": "efa428ed-6e6b-433a-a7e0-2ae781167940",
-      "file": "A.6.1.1.6 - Pattern.md",
-      "category": "grammar",
-      "severity": "high",
-      "pass": "language",
-      "quote": "The Ethereum Mainnet Instances Directory of River deals with `Active` Status are stored herein.",
-      "issue": "Broken sentence: singular verb 'deals' with plural 'are stored'; sibling directories read 'Instances ... with `Active` Status are stored herein'.",
-      "fix": "The Ethereum Mainnet Instances Directory of River with `Active` Status are stored herein."
-    },
-    {
       "id": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1#copy-paste",
       "docNo": "A.6.1.1.6.2.6.1.2.2.1.2.1.2.3.2.1",
       "uuid": "40875283-48ec-48f0-8b61-e45d33f976ab",
@@ -1484,18 +1472,6 @@
       "quote": "More detailed instructions on the code to execute this, see [A.6.1.1.6.2.6.1.2.2.1.2.1.2.1.2 - Burn USDS]",
       "issue": "Broken sentence: a noun phrase is followed by an imperative 'see'. Sibling documents use 'For more detailed instructions on the code to execute this, see'.",
       "fix": "For more detailed instructions on the code to execute this, see [A.6.1.1.6.2.6.1.2.2.1.2.1.2.1.2 - Burn USDS]"
-    },
-    {
-      "id": "A.6.1.1.6.2.6.1.3.1.2#grammar",
-      "docNo": "A.6.1.1.6.2.6.1.3.1.2",
-      "uuid": "2503b3b1-e0cc-477c-95b7-6fdf25a72ea4",
-      "file": "A.6.1.1.6 - Pattern.md",
-      "category": "grammar",
-      "severity": "high",
-      "pass": "language",
-      "quote": "The Ethereum Mainnet Instances of River deals with `Active` Status are stored herein.",
-      "issue": "Broken sentence: 'deals with' disagrees with the plural subject and is not the phrasing used by sibling documents ('Instances of X with `Completed` Status').",
-      "fix": "The Ethereum Mainnet Instances of River with `Active` Status are stored herein."
     },
     {
       "id": "A.6.1.1.8.2.1.1.1.3#naming",
@@ -2767,18 +2743,6 @@
       "fix": "Title should be 'Completed Instances' (the sibling A.6.1.1.3.2.1.1.4 has the same problem, titled 'In Progress Invocations Directory' instead of 'In Progress Invocations')."
     },
     {
-      "id": "A.6.1.1.3.2.2.2.2.1.2.1.1#copy-paste",
-      "docNo": "A.6.1.1.3.2.2.2.2.1.2.1.1",
-      "uuid": "98f59541-8896-4e64-8e99-2b25e7791bf0",
-      "file": "A.6.1.1.3 - Keel.md",
-      "category": "copy-paste",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
-      "issue": "\"Where the token-holding requirement applies\" refers to nothing: unlike Spark and Grove, the Keel artifact has no Nested Contributor exception, so this is residue of their template. Primes without the exception (Obex, Pattern, Osero, Launch Agent 7) state the proof requirement unconditionally.",
-      "fix": "The post must include cryptographic proof"
-    },
-    {
       "id": "A.6.1.1.3.2.3.2.2.1.2.1.3#contradiction",
       "docNo": "A.6.1.1.3.2.3.2.2.1.2.1.3",
       "uuid": "77ad2a49-8fa6-499b-bd26-b9fdef57fded",
@@ -2885,18 +2849,6 @@
       "quote": "##### A.6.1.1.4.2.1.1.4 - In Progress Invocations Directory [Core] <!-- UUID: 58ddd7d7-28af-4ca3-ac6a-f5d2105f9e79 -->",
       "issue": "A.6.1.1.4.2.1.1.4 duplicates the hub title 'In Progress Invocations Directory' (A.6.1.1.4.2.1.1.1.4); the parallel slot A.6.1.1.4.2.1.2.4 is 'In Progress Invocations'. Title-only defect.",
       "fix": "Rename to 'In Progress Invocations'."
-    },
-    {
-      "id": "A.6.1.1.4.2.2.2.2.1.2.1.1#copy-paste",
-      "docNo": "A.6.1.1.4.2.2.2.2.1.2.1.1",
-      "uuid": "f57f157c-c260-4671-8150-01acabcd286d",
-      "file": "A.6.1.1.4 - Skybase.md",
-      "category": "copy-paste",
-      "severity": "medium",
-      "pass": "factual",
-      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
-      "issue": "\"Where the token-holding requirement applies\" refers to nothing: unlike Spark and Grove, the Skybase artifact has no Nested Contributor exception, so this is residue of their template. Primes without the exception (Obex, Pattern, Osero, Launch Agent 7) state the proof requirement unconditionally.",
-      "fix": "The post must include cryptographic proof"
     },
     {
       "id": "A.6.1.1.4.2.3.2.2.1.2.1.3#contradiction",
@@ -3427,6 +3379,18 @@
       "fix": "Deposit Rate Limit"
     },
     {
+      "id": "A.6.1.1.6.2.6.1.1.2.1.2#grammar",
+      "docNo": "A.6.1.1.6.2.6.1.1.2.1.2",
+      "uuid": "efa428ed-6e6b-433a-a7e0-2ae781167940",
+      "file": "A.6.1.1.6 - Pattern.md",
+      "category": "grammar",
+      "severity": "low",
+      "pass": "language",
+      "quote": "The Ethereum Mainnet Instances Directory of River deals with `Active` Status are stored herein.",
+      "issue": "Ambiguous rather than broken: \"River deals with `Active` Status\" can be read as a broken verb (\"deals with\") or as a noun (\"River deals\", the only Instance being River I (River SPV II)). The Maple sibling (A.6.1.1.6.2.6.1.1.2.1.1) reads \"of the Maple Protocol with `Active` Status\"; dropping \"deals\" is clearer either way.",
+      "fix": "The Ethereum Mainnet Instances Directory of River with `Active` Status are stored herein."
+    },
+    {
       "id": "A.6.1.1.6.2.6.1.3.1.1.1.2.4.1#naming",
       "docNo": "A.6.1.1.6.2.6.1.3.1.1.1.2.4.1",
       "uuid": "baf5e2d2-8d4f-4248-90ff-c3bb21972b62",
@@ -3437,6 +3401,18 @@
       "quote": "Inflow Rate Limit",
       "issue": "Title says 'Inflow Rate Limit' while the body describes 'deposit rate limit parameters' and the paired sibling is titled 'Withdrawal Rate Limit'; the sibling convention elsewhere is 'Deposit Rate Limit'.",
       "fix": "Deposit Rate Limit"
+    },
+    {
+      "id": "A.6.1.1.6.2.6.1.3.1.2#grammar",
+      "docNo": "A.6.1.1.6.2.6.1.3.1.2",
+      "uuid": "2503b3b1-e0cc-477c-95b7-6fdf25a72ea4",
+      "file": "A.6.1.1.6 - Pattern.md",
+      "category": "grammar",
+      "severity": "low",
+      "pass": "language",
+      "quote": "The Ethereum Mainnet Instances of River deals with `Active` Status are stored herein.",
+      "issue": "Ambiguous rather than broken: \"River deals with `Active` Status\" can be read as a broken verb (\"deals with\") or as a noun (\"River deals\", the only Instance being River I (River SPV II)). The Maple sibling (A.6.1.1.6.2.6.1.3.1.1) reads \"of the Maple Protocol with `Active` Status\"; dropping \"deals\" is clearer either way.",
+      "fix": "The Ethereum Mainnet Instances of River with `Active` Status are stored herein."
     }
   ],
   "rejected": [
@@ -5279,6 +5255,36 @@
       "rejectedReason": "The Mainnet vault contract 0x802148d518a6de2af866f9a61ffb5e5c39156db2 reports its symbol as `ogusdcp`, so the Atlas records the deployed token exactly; Base's ogUSDCb is a different token.",
       "rejectedOn": "2026-11-18",
       "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+    },
+    {
+      "id": "A.6.1.1.4.2.2.2.2.1.2.1.1#copy-paste",
+      "docNo": "A.6.1.1.4.2.2.2.2.1.2.1.1",
+      "uuid": "f57f157c-c260-4671-8150-01acabcd286d",
+      "file": "A.6.1.1.4 - Skybase.md",
+      "category": "copy-paste",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
+      "issue": "\"Where the token-holding requirement applies\" refers to nothing: unlike Spark and Grove, the Skybase artifact has no Nested Contributor exception, so this is residue of their template. Primes without the exception (Obex, Pattern, Osero, Launch Agent 7) state the proof requirement unconditionally.",
+      "fix": "The post must include cryptographic proof",
+      "rejectedReason": "The conditional refers to the buyback-or-grant waiver of the 1% requirement in the child A.6.1.1.4.2.2.2.2.1.2.1.1.1; the contradiction review missed it by looking only for a Nested Contributor exception.",
+      "rejectedOn": "2026-11-19",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+    },
+    {
+      "id": "A.6.1.1.3.2.2.2.2.1.2.1.1#copy-paste",
+      "docNo": "A.6.1.1.3.2.2.2.2.1.2.1.1",
+      "uuid": "98f59541-8896-4e64-8e99-2b25e7791bf0",
+      "file": "A.6.1.1.3 - Keel.md",
+      "category": "copy-paste",
+      "severity": "medium",
+      "pass": "factual",
+      "quote": "Where the token-holding requirement applies, the post must include cryptographic proof",
+      "issue": "\"Where the token-holding requirement applies\" refers to nothing: unlike Spark and Grove, the Keel artifact has no Nested Contributor exception, so this is residue of their template. Primes without the exception (Obex, Pattern, Osero, Launch Agent 7) state the proof requirement unconditionally.",
+      "fix": "The post must include cryptographic proof",
+      "rejectedReason": "The conditional refers to the buyback-or-grant waiver of the 1% requirement in the child A.6.1.1.3.2.2.2.2.1.2.1.1.1; this row was added by the contradiction review, which missed that waiver.",
+      "rejectedOn": "2026-11-19",
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
     }
   ]
 }

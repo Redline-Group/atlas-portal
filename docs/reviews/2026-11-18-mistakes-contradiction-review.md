@@ -9,14 +9,14 @@
 
 ## Bottom line
 
-**Two are real, three are false positives.**
+**One is real, four are false positives** (the Skybase row was first kept as copy-paste residue; the correction is in the addendum).
 
 | Finding | Sweep sev. | Verdict | Action |
 |---|---|---|---|
 | A.6.1.1.1.2.2.2.2.1.2.1.1 Spark Root Edit Proposal Submission | low | False positive — named exception exists | moved to `rejected` |
 | A.6.1.1.1.3.2.1.1.2.1.18 pyUSD Risk Parameters | low | False positive — same shape as a sibling | moved to `rejected` |
 | A.6.1.1.1.2.6.1.2.2.1.1.3 ALM Controller Role | low | False positive — general sentence beside a specific rule | moved to `rejected` |
-| A.6.1.1.4.2.2.2.2.1.2.1.1 Skybase Root Edit Proposal Submission | low | Real, but copy-paste residue, not a contradiction | re-filed as `copy-paste` (medium); matching Keel row added |
+| A.6.1.1.4.2.2.2.2.1.2.1.1 Skybase Root Edit Proposal Submission | low | False positive — named exception exists (see addendum) | moved to `rejected`, with the Keel row this review had added |
 | A.2.2.10.1.1.1.2.2.7 Administered Agent Admin | low | Real | kept, raised to medium |
 
 ---
@@ -52,7 +52,7 @@ The role set is defined across siblings under Role Hierarchy And Permissions (A.
 
 Read together, the Controller Role sentence describes operational access, the Default Admin Role covers admin functions, and the function-level documents name the admin-only calls — a general sentence beside a specific rule. "Modified" is loose wording, and the same template sentence appears in the ALM Controller Role documents of Spark, Grove, Keel, Obex and Pattern (A.6.1.1.1.2.6.1.2.2.1.1.3, A.6.1.1.2.2.6.1.2.2.1.1.1.3, A.6.1.1.3.2.6.1.2.2.1.1.1.3, A.6.1.1.5.2.6.1.2.2.1.1.3, A.6.1.1.6.2.6.1.2.2.1.1.3), but it is not two incompatible operative rules.
 
-## Skybase Root Edit Proposal Submission — real, re-filed as copy-paste
+## Skybase Root Edit Proposal Submission — false positive (superseded, see addendum)
 
 Sweep id `A.6.1.1.4.2.2.2.2.1.2.1.1#contradiction` (`f57f157c-c260-4671-8150-01acabcd286d`). The wording is identical to Spark's, but here nothing gives the condition a meaning: no Nested Contributor exception exists anywhere under Skybase's artifact (A.6.1.1.4), unlike Spark (A.6.1.1.1.2.2.2.2.1.2.1.1.1) and Grove (A.6.1.1.2.2.2.2.2.1.2.1.1.1). The Primes without such an exception state the proof requirement unconditionally — Obex, Pattern, Osero and Launch Agent 7 (A.6.1.1.5.2.2.2.2.1.2.1.1, A.6.1.1.6.2.2.2.2.1.2.1.1, A.6.1.1.7.2.2.2.2.1.2.1.1, A.6.1.1.8.2.2.2.2.1.2.1.1) all read "The post must include cryptographic proof…".
 
@@ -65,3 +65,20 @@ Sweep id `A.2.2.10.1.1.1.2.2.7#contradiction` (`d823b872-fe99-4856-9096-55335357
 > It is held by Sky Governance through the Prime Agent's SubProxy on Ethereum Mainnet and through the Prime Agent's Executor on other networks.
 
 The AdministeredAgent is deployed off Mainnet — Osero's is on Base (AdministeredAgent Contract, A.6.1.1.7.2.6.1.2.1.1.1.2.2.5), and Osero's Role Hierarchies And Permissions (A.6.1.1.7.2.6.1.2.2.1.1) gives the `DEFAULT_ADMIN_ROLE` to the Osero SubProxy on Ethereum Mainnet and to the Osero Executor on Base. "Both … through the Prime Agent's SubProxy" is therefore true only on Mainnet. Kept, severity raised from low to medium.
+
+---
+
+## Addendum (2026-11-19) — Skybase and Keel rows rejected
+
+The Skybase section above is wrong. It looked only for a Nested Contributor exception and concluded the conditional "Where the token-holding requirement applies" refers to nothing. Skybase has a different exception, which waives the requirement for buyback and grant proposals. Root Edit Proposal Submission Requirements Exception · A.6.1.1.4.2.2.2.2.1.2.1.1.1:
+
+> For proposals that solely entail a buyback or a grant of SKYBASE tokens, the requirement that SKYBASE token holders must hold at least 1% of the circulating token supply to submit a proposal is waived.
+
+Keel carries the same waiver. Root Edit Proposal Submission Requirements Exception · A.6.1.1.3.2.2.2.2.1.2.1.1.1:
+
+> For proposals that solely entail a buyback or a grant of KEEL tokens, the requirement that KEEL token holders must hold at least 1% of the circulating token supply to submit a proposal is waived.
+
+So the conditional works in both, exactly as it does for Spark (A.6.1.1.1.2.2.2.2.1.2.1.1.1) and Grove (A.6.1.1.2.2.2.2.2.1.2.1.1.1), whose exception is for Nested Contributors. The suggested fix (state the proof requirement unconditionally) would contradict the waiver. Obex, Pattern, Osero and Launch Agent 7 have no exception at that slot and state the rule unconditionally (A.6.1.1.5.2.2.2.2.1.2.1.1, A.6.1.1.6.2.2.2.2.1.2.1.1, A.6.1.1.7.2.2.2.2.1.2.1.1, A.6.1.1.8.2.2.2.2.1.2.1.1); all eight Primes are consistent as they stand.
+
+The Skybase row (`A.6.1.1.4.2.2.2.2.1.2.1.1#copy-paste`) and the Keel row this review added (`A.6.1.1.3.2.2.2.2.1.2.1.1#copy-paste`) are moved to `rejected`.
+
