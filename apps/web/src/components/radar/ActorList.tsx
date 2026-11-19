@@ -5,6 +5,7 @@ import type { ActorPageKey } from "@/lib/radarPages";
 import type { SidebarGroup } from "../../lib/actorIndex";
 import { ActorSubNav } from "./ActorSubNav";
 import { SourceMark } from "../SourceMark";
+import { agentKind } from "@/lib/agentKinds";
 
 export interface ActorListProps {
   groups: SidebarGroup[];
@@ -16,14 +17,8 @@ export interface ActorListProps {
   subpages?: ReadonlyMap<string, readonly ActorPageKey[]>;
 }
 
-const SUBTYPE_BADGE: Record<string, string> = {
-  prime: "Prime",
-  operational_executor: "Exec",
-  core_executor: "Core Exec",
-};
-
 function Badge({ st }: { st: string | null }) {
-  const label = st && SUBTYPE_BADGE[st];
+  const label = agentKind(st)?.badge;
   if (!label) return null;
   return (
     <span className="mono text-[9px] shrink-0" style={{ color: "var(--tan-3)" }}>

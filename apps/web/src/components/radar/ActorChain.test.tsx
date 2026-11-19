@@ -14,20 +14,20 @@ function node(overrides: Partial<ChainNode> = {}): ChainNode {
     slug: "prime-agent",
     name: "Prime Agent Co",
     et: "agent",
-    st: null,
+    st: "prime",
     docId: null,
     ...overrides,
   };
 }
 
 function emptyChain(): ActorChainData {
-  return { primes: [], executors: [], facilitators: [], govops: [] };
+  return { served: [], executors: [], facilitators: [], govops: [] };
 }
 
 describe("ActorChain", () => {
   it("renders the Related Parties heading and role labels with actor links", () => {
     const chain: ActorChainData = {
-      primes: [node({ id: "p1", slug: "prime-1", name: "Prime One" })],
+      served: [node({ id: "p1", slug: "prime-1", name: "Prime One" })],
       executors: [node({ id: "e1", slug: "exec-1", name: "Exec One" })],
       facilitators: [node({ id: "f1", slug: "facil-1", name: "Facil One" })],
       govops: [node({ id: "g1", slug: "govops-1", name: "GovOps One" })],
@@ -44,9 +44,22 @@ describe("ActorChain", () => {
     expect(link).toHaveAttribute("href", expect.stringContaining("prime-1"));
   });
 
+  it("lists the Halo Agents an executor serves apart from its Prime Agents", () => {
+    const chain: ActorChainData = { ...emptyChain(), served: [node({ id: "p1", slug: "prime-1", name: "Prime One" }), node({ id: "h1", slug: "halo-1", name: "Halo One", st: "halo" })] };
+    render(<ActorChain chain={chain} currentSlug="ozone" />);
+    expect(screen.getByText("Prime Agent").closest("tr")).toHaveTextContent("Prime One");
+    expect(screen.getByText("Halo Agent").closest("tr")).toHaveTextContent("Halo One");
+    expect(screen.getByText("Prime Agent").closest("tr")).not.toHaveTextContent("Halo One");
+  });
+
+  it("lists a served agent whose subtype the registry does not list under Agent", () => {
+    render(<ActorChain chain={{ ...emptyChain(), served: [node({ id: "x1", slug: "x-1", name: "Odd One", st: "satellite" })] }} currentSlug="ozone" />);
+    expect(screen.getByText("Agent").closest("tr")).toHaveTextContent("Odd One");
+  });
+
   it("filters out the node matching currentSlug", () => {
     const chain: ActorChainData = {
-      primes: [
+      served: [
         node({ id: "p1", slug: "prime-1", name: "Prime One" }),
         node({ id: "p2", slug: "self-slug", name: "Self Node" }),
       ],
@@ -66,7 +79,7 @@ describe("ActorChain", () => {
 
   it("renders nothing when every node equals currentSlug", () => {
     const chain: ActorChainData = {
-      primes: [node({ id: "p1", slug: "self-slug", name: "Self Node" })],
+      served: [node({ id: "p1", slug: "self-slug", name: "Self Node" })],
       executors: [],
       facilitators: [],
       govops: [],
@@ -76,7 +89,7 @@ describe("ActorChain", () => {
   });
 
   it("marks the Related Parties heading as derived", () => {
-    const { container } = render(<ActorChain chain={{ ...emptyChain(), primes: [node({ slug: "other" })] }} currentSlug="me" />);
+    const { container } = render(<ActorChain chain={{ ...emptyChain(), served: [node({ slug: "other" })] }} currentSlug="me" />);
     expect(container.querySelector("[data-source='derived']")).toHaveAttribute("href", "/provenance#source-derived");
   });
 });

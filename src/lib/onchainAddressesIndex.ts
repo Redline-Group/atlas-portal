@@ -52,7 +52,7 @@ export const ADDRESS_TYPES: AddressType[] = [
 // contract system (as opposed to an external token or a delegate's contract).
 const SKY_SYSTEM_ROLES = new Set([
   "proxy",
-  "subproxy",
+  "subproxy", "starguard",
   "buffer",
   "vault",
   "controller",

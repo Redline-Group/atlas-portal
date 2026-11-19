@@ -4,6 +4,7 @@ import { pushTo, groupBy } from "@/lib/collections";
 import { cmpDocNo } from "@/lib/docNo";
 import { parseMeta } from "@/lib/meta";
 import { EXEC_EDGES, FAC_EDGES, GOV_EDGES } from "@/lib/roleEdges";
+import { AGENT_FAMILIES, UNLISTED_AGENT, agentFamily, isServedSubtype } from "@/lib/agentKinds";
 import type { GraphData } from "./graph";
 import type { InstanceMeta, InvocationMeta, RewardsAgent } from "@/lib/rewardsTypes";
 import type { ActiveDataRow } from "@/lib/activeDataIndex";
@@ -29,7 +30,8 @@ export interface ChainNode {
   docId: string | null;
 }
 export interface ActorChain {
-  primes: ChainNode[];
+  /** The agents an executor operates: Prime Agents and Halo Agents. On such an agent's own page, itself. */
+  served: ChainNode[];
   executors: ChainNode[];
   facilitators: ChainNode[];
   govops: ChainNode[];
@@ -129,11 +131,7 @@ export function buildSidebarActors(
       })
       .map((e) => ({ id: e.id, slug: e.slug, name: e.name, et: e.et, st: e.st, docId: e.did }));
   return [
-    { label: "Prime Agents", actors: by((e) => e.et === "agent" && e.st === "prime") },
-    {
-      label: "Executor Agents",
-      actors: by((e) => e.et === "agent" && e.st !== "prime" && e.st !== null),
-    },
+    ...[...AGENT_FAMILIES, null].map((f) => ({ label: (f ?? UNLISTED_AGENT).plural, actors: by((e) => e.et === "agent" && e.st !== null && agentFamily(e.st) === f) })),
     { label: "Facilitators", actors: by((e) => e.et === "facilitator_org") },
     { label: "GovOps", actors: by((e) => e.et === "govops_org") },
   ].filter((g) => g.actors.length > 0);
@@ -176,25 +174,25 @@ export function buildActorProfile(
     const seen = new Set<string>();
     return nodes.filter((n) => (seen.has(n.id) ? false : (seen.add(n.id), true)));
   };
-  const primesOf = (execs: GraphEntity[]) =>
+  const servedBy = (execs: GraphEntity[]) =>
     dedup(
       resolve(execs.flatMap((ex) => execsFrom(ex.id).map((e) => e.t))).map(cn),
     );
 
   let chain: ActorChain;
   const { et, st } = entity;
-  if (et === "agent" && st === "prime") {
+  if (et === "agent" && isServedSubtype(st)) {
     const execs = resolve(execsTo(entity.id).map((e) => e.f));
     chain = {
-      primes: [cn(entity)],
+      served: [cn(entity)],
       executors: execs.map(cn),
       facilitators: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(facsTo(ex.id).map((e) => e.f)).map(cn))) : [],
       govops: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(govsTo(ex.id).map((e) => e.f)).map(cn))) : [],
     };
   } else if (et === "agent") {
-    const primes = resolve(execsFrom(entity.id).map((e) => e.t));
+    const served = resolve(execsFrom(entity.id).map((e) => e.t));
     chain = {
-      primes: primes.map(cn),
+      served: served.map(cn),
       executors: [cn(entity)],
       facilitators: dedup(resolve(facsTo(entity.id).map((e) => e.f)).map(cn)),
       govops: dedup(resolve(govsTo(entity.id).map((e) => e.f)).map(cn)),
@@ -203,7 +201,7 @@ export function buildActorProfile(
     const facEdges = (edgesFrom.get(entity.id) ?? []).filter((e) => FAC_EDGES.has(e.e));
     const execs = resolve(facEdges.map((e) => e.t));
     chain = {
-      primes: primesOf(execs),
+      served: servedBy(execs),
       executors: execs.map(cn),
       facilitators: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(facsTo(ex.id).map((e) => e.f)).map(cn))) : [cn(entity)],
       govops: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(govsTo(ex.id).map((e) => e.f)).map(cn))) : [],
@@ -212,7 +210,7 @@ export function buildActorProfile(
     const govEdges = (edgesFrom.get(entity.id) ?? []).filter((e) => GOV_EDGES.has(e.e));
     const execs = resolve(govEdges.map((e) => e.t));
     chain = {
-      primes: primesOf(execs),
+      served: servedBy(execs),
       executors: execs.map(cn),
       facilitators: dedup(execs.flatMap((ex) => resolve(facsTo(ex.id).map((e) => e.f)).map(cn))),
       govops: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(govsTo(ex.id).map((e) => e.f)).map(cn))) : [cn(entity)],

@@ -6,6 +6,7 @@
 // (not core_*), so it references those edge types explicitly rather than these
 // sets — that narrowing is intentional, not drift.
 import type { GraphEntity, RelationEdge } from "../types";
+import { isExecutorSubtype } from "./agentKinds";
 
 export const EXEC_EDGES = new Set(["operational_executor_agent_for", "core_executor_agent_for"]);
 export const FAC_EDGES = new Set(["operational_facilitator_for", "core_facilitator_for"]);
@@ -18,7 +19,7 @@ export function executorByAgent(participants: GraphEntity[], edges: RelationEdge
   const byId = new Map(participants.map((e) => [e.id, e]));
   const out = new Map<string, GraphEntity>();
   for (const e of participants) {
-    if (e.et === "agent" && (e.st === "operational_executor" || e.st === "core_executor")) out.set(e.id, e);
+    if (e.et === "agent" && isExecutorSubtype(e.st)) out.set(e.id, e);
   }
   for (const edge of edges) {
     const exec = EXEC_EDGES.has(edge.e) ? byId.get(edge.f) : undefined;

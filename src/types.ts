@@ -148,7 +148,7 @@ export interface GraphEntity {
   slug: string;
   name: string;
   et: string; // agent | facilitator_org | govops_org | delegate_org | development_company | foundation | composite_party | governance_body | operational_party | ecosystem_actor | instance | primitive | multisig | bridge
-  st: string | null; // agent subtypes: prime | operational_executor | core_executor; instance: <primitive-slug>; primitive: <primitive-slug>; ecosystem_actor: individual | integration_partner
+  st: string | null; // agent subtypes: see src/lib/agentKinds.ts; instance: <primitive-slug>; primitive: <primitive-slug>; ecosystem_actor: individual | integration_partner
   did: string | null; // defining_doc_id — UUID of the Atlas doc that defines this entity
   // meta JSON, non-null only. Shapes verified against public/graph.json
   // 2026-08-21 — et=instance previously read { primitive_doc_no, agent_doc_no },

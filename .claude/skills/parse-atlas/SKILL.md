@@ -171,7 +171,7 @@ Every entity type below either has a defining Atlas doc number pattern, or is bo
 | `instance`            | `<primitive-slug>`     | Primitive Instance Configuration Document under the **Active/Suspended/Completed Instances** tier. Operational deployment per atlas A.2.2.1.3. Entity id = ICD doc UUID. Emitted for every in-scope primitive (see Pattern 14 for the allowlist). `st` is the primitive slug (`distribution-reward`, `integration-boost`, `allocation-system`, etc.). Status (Active/Suspended/Completed) lives in `meta.status`. |
 | `invocation`          | `<primitive-slug>`     | ICD under the **In Progress Invocations** tier. The in-progress act of enabling a primitive per atlas A.2.2.1.4 — distinct from an Instance. Same param shape and same entity id derivation as `instance`; the only difference is lifecycle stage. `meta.status = "InProgress"`. |
 
-**Halo Agents** are mentioned in `A.6.1.1.5.1` as a future category but have no structural pattern yet — do not classify.
+**Halo Agents**: only **Sky Core Halos** have a structural pattern. They have no Agent Artifact; each is a child of the Governance Scope document titled `List Of Sky Core Halos` that states its contracts in children titled `<Halo> SubProxy Account` / `<Halo> StarGuard Contract` / `<Halo> StarGuard Max Delay`. `scripts/lib/graph-halos.ts` makes each an `agent` / `halo` entity with those params (a list child stating neither a SubProxy Account nor a StarGuard Contract is not a halo and warns); the rule document `Operational Executor Agent For Sky Core Halos` gives the `operational_executor_agent_for` edge, for Sky Core Halos only. A Halo Agent inside a Prime's Agent Artifact has no pattern yet — do not classify.
 
 **Key principle:** Key on doc_no position first, then title shape. Never on names alone — agent names change.
 
@@ -918,7 +918,7 @@ Derive category from the `implements` citation target's parent section:
 
 ```
 prime_agent_for                    entity  → entity   agent(prime)       → Sky Core  (see Editorial Decisions)
-operational_executor_agent_for     entity  → entity   agent(op-exec)     → agent(prime)
+operational_executor_agent_for     entity  → entity   agent(op-exec)     → agent(prime | halo)
 core_executor_agent_for            entity  → entity   agent(core-exec)   → agent(prime)
 operational_facilitator_for        entity  → entity   facilitator_org    → agent(executor)
 core_facilitator_for               entity  → entity   facilitator_org    → agent(executor)
@@ -1150,7 +1150,7 @@ Categories the atlas itself excludes or frames as non-entities. Do not extract.
 
 ## Open Questions
 
-- **Halo Agents**: mentioned in `A.6.1.1.5.1` as a future category — no structural pattern yet; do not classify
+- **Halo Agents**: Sky Core Halos are extracted from the `List Of Sky Core Halos` document (`scripts/lib/graph-halos.ts`); a Halo inside a Prime's Agent Artifact has no structural pattern yet — do not classify
 - **Proto-Agents**: atlas defines the stage but names no current instances. `agent/proto` subtype reserved; pattern will land if/when named
 - **Multi-party Ecosystem Accords**: `A.2.8.2.2` (Prime Program) covers Sky + Spark + Grove + Moonbow — parse from party-details docs, not title
 - **Executor Accord position**: currently `.2.2` for all checked agents — derive from citation, not position

@@ -18,7 +18,7 @@ function profile(): ActorProfile {
   return {
     entity,
     definingDoc: null,
-    chain: { primes: [], executors: [], facilitators: [], govops: [] },
+    chain: { served: [], executors: [], facilitators: [], govops: [] },
     adRows: [],
     rewardsAgent: null,
     relations: [],

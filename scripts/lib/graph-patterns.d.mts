@@ -33,3 +33,6 @@ export function makeEntity(
   is_active: number;
   meta: string | null;
 };
+
+export function slugify(name: string): string;
+export const UUID_LINK_RE: RegExp;
