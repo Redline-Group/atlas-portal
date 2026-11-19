@@ -20,6 +20,10 @@
     "reason": "category container (groups the actual Delegate Onboarding Process doc plus Application Requirements/Minimum Term/Delegate Record; not itself sequential)"
   },
   {
+    "uuid": "1832a6e8-63e6-4b84-a2dd-d3904044ffca",
+    "reason": "category container (Section holding Definitions, Roles, Principles and Structure beside the already-curated Governance Poll Process Breakdown; not itself sequential)"
+  },
+  {
     "uuid": "1a1f4bef-d19d-42ff-8ac4-746498df9fbc",
     "reason": "requirement spec"
   },
@@ -158,6 +162,10 @@
   {
     "uuid": "a227491c-903f-4571-aad0-b76422a5ea7f",
     "reason": "requirement spec"
+  },
+  {
+    "uuid": "a715f3ab-f2ec-46b1-a312-6a3987d2cd93",
+    "reason": "role definition (Poll Administrator, Poll Creator and Poll Reviewer; not a step sequence)"
   },
   {
     "uuid": "abd8ac0d-1265-4a71-aaea-2fff6670eac5",
