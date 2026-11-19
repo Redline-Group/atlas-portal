@@ -193,18 +193,17 @@ function formatParam(title, raw) {
 // same source doc. Used when a single leaf embeds per-chain or per-variant
 // values (e.g. Agent Token's "Token Address" stuffs every deployed chain
 // address into one blob). Returns Array<[key, value]> or null to fall through.
+// "The address of X's SubProxy Account on (the) Network is `0xADDR`."
+// → "SubProxy Account / Network": "0xADDR"
+const addressOnNetwork = (label) => (content) => {
+  const m = content.match(/on (?:the )?(.+?) is `(0x[0-9a-fA-F]+)`/i);
+  return m ? [[`${label} / ${m[1].trim()}`, m[2]]] : null;
+};
 const PARAM_EXPANDERS = {
-  // "The address of X's SubProxy/Genesis Account on (the) Network is `0xADDR`."
-  // → "SubProxy Account / Network": "0xADDR"
-  "SubProxy Account": (content) => {
-    const m = content.match(/on (?:the )?(.+?) is `(0x[0-9a-fA-F]+)`/i);
-    return m ? [[`SubProxy Account / ${m[1].trim()}`, m[2]]] : null;
-  },
-  "Genesis Account": (content) => {
-    if (/will be specified/i.test(content)) return [["Genesis Account", "TBD"]];
-    const m = content.match(/on (?:the )?(.+?) is `(0x[0-9a-fA-F]+)`/i);
-    return m ? [[`Genesis Account / ${m[1].trim()}`, m[2]]] : null;
-  },
+  "SubProxy Account": addressOnNetwork("SubProxy Account"),
+  "StarGuard Contract": addressOnNetwork("StarGuard Contract"),
+  "Genesis Account": (content) =>
+    /will be specified/i.test(content) ? [["Genesis Account", "TBD"]] : addressOnNetwork("Genesis Account")(content),
   "Token Address": (content) => {
     // "The address of X on (the) CHAIN is `ADDR`." — repeats per chain.
     const re = /The address of \S+ on (?:the )?([^.]+?) is `([^`\n]+)`/gi;
@@ -274,8 +273,10 @@ export function extractParamsFromRoot(rootDoc, childrenByDocNo) {
       // A group that states its own `key`: value bullets and also has children
       // (a "Deposit Rate Limits" leaf with a "Deposit Rate Limit Default" child)
       // still states those values; the walk must not drop them.
-      if (content && !DIRECTORY_RE.test(content) && !PARAM_EXPANDERS[doc.title])
-        for (const [k, v] of expandBulletList(content, doc.title) ?? []) params[k] ??= [v, doc.id, doc.doc_no];
+      // So does a titled group whose sentence states an address above a child
+      // (a "StarGuard Contract" with a "StarGuard Max Delay" child).
+      const own = PARAM_EXPANDERS[doc.title] ?? ((c) => expandBulletList(c, doc.title));
+      if (content && !DIRECTORY_RE.test(content)) for (const [k, v] of own(content) ?? []) params[k] ??= [v, doc.id, doc.doc_no];
       for (const c of kids) pending.push({ doc: c, parents: [...parents, doc.title] });
     }
   }

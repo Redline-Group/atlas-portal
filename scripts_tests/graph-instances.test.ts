@@ -238,7 +238,14 @@ describe("extractInstanceParams", () => {
   const custom = mkDoc("custom", `${PARAMS_NO}.10`, "Custom Instance Parameters");
   const customChild = mkDoc("customchild", `${PARAMS_NO}.10.1`, "Should Not Appear", { content: "Ignored value." });
 
+  const starGuard = mkDoc("sg", `${PARAMS_NO}.11`, "StarGuard Contract", {
+    content: "The address of Test Agent's StarGuard contract on the Ethereum Mainnet is `0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`.",
+  });
+  const starGuardDelay = mkDoc("sgd", `${PARAMS_NO}.11.1`, "StarGuard Max Delay", { content: "The Test Agent StarGuard `maxDelay` is seven (7) days." });
+
   const allDocs = [
+    starGuard,
+    starGuardDelay,
     params_,
     rewardCode,
     subproxy,
@@ -270,6 +277,11 @@ describe("extractInstanceParams", () => {
     expect(paramsResult["SubProxy Account / Ethereum Mainnet"][0]).toBe(
       "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     );
+  });
+
+  it("keeps a StarGuard Contract address stated above its Max Delay child", () => {
+    expect(paramsResult["StarGuard Contract / Ethereum Mainnet"]).toEqual(["0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", "sg", `${PARAMS_NO}.11`]);
+    expect(paramsResult["StarGuard Max Delay"][1]).toBe("sgd");
   });
 
   it("special-cases the 'will be specified' Genesis Account placeholder", () => {

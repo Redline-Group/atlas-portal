@@ -33,6 +33,11 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
+## 2026-11-19
+
+- Added each Prime Agent's StarGuard contract address to its Agent Creation parameters.
+- Added the Governance Poll process, the Morpho Vault Change Note Template update process and Grove's GROVE purchase process to the Processes report.
+
 ## 2026-11-18
 
 - Preview diffs now show the whole old and new document, starting with its heading line (number, title, type and UUID).
