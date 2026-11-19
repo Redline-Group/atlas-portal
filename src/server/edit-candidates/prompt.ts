@@ -39,7 +39,11 @@ const parentNo = (docNo: string): string => docNo.slice(0, Math.max(docNo.lastIn
 
 export function sweepIndex(docs: readonly SweepDoc[]): SweepIndex {
   const children = new Map<string, SweepDoc[]>();
-  for (const d of docs) children.set(parentNo(d.doc_no), [...(children.get(parentNo(d.doc_no)) ?? []), d]);
+  for (const d of docs) {
+    const list = children.get(parentNo(d.doc_no));
+    if (list) list.push(d);
+    else children.set(parentNo(d.doc_no), [d]);
+  }
   return { byId: new Map(docs.map((d) => [d.id, d])), byDocNo: new Map(docs.map((d) => [d.doc_no, d])), children };
 }
 
@@ -61,16 +65,26 @@ export function renderDoc(doc: SweepDoc, index: SweepIndex, text = doc.content, 
 const CONTEXT_DOC_CHARS = 1_200;
 const CONTEXT_BYTES_PER_DOC = 6_000;
 
+/** Siblings by distance from position `at`, nearest first; the later one first at equal distance. */
+function* outward(siblings: readonly SweepDoc[], at: number): Generator<SweepDoc> {
+  for (let step = 1; at - step >= 0 || at + step < siblings.length; step++) {
+    if (at + step < siblings.length) yield siblings[at + step];
+    if (at - step >= 0) yield siblings[at - step];
+  }
+}
+
+function* candidates(doc: SweepDoc, index: SweepIndex): Generator<SweepDoc | undefined> {
+  yield index.byDocNo.get(parentNo(doc.doc_no));
+  for (const m of doc.content.matchAll(UUID_LINK_RE)) yield index.byId.get(m[2].toLowerCase());
+  const siblings = index.children.get(parentNo(doc.doc_no)) ?? [];
+  yield* outward(siblings, siblings.indexOf(doc));
+}
+
 /** A document's parent, link targets and nearest siblings, within the per-document context budget. */
 export function neighbours(doc: SweepDoc, index: SweepIndex): SweepDoc[] {
-  const siblings = index.children.get(parentNo(doc.doc_no)) ?? [];
-  const at = siblings.indexOf(doc);
-  const near = siblings.filter((s) => s !== doc).sort((a, b) => Math.abs(siblings.indexOf(a) - at) - Math.abs(siblings.indexOf(b) - at));
-  const cited = [...doc.content.matchAll(UUID_LINK_RE)].map((m) => index.byId.get(m[2].toLowerCase()));
-  const parent = index.byDocNo.get(parentNo(doc.doc_no));
   const out = new Set<SweepDoc>();
   let size = 0;
-  for (const d of [parent, ...cited, ...near]) {
+  for (const d of candidates(doc, index)) {
     if (!d || d === doc || out.has(d)) continue;
     size += Math.min(d.content.length, CONTEXT_DOC_CHARS) + 160;
     if (size > CONTEXT_BYTES_PER_DOC) break;

@@ -51,6 +51,8 @@ export interface EditStore {
   forgetDocs(docIds: string[]): Promise<void>;
   deleteKeys(keys: string[]): Promise<number>;
   bumpFailures(docs: SweptDoc[]): Promise<void>;
+  /** Records that nothing was left to read at `sha` on `day`. With `ifUnset`, only when no commit is recorded yet. */
+  markCovered(sha: string, day: string, ifUnset?: boolean): Promise<void>;
   loadSpend(month: string): Promise<number>;
   addSpend(month: string, usd: number): Promise<void>;
 }

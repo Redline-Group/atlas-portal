@@ -9,15 +9,24 @@ const COLS = "key, doc_id, doc_no, file, category, severity, pass, quote, issue,
 const CASTS: Record<number, string> = { 1: "::uuid", 13: "::date" };
 const tuple = (base: number): string => `(${Array.from({ length: 14 }, (_, n) => `$${base + n + 1}${CASTS[n] ?? ""}`).join(", ")})`;
 
-async function insertCandidates(tx: Tx, rows: CandidateWrite[], by: ReplaceBy, seen: Map<string, string>): Promise<void> {
+interface Old {
+  /** Candidate key → the day it was first found. */
+  seen: Map<string, string>;
+  /** Document → the source file its candidates named. */
+  file: Map<string, string>;
+}
+
+async function insertCandidates(tx: Tx, rows: CandidateWrite[], by: ReplaceBy, old: Old): Promise<void> {
   const today = new Date().toISOString().slice(0, 10);
   for (let i = 0; i < rows.length; i += 300) {
     const params: unknown[] = [];
     const values = rows.slice(i, i + 300).map((r) => {
       const key = candidateKey(r);
       const base = params.length;
-      const first = r.firstSeen ?? seen.get(key) ?? today;
-      params.push(key, r.uuid, r.docNo, r.file, r.category, r.severity, r.pass, r.quote, r.issue, r.fix || null, r.detector ?? null, by.source, by.model, first);
+      const first = r.firstSeen ?? old.seen.get(key) ?? today;
+      // The worker reads documents from the database, which holds no source file, so a re-read keeps the one known.
+      const file = r.file || old.file.get(r.uuid ?? "") || "";
+      params.push(key, r.uuid, r.docNo, file, r.category, r.severity, r.pass, r.quote, r.issue, r.fix || null, r.detector ?? null, by.source, by.model, first);
       return tuple(base);
     });
     await tx.unsafe(`INSERT INTO edit_candidates (${COLS}) VALUES ${values.join(",")} ON CONFLICT (key) DO NOTHING`, params);
@@ -54,10 +63,11 @@ export const realStore: EditStore = {
   async replace(docs, rows, by) {
     const ids = toUuidArrayLiteral(docs.map((d) => d.docId));
     await sql.begin(async (tx) => {
-      const old = (await tx`SELECT key, first_seen::text AS seen FROM edit_candidates WHERE doc_id = ANY(${ids}::uuid[])`) as { key: string; seen: string }[];
+      const had = (await tx`SELECT key, doc_id, file, first_seen::text AS seen FROM edit_candidates WHERE doc_id = ANY(${ids}::uuid[])`) as { key: string; doc_id: string; file: string; seen: string }[];
+      const old = { seen: new Map(had.map((r) => [r.key, r.seen])), file: new Map(had.filter((r) => r.file).map((r) => [r.doc_id, r.file])) };
       await tx`DELETE FROM edit_candidates WHERE doc_id = ANY(${ids}::uuid[])`;
       if (by.corpus) await tx`DELETE FROM edit_candidates WHERE doc_id IS NULL`;
-      await insertCandidates(tx, rows, by, new Map(old.map((r) => [r.key, r.seen])));
+      await insertCandidates(tx, rows, by, old);
       await recordRead(tx, docs, by.source);
       if (by.seedHash) await tx`UPDATE sync_state SET edit_candidates_seed_hash = ${by.seedHash} WHERE id = 1`;
     });
@@ -84,6 +94,11 @@ export const realStore: EditStore = {
           failures = CASE WHEN edit_candidate_docs.failed_digest = excluded.failed_digest THEN edit_candidate_docs.failures + 1 ELSE 1 END,
           failed_digest = excluded.failed_digest`;
     }
+  },
+  async markCovered(sha, day, ifUnset = false) {
+    await sql`
+      UPDATE sync_state SET edit_candidates_covered_sha = ${sha}, edit_candidates_covered_on = ${day}::date
+      WHERE id = 1 AND (NOT ${ifUnset} OR edit_candidates_covered_sha IS NULL)`;
   },
   async loadSpend(month) {
     const rows = (await sql`SELECT usd FROM edit_candidate_spend WHERE month = ${month}`) as { usd: number }[];

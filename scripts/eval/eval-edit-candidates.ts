@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
+import { politeFetch } from "../../src/lib/upstreamBackoff.ts";
 import { mapPool } from "../../src/server/pool.ts";
 import { loadAtlasSource } from "../lib/atlas-source.mjs";
 import { batches, explain, explainInContext } from "./eval-edit-candidates-explain.ts";
@@ -54,7 +55,7 @@ function loadCases(): GoldCase[] {
 }
 
 async function listPrices(): Promise<Prices> {
-  const res = await fetch("https://openrouter.ai/api/v1/models");
+  const res = await politeFetch("https://openrouter.ai/api/v1/models");
   const { data } = (await res.json()) as { data: Array<{ id: string; pricing: { prompt: string; completion: string } }> };
   return Object.fromEntries(data.map((m) => [m.id, { prompt: Number(m.pricing.prompt), completion: Number(m.pricing.completion) }]));
 }

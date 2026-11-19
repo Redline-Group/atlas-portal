@@ -21,6 +21,10 @@ describe("placement", () => {
     expect(neighbours(citing, index).map((d) => d.doc_no)).toEqual(["A.1.2", "A.9", "A.1.2.4", "A.1.2.3", "A.1.2.2", "A.1.2.1"]);
   });
 
+  test("siblings are taken outward from the document's own position", () => {
+    expect(neighbours(kids[1], index).map((d) => d.doc_no)).toEqual(["A.1.2", "A.1.2.3", "A.1.2.1", "A.1.2.4", "A.1.2.5"]);
+  });
+
   test("neighbours stop at the per-document context budget, counting each at its clipped length", () => {
     const big = [1, 2, 3, 4, 5, 6].map((n) => doc(10 + n, `C.${n}`, "x".repeat(5_000)));
     expect(neighbours(big[0], sweepIndex(big))).toHaveLength(4);

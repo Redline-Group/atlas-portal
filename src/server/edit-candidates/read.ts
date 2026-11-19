@@ -49,8 +49,8 @@ const toFinding = (r: Row) => ({
 export async function readEditCandidates(db: SqlTag = sql) {
   const meta = (await db`
     SELECT (SELECT count(*)::int FROM edit_candidate_docs WHERE digest <> '') AS docs,
-           (SELECT to_char(max(swept_at), 'YYYY-MM-DD') FROM edit_candidate_docs) AS swept,
-           (SELECT atlas_sha FROM sync_state WHERE id = 1) AS sha`) as { docs: number; swept: string | null; sha: string | null }[];
+           edit_candidates_covered_on::text AS swept, edit_candidates_covered_sha AS sha
+    FROM sync_state WHERE id = 1`) as { docs: number; swept: string | null; sha: string | null }[];
   if (!meta[0]?.docs) return null;
   const rows = (await db`
     SELECT doc_id, doc_no, file, category, severity, pass, quote, issue, fix, detector, first_seen::text AS first_seen

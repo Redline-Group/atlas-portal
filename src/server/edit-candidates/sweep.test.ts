@@ -63,6 +63,24 @@ describe("sweepPass", () => {
     }
   });
 
+  test("an outage costs nothing and counts against no document", async () => {
+    const store = fakeStore(docs());
+    await sweepPass(fakeDeps(store, () => Object.assign(new Error("503"), { billed: false })), liveView(docs(), "sha1"), new Set());
+    expect(store.spend.size).toBe(0);
+    expect(store.states.size).toBe(0);
+    expect(store.covered).toBeNull();
+  });
+
+  test("records the commit as covered only when nothing is left to read", async () => {
+    const done = fakeStore(docs());
+    await sweepPass(fakeDeps(done, () => ok([])), liveView(docs(), "sha1"), new Set());
+    expect(done.covered).toEqual({ sha: "sha1", day: "2026-11-19" });
+    const broke = fakeStore(docs());
+    broke.spend.set(MONTH, 4.6);
+    await sweepPass(fakeDeps(broke, () => ok([])), liveView(docs(), "sha1"), new Set());
+    expect(broke.covered).toBeNull();
+  });
+
   test("a document that failed three times at its current version is parked", async () => {
     const store = fakeStore(docs());
     const [a, b] = docs();

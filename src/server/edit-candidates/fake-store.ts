@@ -11,6 +11,7 @@ export interface FakeStore extends EditStore {
   spend: Map<string, number>;
   seedHash: string | null;
   replaces: ReplaceBy[];
+  covered: { sha: string; day: string } | null;
 }
 
 export function node(id: string, docNo: string, content: string, title = `Title ${docNo}`): AtlasNode {
@@ -19,7 +20,7 @@ export function node(id: string, docNo: string, content: string, title = `Title 
 
 export const digestOf = (n: AtlasNode): string => docDigest(n as AtlasNode & { contentHash: string });
 
-type Data = Pick<FakeStore, "docs" | "states" | "rows" | "spend" | "seedHash" | "replaces">;
+type Data = Pick<FakeStore, "docs" | "states" | "rows" | "spend" | "seedHash" | "replaces" | "covered">;
 
 function fakeWrites(s: Data): Pick<EditStore, "replace" | "bumpFailures"> {
   return {
@@ -42,7 +43,7 @@ function fakeWrites(s: Data): Pick<EditStore, "replace" | "bumpFailures"> {
 }
 
 export function fakeStore(docs: AtlasNode[]): FakeStore {
-  const s: Data = { docs, states: new Map(), rows: new Map(), spend: new Map(), seedHash: null, replaces: [] };
+  const s: Data = { docs, states: new Map(), rows: new Map(), spend: new Map(), seedHash: null, replaces: [], covered: null };
   return Object.assign(s, fakeWrites(s), {
     loadSnapshot: async () => ({ atlasSha: "sha", docs: s.docs }),
     loadSeedHash: async () => s.seedHash,
@@ -54,6 +55,9 @@ export function fakeStore(docs: AtlasNode[]): FakeStore {
       for (const id of ids) s.states.delete(id);
     },
     deleteKeys: async (keys: string[]) => keys.filter((k) => s.rows.delete(k)).length,
+    async markCovered(sha: string, day: string, ifUnset = false) {
+      if (!ifUnset || !s.covered) s.covered = { sha, day };
+    },
     loadSpend: async (month: string) => s.spend.get(month) ?? 0,
     async addSpend(month: string, usd: number) {
       s.spend.set(month, (s.spend.get(month) ?? 0) + usd);

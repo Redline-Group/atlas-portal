@@ -29,6 +29,7 @@ describe("seedApplies", () => {
 describe("seedPass", () => {
   const artifact = {
     generatedAt: "2026-11-18",
+    atlasSha: "filesha",
     findings: [row(A, "text of a", { firstSeen: "2026-10-29" }), row(B, "text of b"), row(null, "spans documents")],
   };
   const digests = { [A]: digestOf(a), [B]: "digest-before-the-edit" };
@@ -40,6 +41,14 @@ describe("seedPass", () => {
     expect([...store.rows.values()].map((r) => [r.uuid, r.firstSeen])).toEqual([[A, "2026-10-29"], [B, "2026-11-18"], [null, "2026-11-18"]]);
     expect(store.states.get(B)).toMatchObject({ digest: "digest-before-the-edit", source: "seed" });
     expect(store.replaces[0]).toMatchObject({ source: "seed", corpus: true });
+    expect(store.covered).toEqual({ sha: "filesha", day: "2026-11-18" });
+  });
+
+  test("does not move coverage a sweep run has already recorded", async () => {
+    const store = fakeStore([a, b]);
+    store.covered = { sha: "later", day: "2026-11-19" };
+    await seedPass(fakeDeps(store, () => new Error("unused"), { readSeed: seedFiles(artifact, digests) }), liveView([a, b]));
+    expect(store.covered).toEqual({ sha: "later", day: "2026-11-19" });
   });
 
   test("leaves alone a document the worker has read at a newer version", async () => {

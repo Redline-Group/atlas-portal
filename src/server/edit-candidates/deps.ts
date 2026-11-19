@@ -22,6 +22,7 @@ export interface EditDeps {
   store: EditStore;
   /** The committed seed files' bytes, or null when either is absent. */
   readSeed: () => SeedFiles | null;
+  /** A rejection carrying `billed: false` is one the provider cannot have charged for: it never produced a reply. */
   complete: (system: string, user: string) => Promise<ModelReply>;
   model: string;
   /** Most documents read in one run. */
@@ -41,16 +42,18 @@ export interface EditDeps {
 type HashedNode = AtlasNode & { contentHash: string };
 
 export interface Live {
+  atlasSha: string | null;
   docs: HashedNode[];
   nodeMap: Record<string, HashedNode>;
   digest: Map<string, string>;
 }
 
 // A document with no parser hash cannot be digested, so it is left out.
-export function liveView(all: AtlasNode[]): Live {
+export function liveView(all: AtlasNode[], atlasSha: string | null = null): Live {
   const docs = all.filter((d): d is HashedNode => Boolean(d.contentHash));
   if (docs.length < all.length) console.warn(`sync:edit-candidates: ${all.length - docs.length} documents have no content hash; skipped`);
   return {
+    atlasSha,
     docs,
     nodeMap: Object.fromEntries(docs.map((d) => [d.id, d])),
     digest: new Map(docs.map((d) => [d.id, docDigest(d)])),

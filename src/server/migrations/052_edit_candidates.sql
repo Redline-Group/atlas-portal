@@ -48,3 +48,9 @@ CREATE TABLE IF NOT EXISTS edit_candidate_spend (
 
 -- sha256 of the committed seed files last loaded, so unchanged files are skipped.
 ALTER TABLE sync_state ADD COLUMN IF NOT EXISTS edit_candidates_seed_hash TEXT;
+
+-- The atlas commit the sweep last had nothing left to read at, and the day it
+-- got there. A run that stops early (budget, deadline, a failed request) leaves
+-- them alone, so the report never claims a commit it has not finished.
+ALTER TABLE sync_state ADD COLUMN IF NOT EXISTS edit_candidates_covered_sha TEXT;
+ALTER TABLE sync_state ADD COLUMN IF NOT EXISTS edit_candidates_covered_on DATE;

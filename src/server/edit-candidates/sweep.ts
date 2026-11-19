@@ -6,7 +6,7 @@ import { STATE_VERSION, buildBacklinks, planSweep, validateFinding } from "../..
 import type { EditDeps, Live } from "./deps.ts";
 import { SWEEP_SYSTEM, chunkMessage, packChunks, sweepIndex, type SweepChunk, type SweepIndex } from "./prompt.ts";
 import { settledRemovals, sweepQueue, type SweepPlan } from "./queue.ts";
-import { candidateKey, type CandidateWrite, type DocState } from "./store.ts";
+import { candidateKey, type CandidateWrite, type DocState, type SweptDoc } from "./store.ts";
 
 export const MAX_FAILURES = 3;
 const LANGUAGE = new Set(["typo", "grammar", "wrong-word", "markdown", "naming", "placeholder"]);
@@ -68,6 +68,21 @@ async function mayStart(deps: EditDeps, month: string): Promise<boolean> {
   return false;
 }
 
+type Reply = Awaited<ReturnType<EditDeps["complete"]>> | (Error & { billed?: boolean });
+
+/**
+ * Books a request that produced nothing usable. An outage (a rejection the
+ * provider cannot have charged for) costs nothing and counts against no
+ * document, so it can neither spend the month nor park what it interrupted.
+ */
+async function bookFailure(run: Run, month: string, docs: SweptDoc[], reply: Reply): Promise<void> {
+  const outage = reply instanceof Error && reply.billed === false;
+  console.warn(`  ${docs.length} documents left queued: ${reply instanceof Error ? reply.message : "reply cut off or not JSON"}`);
+  if (outage) return;
+  await run.deps.store.addSpend(month, (reply instanceof Error ? null : reply.cost) ?? run.deps.reserveUsd);
+  await run.deps.store.bumpFailures(docs);
+}
+
 /** One request. Returns false when the run must stop: no request may start, or this one failed. */
 async function runChunk(run: Run, chunk: SweepChunk): Promise<boolean> {
   const { deps, live } = run;
@@ -75,15 +90,13 @@ async function runChunk(run: Run, chunk: SweepChunk): Promise<boolean> {
   if (!(await mayStart(deps, month))) return false;
   const docs = chunk.docs.map((d) => ({ docId: d.id, digest: live.digest.get(d.id)! }));
   const today = new Date(deps.now()).toISOString().slice(0, 10);
-  const reply = await deps.complete(SWEEP_SYSTEM, chunkMessage(chunk, run.index, today, run.why)).catch((e: Error) => e);
-  // A failed request may still have been billed, so it is charged the reserve.
-  await deps.store.addSpend(month, reply instanceof Error ? deps.reserveUsd : (reply.cost ?? deps.reserveUsd));
+  const reply: Reply = await deps.complete(SWEEP_SYSTEM, chunkMessage(chunk, run.index, today, run.why)).catch((e: Error) => e);
   const parsed = reply instanceof Error ? null : parseReply(reply.content, reply.finishReason);
-  if (!parsed) {
-    console.warn(`  ${docs.length} documents left queued: ${reply instanceof Error ? reply.message : "reply cut off or not JSON"}`);
-    await deps.store.bumpFailures(docs);
+  if (reply instanceof Error || !parsed) {
+    await bookFailure(run, month, docs, reply);
     return false;
   }
+  await deps.store.addSpend(month, reply.cost ?? deps.reserveUsd);
   const rows = validRows(parsed, chunk, live, run.vetoed);
   await deps.store.replace(docs, rows, { source: "worker", model: deps.model });
   for (const d of docs) run.read.add(d.docId);
@@ -117,9 +130,11 @@ export async function sweepPass(deps: EditDeps, live: Live, vetoed: ReadonlySet<
   for (const chunk of packChunks(queue, index)) if (!(await runChunk(run, chunk))) break;
   await deps.store.dropCandidatesOf(plan.removed);
   await deps.store.forgetDocs(settledRemovals(plan, run.read));
-  const stuck = [...plan.new, ...plan.changed].filter(parked).length;
+  const moved = [...plan.new, ...plan.changed];
+  if (live.atlasSha && moved.every((id) => run.read.has(id))) await deps.store.markCovered(live.atlasSha, new Date(deps.now()).toISOString().slice(0, 10));
+  const stuck = moved.filter(parked).length;
   if (stuck) console.warn(`[drift] edit-candidates: ${stuck} documents failed ${MAX_FAILURES} times and are parked until they change`);
-  console.log(`sync:edit-candidates: sweep: ${plan.new.length + plan.changed.length} moved, ${run.read.size} read, ${run.found} candidates`);
+  console.log(`sync:edit-candidates: sweep: ${moved.length} moved, ${run.read.size} read, ${run.found} candidates`);
   return { read: run.read.size, found: run.found };
 }
 

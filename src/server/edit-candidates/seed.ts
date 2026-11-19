@@ -7,6 +7,7 @@ import { candidateKey, type CandidateWrite, type DocState, type SweptDoc } from 
 
 interface SeedArtifact {
   generatedAt: string;
+  atlasSha?: string;
   findings: CandidateWrite[];
   rejected?: CandidateWrite[];
 }
@@ -56,6 +57,8 @@ export async function seedPass(deps: EditDeps, live: Live): Promise<number | nul
     .filter((f) => f.uuid === null || seeded.has(f.uuid))
     .map((f) => ({ ...f, firstSeen: f.firstSeen ?? artifact.generatedAt }));
   await deps.store.replace(docs, rows, { source: "seed", model: null, corpus: true, seedHash });
+  // The file's own coverage stands until a sweep run records a later one.
+  await deps.store.markCovered(artifact.atlasSha ?? "", artifact.generatedAt, true);
   console.log(`sync:edit-candidates: seed: ${docs.length} documents, ${rows.length} candidates`);
   return docs.length;
 }

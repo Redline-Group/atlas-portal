@@ -19,6 +19,13 @@ import { sweepPass } from "./edit-candidates/sweep.ts";
 import { runMigrations } from "./migrate.ts";
 import { shutdownPosthog } from "./posthog-node.ts";
 
+// Measured numbers are in edit-candidates/CLAUDE.md. One request holds about
+// 40 KB of documents and context and costs about $0.06 on Gemini 4 Carbon; the
+// reserve is what a request is assumed to cost before the provider reports it,
+// so the month stops one reserve short of the budget.
+const env = process.env;
+const MODEL = env.EDIT_CANDIDATES_MODEL ?? "google/gemini-4-carbon";
+
 // One run at a time across callers. Any fixed key no other lock uses; see sync-briefings.ts.
 const LOCK_KEY = 4711_2063;
 
@@ -39,8 +46,8 @@ async function withLock(fn: () => Promise<void>): Promise<void> {
   }
 }
 
-async function complete(system: string, user: string) {
-  const res = await getClient().chat.completions.create(
+const request = (system: string, user: string) =>
+  getClient().chat.completions.create(
     {
       model: MODEL,
       temperature: 0,
@@ -53,9 +60,18 @@ async function complete(system: string, user: string) {
     },
     { timeout: 240_000, maxRetries: 0 },
   );
-  // OpenRouter can answer 200 with an error body and no choices.
+
+/** Whether a failed request can have been charged: only one that timed out while the model was working. */
+const maybeBilled = (e: { status?: unknown; name?: string }): boolean =>
+  e.name === "APIConnectionTimeoutError" || (typeof e.status !== "number" && e.name !== "APIConnectionError");
+
+async function complete(system: string, user: string) {
+  const res = await request(system, user).catch((e: Error) => {
+    throw Object.assign(e, { billed: maybeBilled(e) });
+  });
+  // OpenRouter can answer 200 with an error body and no choices, which it does not charge for.
   const choice = res.choices?.[0];
-  if (!choice) throw new Error(`no choices in response: ${JSON.stringify(res).slice(0, 200)}`);
+  if (!choice) throw Object.assign(new Error(`no choices in response: ${JSON.stringify(res).slice(0, 200)}`), { billed: false });
   const cost = (res.usage as { cost?: unknown } | undefined)?.cost;
   return { content: choice.message?.content ?? "", finishReason: choice.finish_reason ?? null, cost: typeof cost === "number" ? cost : null };
 }
@@ -65,13 +81,6 @@ function readSeed() {
   const state = resolve(config.publicDir, "../.github/mistakes-sweep-state.json");
   return existsSync(artifact) && existsSync(state) ? { artifact: readFileSync(artifact), state: readFileSync(state) } : null;
 }
-
-// Measured numbers are in edit-candidates/CLAUDE.md. One request holds about
-// 40 KB of documents and context and costs about $0.06 on Gemini 4 Carbon; the
-// reserve is what a request is assumed to cost before the provider reports it,
-// so the month stops one reserve short of the budget.
-const env = process.env;
-const MODEL = env.EDIT_CANDIDATES_MODEL ?? "google/gemini-4-carbon";
 
 // The worker kills its tails eleven minutes after it starts, and a request may
 // take four, so no request starts after six.
@@ -98,7 +107,7 @@ export async function runEditCandidates(deps: EditDeps): Promise<void> {
   // An unsynced database is a precondition failure, not "nothing to do".
   if (docs.length === 0) return console.warn("sync:edit-candidates: atlas_doc_meta is empty (structural sync has not run); skipping");
   console.log(`sync:edit-candidates: ${docs.length} docs, atlas ${(atlasSha ?? "unknown").slice(0, 12)}`);
-  const live = liveView(docs);
+  const live = liveView(docs, atlasSha);
   await seedPass(deps, live);
   const vetoed = await vetoPass(deps);
   await sweepPass(deps, live, vetoed);
