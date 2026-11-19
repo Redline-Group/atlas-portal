@@ -1,6 +1,6 @@
 # Edit Candidates: the worker sweep
 
-The Edit Candidates report (`/reports/edit-candidates`) lists things in the Atlas that may need an edit. Its text-sweep rows are written by a model the atlas worker runs. This directory is that sweep: `pnpm sync:edit-candidates` (`src/server/sync-edit-candidates.ts`), the tail lane `edit-candidates` in `scripts/lib/worker-steps/tail.mjs`, and `GET /api/edit-candidates`. The page's other sources (Stale Dates, the PAU audit) are computed in the browser and are described in `apps/web/src/components/reports/CLAUDE.md`.
+The Edit Candidates report (`/reports/edit-candidates`) lists things in the Atlas that may need an edit. Its text-sweep rows are written by a model the atlas worker runs. This directory is that sweep: `pnpm sync:edit-candidates` (`src/server/sync-edit-candidates.ts`), the tail lane `edit-candidates` in `scripts/lib/worker-steps/tail.mjs`, and `GET /api/edit-candidates`. The page's other sources (Stale Dates, the PAU audit) are computed in the browser; each is one entry in `apps/web/src/lib/editCandidates/registry.ts`, and a new source is one file there plus one line. The page reads this API first and falls back to the committed file when it answers 503.
 
 Internal names still say "mistakes" (`public/potential-mistakes.json`, `scripts/lib/mistakes-sweep.mjs`, the `mistakes:*` commands, the `Mistake` types). "Edit Candidates" is the public name.
 

@@ -36,7 +36,7 @@ export const ROUTES = {
   REPORTS_RISK_RUBRIC: "/reports/risk-rules/rubric",
   REPORTS_ONCHAIN_ADDRESSES: "/reports/onchain-addresses",
   REPORTS_MOD_FREQUENCY: "/reports/mod-frequency",
-  REPORTS_POTENTIAL_MISTAKES: "/reports/potential-mistakes",
+  REPORTS_EDIT_CANDIDATES: "/reports/edit-candidates",
 } as const;
 
 // The preview INDEX is deliberately absent from ROUTES: main.tsx resolves

@@ -5,12 +5,15 @@ import { ROUTES } from "@/lib/routes";
 // Contents tab (superseded by Shape's "Doc mass by scope"); /library and
 // /reports/library survive the Library → CrossView rename; /constellations
 // survives the removed Constellations page (Radar is the remaining entity
-// relationship surface).
+// relationship surface); /reports/potential-mistakes survives that report's
+// rename to Edit Candidates. A redirect carries the query string across, so a
+// saved filter link still lands filtered.
 export const LEGACY_REDIRECTS: [from: string, to: string][] = [
   ["/reports/crossview/contents", ROUTES.REPORTS_CROSSVIEW],
   ["/library", ROUTES.REPORTS_CROSSVIEW],
   ["/reports/library", ROUTES.REPORTS_CROSSVIEW],
   ["/constellations", ROUTES.RADAR],
+  ["/reports/potential-mistakes", ROUTES.REPORTS_EDIT_CANDIDATES],
 ];
 
 // Legacy URLs whose trailing :tab* segment is preserved onto the replacement

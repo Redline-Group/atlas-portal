@@ -4,13 +4,13 @@
 // here is the order within each index group.
 import { activeData } from "./active-data";
 import { crossview } from "./crossview";
+import { editCandidates } from "./edit-candidates";
 import { govOpsResponsibilities } from "./gov-ops-responsibilities";
 import { modFrequency } from "./mod-frequency";
 import { oeaAssessment } from "./oea-assessment";
 import { ofResponsibilities } from "./of-responsibilities";
 import { onchainAddresses } from "./onchain-addresses";
 import { pauAudit } from "./pau-audit";
-import { potentialMistakes } from "./potential-mistakes";
 import { processes } from "./processes";
 import { rewards } from "./rewards";
 import { riskRules } from "./risk-rules";
@@ -27,7 +27,7 @@ export const REPORTS = [
   processes,
   activeData,
   crossview,
-  potentialMistakes,
+  editCandidates,
   staleDates,
   modFrequency,
 ] as const;

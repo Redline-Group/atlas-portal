@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import type { GoldCase } from "./eval-edit-candidates-gold.ts";
 import { auc, operatingPoint, sameQuote, scoreExplain } from "./eval-edit-candidates-score.ts";
 

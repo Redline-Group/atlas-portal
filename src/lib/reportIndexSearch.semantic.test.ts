@@ -26,7 +26,8 @@ describe("report index ternlight scoring", () => {
 
     const stale = score("outdated dates");
     expect(stale.get("stale-dates")!).toBeGreaterThanOrEqual(SEMANTIC_MIN);
-    expect(idsOf("outdated dates", hitsFromScores(stale))).toEqual(["stale-dates"]);
+    // Edit Candidates lists passed dates too, so it answers beside Stale Dates.
+    expect(idsOf("outdated dates", hitsFromScores(stale))).toEqual(["edit-candidates", "stale-dates"]);
 
     const duties = score("facilitator duties");
     expect(duties.get("of-responsibilities")!).toBeGreaterThanOrEqual(SEMANTIC_MIN);
@@ -44,7 +45,7 @@ describe("report index ternlight scoring", () => {
 
     const typos = hitsFromScores(score("typos in the atlas"));
     expect(typos.size).toBeLessThanOrEqual(SEMANTIC_MAX);
-    expect(typos).toContain("potential-mistakes");
+    expect(typos).toContain("edit-candidates");
 
     // Direct name is lexical; the score lane still ranks it first.
     const name = score("stale dates");

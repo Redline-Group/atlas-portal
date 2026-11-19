@@ -1,4 +1,4 @@
-// Phone layout for Potential Mistakes: one finding at a time, stacked
+// Phone layout for Edit Candidates: one candidate at a time, stacked
 // vertically. Swipe left for the next row, right for the previous; the
 // previous/next buttons and arrow keys do the same for anyone who isn't swiping.
 import { useCallback, useRef, useState, type PointerEvent } from "react";
@@ -79,7 +79,7 @@ export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps
       <div className="flex items-center justify-between gap-3 mb-3">
         <button
           type="button"
-          aria-label="Previous finding"
+          aria-label="Previous candidate"
           disabled={index === 0}
           className="min-h-11 min-w-11 text-tan-2 disabled:text-tan-3"
           onClick={() => go(index - 1)}
@@ -91,7 +91,7 @@ export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps
         </p>
         <button
           type="button"
-          aria-label="Next finding"
+          aria-label="Next candidate"
           disabled={index === rows.length - 1}
           className="min-h-11 min-w-11 text-tan-2 disabled:text-tan-3"
           onClick={() => go(index + 1)}

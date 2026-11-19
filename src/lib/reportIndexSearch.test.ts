@@ -53,7 +53,7 @@ describe("filterReportGroups — lexical", () => {
     expect(health).toHaveLength(1);
     expect(health[0]!.title).toBe("Atlas health");
     expect(health[0]!.cards.map((c) => c.id)).toEqual([
-      "potential-mistakes",
+      "edit-candidates",
       "stale-dates",
       "mod-frequency",
     ]);
@@ -85,10 +85,10 @@ describe("filterReportGroups — lexical", () => {
     expect([...idsOf("curated")].sort()).toEqual(["crossview", "pau-audit", "processes", "rewards"]);
   });
 
-  // Potential Mistakes is an LLM sweep, not a hand-maintained inventory: its
+  // Edit Candidates includes an LLM sweep, not a hand-maintained inventory: its
   // findings are model judgement, which is what the AI chip has to say.
   it("finds the model-written reports by the AI chip's word", () => {
-    expect(idsOf("AI")).toEqual(expect.arrayContaining(["oea-assessment", "potential-mistakes", "risk-rules", "stale-dates"]));
+    expect(idsOf("AI")).toEqual(expect.arrayContaining(["oea-assessment", "edit-candidates", "risk-rules", "stale-dates"]));
   });
 
   it("drops empty groups and matches nothing for noise", () => {

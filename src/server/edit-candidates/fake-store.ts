@@ -19,12 +19,10 @@ export function node(id: string, docNo: string, content: string, title = `Title 
 
 export const digestOf = (n: AtlasNode): string => docDigest(n as AtlasNode & { contentHash: string });
 
-export function fakeStore(docs: AtlasNode[]): FakeStore {
-  const s: FakeStore = {
-    docs, states: new Map(), rows: new Map(), spend: new Map(), seedHash: null, replaces: [],
-    loadSnapshot: async () => ({ atlasSha: "sha", docs: s.docs }),
-    loadSeedHash: async () => s.seedHash,
-    loadDocStates: async () => new Map(s.states),
+type Data = Pick<FakeStore, "docs" | "states" | "rows" | "spend" | "seedHash" | "replaces">;
+
+function fakeWrites(s: Data): Pick<EditStore, "replace" | "bumpFailures"> {
+  return {
     async replace(read, rows, by) {
       s.replaces.push(by);
       const ids = new Set(read.map((d) => d.docId));
@@ -33,15 +31,6 @@ export function fakeStore(docs: AtlasNode[]): FakeStore {
       for (const d of read) s.states.set(d.docId, { digest: d.digest, source: by.source, failures: 0, failed_digest: null });
       if (by.seedHash) s.seedHash = by.seedHash;
     },
-    async dropCandidatesOf(ids) {
-      for (const [k, r] of s.rows) if (r.uuid && ids.includes(r.uuid)) s.rows.delete(k);
-    },
-    async forgetDocs(ids) {
-      for (const id of ids) s.states.delete(id);
-    },
-    async deleteKeys(keys) {
-      return keys.filter((k) => s.rows.delete(k)).length;
-    },
     async bumpFailures(read) {
       for (const d of read) {
         const have = s.states.get(d.docId);
@@ -49,12 +38,27 @@ export function fakeStore(docs: AtlasNode[]): FakeStore {
         s.states.set(d.docId, { digest: have?.digest ?? "", source: have?.source ?? "worker", failures, failed_digest: d.digest });
       }
     },
-    loadSpend: async (month) => s.spend.get(month) ?? 0,
-    async addSpend(month, usd) {
+  };
+}
+
+export function fakeStore(docs: AtlasNode[]): FakeStore {
+  const s: Data = { docs, states: new Map(), rows: new Map(), spend: new Map(), seedHash: null, replaces: [] };
+  return Object.assign(s, fakeWrites(s), {
+    loadSnapshot: async () => ({ atlasSha: "sha", docs: s.docs }),
+    loadSeedHash: async () => s.seedHash,
+    loadDocStates: async () => new Map(s.states),
+    async dropCandidatesOf(ids: string[]) {
+      for (const [k, r] of s.rows) if (r.uuid && ids.includes(r.uuid)) s.rows.delete(k);
+    },
+    async forgetDocs(ids: string[]) {
+      for (const id of ids) s.states.delete(id);
+    },
+    deleteKeys: async (keys: string[]) => keys.filter((k) => s.rows.delete(k)).length,
+    loadSpend: async (month: string) => s.spend.get(month) ?? 0,
+    async addSpend(month: string, usd: number) {
       s.spend.set(month, (s.spend.get(month) ?? 0) + usd);
     },
-  };
-  return s;
+  });
 }
 
 export const NOW = Date.UTC(2026, 10, 19, 12);

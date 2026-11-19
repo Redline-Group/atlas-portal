@@ -83,7 +83,7 @@ const REPORT_PAGES: Record<ReportId, Omit<SimpleRoute, "path">> = {
   processes: { Component: ProcessesReport, props: searchProps },
   "active-data": { Component: ActiveDataReport, props: searchProps },
   crossview: { Component: CrossViewPage, props: () => ({ tab: "shape" }) },
-  "potential-mistakes": { Component: PotentialMistakesReport, props: searchProps },
+  "edit-candidates": { Component: PotentialMistakesReport, props: searchProps },
   "stale-dates": { Component: StaleDatesReport, props: searchProps },
   "mod-frequency": { Component: ModFrequencyReport, props: searchProps },
 };

@@ -1,4 +1,4 @@
-// Who a Potential Mistakes finding belongs to: the Atlas Scope its document
+// Who an Edit Candidates row belongs to: the Atlas Scope its document
 // sits in, the Agent Artifact (if any) it sits in, and the Executor Agent
 // accountable for that artifact.
 //
