@@ -1,9 +1,10 @@
-// Filter pill groups for Potential Mistakes. On a phone the groups start
-// folded so the finding card isn't pushed below the fold; desktop always
+// Filter pill groups for Edit Candidates. On a phone the groups start
+// folded so the candidate card isn't pushed below the fold; desktop always
 // shows them. Open/closed is local — the active pills still live in the URL.
 import { useId, useState } from "react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { KindPills, PlacePills, type MistakeFilterProps } from "./MistakesFilterGroups";
+import { RecencyPills } from "./MistakesRecencyPills";
 import { MOBILE_AT } from "./PotentialMistakesTable";
 
 export function MistakesFilters(props: MistakeFilterProps) {
@@ -13,6 +14,7 @@ export function MistakesFilters(props: MistakeFilterProps) {
     <div className="flex flex-col gap-1.5">
       <KindPills {...props} />
       <PlacePills {...props} />
+      <RecencyPills {...props} />
     </div>
   );
 

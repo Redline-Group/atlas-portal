@@ -20,6 +20,7 @@ import { handleSemanticSearch } from "./search-semantic.ts";
 import { handleModCounts } from "./history/mod-counts.ts";
 import { handleModTimeline } from "./history/mod-timeline.ts";
 import { handleVoteEvidence } from "./vote-evidence/store.ts";
+import { handleEditCandidates } from "./edit-candidates/read.ts";
 
 export type RouteHandler = (req: Request) => Response | Promise<Response>;
 
@@ -45,6 +46,7 @@ const HISTORY_ROUTES = {
 const PUBLIC_ROUTES = {
   "/api/balances": { GET: (req: Request) => handleBalances(req), POST: (req: Request) => handleBalances(req) },
   "/api/chain-state": () => handleChainState(),
+  "/api/edit-candidates": () => handleEditCandidates(),
   "/api/forum-topics": (req: Request) => handleForumTopics(req),
   "/api/pau": () => handlePau(),
   "/api/pau/history": (req: Request) => handlePauHistory(req),

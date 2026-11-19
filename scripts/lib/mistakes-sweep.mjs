@@ -1,4 +1,4 @@
-// Incremental bookkeeping for the Potential Mistakes sweep.
+// Incremental bookkeeping for the Edit Candidates sweep.
 //
 // The sweep itself is LLM judgement (see .claude/skills/mistakes-report), so
 // this module does the part that must be deterministic: decide WHICH documents

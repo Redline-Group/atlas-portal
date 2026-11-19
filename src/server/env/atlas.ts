@@ -84,6 +84,22 @@ export const worker: EnvGroup = {
       doc: "Minimum age of the stored vote evidence before sync:vote-evidence refetches the vote record and runs again. A new atlas commit or an unfinished run reruns sooner.",
       default: "3600",
     },
+    {
+      name: "EDIT_CANDIDATES_MODEL",
+      doc: "Model the worker's sync:edit-candidates tail reads new and changed documents with. An empty value turns the sweep off; the committed sweep is still loaded and its vetoes applied.",
+      default: "google/gemini-4-carbon",
+    },
+    { name: "EDIT_CANDIDATES_PER_CYCLE", doc: "Most documents sync:edit-candidates reads in one worker cycle. 0 turns the sweep off.", default: "150" },
+    {
+      name: "EDIT_CANDIDATES_MONTHLY_USD",
+      doc: "Most dollars sync:edit-candidates spends on the model in one calendar month (UTC). Documents still due when it is spent wait for the next month.",
+      default: "5",
+    },
+    {
+      name: "EDIT_CANDIDATES_RESERVE_USD",
+      doc: "What sync:edit-candidates assumes one request costs before making it, and charges when a request fails or reports no cost.",
+      default: "0.5",
+    },
     { name: "ATLAS_COMMIT", doc: "Atlas commit stamped into built artifacts. Defaults to the source checkout's HEAD." },
     { name: "ATLAS_SRC_DIR", doc: "Atlas checkout the build reads. Defaults to vendor/next-gen-atlas." },
     { name: "ATLAS_OUT_DIR", doc: "Directory the build writes artifacts to. Defaults to public." },

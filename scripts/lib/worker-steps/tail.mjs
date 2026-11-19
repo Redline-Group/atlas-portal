@@ -66,4 +66,16 @@ export const TAIL_LANES = [
         env: { ...ctx.env, ...(ctx.noFetch ? { ATLAS_WORKER_NO_FETCH: "1" } : {}) },
       }),
   },
+  {
+    // Edit Candidates (edit_candidates): the committed sweep seeded, its vetoes
+    // applied, and a model reading new and changed documents inside a monthly
+    // budget. Under --no-fetch the child seeds and vetoes but does not spend.
+    id: "edit-candidates",
+    phase: "tail",
+    skipWhenInert: "edit candidates skipped (PR environment) — the sweep calls OpenRouter",
+    run: (ctx) =>
+      ctx.runAsync("bun", ["src/server/sync-edit-candidates.ts"], {
+        env: { ...ctx.env, ...(ctx.noFetch ? { ATLAS_WORKER_NO_FETCH: "1" } : {}) },
+      }),
+  },
 ];

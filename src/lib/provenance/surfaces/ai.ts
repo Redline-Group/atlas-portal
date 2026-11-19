@@ -3,9 +3,9 @@ import type { SourceSurface } from "./types";
 export const AI_SURFACES: readonly SourceSurface[] = [
   {
     name: "Assessments and sweeps",
-    from: "A model drafts each OEA task and Risk Rules rating, description and type against a published rubric, and people review them. The Potential Mistakes report is a model sweep for defects.",
+    from: "A model drafts each OEA task and Risk Rules rating, description and type against a published rubric, and people review them. The Edit Candidates report includes a model sweep for text that may need an edit.",
     fresh: "An assessment shows which model made it, and a rating is marked stale when the Atlas changed after it.",
-    where: "The OEA Assessment, Risk Rules and Potential Mistakes reports.",
+    where: "The OEA Assessment, Risk Rules and Edit Candidates reports.",
   },
   {
     name: "Chat and its checks",

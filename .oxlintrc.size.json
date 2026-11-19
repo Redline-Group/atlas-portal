@@ -55,7 +55,7 @@
     { "files": ["scripts/aux/identity-search-vector.ts"], "rules": { "max-lines": ["error", { "max": 207, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/aux/leaf-attribution-experiment.ts"], "rules": { "max-lines": ["error", { "max": 242, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/aux/load/run.mjs"], "rules": { "max-lines": ["error", { "max": 333, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 60, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["scripts/aux/mistakes-sweep.mjs"], "rules": { "max-lines": ["error", { "max": 258, "skipBlankLines": true, "skipComments": true }] } },
+    { "files": ["scripts/aux/mistakes-sweep.mjs"], "rules": { "max-lines": ["error", { "max": 259, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/eval/eval-bakeoff.ts"], "rules": { "max-lines": ["error", { "max": 257, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 58, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/eval/eval-facts.ts"], "rules": { "max-lines": ["error", { "max": 202, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 143, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/eval/eval-retrieval-queries.ts"], "rules": { "max-lines": ["error", { "max": 208, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 159, "skipBlankLines": true, "skipComments": true }] } },

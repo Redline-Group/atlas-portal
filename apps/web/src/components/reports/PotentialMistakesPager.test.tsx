@@ -19,6 +19,11 @@ const row = (over: Partial<MistakeRow> & Pick<MistakeRow, "id" | "quote">): Mist
   status: "current",
   currentDocNo: "A.1",
   title: "Example",
+  source: "sweep",
+  sourceLabel: "Text sweep",
+  detailHref: "",
+  found: "",
+  docChanged: "",
   ...NO_OWNER,
   ...over,
 });
@@ -40,9 +45,9 @@ describe("PotentialMistakesPager", () => {
     expect(screen.getByText("A.1")).toBeInTheDocument();
     expect(screen.queryByText("Example")).not.toBeInTheDocument();
     expect(screen.getByText("Typo / spelling").parentElement).toHaveClass("flex");
-    expect(screen.getByRole("button", { name: "Previous finding" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Previous candidate" })).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Next finding" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next candidate" }));
     expect(screen.getByText("second quote")).toBeInTheDocument();
     expect(screen.queryByText("first quote")).not.toBeInTheDocument();
     expect(screen.getByText("2 of 3")).toBeInTheDocument();

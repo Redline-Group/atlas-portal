@@ -1,25 +1,37 @@
 ---
 name: mistakes-report
 description: >
-  Runbook for refreshing the Potential Mistakes report — the LLM defect sweep
-  behind public/potential-mistakes.json and /reports/potential-mistakes.
-  Triggered by phrases like "re-run the mistakes sweep", "update the potential
-  mistakes report", "refresh atlas findings", "sweep the atlas for mistakes",
-  "mistakes:plan", or any work on scripts/aux/mistakes-sweep.mjs. Covers the
-  incremental plan/merge cycle, the subagent fan-out and model split, the JSONL
-  finding contract, and the rules that stop a killed agent from silently
-  retiring documents.
+  Runbook for the hand-run, whole-corpus sweep behind the Edit Candidates
+  report (public/potential-mistakes.json, /reports/edit-candidates) and for
+  reviewing what the atlas worker's own sweep finds. Triggered by phrases like
+  "re-run the mistakes sweep", "full sweep of the edit candidates", "update
+  the potential mistakes report", "refresh atlas findings", "reject this
+  candidate", "review the edit candidates", "mistakes:plan", or any work on
+  scripts/aux/mistakes-sweep.mjs. Covers the incremental plan/merge cycle, the
+  subagent fan-out and model split, the JSONL finding contract, the veto list,
+  and the rules that stop a killed agent from silently retiring documents.
 license: MIT
 metadata:
   author: anscharo
-  version: "1.1"
+  version: "1.2"
 ---
 
 # mistakes-report
 
-`public/potential-mistakes.json` holds the suspected defects in the Atlas source text — typos, wrong words, broken cross-references, wrong figures, contradictions. It is **committed data, not a build artifact**: the sweep is LLM judgement, hand-run, and deliberately does **not** re-run on an atlas bump. That is what the report's provenance banner promises readers, so keep it true.
+The report is publicly called **Edit Candidates**; a row is a candidate for an edit, not a confirmed mistake. The files, commands and types keep the internal name `mistakes`.
 
-This skill is the runbook for refreshing it. The sweep is **incremental**: a run re-reads the documents whose title, type, or body changed since the last one — plus, via the atlas link graph, the unchanged documents that cross-reference them.
+`public/potential-mistakes.json` holds the reviewed sweep of the Atlas source text: typos, wrong words, broken cross-references, wrong figures, contradictions, out-of-date text. It is **committed data, not a build artifact**.
+
+Two things write candidates:
+
+- **The atlas worker** reads every new or changed document (and the documents that link to it) on its own, inside a monthly budget, and stores what it finds in Postgres (`pnpm sync:edit-candidates`, `src/server/edit-candidates/CLAUDE.md`). The live report reads the database through `GET /api/edit-candidates`. Nothing in this skill is needed to keep up with ordinary atlas edits.
+- **This hand-run cycle** re-reads as much of the corpus as you queue, with subagents. Use it for what the worker's budget does not cover: a whole-corpus re-sweep after the atlas restructures or the prompts change. The worker seeds from the file and the state this cycle commits, and a hand-run row for a document's live version replaces the worker's rows for it.
+
+The cycle is **incremental**: a run re-reads the documents whose title, type, or body changed since the last hand run, plus, via the atlas link graph, the unchanged documents that cross-reference them. `pnpm mistakes:status` compares against the committed state file only, so it also counts documents the worker has already read.
+
+## Reviewing what the worker found
+
+The worker's rows go live without review. To rule one out, add it to `rejected` in `public/potential-mistakes.json` (the report's CSV export has the uuid, category and quote), with `rejectedReason`, `rejectedOn`, `rejectedIn` and `rejectedBy`, and commit. The worker deletes the stored row on its next run after the deploy and never writes it again while the quoted text stands. The rules under "Rules that keep the sweep honest" apply to these vetoes unchanged.
 
 ## Entry points
 
@@ -93,6 +105,7 @@ One JSON object per line in `findings/NNN.jsonl`:
 - **`severity`** — `high` / `medium` / `low`. This is **confidence that it is a real defect**, not how damaging it would be.
 - **`pass`** — `language`, `factual`, or `deterministic`.
 - **`category`** — one of: `numeric`, `entity`, `governance`, `contradiction`, `structural`, `xref`, `stale`, `placeholder`, `copy-paste`, `wrong-word`, `typo`, `grammar`, `markdown`, `naming`, `duplication`. **`merge` rejects anything else**: an unknown category renders a filter pill the report cannot decode back out of the URL, so the pill silently does nothing. Adding one means editing `CATEGORIES` (`scripts/lib/mistakes-sweep.mjs`), `CATEGORY_LABELS` (`src/lib/potentialMistakesIndex.ts` — a test pins the two together) and `scripts/aux/render-potential-mistakes.mjs`.
+- **`firstSeen`** is the day the finding was first found (`YYYY-MM-DD`). `merge` stamps it: a finding already in the file under the same (uuid, category, quote) keeps its date, a new one gets today. It backs the report's "First found" filter.
 - **`id`, `docNo`, `file`** are stamped by `merge` from the live atlas — agents do not supply them. `file` comes from a layout-blind scan of the source tree, not the loader, for the same reason `check:atlas` does its own recount.
 
 ## Rules that keep the sweep honest
@@ -139,4 +152,4 @@ Two things to know:
 
 Commit `.github/mistakes-sweep-state.json` and `public/potential-mistakes.json` **together** — a state file ahead of the artifact retires documents whose findings never landed.
 
-A refresh needs **no `patch-notes.md` bullet**. Re-running the sweep is routine data maintenance, not a shipped capability: the report already exists and already says when it was last swept. Add a note only if the refresh changes what the report *is* — a new category, a new filter, a change to how findings are presented.
+A refresh needs **no `patch-notes.md` bullet**. Re-running the sweep is routine data maintenance, not a shipped capability. Add a note only if the refresh changes what the report *is*: a new category, a new filter, a change to how candidates are presented.

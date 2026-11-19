@@ -1,17 +1,17 @@
-// Shared finding fields for the Potential Mistakes table and the mobile pager.
+// Shared candidate fields for the Edit Candidates table and the mobile pager.
 // The table lays these out as columns; the pager stacks them in a definition
-// list so one finding fits a phone without sideways scrolling.
+// list so one candidate fits a phone without sideways scrolling.
 import { AtlasLink } from "../AtlasLink";
 import { atlasHref } from "@/lib/routes";
 import {
-  CATEGORY_LABELS,
-  PASS_LABELS,
+  DISPLAY_CATEGORY_LABELS,
   STATUS_LABELS,
   type MistakeRow,
 } from "@/lib/potentialMistakesIndex";
 import type { ReportQuery } from "@/lib/reportFilter";
 import { Highlight } from "./Highlight";
 import { MistakeOwnerNote } from "./MistakeOwnerNote";
+import { MistakeSourceNote } from "./MistakeSourceNote";
 
 export const SEV_TONE: Record<MistakeRow["severity"], string> = {
   high: "var(--error-text)",
@@ -67,13 +67,13 @@ export function MistakeCard({ r, rq }: { r: MistakeRow; rq: ReportQuery }) {
               {r.severity}
             </span>
             <span className="mono text-[10px] text-tan-3 whitespace-nowrap">
-              {CATEGORY_LABELS[r.category] ?? r.category}
+              {DISPLAY_CATEGORY_LABELS[r.category] ?? r.category}
             </span>
-            <span className="mono text-[10px] text-tan-3 whitespace-nowrap">{PASS_LABELS[r.pass]}</span>
+            <MistakeSourceNote r={r} />
           </dd>
         </div>
         <div>
-          <dt className="mono text-[10px] text-tan-3">Quoted Atlas text</dt>
+          <dt className="mono text-[10px] text-tan-3">Atlas text</dt>
           <dd className="mt-0.5 m-0">
             {r.quote ? (
               <q className="text-xs text-tan-2 italic">
@@ -85,7 +85,7 @@ export function MistakeCard({ r, rq }: { r: MistakeRow; rq: ReportQuery }) {
           </dd>
         </div>
         <div>
-          <dt className="mono text-[10px] text-tan-3">What looks wrong</dt>
+          <dt className="mono text-[10px] text-tan-3">Why it is listed</dt>
           <dd className="mt-0.5 m-0">
             <p className="text-xs text-tan-2 m-0">
               <Highlight text={r.issue} rq={rq} />

@@ -1,13 +1,14 @@
-// Table body for the Potential Mistakes report — split out of
+// Table body for the Edit Candidates report — split out of
 // PotentialMistakesReport.tsx so the page file stays data + filters + shell.
 import { AtlasLink } from "../AtlasLink";
 import { atlasHref } from "@/lib/routes";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
-import { CATEGORY_LABELS, PASS_LABELS, mistakeSearchFields, type MistakeRow } from "@/lib/potentialMistakesIndex";
+import { DISPLAY_CATEGORY_LABELS, mistakeSearchFields, type MistakeRow } from "@/lib/potentialMistakesIndex";
 import { hiddenMatches, type ReportQuery } from "@/lib/reportFilter";
 import { Highlight, MatchAside } from "./Highlight";
 import { Fix, SEV_TONE, StatusNote } from "./MistakeCard";
 import { MistakeOwnerNote } from "./MistakeOwnerNote";
+import { MistakeSourceNote } from "./MistakeSourceNote";
 import { PotentialMistakesPager } from "./PotentialMistakesPager";
 
 // Quote / issue / fix wrap instead of widening the table. table-layout:fixed
@@ -18,7 +19,7 @@ import { PotentialMistakesPager } from "./PotentialMistakesPager";
 // below that it stays under the explanation.
 export const SPLIT_FIX_AT = "(min-width: 110rem)";
 // Tailwind `md` is 48rem. Below that a four-column table is unreadable, so the
-// pager shows one stacked finding at a time instead.
+// pager shows one stacked candidate at a time instead.
 export const MOBILE_AT = "(max-width: 47.99rem)";
 const PROSE = "min-w-0 max-w-[65ch] break-words";
 // ReportShell's px-6 gutter is 1.5rem a side. The table must not grow the page
@@ -31,8 +32,8 @@ function headers(split: boolean): [label: string, width: string][] {
   return [
     ["Document", "w-[10rem]"],
     ["Category", "w-[7rem]"],
-    ["Quoted Atlas text", "min-w-0"],
-    ["What looks wrong", "min-w-0"],
+    ["Atlas text", "min-w-0"],
+    ["Why it is listed", "min-w-0"],
     ...(split ? ([["Suggested", "min-w-0"]] as [string, string][]) : []),
   ];
 }
@@ -63,11 +64,9 @@ function Row({ r, rq, split }: { r: MistakeRow; rq: ReportQuery; split: boolean 
             {r.severity}
           </span>
           <span className="mono text-[10px] text-tan-3 block">
-            {CATEGORY_LABELS[r.category] ?? r.category}
+            {DISPLAY_CATEGORY_LABELS[r.category] ?? r.category}
           </span>
-          <span className="mono text-[10px] text-tan-3 block" title="Which sweep pass reported this">
-            {PASS_LABELS[r.pass]}
-          </span>
+          <MistakeSourceNote r={r} />
         </div>
       </td>
       <td className="py-2 px-2 align-top">

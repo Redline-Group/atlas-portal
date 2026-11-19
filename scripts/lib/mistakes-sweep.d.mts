@@ -77,7 +77,7 @@ export function validateFinding(
   row: unknown,
   nodeMap: Record<string, MistakeSweepNode>,
 ): ValidationResult;
-export function dedupeIds(findings: Mistake[]): Mistake[];
+export function dedupeIds<T extends { id: string }>(findings: T[]): T[];
 export function suppressRejected(
   incoming: Mistake[],
   rejected?: Mistake[],
@@ -89,7 +89,7 @@ export function mergeFindings(
   removed?: string[],
   opts?: { dropCorpus?: boolean; corpusDetectors?: string[] },
 ): { findings: Mistake[]; kept: number; replaced: number; added: number };
-export function sortFindings(findings: Mistake[]): Mistake[];
+export function sortFindings<T extends { severity: string; docNo: string; category: string }>(findings: T[]): T[];
 export function compareDocNo(a: string, b: string): number;
 export function advanceState(
   state: SweepState | null,

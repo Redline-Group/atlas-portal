@@ -1,5 +1,5 @@
 import { Suspense, type ReactNode } from "react";
-import { Route, Redirect } from "wouter";
+import { Route, Redirect, useSearch } from "wouter";
 import { ROUTES } from "@/lib/routes";
 import { SIMPLE_ROUTES, type RouteCtx } from "../../lib/lazyRoutes";
 import { LEGACY_REDIRECTS, LEGACY_REDIRECT_PREFIXES } from "../../lib/legacyRedirects";
@@ -25,12 +25,18 @@ export function simpleRoutes(ctx: RouteCtx) {
   ));
 }
 
+/** A redirect that keeps the query string, so a filtered legacy link stays filtered. */
+function RedirectWithSearch({ to }: { to: string }) {
+  const search = useSearch();
+  return <Redirect to={search ? `${to}?${search}` : to} replace />;
+}
+
 /** Retired URLs, each redirected to the page that replaced it. */
 export function redirectRoutes() {
   return [
     ...LEGACY_REDIRECTS.map(([from, to]) => (
       <Route key={from} path={from}>
-        <Redirect to={to} replace />
+        <RedirectWithSearch to={to} />
       </Route>
     )),
     ...LEGACY_REDIRECT_PREFIXES.map((path) => (

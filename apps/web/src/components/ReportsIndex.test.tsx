@@ -39,7 +39,7 @@ describe("ReportsIndex", () => {
     // A representative card from three different groups.
     expect(screen.getByText("Operational Facilitator Responsibilities")).toBeInTheDocument();
     expect(screen.getByText("Active Data Index")).toBeInTheDocument();
-    expect(screen.getByText("Potential Mistakes")).toBeInTheDocument();
+    expect(screen.getByText("Edit Candidates")).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -54,9 +54,10 @@ describe("ReportsIndex", () => {
       [...screen.getByText(title).closest("a")!.querySelectorAll("[data-source]")].map((e) => e.getAttribute("data-source"));
 
     expect(chips("Atlas Processes")).toEqual(["curated"]);
-    for (const title of ["OEA Task Assessment", "Risk Rules Assessment", "Potential Mistakes"]) {
+    for (const title of ["OEA Task Assessment", "Risk Rules Assessment"]) {
       expect(chips(title)).toEqual(["ai"]);
     }
+    expect(chips("Edit Candidates")).toEqual(["onchain", "external", "derived", "ai"]);
     // A report can draw on several classes at once, listed in registry order.
     expect(chips("Stale Dates")).toEqual(["external", "derived", "ai"]);
     expect(chips("Active Data Index")).toEqual(["derived"]);
@@ -84,7 +85,7 @@ describe("ReportsIndex", () => {
     render(<ReportsIndex query="curated" />, { wrapper: wrap() });
 
     expect(screen.getByText("Atlas Processes")).toBeInTheDocument();
-    expect(screen.queryByText("Potential Mistakes")).toBeNull();
+    expect(screen.queryByText("Edit Candidates")).toBeNull();
     expect(screen.queryByText("Active Data Index")).toBeNull();
   });
 
@@ -92,7 +93,7 @@ describe("ReportsIndex", () => {
     render(<ReportsIndex query="atlas health" />, { wrapper: wrap() });
     expect(screen.getByRole("heading", { name: /Atlas health/i })).toBeInTheDocument();
     expect(screen.queryByText("Roles & duties")).toBeNull();
-    expect(screen.getByRole("link", { name: /Potential Mistakes/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Edit Candidates/ })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Stale Dates/ })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Operational Facilitator Responsibilities/ })).toBeNull();
   });

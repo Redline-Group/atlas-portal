@@ -1,4 +1,4 @@
-// The Agent Artifact a finding's document sits in and the Executor Agent
+// The Agent Artifact a candidate's document sits in and the Executor Agent
 // accountable for it (src/lib/mistakeOwnership.ts). Nothing for a document
 // outside every agent artifact — its doc_no already names the scope.
 import type { MistakeRow } from "@/lib/potentialMistakesIndex";

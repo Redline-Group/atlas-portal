@@ -1,6 +1,6 @@
-// The two pill rows of the Potential Mistakes filters: what a finding is
-// (severity, category, pass) and where it lives (scope, executor agent, live
-// doc status). Every active pill lives in the URL via usePotentialMistakesState.
+// Two pill rows of the Edit Candidates filters: what a candidate is
+// (confidence, category, pass) and where it lives (scope, executor agent, live
+// doc status). Every active pill lives in the URL via useMistakeFilters.
 import {
   PASSES,
   PASS_LABELS,
@@ -11,13 +11,21 @@ import {
   type MistakeStatus,
 } from "@/lib/potentialMistakesIndex";
 import { CategoryPills } from "./CategoryPills";
-import type { MistakeBuckets, MistakeFilterState } from "./usePotentialMistakesState";
+import type { MistakeFilterState } from "./useMistakeFilters";
+import type { MistakeBuckets } from "./usePotentialMistakesState";
 
 const STATUSES: readonly MistakeStatus[] = ["current", "renumbered", "fixed", "missing", "corpus"];
 
-export type MistakeFilterProps = MistakeFilterState & { all: readonly MistakeRow[]; buckets: MistakeBuckets };
+export type MistakeFilterProps = MistakeFilterState & {
+  all: readonly MistakeRow[];
+  buckets: MistakeBuckets;
+  /** The current UTC day, which the recency pills count against. */
+  today: string;
+  /** Whether document last-change dates loaded; without them the Doc changed pills are hidden. */
+  hasDocDates: boolean;
+};
 
-/** What the finding is: how sure, what kind, which pass found it. */
+/** What the candidate is: how sure, what kind, which pass found it. */
 export function KindPills({ all, buckets, severity, onSeverity, category, onCategory, pass, onPass }: MistakeFilterProps) {
   return (
     <>
@@ -25,8 +33,8 @@ export function KindPills({ all, buckets, severity, onSeverity, category, onCate
         categories={SEVERITIES}
         active={severity}
         onToggle={onSeverity}
-        label="Severity"
-        labelTitle="How confident the sweep was that this is a real defect — not how damaging it would be."
+        label="Confidence"
+        labelTitle="How confident the source is that the Atlas text needs an edit — not how damaging leaving it would be."
         counts={countBy(all, (r) => r.severity)}
         showSingle
       />
@@ -43,7 +51,7 @@ export function KindPills({ all, buckets, severity, onSeverity, category, onCate
         active={pass}
         onToggle={onPass}
         label="Found by"
-        labelTitle="Which sweep pass reported the finding: a language read, a consistency read, or a mechanical scan."
+        labelTitle="How the candidate was found: the sweep's language read, its consistency read, or a mechanical check (which includes every stale date and Atlas-versus-chain row)."
         display={PASS_LABELS}
         counts={countBy(all, (r) => r.pass)}
       />
@@ -51,7 +59,7 @@ export function KindPills({ all, buckets, severity, onSeverity, category, onCate
   );
 }
 
-/** Where the finding lives: Atlas scope, accountable executor agent, live doc status. */
+/** Where the candidate lives: Atlas scope, accountable executor agent, live doc status. */
 export function PlacePills({ all, buckets, scope, onScope, executor, onExecutor, status, onStatus }: MistakeFilterProps) {
   return (
     <>
@@ -80,7 +88,7 @@ export function PlacePills({ all, buckets, scope, onScope, executor, onExecutor,
         active={status}
         onToggle={onStatus}
         label="Doc status"
-        labelTitle="Checked live against the Atlas being served right now — findings whose document moved or vanished since the sweep, or whose quoted text is gone (likely fixed upstream; hidden unless picked here)."
+        labelTitle="Checked live against the Atlas being served right now — candidates whose document moved or vanished since it was swept, or whose quoted text is gone (likely fixed upstream; hidden unless picked here)."
         display={STATUS_LABELS}
         counts={countBy(all, (r) => r.status)}
       />

@@ -1,13 +1,16 @@
-// CSV export for the Potential Mistakes report: one row per finding, with its
-// live doc_no, scope, agent and executor agent beside the stored finding.
+// CSV export for the Edit Candidates report: one row per candidate, with its
+// source, dates, live doc_no, scope, agent and executor agent.
 import { toCSV } from "./csv";
 import { atlasUrlOrEmpty } from "./routes";
-import { CATEGORY_LABELS, PASS_LABELS, STATUS_LABELS, type MistakeRow } from "./potentialMistakesIndex";
+import { DISPLAY_CATEGORY_LABELS, PASS_LABELS, STATUS_LABELS, type MistakeRow } from "./potentialMistakesIndex";
 
 const CSV_HEADERS = [
-  "Severity",
+  "Confidence",
   "Category",
-  "Pass",
+  "Found By",
+  "Source",
+  "First Found",
+  "Doc Last Changed",
   "Doc No (at sweep)",
   "Doc No (current)",
   "Title",
@@ -23,29 +26,31 @@ const CSV_HEADERS = [
   "Atlas Link",
 ];
 
-/** One row per finding; each row carries the single doc it targets, so a UUID
+const csvRow = (r: MistakeRow): string[] => [
+  r.severity,
+  DISPLAY_CATEGORY_LABELS[r.category] ?? r.category,
+  PASS_LABELS[r.pass],
+  r.sourceLabel,
+  r.found,
+  r.docChanged,
+  r.docNo,
+  r.currentDocNo,
+  r.title,
+  STATUS_LABELS[r.status],
+  r.scopeLabel,
+  r.agent,
+  r.executorLabel,
+  r.file,
+  r.quote,
+  r.issue,
+  r.fix ?? "",
+  r.uuid ?? "",
+  atlasUrlOrEmpty(r.uuid),
+];
+
+/** One row per candidate; each row carries the single doc it targets, so a UUID
  *  and Atlas Link always point at exactly one document (empty for the handful
- *  of corpus-wide findings, which by definition have no single target). */
+ *  of corpus-wide candidates, which by definition have no single target). */
 export function mistakesToCSV(rows: readonly MistakeRow[]): string {
-  return toCSV(
-    CSV_HEADERS,
-    rows.map((r) => [
-      r.severity,
-      CATEGORY_LABELS[r.category] ?? r.category,
-      PASS_LABELS[r.pass],
-      r.docNo,
-      r.currentDocNo,
-      r.title,
-      STATUS_LABELS[r.status],
-      r.scopeLabel,
-      r.agent,
-      r.executorLabel,
-      r.file,
-      r.quote,
-      r.issue,
-      r.fix ?? "",
-      r.uuid ?? "",
-      atlasUrlOrEmpty(r.uuid),
-    ]),
-  );
+  return toCSV(CSV_HEADERS, rows.map(csvRow));
 }
