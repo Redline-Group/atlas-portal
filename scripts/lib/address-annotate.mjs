@@ -29,6 +29,7 @@ const ROLE_VOCAB = {
   // --- Wallet type ---
   multisig: [/\bmulti-?sig\b/i],
   subproxy: [/\bsub-?proxy\b/i],
+  starguard: [/\bstar-?guard\b/i],
   "hot-wallet": [/\bhot[- ]wallet\b/i],
 
   // --- Contract type ---

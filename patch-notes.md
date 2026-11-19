@@ -35,7 +35,7 @@
 
 ## 2026-11-19
 
-- Added each Prime Agent's StarGuard contract address to its Agent Creation parameters.
+- Added each Prime Agent's StarGuard contract address to its Agent Creation parameters, and linked each Prime Agent to its SubProxy and StarGuard addresses.
 - Added the Governance Poll process, the Morpho Vault Change Note Template update process and Grove's GROVE purchase process to the Processes report.
 
 ## 2026-11-18

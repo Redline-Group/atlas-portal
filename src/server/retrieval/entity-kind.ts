@@ -26,6 +26,7 @@ const AGENT_SUBTYPE_LABEL: Record<string, string> = {
   prime: "Prime",
   operational_executor: "Operational Executor",
   core_executor: "Core Executor",
+  halo: "Halo",
 };
 
 const ACTOR_SUBTYPE_LABEL: Record<string, string> = {

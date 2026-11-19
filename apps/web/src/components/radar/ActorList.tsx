@@ -20,6 +20,7 @@ const SUBTYPE_BADGE: Record<string, string> = {
   prime: "Prime",
   operational_executor: "Exec",
   core_executor: "Core Exec",
+  halo: "Halo",
 };
 
 function Badge({ st }: { st: string | null }) {

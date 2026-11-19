@@ -35,12 +35,12 @@ interface Describe {
 // evidence about this agent). Derived from entity → defining_doc so it tracks
 // the served atlas; empty when agents aren't loaded yet.
 export function agentArtifactRoster(ix: Indexes): string | null {
-  type Row = { name: string; doc_no: string; kind: "prime" | "executor" };
+  type Row = { name: string; doc_no: string; kind: "prime" | "executor" | "halo" };
   const rows: Row[] = [];
   for (const e of ix.entities) {
     if (e.entity_type !== "agent" || !e.defining_doc_id) continue;
     const doc = ix.docMap.get(e.defining_doc_id);
-    if (doc?.doc_no) rows.push({ name: e.name, doc_no: doc.doc_no, kind: e.subtype === "prime" ? "prime" : "executor" });
+    if (doc?.doc_no) rows.push({ name: e.name, doc_no: doc.doc_no, kind: e.subtype === "prime" || e.subtype === "halo" ? e.subtype : "executor" });
   }
   if (rows.length === 0) return null;
   rows.sort((a, b) => a.doc_no.localeCompare(b.doc_no, undefined, { numeric: true }));
@@ -52,6 +52,8 @@ export function agentArtifactRoster(ix: Indexes): string | null {
   ];
   if (primes.length) parts.push(`Prime Agents: ${fmt(primes)}.`);
   if (execs.length) parts.push(`Executor Agents: ${fmt(execs)}.`);
+  const halos = rows.filter((r) => r.kind === "halo");
+  if (halos.length) parts.push(`Sky Core Halos (Halo Agents with no Agent Artifact, specified outside A.6): ${fmt(halos)}.`);
   return parts.join(" ");
 }
 

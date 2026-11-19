@@ -130,10 +130,8 @@ export function buildSidebarActors(
       .map((e) => ({ id: e.id, slug: e.slug, name: e.name, et: e.et, st: e.st, docId: e.did }));
   return [
     { label: "Prime Agents", actors: by((e) => e.et === "agent" && e.st === "prime") },
-    {
-      label: "Executor Agents",
-      actors: by((e) => e.et === "agent" && e.st !== "prime" && e.st !== null),
-    },
+    { label: "Executor Agents", actors: by((e) => e.et === "agent" && e.st !== "prime" && e.st !== "halo" && e.st !== null) },
+    { label: "Halo Agents", actors: by((e) => e.et === "agent" && e.st === "halo") },
     { label: "Facilitators", actors: by((e) => e.et === "facilitator_org") },
     { label: "GovOps", actors: by((e) => e.et === "govops_org") },
   ].filter((g) => g.actors.length > 0);
@@ -183,7 +181,7 @@ export function buildActorProfile(
 
   let chain: ActorChain;
   const { et, st } = entity;
-  if (et === "agent" && st === "prime") {
+  if (et === "agent" && (st === "prime" || st === "halo")) {
     const execs = resolve(execsTo(entity.id).map((e) => e.f));
     chain = {
       primes: [cn(entity)],

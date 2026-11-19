@@ -20,7 +20,8 @@ export function ActorChain({ chain, currentSlug }: Props) {
   const others = (nodes: ChainNode[]) => nodes.filter((n) => n.slug !== currentSlug);
 
   const groups: ChainGroup[] = [
-    { role: "Prime Agent", nodes: others(primes) },
+    { role: "Prime Agent", nodes: others(primes).filter((n) => n.st !== "halo") },
+    { role: "Halo Agent", nodes: others(primes).filter((n) => n.st === "halo") },
     { role: "Executor Agent", nodes: others(executors) },
     { role: "Facilitator", nodes: others(facilitators) },
     { role: "GovOps", nodes: others(govops) },
