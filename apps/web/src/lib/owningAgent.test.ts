@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { findOwningAgent, buildOwningAgentMap } from "./owningAgent";
+import { findOwningAgent, buildOwningAgentMap } from "@/lib/owningAgent";
 import { makeNode, makeAtlasBundle, makeGraphEntity, makeGraphData } from "../test/fixtures";
 
 // Spark (prime, root A.6.1.1.1) with a nested token param; a Grove executor

@@ -4,9 +4,11 @@
 // the atlas being served, so the banner is load-bearing rather than decorative:
 // it states that the findings are LLM-generated and hand-run, names the atlas
 // commit they were taken at, and — when the served atlas has moved on — says
-// how many rows now point at renumbered or deleted documents.
+// how many rows now point at renumbered or deleted documents, and how many are
+// hidden because their quoted text is gone.
 import { useId, useState } from "react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { LiveCheckNotes } from "./MistakesLiveCheck";
 import { MOBILE_AT } from "./PotentialMistakesTable";
 
 const SHA_LEN = 8;
@@ -18,6 +20,7 @@ export function MistakesProvenance({
   documentsScanned,
   total,
   drifted,
+  fixed,
 }: {
   generatedAt: string;
   atlasSha: string;
@@ -25,6 +28,8 @@ export function MistakesProvenance({
   total: number;
   /** Rows whose target doc was renumbered or is gone from the served atlas. */
   drifted: number;
+  /** Rows hidden because their quote is absent from their document. */
+  fixed: number;
 }) {
   const mobile = useMediaQuery(MOBILE_AT);
   const [open, setOpen] = useState(false);
@@ -65,20 +70,10 @@ export function MistakesProvenance({
           describe the Atlas as it stood at commit{" "}
           <span className="mono text-accent">{atlasSha.slice(0, SHA_LEN)}</span> on{" "}
           <span className="mono">{generatedAt}</span> ({documentsScanned.toLocaleString()}{" "}
-          documents). Findings already fixed upstream will still be listed here until the next
-          manual run.
+          documents). A finding whose quoted text is no longer in its document is hidden as
+          likely fixed upstream; one fixed any other way still shows until the next manual run.
         </p>
-        {drifted > 0 && (
-          <p className="text-tan-3 mt-1.5">
-            Checked live against the Atlas currently being served:{" "}
-            <span className="mono" style={{ color: "var(--warn)" }}>
-              {drifted}
-            </span>{" "}
-            {drifted === 1 ? "finding targets a document that has" : "findings target documents that have"}{" "}
-            been renumbered or removed since the sweep — filter by{" "}
-            <span className="mono">Doc status</span> to see them.
-          </p>
-        )}
+        <LiveCheckNotes drifted={drifted} fixed={fixed} />
       </div>
     </div>
   );

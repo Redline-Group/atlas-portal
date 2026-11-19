@@ -33,6 +33,11 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
+## 2026-11-19
+
+- Added Scope and Executor agent filters to the Potential Mistakes report.
+- Hid Potential Mistakes findings whose quoted text has since been changed in the Atlas.
+
 ## 2026-11-18
 
 - Preview diffs now show the whole old and new document, starting with its heading line (number, title, type and UUID).
