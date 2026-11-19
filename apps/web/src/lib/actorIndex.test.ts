@@ -106,11 +106,11 @@ describe("buildActorProfile — prime agent branch", () => {
   const primes = graph.participants.filter((e) => e.et === "agent" && e.st === "prime");
   const chainMap = buildChainMap(graph.participants, graph.edges, docs, entityById);
 
-  it("chain.primes is exactly [self]; executor/facilitator/govops ids agree with buildChainMap", () => {
+  it("chain.served is exactly [self]; executor/facilitator/govops ids agree with buildChainMap", () => {
     expect(primes.length).toBeGreaterThan(0);
     for (const prime of primes) {
       const p = profile(prime.slug)!;
-      expect(p.chain.primes.map((n) => n.id)).toEqual([prime.id]);
+      expect(p.chain.served.map((n) => n.id)).toEqual([prime.id]);
       const expected = chainMap.get(prime.name);
       if (expected?.executorId) expect(p.chain.executors.map((n) => n.id)).toContain(expected.executorId);
       if (expected?.facilitatorId)
@@ -170,7 +170,7 @@ describe("buildActorProfile — prime agent branch", () => {
 });
 
 describe("buildActorProfile — executor agent branch", () => {
-  it("chain.executors is [self]; primes come from this executor's EXEC_EDGES targets", () => {
+  it("chain.executors is [self]; served agents come from this executor's EXEC_EDGES targets", () => {
     const execs = graph.participants.filter(
       (e) => e.et === "agent" && isExecutorSubtype(e.st),
     );
@@ -181,7 +181,7 @@ describe("buildActorProfile — executor agent branch", () => {
       const expectedPrimeIds = new Set(
         graph.edges.filter((e) => EXEC_EDGES.has(e.e) && e.f === exec.id).map((e) => e.t),
       );
-      expect(new Set(p.chain.primes.map((n) => n.id))).toEqual(expectedPrimeIds);
+      expect(new Set(p.chain.served.map((n) => n.id))).toEqual(expectedPrimeIds);
     }
   });
 });
@@ -345,10 +345,10 @@ describe("buildActorProfile — synthetic: zero-exec fallback, missing RP, no re
     expect(p.recommendations.map((r) => r.kind)).toEqual(["no-rewards"]);
   });
 
-  it("facilitator_org with zero FAC_EDGES falls back to itself as facilitator, with empty executors/primes/govops", () => {
+  it("facilitator_org with zero FAC_EDGES falls back to itself as facilitator, with empty executors/served/govops", () => {
     const p = buildActorProfile("facnoexec", synGraph, synDocs, { agents: [] }, [])!;
     expect(p.chain).toEqual({
-      primes: [],
+      served: [],
       executors: [],
       facilitators: [{ id: "syn-fac-no-exec", slug: "facnoexec", name: "FacNoExec", et: "facilitator_org", st: null, docId: "syn-fac-doc" }],
       govops: [],

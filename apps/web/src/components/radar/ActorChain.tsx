@@ -19,10 +19,9 @@ interface ChainGroup {
 }
 
 export function ActorChain({ chain, currentSlug }: Props) {
-  const { primes, executors, facilitators, govops } = chain;
+  const { executors, facilitators, govops } = chain;
   const others = (nodes: ChainNode[]) => nodes.filter((n) => n.slug !== currentSlug);
-  // `primes` holds every agent an executor serves, one row per family.
-  const served = others(primes);
+  const served = others(chain.served);
 
   const groups: ChainGroup[] = [
     ...AGENT_FAMILIES.filter((f) => f.served).map((f) => ({ role: f.label, nodes: served.filter((n) => agentFamily(n.st) === f) })),
