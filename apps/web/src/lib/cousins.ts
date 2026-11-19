@@ -2,7 +2,7 @@ import type { AtlasNode, GraphEntity } from "@/types";
 import type { AtlasBundle } from "@/lib/docsTypes";
 import type { GraphData } from "./graph";
 import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
-import { abbreviateAgentName } from "./owningAgent";
+import { abbreviateAgentName } from "@/lib/owningAgent";
 import { parseMeta } from "@/lib/meta";
 import { byDocNo } from "@/lib/docNo";
 import { pushTo } from "@/lib/collections";

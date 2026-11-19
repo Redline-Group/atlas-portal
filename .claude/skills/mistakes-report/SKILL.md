@@ -103,6 +103,8 @@ One JSON object per line in `findings/NNN.jsonl`:
 
 **A finding a human ruled out belongs in `rejected`, not deleted.** The artifact carries a `rejected` list beside `findings`: same row shape plus `rejectedReason`, `rejectedOn` and `rejectedIn` (the review that argued it). The report reads `findings` only, so a rejected row is invisible to users, and `suppressRejected` drops any incoming finding repeating a rejected `(uuid, category, quote)` — so re-sweeping that document cannot put it back. Deleting the row instead would mean re-applying the veto by hand after every sweep. The key includes the quote on purpose: **if upstream rewrites the passage the veto lapses**, because nobody has judged the new wording. Rejecting findings is a human call — record it in a `docs/reviews/` note and point `rejectedIn` at it.
 
+**Say who decided each veto in `rejectedBy`.** `human` when a person made or confirmed the call; `ai-review` when an AI reviewer's verdict was applied without a person checking that row (an AI review pass over the backlog, a duplicate merge). An `ai-review` veto suppresses re-adds exactly like a human one, so a wrong one hides a real defect silently — that is why it is marked: a person auditing the list confirms it (set `human`) or moves the row back to `findings`. Rows recorded before the field existed have none.
+
 **A re-evaluated document's old findings are dropped.** That is the point: a defect fixed upstream disappears instead of lingering. It also means a lazy re-read silently deletes real findings, so agents get the whole document, not a diff of it.
 
 **`merge` will not advance a chunk whose JSONL is malformed.** A truncated last line means the agent died mid-write; the chunk stays queued rather than being half-trusted.

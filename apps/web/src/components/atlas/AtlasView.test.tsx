@@ -65,7 +65,7 @@ vi.mock("../../hooks/useDocumentTitle", () => ({
 vi.mock("../../lib/graph", () => ({
   loadGraph: vi.fn(),
 }));
-vi.mock("../../lib/owningAgent", () => ({
+vi.mock("@/lib/owningAgent", () => ({
   buildOwningAgentMap: (...args: unknown[]) => buildOwningAgentMapMock(...args),
 }));
 vi.mock("../../lib/dataSource", () => ({

@@ -15,8 +15,8 @@
 // claim is checkable against the source in context.
 
 import type { AtlasNode } from "../types";
-import { toCSV } from "./csv";
-import { atlasUrlOrEmpty } from "./routes";
+import { NO_OWNER, type Ownership } from "./mistakeOwnership";
+import { quoteInDoc } from "./mistakeQuote";
 import type { SearchField } from "./reportFilter";
 
 export type MistakeSeverity = "high" | "medium" | "low";
@@ -38,7 +38,7 @@ export interface Mistake {
   fix: string | null;
 }
 
-/** A finding a human read against the source and ruled out. */
+/** A finding a review read against the source and ruled out. */
 export interface RejectedMistake extends Mistake {
   /** One line on why it is not a real defect. */
   rejectedReason: string;
@@ -46,6 +46,13 @@ export interface RejectedMistake extends Mistake {
   rejectedOn: string;
   /** Repo path of the review that carries the full reasoning. */
   rejectedIn: string;
+  /**
+   * Who decided the veto: a person, or an AI reviewer whose verdict no person
+   * has confirmed. An `ai-review` veto suppresses re-adds like any other, so it
+   * stays open to audit: a person confirms it (→ `human`) or moves the row back
+   * to `findings`. Absent on vetoes recorded before the field existed.
+   */
+  rejectedBy?: "human" | "ai-review";
 }
 
 export interface MistakesFile {
@@ -68,12 +75,14 @@ export interface MistakesFile {
 
 /** How a stored finding lines up with the atlas currently being served. */
 export type MistakeStatus =
-  | "current" // doc still exists at the recorded doc_no
-  | "renumbered" // doc still exists, but its doc_no changed since the sweep
+  | "current" // quote still in the doc, at the recorded doc_no
+  | "renumbered" // quote still in the doc, but its doc_no changed since the sweep
+  | "fixed" // doc still exists, but the quote is gone from it — likely fixed upstream
   | "missing" // UUID no longer in the atlas — doc deleted, or the finding is stale
   | "corpus"; // finding spans documents; nothing single to resolve
 
-export interface MistakeRow extends Mistake {
+/** Ownership fields (mistakeOwnership.ts) are all "" when the doc is unresolvable. */
+export interface MistakeRow extends Mistake, Ownership {
   status: MistakeStatus;
   /** Live doc_no when resolvable, else "". Differs from docNo when renumbered. */
   currentDocNo: string;
@@ -130,8 +139,9 @@ export const PASS_LABELS: Record<MistakePass, string> = {
 };
 
 export const STATUS_LABELS: Record<MistakeStatus, string> = {
-  current: "Doc unchanged",
+  current: "Quote still in doc",
   renumbered: "Renumbered since sweep",
+  fixed: "Quote no longer in doc",
   missing: "Doc no longer in atlas",
   corpus: "Spans documents",
 };
@@ -139,16 +149,22 @@ export const STATUS_LABELS: Record<MistakeStatus, string> = {
 /**
  * Joins stored findings to the atlas currently being served. This is the only
  * part of the report that is live — it is what stops a hand-run artifact from
- * quietly presenting findings about documents that have since moved or gone.
+ * quietly presenting findings about documents that have since moved or gone,
+ * or whose quoted text has since been rewritten (mistakeQuote.ts).
  */
-export function resolveMistakes(file: MistakesFile, docs: Record<string, AtlasNode>): MistakeRow[] {
+export function resolveMistakes(
+  file: MistakesFile,
+  docs: Record<string, AtlasNode>,
+  owner: (uuid: string) => Ownership = () => NO_OWNER,
+): MistakeRow[] {
   const rows = file.findings.map((f): MistakeRow => {
-    if (!f.uuid) return { ...f, status: "corpus", currentDocNo: "", title: "" };
+    if (!f.uuid) return { ...f, ...NO_OWNER, status: "corpus", currentDocNo: "", title: "" };
     const doc = docs[f.uuid];
-    if (!doc) return { ...f, status: "missing", currentDocNo: "", title: "" };
+    if (!doc) return { ...f, ...NO_OWNER, status: "missing", currentDocNo: "", title: "" };
     return {
       ...f,
-      status: doc.doc_no === f.docNo ? "current" : "renumbered",
+      ...owner(f.uuid),
+      status: !quoteInDoc(f.quote, f.docNo, doc) ? "fixed" : doc.doc_no === f.docNo ? "current" : "renumbered",
       currentDocNo: doc.doc_no,
       title: doc.title,
     };
@@ -182,51 +198,14 @@ export function mistakeSearchFields(r: MistakeRow): SearchField[] {
     { label: "category", value: CATEGORY_LABELS[r.category] ?? r.category, hidden: true },
     { label: "pass", value: PASS_LABELS[r.pass], hidden: true },
     { label: "file", value: r.file, hidden: true },
+    { label: "scope", value: r.scopeLabel, hidden: true },
+    { label: "agent", value: r.agent, hidden: true },
+    { label: "executor", value: r.executorLabel, hidden: true },
   ];
 }
 
 export const MISTAKE_SEARCHES =
-  "doc no · title · quoted atlas text · issue · suggested fix · category · pass";
-
-const CSV_HEADERS = [
-  "Severity",
-  "Category",
-  "Pass",
-  "Doc No (at sweep)",
-  "Doc No (current)",
-  "Title",
-  "Status",
-  "Source File",
-  "Quoted Text",
-  "Issue",
-  "Suggested Fix",
-  "UUID",
-  "Atlas Link",
-];
-
-/** One row per finding; each row carries the single doc it targets, so a UUID
- *  and Atlas Link always point at exactly one document (empty for the handful
- *  of corpus-wide findings, which by definition have no single target). */
-export function mistakesToCSV(rows: readonly MistakeRow[]): string {
-  return toCSV(
-    CSV_HEADERS,
-    rows.map((r) => [
-      r.severity,
-      CATEGORY_LABELS[r.category] ?? r.category,
-      PASS_LABELS[r.pass],
-      r.docNo,
-      r.currentDocNo,
-      r.title,
-      STATUS_LABELS[r.status],
-      r.file,
-      r.quote,
-      r.issue,
-      r.fix ?? "",
-      r.uuid ?? "",
-      atlasUrlOrEmpty(r.uuid),
-    ]),
-  );
-}
+  "doc no · title · quoted atlas text · issue · suggested fix · category · pass · scope · agent · executor agent";
 
 /** Per-bucket counts for the filter pills. */
 export function countBy<K extends string>(rows: readonly MistakeRow[], key: (r: MistakeRow) => K): Partial<Record<K, number>> {

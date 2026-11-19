@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   resolveMistakes,
   sortMistakes,
-  mistakesToCSV,
   mistakeSearchFields,
   presentCategories,
   countBy,
@@ -11,6 +10,7 @@ import {
   type MistakesFile,
 } from "./potentialMistakesIndex";
 import type { AtlasNode } from "../types";
+import { mistakesToCSV } from "./potentialMistakesCsv";
 
 const UUID_A = "11111111-1111-4111-8111-111111111111";
 const UUID_B = "22222222-2222-4222-8222-222222222222";
@@ -30,8 +30,9 @@ const mistake = (over: Partial<Mistake> = {}): Mistake => ({
   ...over,
 });
 
-const doc = (id: string, doc_no: string, title: string): AtlasNode =>
-  ({ id, doc_no, title, type: "Core", depth: 3, parentId: null, content: "", order: 0, addressRefs: [] }) as AtlasNode;
+// Every fixture body still carries the default quote, so findings stay live.
+const doc = (id: string, doc_no: string, title: string, content = "The Sky Ecoystem is …"): AtlasNode =>
+  ({ id, doc_no, title, type: "Core", depth: 3, parentId: null, content, order: 0, addressRefs: [] }) as AtlasNode;
 
 const file = (findings: Mistake[]): MistakesFile => ({
   generatedAt: "2026-09-15",
@@ -48,6 +49,13 @@ const DOCS: Record<string, AtlasNode> = {
 };
 
 describe("resolveMistakes", () => {
+  it("marks a finding fixed when its quote is no longer in the document", () => {
+    const docs = { [UUID_A]: doc(UUID_A, "A.1.1", "Governance", "The Sky Ecosystem is …") };
+    const [row] = resolveMistakes(file([mistake()]), docs);
+    expect(row.status).toBe("fixed");
+    expect(row.currentDocNo).toBe("A.1.1");
+  });
+
   it("marks a finding current when the doc_no still matches", () => {
     const [row] = resolveMistakes(file([mistake()]), DOCS);
     expect(row.status).toBe("current");
@@ -110,6 +118,20 @@ describe("mistakesToCSV", () => {
   it("escapes quotes and commas in the quoted atlas text", () => {
     const rows = resolveMistakes(file([mistake({ quote: 'a "quoted", comma' })]), DOCS);
     expect(mistakesToCSV(rows)).toContain('"a ""quoted"", comma"');
+  });
+
+  it("carries the scope, agent and executor agent columns", () => {
+    const owner = () => ({
+      scope: "s",
+      scopeLabel: "A.6 Agent",
+      agent: "Spark",
+      executor: "amatsu",
+      executorLabel: "Amatsu",
+      viaExecutor: true,
+    });
+    const csv = mistakesToCSV(resolveMistakes(file([mistake()]), DOCS, owner));
+    expect(csv.split("\r\n")[0]).toContain('"Status","Scope","Agent","Executor Agent"');
+    expect(csv).toContain('"A.6 Agent","Spark","Amatsu"');
   });
 
   it("emits exactly one row per finding", () => {

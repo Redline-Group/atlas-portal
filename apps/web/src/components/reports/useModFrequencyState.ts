@@ -6,7 +6,7 @@ import { useLoaded } from "../../hooks/useAtlasData";
 import { loadDocs } from "../../lib/docs";
 import { loadModCounts, type ModCount } from "@/lib/history";
 import { loadGraph } from "../../lib/graph";
-import { buildOwningAgentMap } from "../../lib/owningAgent";
+import { buildOwningAgentMap } from "@/lib/owningAgent";
 import { useDataSource, type DataSource } from "../../lib/dataSource";
 import { filterRows, type ReportMode, type ReportQuery } from "@/lib/reportFilter";
 import {

@@ -11,6 +11,7 @@ import {
 } from "@/lib/potentialMistakesIndex";
 import type { ReportQuery } from "@/lib/reportFilter";
 import { Highlight } from "./Highlight";
+import { MistakeOwnerNote } from "./MistakeOwnerNote";
 
 export const SEV_TONE: Record<MistakeRow["severity"], string> = {
   high: "var(--error-text)",
@@ -24,7 +25,7 @@ export function StatusNote({ r }: { r: MistakeRow }) {
   return (
     <span className="mono text-[10px] block mt-0.5" style={{ color: tone }}>
       {STATUS_LABELS[r.status]}
-      {r.status === "renumbered" && ` → ${r.currentDocNo}`}
+      {r.currentDocNo && r.currentDocNo !== r.docNo && ` → ${r.currentDocNo}`}
     </span>
   );
 }
@@ -55,6 +56,7 @@ export function MistakeCard({ r, rq }: { r: MistakeRow; rq: ReportQuery }) {
                 <Highlight text={r.docNo} rq={rq} />
               </span>
             )}
+            <MistakeOwnerNote r={r} />
             <StatusNote r={r} />
           </dd>
         </div>

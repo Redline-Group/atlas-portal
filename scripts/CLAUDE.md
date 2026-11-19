@@ -137,7 +137,7 @@ They were four separate lists until every one of them was shown to fail silently
 - `pnpm mistakes:merge` folds `.cache/mistakes-sweep/findings/NNN.jsonl` back into `public/potential-mistakes.json` and advances the state.
   - After a `--full` plan it ALSO runs the corpus detectors (`scripts/lib/mistakes-corpus.mjs`). These are deterministic cross-document comparisons the chunked fan-out structurally cannot make, e.g. one template sentence that says `circulating` in six prime artifacts and `total` in two.
   - Rows carrying a `detector` are retired and rebuilt on every full run. That is what makes `--full` mean re-derive, not just re-read. Hand-authored corpus rows have nothing that can rebuild them, and only `--drop-corpus` removes them.
-  - Findings a human rejected live in the artifact's `rejected` list, and `suppressRejected` keeps them from coming back.
+  - Findings a review rejected live in the artifact's `rejected` list, and `suppressRejected` keeps them from coming back. Each says who decided it in `rejectedBy` (`human`, or `ai-review` for an AI verdict no person has confirmed).
   - It validates every model-reported row (known UUID, verbatim quote, legal severity/pass) and drops the rest.
   - **A chunk with no output file, or a truncated one, is treated as UNPROCESSED and stays queued.** A killed agent's silence must never be recorded as "read it, found nothing".
   - `--dry-run` prints the counts only.
