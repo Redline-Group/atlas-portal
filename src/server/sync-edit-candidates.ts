@@ -30,7 +30,7 @@ const MODEL = env.EDIT_CANDIDATES_MODEL ?? "google/gemini-4-carbon";
 const LOCK_KEY = 4711_2063;
 
 /** Runs `fn` unless another run holds the lock. A database that cannot be asked runs unlocked: a doubled run is bounded by the budget. */
-async function withLock(fn: () => Promise<void>): Promise<void> {
+export async function withLock(fn: () => Promise<void>): Promise<void> {
   const reserved = await sql.reserve().catch(() => null);
   let mine = false;
   try {
@@ -62,7 +62,7 @@ const request = (system: string, user: string) =>
   );
 
 /** Whether a failed request can have been charged: only one that timed out while the model was working. */
-const maybeBilled = (e: { status?: unknown; name?: string }): boolean =>
+export const maybeBilled = (e: { status?: unknown; name?: string }): boolean =>
   e.name === "APIConnectionTimeoutError" || (typeof e.status !== "number" && e.name !== "APIConnectionError");
 
 async function complete(system: string, user: string) {
