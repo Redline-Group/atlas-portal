@@ -18,6 +18,7 @@ import { execFileSync } from "node:child_process";
 
 import { loadAtlasSource } from "../lib/atlas-source.mjs";
 import { CORPUS_DETECTORS, runCorpusDetectors } from "../lib/mistakes-corpus.mjs";
+import { stampFirstSeen } from "../lib/mistakes-first-seen.ts";
 import {
   advanceState,
   buildBacklinks,
@@ -27,7 +28,6 @@ import {
   isStateUsable,
   mergeFindings,
   planSweep,
-  stampFirstSeen,
   suppressRejected,
   validateFinding,
 } from "../lib/mistakes-sweep.mjs";
@@ -305,13 +305,12 @@ if (cmd === "merge") {
     corpusDetectors: ran,
   });
   const sha = plan.atlasSha ?? atlasSha();
-  const today = new Date().toISOString().slice(0, 10);
   const next = {
     ...artifact,
-    generatedAt: today,
+    generatedAt: new Date().toISOString().slice(0, 10),
     atlasSha: sha ?? artifact.atlasSha,
     documentsScanned: Object.keys(nodeMap).length,
-    findings: stampFirstSeen(merged.findings, artifact.findings, today),
+    findings: stampFirstSeen(merged.findings, artifact.findings),
   };
 
   console.log(`chunks processed ${plan.chunks.length - skipped.length}/${plan.chunks.length}`);

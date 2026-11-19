@@ -42,7 +42,7 @@ async function withLock(fn: () => Promise<void>): Promise<void> {
 async function complete(system: string, user: string) {
   const res = await getClient().chat.completions.create(
     {
-      model: config.editCandidatesModel,
+      model: MODEL,
       temperature: 0,
       max_tokens: 20_000,
       response_format: { type: "json_object" },
@@ -66,6 +66,13 @@ function readSeed() {
   return existsSync(artifact) && existsSync(state) ? { artifact: readFileSync(artifact), state: readFileSync(state) } : null;
 }
 
+// Measured numbers are in edit-candidates/CLAUDE.md. One request holds about
+// 40 KB of documents and context and costs about $0.06 on Gemini 4 Carbon; the
+// reserve is what a request is assumed to cost before the provider reports it,
+// so the month stops one reserve short of the budget.
+const env = process.env;
+const MODEL = env.EDIT_CANDIDATES_MODEL ?? "google/gemini-4-carbon";
+
 // The worker kills its tails eleven minutes after it starts, and a request may
 // take four, so no request starts after six.
 export function realDeps(): EditDeps {
@@ -74,12 +81,12 @@ export function realDeps(): EditDeps {
     store: realStore,
     readSeed,
     complete,
-    model: config.editCandidatesModel,
-    perCycle: config.editCandidatesPerCycle,
-    monthlyUsd: config.editCandidatesMonthlyUsd,
-    reserveUsd: config.editCandidatesReserveUsd,
+    model: MODEL,
+    perCycle: Number(env.EDIT_CANDIDATES_PER_CYCLE ?? 150),
+    monthlyUsd: Number(env.EDIT_CANDIDATES_MONTHLY_USD ?? 5),
+    reserveUsd: Number(env.EDIT_CANDIDATES_RESERVE_USD ?? 0.5),
     hasApiKey: Boolean(config.openrouterApiKey),
-    noFetch: process.env.ATLAS_WORKER_NO_FETCH === "1",
+    noFetch: env.ATLAS_WORKER_NO_FETCH === "1",
     deadlineAt: Date.now() - process.uptime() * 1000 + 6 * 60_000,
     now: () => Date.now(),
   };

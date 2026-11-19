@@ -142,7 +142,7 @@ These commands are the hand-run, whole-corpus path behind the Edit Candidates re
   - Findings a review rejected live in the artifact's `rejected` list, and `suppressRejected` keeps them from coming back. Each says who decided it in `rejectedBy` (`human`, or `ai-review` for an AI verdict no person has confirmed).
   - It validates every model-reported row (known UUID, verbatim quote, legal severity/pass) and drops the rest.
   - **A chunk with no output file, or a truncated one, is treated as UNPROCESSED and stays queued.** A killed agent's silence must never be recorded as "read it, found nothing".
-  - Each finding carries `firstSeen`, the day it was first found. `stampFirstSeen` keeps the date of a finding already in the file under the same (uuid, category, quote) and dates a new one today.
+  - Each finding carries `firstSeen`, the day it was first found. `stampFirstSeen` (`scripts/lib/mistakes-first-seen.ts`) keeps the date of a finding already in the file under the same (uuid, category, quote) and dates a new one today.
   - `--dry-run` prints the counts only.
 - `pnpm mistakes:status` shows how many atlas documents changed since the last hand-run sweep. It is read-only, and it does not know what the worker has read since.
 - `pnpm mistakes:bootstrap` is a one-off. It adopts an existing whole-corpus sweep as the incremental baseline. It refuses unless the artifact's `atlasSha` matches the checked-out submodule.

@@ -18,11 +18,11 @@ import {
   mergeFindings,
   planSweep,
   sortFindings,
-  stampFirstSeen,
   suppressRejected,
   validateFinding,
   STATE_VERSION,
 } from "../scripts/lib/mistakes-sweep.mjs";
+import { stampFirstSeen } from "../scripts/lib/mistakes-first-seen";
 
 type Node = {
   id: string;

@@ -235,17 +235,6 @@ export const config = {
   // pass off, while the seed load and the embed pass still run.
   briefingModel: process.env.BRIEFING_MODEL ?? "google/gemini-3.8-flash",
 
-  // The Edit Candidates sweep (sync-edit-candidates.ts, measured numbers in
-  // edit-candidates/CLAUDE.md). One request holds about 40 KB of documents and
-  // context and costs about $0.06 on Gemini 4 Carbon; the reserve is what a
-  // request is assumed to cost before the provider reports it, so the month
-  // stops one reserve short of the budget. An empty model, a per-cycle count of
-  // 0 or a budget of 0 turns the sweep off; the seed and veto passes still run.
-  editCandidatesModel: process.env.EDIT_CANDIDATES_MODEL ?? "google/gemini-4-carbon",
-  editCandidatesPerCycle: Number(process.env.EDIT_CANDIDATES_PER_CYCLE ?? 150),
-  editCandidatesMonthlyUsd: Number(process.env.EDIT_CANDIDATES_MONTHLY_USD ?? 5),
-  editCandidatesReserveUsd: Number(process.env.EDIT_CANDIDATES_RESERVE_USD ?? 0.5),
-
   // Semantic search relevance floor (cosine, 0..1). pgvector's ORDER BY returns
   // the k nearest docs regardless of absolute similarity, so a query with few
   // true matches drags in unrelated neighbors that then occupy top slots after

@@ -288,17 +288,6 @@ export function mergeFindings(previous, incoming, evaluated, removed = [], { dro
   };
 }
 
-/**
- * Date each finding by when it was first found. A finding that was already in
- * `previous` under the same (uuid, category, quote) keeps the date it had, so
- * re-reading a document does not make an old finding look new; anything else is
- * dated `today`.
- */
-export function stampFirstSeen(findings, previous, today) {
-  const seen = new Map(previous.filter((f) => f.firstSeen).map((f) => [rejectionKey(f), f.firstSeen]));
-  return findings.map((f) => ({ ...f, firstSeen: f.firstSeen ?? seen.get(rejectionKey(f)) ?? today }));
-}
-
 const SEVERITY_RANK = { high: 0, medium: 1, low: 2 };
 
 /** Severity first, then atlas order by doc_no — the order the report and the

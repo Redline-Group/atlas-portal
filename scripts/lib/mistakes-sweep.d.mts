@@ -89,11 +89,6 @@ export function mergeFindings(
   removed?: string[],
   opts?: { dropCorpus?: boolean; corpusDetectors?: string[] },
 ): { findings: Mistake[]; kept: number; replaced: number; added: number };
-export function stampFirstSeen<T extends { uuid: string | null; category: string; quote: string; firstSeen?: string }>(
-  findings: T[],
-  previous: T[],
-  today: string,
-): Array<T & { firstSeen: string }>;
 export function sortFindings<T extends { severity: string; docNo: string; category: string }>(findings: T[]): T[];
 export function compareDocNo(a: string, b: string): number;
 export function advanceState(
