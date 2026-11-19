@@ -12,6 +12,12 @@
 // "re-derive everything" rather than "re-read every document and hope". A
 // corpus row with no `detector` is hand-authored and is never touched.
 
+import { divergenceFinding, MAX_DIVERGENT_WORDS, MIN_ARTIFACTS, uniqueWords, wordDistance } from "./mistakes-divergence.ts";
+
+export { uniqueWords, wordDistance };
+
+const MIN_SENTENCE_WORDS = 12;
+
 /** Prime Agent artifacts are the one place the atlas instantiates the same
  *  template eight times, which is what makes divergence detectable at all. */
 const ARTIFACT_ROOT = /^A\.6\.1\.1\.[0-9]+$/;
@@ -78,58 +84,6 @@ export function normalizeForCompare(text, artifactName, docNoOf) {
 const splitSentences = (text) =>
   (text ?? "").split(/(?<=[.:])\s+|\n+/).map((s) => s.trim()).filter(Boolean);
 
-/** Words in `a` that `b` does not have. The readable half of a diff. */
-export function uniqueWords(a, b) {
-  const other = new Set(b.split(" "));
-  return [...new Set(a.split(" ").filter((w) => w && !other.has(w)))];
-}
-
-/**
- * A reference as normalizeForCompare leaves it: a slot marker (`A.6.1.1.*.2.2`)
- * or a doc_no it could not place in the slot space. Both are MADE of digits, so
- * anything that asks "did a number move here" has to strip them first.
- */
-const REFERENCE_RE = /a\.[0-9]+(?:\.(?:\*|[0-9]+|var[0-9]+))*/g;
-
-/** The distinct references inside a set of words, in order, for comparison. */
-const referencesIn = (words) => (words.join(" ").match(REFERENCE_RE) ?? []).sort().join("|");
-
-/**
- * Two kinds of divergence are high-confidence defects rather than wording.
- *
- * A real NUMBER moved -- the heuristic this started as. It must be asked with
- * references REMOVED: a rewritten slot marker is all digits, so testing the raw
- * words marked every link divergence high by construction (13 of 20 live rows,
- * including two that differed only by a stray semicolon).
- *
- * A reference points at a different SLOT. The template puts the same link in
- * every artifact, so a different target is a routing mistake, not a choice.
- * Comparing the reference SETS, not merely "a unique word holds a reference",
- * keeps `to [x` vs `to[x` -- same target, missing space -- out of this class.
- */
-function divergenceSeverity(majorOnly, minorOnly) {
-  const numberMoved = /[0-9]/.test([...majorOnly, ...minorOnly].join(" ").replace(REFERENCE_RE, ""));
-  const targetMoved = referencesIn(majorOnly) !== referencesIn(minorOnly);
-  return numberMoved || targetMoved ? "high" : "medium";
-}
-
-/** Word-level edit distance via LCS -- how far apart two sentences really are. */
-export function wordDistance(a, b) {
-  const A = a.split(" ");
-  const B = b.split(" ");
-  const dp = Array.from({ length: A.length + 1 }, () => new Uint32Array(B.length + 1));
-  for (let i = 1; i <= A.length; i++) {
-    for (let j = 1; j <= B.length; j++) {
-      dp[i][j] = A[i - 1] === B[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]);
-    }
-  }
-  return A.length + B.length - 2 * dp[A.length][B.length];
-}
-
-const MIN_SENTENCE_WORDS = 12;
-const MIN_ARTIFACTS = 4;
-const MAX_DIVERGENT_WORDS = 6;
-
 /**
  * Template divergence: one sentence, instantiated at the same slot in several
  * Prime Agent artifacts, that does not say the same thing in all of them.
@@ -141,11 +95,24 @@ const MAX_DIVERGENT_WORDS = 6;
  * the template drifting.
  */
 export function templateDivergence(nodes) {
+  const byUuid = new Map(nodes.map((n) => [n.id.toLowerCase(), n.doc_no]));
+  const docNoOf = (uuid) => byUuid.get(uuid);
+  const findings = [];
+  for (const [slot, members] of groupBySlot(nodes)) {
+    if (new Set(members.map((m) => m.root)).size < MIN_ARTIFACTS) continue;
+    if (new Set(members.map((m) => m.node.title.toLowerCase())).size > 1) continue;
+    for (const family of sentenceFamilies(slotVariants(members, docNoOf))) {
+      findings.push(...familyFindings(slot, family));
+    }
+  }
+  return findings.sort((a, b) => a.docNo.localeCompare(b.docNo));
+}
+
+/** Every node at an artifact-member position, grouped by slot, with its artifact's name. */
+function groupBySlot(nodes) {
   const names = new Map(
     nodes.filter((n) => ARTIFACT_ROOT.test(n.doc_no)).map((n) => [n.doc_no, n.title]),
   );
-  const byUuid = new Map(nodes.map((n) => [n.id.toLowerCase(), n.doc_no]));
-  const docNoOf = (uuid) => byUuid.get(uuid);
   const bySlot = new Map();
   for (const n of nodes) {
     const k = slotKey(n.doc_no);
@@ -153,21 +120,14 @@ export function templateDivergence(nodes) {
     if (!bySlot.has(k.slot)) bySlot.set(k.slot, []);
     bySlot.get(k.slot).push({ node: n, root: k.root, name: names.get(k.root) ?? "" });
   }
+  return bySlot;
+}
 
-  const findings = [];
-  for (const [slot, members] of bySlot) {
-    if (new Set(members.map((m) => m.root)).size < MIN_ARTIFACTS) continue;
-    if (new Set(members.map((m) => m.node.title.toLowerCase())).size > 1) continue;
-    for (const family of sentenceFamilies(slotVariants(members, docNoOf))) {
-      if (family.length < 2) continue;
-      const [major, ...minorities] = [...family].sort((a, b) => b[1].length - a[1].length);
-      for (const minor of minorities) {
-        const finding = divergenceFinding(slot, major, minor);
-        if (finding) findings.push(finding);
-      }
-    }
-  }
-  return findings.sort((a, b) => a.docNo.localeCompare(b.docNo));
+/** The majority reading of a family against each of its minority readings. */
+function familyFindings(slot, family) {
+  if (family.length < 2) return [];
+  const [major, ...minorities] = [...family].sort((a, b) => b[1].length - a[1].length);
+  return minorities.map((minor) => divergenceFinding(slot, major, minor)).filter(Boolean);
 }
 
 /**
@@ -217,45 +177,6 @@ function sentenceFamilies(variants) {
     families.get(root).push(v);
   });
   return families.values();
-}
-
-/** The finding for one minority reading against its family's majority, or null. */
-function divergenceFinding(slot, major, minor) {
-  const majorRoots = new Set(major[1].map((m) => m.root));
-  const minorRoots = new Set(minor[1].map((m) => m.root));
-  // Two READINGS of one sentence are held by different artifacts. When the
-  // same artifact appears on both sides these are two different sentences
-  // that happen to be similar, and the finding reads absurdly: "Spark says
-  // X, while Spark says Y".
-  if ([...minorRoots].some((r) => majorRoots.has(r))) return null;
-  if (new Set([...majorRoots, ...minorRoots]).size < MIN_ARTIFACTS) return null;
-  const changed = wordDistance(major[0], minor[0]);
-  if (changed === 0 || changed > MAX_DIVERGENT_WORDS) return null;
-  const majorOnly = uniqueWords(major[0], minor[0]);
-  const minorOnly = uniqueWords(minor[0], major[0]);
-  if (!majorOnly.length && !minorOnly.length) return null; // reordering only
-
-  const say = (rows, words) =>
-    `${rows.map((r) => r.name).join(", ")} say "${words.join(" ")}"`;
-  // A slot can have more than one divergent sentence, so the differing word
-  // goes in the id: without it the rows collide and the report shows one.
-  const tag = (minorOnly[0] ?? majorOnly[0] ?? "").replace(/[^a-z0-9]+/gi, "").slice(0, 12);
-  return {
-    id: `${slot}#structural${tag ? `-${tag}` : ""}`,
-    docNo: slot,
-    uuid: null,
-    file: "A.6.1.1.* (all prime artifacts)",
-    category: "structural",
-    severity: divergenceSeverity(majorOnly, minorOnly),
-    pass: "deterministic",
-    detector: "template-divergence",
-    quote: minor[1][0].raw,
-    issue:
-      `The same sentence at ${slot} does not say the same thing in every Prime Agent artifact: ` +
-      `${say(major[1], majorOnly)}, while ${say(minor[1], minorOnly)}. ` +
-      "Only visible corpus-wide; no single chunk of the sweep contains both.",
-    fix: "",
-  };
 }
 
 /** Every corpus detector, by the id its rows carry. */

@@ -28,13 +28,19 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { HEADING_RE, parse, parseTree } from "./atlas-parser.mjs";
+import { parse, parseTree } from "./atlas-parser.mjs";
 import { bucketFromFilename, bucketOrderKey, compareBuckets } from "./atlas-source-buckets.ts";
+import { AtlasSourceError } from "./atlas-source-error.ts";
+import { canonicalSortKey, orderDocuments, splitIntoBlocks } from "./atlas-source-order.ts";
 import { MAX_HEADING_LEVEL, restoreAbsoluteLevels, structuralDepth } from "./atlas-source-levels.ts";
 
-// Pure ports of upstream's bucket-name and heading-level rules live in sibling
-// modules; re-exported so this stays the one entry point.
+// Pure ports of upstream's bucket-name, heading-level and document-order rules
+// live in sibling modules; re-exported so this stays the one entry point.
 export {
+  AtlasSourceError,
+  canonicalSortKey,
+  orderDocuments,
+  splitIntoBlocks,
   bucketFromFilename,
   bucketOrderKey,
   compareBuckets,
@@ -48,14 +54,6 @@ export const LAYOUT = {
   ATOMIZED: "atomized",
   CONSOLIDATED: "consolidated",
 };
-
-/** Detection ambiguity, an unreadable checkout, or an implausibly small parse. */
-export class AtlasSourceError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "AtlasSourceError";
-  }
-}
 
 // Paths relative to the atlas repo root.
 export const MONOLITH_REL = "Sky Atlas/Sky Atlas.md";
@@ -102,127 +100,36 @@ export function readConsolidated(contentRoot) {
   return restoreAbsoluteLevels(orderDocuments(linesBySource).join("\n"));
 }
 
-// ---------------------------------------------------------------------------
-// Document order — port of sync/partition.py (split_into_blocks /
-// canonical_sort_key / order_documents / _assert_source_order_preserved).
-// ---------------------------------------------------------------------------
-
-const isNr = (docNo) => docNo.startsWith("NR-");
-
-/** Cut one file's lines into blocks at numbered-document headings. A Needed
- *  Research doc has no position of its own (flat `NR-<n>` namespace; its target
- *  is "the numbered document it follows"), so it travels inside the preceding
- *  block and is never sorted as a document. Mirror of split_into_blocks. */
-export function splitIntoBlocks(source, lines) {
-  const heads = [];
-  for (let i = 0; i < lines.length; i++) {
-    const m = HEADING_RE.exec(lines[i]);
-    if (m) heads.push([i, m[2]]);
+/** Layout of an existing content/ directory. Throws on a half-migrated or empty tree. */
+function detectContentLayout(contentRoot) {
+  let buckets;
+  try {
+    buckets = listBuckets(contentRoot);
+  } catch (e) {
+    if (e instanceof AtlasSourceError) throw e;
+    throw new AtlasSourceError(`cannot read ${contentRoot}: ${e.message}`);
   }
-  if (!heads.length) throw new AtlasSourceError(`${source} contains no Atlas document headings`);
-  if (heads[0][0] !== 0)
+  const hasAtomRoot = fs.existsSync(path.join(contentRoot, ...ATOM_ROOT_REL));
+
+  if (buckets.length && hasAtomRoot)
     throw new AtlasSourceError(
-      `${source} has ${heads[0][0]} line(s) before its first document heading — that text belongs to no document and would be dropped at reassembly`,
+      `${contentRoot} contains BOTH consolidated bucket files (${buckets.length}) and an ` +
+        "atomized content tree. That is a half-finished migration — refusing to guess.",
     );
-  if (isNr(heads[0][1]))
-    throw new AtlasSourceError(`${source} begins with Needed Research ${heads[0][1]}, which has no numbered document in this file to travel with`);
-  const starts = heads.filter(([, dn]) => !isNr(dn));
-  return starts.map(([start, docNo], k) => ({
-    docNo,
-    source,
-    index: k,
-    lines: lines.slice(start, k + 1 < starts.length ? starts[k + 1][0] : lines.length),
-  }));
-}
+  if (buckets.length) return LAYOUT.CONSOLIDATED;
+  if (hasAtomRoot) return LAYOUT.ATOMIZED;
 
-/** Compose's emit position for a numbered document, from its doc number alone.
- *  Per segment: (rank, value, text) with rank 0 = real child (some document
- *  claims the prefix), 1 = phantom extension folder (`0` segments no document
- *  claims — compose emits a parent's real children BEFORE any phantom-rooted
- *  subtree, which naive numeric order gets backwards in ~410 places), 2 = the
- *  non-integer `var1` Scenario Variation segment. A parent's key is a prefix of
- *  its children's, so it sorts first for free. Mirror of canonical_sort_key. */
-export function canonicalSortKey(docNo, realDocNos) {
-  const parts = docNo.split(".");
-  const key = [];
-  for (let i = 1; i < parts.length; i++) {
-    const seg = parts[i];
-    if (/^\d+$/.test(seg)) key.push([realDocNos.has(parts.slice(0, i + 1).join(".")) ? 0 : 1, Number.parseInt(seg, 10), ""]);
-    else key.push([2, 0, seg]);
-  }
-  return key;
-}
-
-function compareKeys(a, b) {
-  const n = Math.min(a.length, b.length);
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < 3; j++) {
-      const x = a[i][j];
-      const y = b[i][j];
-      if (x !== y) return x < y ? -1 : 1;
-    }
-  }
-  return a.length - b.length; // a shorter tuple (the parent) compares less
-}
-
-/** Merge split files into the composed line stream, ordered by document. Depends
- *  on neither file order, names, count, nor any manifest. Mirror of order_documents. */
-export function orderDocuments(linesBySource) {
-  const blocks = [];
-  for (const source of [...linesBySource.keys()].sort()) blocks.push(...splitIntoBlocks(source, linesBySource.get(source)));
-  const origin = new Map();
-  for (const b of blocks) {
-    if (origin.has(b.docNo))
-      throw new AtlasSourceError(`document ${b.docNo} appears in both ${origin.get(b.docNo)} and ${b.source} — a document must live in exactly one file`);
-    origin.set(b.docNo, b.source);
-  }
-  const real = new Set(origin.keys());
-  const keyed = blocks.map((b) => ({ b, k: canonicalSortKey(b.docNo, real) }));
-  keyed.sort((x, y) => compareKeys(x.k, y.k));
-  const ordered = keyed.map((x) => x.b);
-  // Within a file the order is compose's own emit order and is authoritative; the
-  // derived key may interleave files but must never move a document backwards past
-  // another from the same file — any disagreement with compose fails here, loudly.
-  const last = new Map();
-  for (const b of ordered) {
-    const prev = last.get(b.source) ?? -1;
-    if (b.index <= prev)
-      throw new AtlasSourceError(
-        `document ordering moved ${b.docNo} backwards within ${b.source} (position ${b.index} after ${prev}) — canonicalSortKey and upstream compose disagree`,
-      );
-    last.set(b.source, b.index);
-  }
-  return ordered.flatMap((b) => b.lines);
+  throw new AtlasSourceError(
+    `${contentRoot} matches neither layout: no \`A.<n> - <name>.md\` bucket files and no ` +
+      "A/0/document.md. An empty or truncated checkout reaches here and must NOT be " +
+      "treated as a pre-cutover ref.",
+  );
 }
 
 /** Classify an atlas checkout. Throws on ambiguity, emptiness, or an unreadable tree. */
 export function detectLayout(atlasSrcDir) {
   const contentRoot = path.join(atlasSrcDir, CONTENT_REL);
-
-  if (fs.existsSync(contentRoot)) {
-    let buckets;
-    try {
-      buckets = listBuckets(contentRoot);
-    } catch (e) {
-      if (e instanceof AtlasSourceError) throw e;
-      throw new AtlasSourceError(`cannot read ${contentRoot}: ${e.message}`);
-    }
-    const hasAtomRoot = fs.existsSync(path.join(contentRoot, ...ATOM_ROOT_REL));
-
-    if (buckets.length && hasAtomRoot)
-      throw new AtlasSourceError(
-        `${contentRoot} contains BOTH consolidated bucket files (${buckets.length}) and an ` +
-          "atomized content tree. That is a half-finished migration — refusing to guess.",
-      );
-    if (buckets.length) return LAYOUT.CONSOLIDATED;
-    if (hasAtomRoot) return LAYOUT.ATOMIZED;
-
-    throw new AtlasSourceError(
-      `${contentRoot} matches neither layout: no \`A.<n> - <name>.md\` bucket files and no ` +
-        "A/0/document.md. An empty or truncated checkout reaches here and must NOT be " +
-        "treated as a pre-cutover ref.",
-    );
-  }
+  if (fs.existsSync(contentRoot)) return detectContentLayout(contentRoot);
 
   if (fs.existsSync(path.join(atlasSrcDir, MONOLITH_REL))) return LAYOUT.MONOLITH;
 

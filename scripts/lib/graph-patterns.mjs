@@ -90,57 +90,20 @@ export const ACTIVE_ECOSYSTEM_ACTORS_UUID = "1ef5767b-60bc-446a-af45-4eccdb20c02
 // that the A.1.7.1 walk is still finding the right section.
 export const CCRA_BINDING_UUID = "51b1fe46-2251-4078-a805-e2b40aaaf729";
 
-// Canonical UUID source fragment. Exported as a *source string* so callers that
-// embed a UUID inside a larger pattern (doc-edges' IMPLEMENTS_RE) compose it
-// instead of retyping the five hex groups.
-export const UUID_SRC = String.raw`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`;
-export const UUID_LINK_RE = new RegExp(String.raw`\[([^\]]*)\]\((${UUID_SRC})\)`, "gi");
-// A markdown link's URL — "[text](https://…)". Used by table-parser's
-// extractUrl (Active Data cells) and by the omni Discord edge (Pattern 22).
-export const MD_URL_RE = /\((https?:\/\/[^)]+)\)/;
-export const COMPRISES_RE = /The party ['‘]([^'’]+)['’] comprises\s+(.+?)\./i;
-// Atomic parties use a different sentence shape — "The party 'X' is <descriptor>."
-// (e.g. A.2.8.2.2.1.1.4 Moonbow: "…is the entity owning relevant intellectual
-// property."). The party still signs the accord, it just has no members to list.
-export const ATOMIC_PARTY_RE = /The party ['‘]([^'’]+)['’]\s+is\b/i;
-
-// Org-to-org prose (Pattern 20): the same two sentence shapes are read by two
-// consumers — graph-entity-edges.mjs's free-content scan (Phase 2w, emits
-// prime_foundation_of/provides_services_to edges) and graph-entities.mjs's
-// title-anchored Foundation/Development Company doc read (Phase 1p, creates/
-// corrects the entities those edges need). Shared here so the two can't drift
-// apart the way they did before 2026-09-28 (one had its own `(?:The\s+)?`
-// prefix-strip baked into the regex; the other post-processed the capture
-// with `cleanOrgProseName` below — same result today, but two copies of one
-// rule). `g` flag: both consumers reset `lastIndex` before use, whether via
-// `matchAll` (2w) or a single `exec` (1p).
-// Either name may carry a parenthetical aside, as next-gen-atlas PR 370 writes
-// Grove's development company doc (A.6.1.1.2.2.1.1.3.1.1.5: "Grove Labs (…) is
-// a development company …"). The aside is matched but not captured: the name
-// before it is the entity's name, and both consumers read the two names as
-// m[1] and m[2].
-const NAME = String.raw`([A-Z][A-Za-z0-9'&. -]+?)(?: \([^()]*\))?`;
-//   "The Spark Foundation is the Prime Foundation associated with Spark."
-//   "Rubicon is the Prime Foundation associated with Obex."
-export const PRIME_FOUNDATION_RE = new RegExp(String.raw`\b${NAME} is the Prime Foundation associated with (?:the )?${NAME}[.,]`, "g");
-//   "Phoenix Labs is a development company that provides services to the Spark Foundation."
-//   "Treadstone is the development company that provides services to Rubicon." (A.6.1.1.5.2.1.1.3.1.1.6 — "is THE ... company")
-export const PROVIDES_SERVICES_RE = new RegExp(String.raw`\b${NAME} is (?:an?|the) [a-z -]*company that provides services to (?:the )?${NAME}[.,]`, "g");
-// A leading article survives the capture ("The Spark Foundation" — the regex
-// can't tell "The" apart from a real name word) and is stripped here instead,
-// so both consumers clean a captured name identically.
-export const cleanOrgProseName = (raw) => raw.trim().replace(/^the\s+/i, "");
-
-// The atlas writes structured fields as bullet key/value lines:
-//   "- Recipient: Sky Frontier Foundation"
-//   "- Soter Labs: 2 signers"
-// Both halves are REGEX SOURCE, not literals — the factory escapes nothing, so
-// a label may itself capture ("(.+?)\\s+amount"). Returns a fresh RegExp per
-// call: callers hold these as module consts and reset `lastIndex` on the /g
-// ones, which a shared object would break.
-export function bulletField(labelSrc, valueSrc, flags = "im") {
-  return new RegExp(String.raw`^[-*]\s*${labelSrc}:\s*${valueSrc}\s*$`, flags);
-}
+// Shared regexes (UUID links, accord parties, org-to-org prose) and the
+// bullet-field factory live in their own module; re-exported so importers keep
+// one entry point.
+export {
+  UUID_SRC,
+  UUID_LINK_RE,
+  MD_URL_RE,
+  COMPRISES_RE,
+  ATOMIC_PARTY_RE,
+  PRIME_FOUNDATION_RE,
+  PROVIDES_SERVICES_RE,
+  cleanOrgProseName,
+  bulletField,
+} from "./graph-patterns-regex.ts";
 
 // Per-module warning emitter. Every Phase 2.8 pattern is "never-silent": a doc
 // that looks like one of its shapes but fails to parse warns instead of being
@@ -234,69 +197,9 @@ export function resolveAliasedEntity(nameIndex, entityMap, name) {
 // Content extraction helpers
 // ---------------------------------------------------------------------------
 
-// Extract "X is Y." or "X is the Y." from content
-export function extractAssignment(content, prefix) {
-  const re = new RegExp(prefix + "\\s+is\\s+(?:the\\s+)?([^.\\[]+)\\.", "i");
-  const m = content?.match(re);
-  return m ? m[1].trim() : null;
-}
+// Content readers live in their own module; re-exported for the same reason.
+export { extractAssignment, parseNameList, extractListItems } from "./graph-patterns-content.ts";
 
-// Parse a comma/and-separated list, stripping leading "the " / "and ".
-export function parseNameList(str) {
-  return str
-    .split(/,\s*/)
-    .flatMap((p) => p.split(/\s+and\s+/i))
-    .map((s) =>
-      s
-        .trim()
-        .replace(/^(?:the|and)\s+/i, "")
-        .trim(),
-    )
-    .filter(Boolean);
-}
-
-// Extract list items from Active Data content (for ERG membership, delegate lists)
-export function extractListItems(content) {
-  return (
-    (content ?? "")
-      .split("\n")
-      .filter((l) => /^[-*]\s+/.test(l.trim()))
-      .map((l) =>
-        l
-          .trim()
-          .replace(/^[-*]\s+/, "")
-          .trim(),
-      )
-      // Strip "Recipient: X" or bullet labels; keep plain names.
-      .map((l) => l.replace(/^Recipient:\s*/i, "").trim())
-      .filter(Boolean)
-  );
-}
-
-export function ancestorByStripping(doc, n, docByDocNo) {
-  const parts = doc.doc_no.split(".");
-  if (parts.length <= n) return null;
-  return docByDocNo.get(parts.slice(0, -n).join(".")) ?? null;
-}
-
-// The document an Annotation / Action Tenet / Scenario Variation annotates,
-// from its doc_no alone. The spec fixes these suffixes (`.0.3.N`, `.0.4.N`,
-// `.varN`) as structural, so stripping them is stable — unlike parentId, which
-// the heading-depth cap flattens: 11 of 101 annotations sat under a capped
-// ancestor rather than their target once artifact levels were restored to their
-// true depth (2026-09-10). Same reasoning as ancestorByStripping for `.0.6.N`.
-export function annotationTarget(doc, docByDocNo) {
-  const no = doc.doc_no.replace(/\.var\d+(\.\d+)?$/, "").replace(/\.0\.[34](\.\d+)?$/, "");
-  return no !== doc.doc_no ? (docByDocNo.get(no) ?? null) : null;
-}
-
-// Resolve the Primitive root for any per-agent ICD. Primitive roots live at
-// A.6.1.1.X.2.G.P (agent X → Sky Primitives section → primitive group G →
-// primitive P). Every ICD lives under one of these, however deeply nested.
-export function primitiveRootFor(doc, docByDocNo) {
-  const m = doc.doc_no.match(/^(A\.6\.1\.1\.\d+\.2\.\d+\.\d+)(?:$|\.)/);
-  if (!m) return null;
-  const root = docByDocNo.get(m[1]);
-  return root && /Primitive$/i.test(root.title) ? root : null;
-}
-
+// doc_no navigation (ancestor stripping, annotation targets, primitive roots)
+// lives in its own module; re-exported for the same reason.
+export { ancestorByStripping, annotationTarget, primitiveRootFor } from "./graph-patterns-docno.ts";

@@ -23,69 +23,18 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { Buffer } from "node:buffer";
 import { fileURLToPath } from "node:url";
+import { fetchCreatePollTxs, getJson, V2 } from "./etherscan-poll-fetch.ts";
+import { CREATE_EMITTER, pollRecord, TRUNCATION_DATE } from "./onchain-poll-record.ts";
 
 const API_KEY = process.env.ETHERSCAN_API_KEY;
-const V2 = "https://api.etherscan.io/v2/api?chainid=1";
-const CREATE_EMITTER = "0xF9be8F0945acDdeeDaA64DFCA5Fe9629D0CF8E5D"; // createPoll(start,end,multiHash,url) txs
 const VOTE_EMITTER = "0xD3A9FE267852281a1e6307a1C37CDfD76d39b133"; // PollingEmitter; Voted(voter,pollId,optionId) tallies
 const CREATE_POLL_SELECTOR = "0xd54a8176"; // createPoll(uint256,uint256,string,string)
 const FLOOR_DATE = "2024-08-01"; // before the first Atlas Edit poll (2024-09-16); bounds the scan
-const TRUNCATION_DATE = "2025-05-28"; // next-gen-atlas repo re-init; git is authoritative on/after this
-const ATLAS_RE = /atlas[\s_%]*edit/i;
-const CID_RE = /^(Qm[1-9A-HJ-NP-Za-km-z]{44}|baf[0-9a-z]{20,})$/;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(__dirname, "atlas-onchain-polls.json"); // co-located with this script
 const AEP_DIR = path.resolve(__dirname, "../../../vendor/next-gen-atlas/Atlas Edit Proposals");
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function getJson(url, tries = 4) {
-  for (let i = 0; i < tries; i++) {
-    try {
-      const res = await fetch(url, { headers: { accept: "application/json" } });
-      if (res.ok) {
-        const j = await res.json();
-        // Etherscan rate-limit: {status:"0", message:"NOTOK", result:"Max rate limit reached"}
-        if (j.message === "NOTOK" && /rate limit/i.test(j.result || "")) {
-          await sleep(1500 * (i + 1));
-          continue;
-        }
-        return j;
-      }
-    } catch (err) {
-      if (i === tries - 1) throw err;
-    }
-    await sleep(600 * (i + 1));
-  }
-  throw new Error(`fetch failed after ${tries} tries: ${url}`);
-}
-
-// Decode createPoll(uint256 startDate, uint256 endDate, string multiHash, string url).
-function decodeCreatePoll(input) {
-  if (typeof input !== "string") return null;
-  const buf = Buffer.from(input.slice(input.startsWith("0x") ? 10 : 8), "hex"); // strip 0x + 4-byte selector
-  if (buf.length < 5 * 32) return null;
-  const uint = (i) => Number(BigInt("0x" + buf.subarray(i * 32, (i + 1) * 32).toString("hex")));
-  const readStr = (off) => {
-    if (!Number.isFinite(off) || off + 32 > buf.length) return null;
-    const len = Number(BigInt("0x" + buf.subarray(off, off + 32).toString("hex")));
-    if (len <= 0 || off + 32 + len > buf.length) return null;
-    return buf.subarray(off + 32, off + 32 + len).toString("utf8");
-  };
-  return { start: uint(0), end: uint(1), multiHash: readStr(uint(2)), url: readStr(uint(3)) };
-}
-
-function classify(title) {
-  const m = title.match(/\(AEP-(\d+)\)/i);
-  if (m) return { kind: "monthly", aep: Number(m[1]) };
-  if (/weekly/i.test(title)) return { kind: "weekly", aep: null };
-  return { kind: "other", aep: null };
-}
-
-const isoDate = (tsSeconds) => new Date(Number(tsSeconds) * 1000).toISOString().slice(0, 10);
 
 // Committed AEP files carry the ratification-poll URL (a vote.makerdao.com/polling/<slug>
 // where <slug> is the IPFS multiHash prefix) — used to cross-link + integrity-check.
@@ -107,59 +56,6 @@ function readRepoAeps() {
       poll_slug: (pollUrl && (pollUrl.match(/polling\/([A-Za-z0-9]+)/) || [])[1]) || null,
     };
   });
-}
-
-async function fetchCreatePollTxs(startBlock) {
-  const out = [];
-  for (let page = 1; page <= 25; page++) {
-    const j = await getJson(
-      `${V2}&module=account&action=txlist&address=${CREATE_EMITTER}&startblock=${startBlock}&endblock=99999999&sort=asc&page=${page}&offset=1000&apikey=${API_KEY}`,
-    );
-    const txs = Array.isArray(j.result) ? j.result : [];
-    out.push(...txs);
-    if (txs.length < 1000) break;
-    await sleep(300);
-  }
-  return out;
-}
-
-// One createPoll tx -> poll record, or null when it is not an Atlas Edit poll.
-function pollRecord(t, aeps) {
-  const dec = decodeCreatePoll(t.input);
-  if (!dec || !dec.url || !dec.multiHash) return null;
-  let url = dec.url;
-  try {
-    url = decodeURIComponent(dec.url);
-  } catch {
-    /* keep raw */
-  }
-  if (!ATLAS_RE.test(url) && !ATLAS_RE.test(dec.url)) return null;
-  const multiHash = dec.multiHash.trim();
-  const title = (url.split("/").pop() || "").replace(/\.md$/i, "");
-  const date = isoDate(t.timeStamp);
-  const { kind, aep } = classify(title);
-  const rec = {
-    date,
-    window: date < TRUNCATION_DATE ? "severed" : "overlap",
-    kind,
-    aep,
-    title,
-    multiHash,
-    valid_cid: CID_RE.test(multiHash),
-    ipfs_url: `https://ipfs.io/ipfs/${multiHash}`,
-    poll_url: url,
-    start_date: isoDate(dec.start),
-    end_date: isoDate(dec.end),
-    tx: t.hash,
-    block: Number(t.blockNumber),
-    create_emitter: CREATE_EMITTER,
-  };
-  if (aep && aeps.has(aep)) {
-    const a = aeps.get(aep);
-    rec.repo_file = a.file;
-    rec.aep_poll_match = a.poll_slug ? multiHash.startsWith(a.poll_slug) : null;
-  }
-  return rec;
 }
 
 function buildManifest(createPolls, polls) {
@@ -190,7 +86,7 @@ async function main() {
   const floor = await getJson(`${V2}&module=block&action=getblocknobytime&timestamp=${floorTs}&closest=before&apikey=${API_KEY}`);
   const startBlock = Number(floor.result);
 
-  const txs = await fetchCreatePollTxs(startBlock);
+  const txs = await fetchCreatePollTxs(startBlock, API_KEY);
   const createPolls = txs.filter((t) => (t.input || "").toLowerCase().startsWith(CREATE_POLL_SELECTOR));
 
   const aeps = new Map(readRepoAeps().map((a) => [a.aep, a]));

@@ -1,4 +1,4 @@
-import type { SettlementVenue } from "./settlements";
+export { collapseVenues } from "./settlementSankeyVenues";
 import { NODE_W, PAD, buildFlows, buildLinks, buildSinkBars, spanOf } from "./settlementSankeyBuild";
 
 export interface SankeyVenue {
@@ -63,33 +63,21 @@ const LABEL_LINE = 11;
 // (what went out, then the net the pair settles to).
 const SINK_LABEL_BLOCK = 24;
 
-export function collapseVenues(
-  venues: readonly Pick<SettlementVenue, "id" | "label" | "synthetic" | "profitToSky" | "profitToGrove">[],
-  topN = 12,
-  minAbs = 1,
-): SankeyVenue[] {
-  const kept = venues
-    .map((v) => ({
-      id: v.id,
-      label: v.label || v.id,
-      synthetic: v.synthetic,
-      profitToSky: v.profitToSky,
-      profitToGrove: v.profitToGrove,
-      mag: Math.abs(v.profitToSky) + Math.abs(v.profitToGrove),
-    }))
-    .filter((v) => v.mag >= minAbs)
-    .sort((a, b) => b.mag - a.mag);
-  if (kept.length <= topN) return kept;
-  const head = kept.slice(0, topN);
-  const tail = kept.slice(topN);
-  const other: SankeyVenue = {
-    id: "_other",
-    label: `Other venues (${tail.length})`,
-    synthetic: false,
-    profitToSky: tail.reduce((n, v) => n + v.profitToSky, 0),
-    profitToGrove: tail.reduce((n, v) => n + v.profitToGrove, 0),
-  };
-  return [...head, other];
+// Every ribbon is floored so the smallest venues stay visible at all. That
+// floor is why NOTHING here may be sized from a proportional total: a dozen
+// floored ribbons stack taller than the exact share they represent, and the
+// bar they dock into overflowed by up to 6px. Nodes are sized FROM the
+// ribbons instead — bar length is the sum of what docks to it, by
+// construction, on both sides of the chart.
+function flowsOf(venues: readonly SankeyVenue[]) {
+  const leftSum = venues.reduce((t, v) => t + Math.abs(v.profitToSky) + Math.abs(v.profitToGrove), 0);
+  if (leftSum <= 0) return [];
+  const px = INNER_H / leftSum;
+  return buildFlows(venues, (v) => Math.max(MIN_PX, v * px));
+}
+
+function columnBottom(ns: SankeyNode[]) {
+  return ns.reduce((t, n) => Math.max(t, n.y + n.height), 0);
 }
 
 export function layoutVenueSankey(
@@ -97,66 +85,48 @@ export function layoutVenueSankey(
   primeLabel = "Prime",
   width = WIDTH,
 ): SankeyLayout {
-  const empty: SankeyLayout = { width, height: 0, nodes: [], links: [] };
-  if (venues.length === 0) return empty;
-
-  const leftSum = venues.reduce((t, v) => t + Math.abs(v.profitToSky) + Math.abs(v.profitToGrove), 0);
-  if (leftSum <= 0) return empty;
-
-  const px = INNER_H / leftSum;
-  // Every ribbon is floored so the smallest venues stay visible at all. That
-  // floor is why NOTHING here may be sized from a proportional total: a dozen
-  // floored ribbons stack taller than the exact share they represent, and the
-  // bar they dock into overflowed by up to 6px. Nodes are sized FROM the
-  // ribbons instead — bar length is the sum of what docks to it, by
-  // construction, on both sides of the chart.
-  const flows = buildFlows(venues, (v) => Math.max(MIN_PX, v * px));
-  if (flows.length === 0) return empty;
+  const flows = flowsOf(venues);
+  if (flows.length === 0) return { width, height: 0, nodes: [], links: [] };
 
   const rightX = width - RIGHT_GUTTER - NODE_W;
-  const leftNodes = stack(
-    venues.map((v) => ({
-      id: v.id,
-      label: v.label,
-      kind: "venue" as const,
-      h: spanOf(flows, (f) => f.from, v.id),
-    })),
-    LEFT_GUTTER,
-    LABEL_LINE,
-  );
+  const venueItems = venues.map((v) => ({
+    id: v.id,
+    label: v.label,
+    kind: "venue" as const,
+    h: spanOf(flows, (f) => f.from, v.id),
+  }));
+  const leftNodes = stack(venueItems, LEFT_GUTTER, LABEL_LINE);
   const rightNodes = stack(buildSinkBars(flows, primeLabel), rightX, SINK_LABEL_BLOCK);
   const nodes: SankeyNode[] = [...leftNodes, ...rightNodes];
 
-  const colBottom = (ns: SankeyNode[]) => ns.reduce((t, n) => Math.max(t, n.y + n.height), 0);
   // A pushed-down label can outrun its column, so the box has to cover both.
   const lowestLabel = Math.max(...nodes.map((n) => n.labelY + SINK_LABEL_BLOCK / 2));
-  const height = Math.max(colBottom(leftNodes), colBottom(rightNodes), lowestLabel) + 8;
+  const height = Math.max(columnBottom(leftNodes), columnBottom(rightNodes), lowestLabel) + 8;
 
   return { width, height, nodes, links: buildLinks(flows, leftNodes, rightNodes, LEFT_GUTTER + NODE_W, rightX) };
 }
 
-function stack(
-  items: { id: string; label: string; kind: SankeyNode["kind"]; h: number; flow?: "in" | "out"; gap?: number }[],
-  x: number,
-  minLabelGap: number,
-): SankeyNode[] {
+type StackItem = {
+  id: string;
+  label: string;
+  kind: SankeyNode["kind"];
+  h: number;
+  flow?: "in" | "out";
+  gap?: number;
+};
+
+function nodeAt(it: StackItem, x: number, y: number, labelY: number): SankeyNode {
+  const { id, label, kind, h: height } = it;
+  return { id, label, x, y, width: NODE_W, height, kind, labelY, ...(it.flow ? { flow: it.flow } : {}) };
+}
+
+function stack(items: StackItem[], x: number, minLabelGap: number): SankeyNode[] {
   let y = 4;
   let prevLabel = -Infinity;
   return items.map((it, i) => {
     if (i > 0) y += it.gap ?? PAD;
-    const labelY = Math.max(y + it.h / 2, prevLabel + minLabelGap);
-    prevLabel = labelY;
-    const n: SankeyNode = {
-      id: it.id,
-      label: it.label,
-      x,
-      y,
-      width: NODE_W,
-      height: it.h,
-      kind: it.kind,
-      labelY,
-      ...(it.flow ? { flow: it.flow } : {}),
-    };
+    prevLabel = Math.max(y + it.h / 2, prevLabel + minLabelGap);
+    const n = nodeAt(it, x, y, prevLabel);
     y += it.h;
     return n;
   });

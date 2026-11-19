@@ -15,115 +15,13 @@
 // throw, an unexpected response shape, a 5xx — DENIES rather than grants.
 // Never widen a catch/fallback to "ok: true" here.
 
-import { config } from "../config.ts";
 import { createCache } from "../ttl-cache.ts";
 import { appJwt, resetAppJwtCache } from "./github-app-jwt.ts";
+import { ghFetch } from "./github-app-fetch.ts";
+import { resetInstallUrlCaches } from "./github-app-install-url.ts";
 
 export { appJwt, normalizePem } from "./github-app-jwt.ts";
-
-// ---------------------------------------------------------------------------
-// Shared fetch helper
-// ---------------------------------------------------------------------------
-
-// Calls the AMBIENT global fetch (not a captured reference) so tests can
-// swap globalThis.fetch. Wraps the network call: a thrown error (DNS, abort,
-// TLS…) collapses to `null` here so every caller has one shape to handle,
-// instead of a propagating exception each call site would need to catch
-// itself.
-async function ghFetch(
-  url: string,
-  token: string,
-  init?: RequestInit,
-): Promise<{ ok: boolean; status: number; json: any } | null> {
-  try {
-    const res = await fetch(url, {
-      ...init,
-      headers: {
-        accept: "application/vnd.github+json",
-        "x-github-api-version": "2022-11-28",
-        "user-agent": "redlens-preview",
-        // An empty token means an unauthenticated call (public endpoints only,
-        // e.g. the account-id lookup below); GitHub rejects a bare `Bearer `.
-        ...(token ? { authorization: `Bearer ${token}` } : {}),
-        ...(init?.headers ?? {}),
-      },
-    });
-    let json: any = null;
-    try {
-      json = await res.json();
-    } catch {
-      /* non-JSON (e.g. 5xx html) — leave null */
-    }
-    return { ok: res.ok, status: res.status, json };
-  } catch {
-    return null;
-  }
-}
-
-// ---------------------------------------------------------------------------
-// App metadata (install URL)
-// ---------------------------------------------------------------------------
-
-// The App's public install page — https://github.com/apps/<slug>/installations/new.
-// We only configure the numeric app id + private key, not the slug, so derive it
-// from GET /app (an app-JWT call). Cached on first success for the process; a
-// failure returns null (and is NOT cached, so the next request retries) so the
-// caller falls back to generic "ask the owner" copy rather than a broken link.
-let cachedInstallUrl: string | null = null;
-
-// GitHub's install page also accepts `/installations/new/permissions?target_id=<account id>`,
-// which skips the account picker and opens the permission screen for THAT account
-// only — so an installer is never offered every org they belong to. The id of a
-// user or org is public (GET /users/<login>, no auth needed), so it can be looked
-// up for the repo the preview named even though the App can't see the repo yet.
-// GitHub's docs name the key `suggested_target_id` (marked required on that path)
-// while its own install buttons emit `target_id`; both are sent so the link is
-// right whichever one this path honours.
-// The repository itself CAN'T be pre-set: `repository_ids[]` ticks "Only select
-// repositories" with the listed repos, but a private repo's numeric id is
-// invisible until the App is installed on it — exactly the state this link is
-// shown in. So we pass a PLACEHOLDER id the account can't own: GitHub drops ids
-// the target doesn't own, and the presence of the parameter is what flips the
-// selector off its "All repositories" default. Decided 2026-09-17 without a
-// verified GitHub reference (docs unreachable from the sandbox) — if the
-// install page ever errors on it, drop INSTALL_REPO_PLACEHOLDER first. The
-// install screen's copy names the repo to pick either way.
-const INSTALL_REPO_PLACEHOLDER = "&repository_ids[]=0";
-// Account ids never change; the TTL only bounds a deleted/renamed login.
-const ownerIdCache = createCache<number>({ max: 1000, ttlMs: 24 * 60 * 60_000 });
-
-/** Numeric GitHub account id for a user/org login, or null if unknown. Public endpoint. */
-export async function accountIdForLogin(login: string): Promise<number | null> {
-  const now = Date.now();
-  const cached = ownerIdCache.get(login);
-  if (cached !== undefined) return cached;
-  const r = await ghFetch(`https://api.github.com/users/${encodeURIComponent(login)}`, config.githubToken);
-  const id = r?.ok ? r.json?.id : null;
-  if (typeof id !== "number" || !Number.isFinite(id)) return null;
-  ownerIdCache.set(login, id, now);
-  return id;
-}
-
-/**
- * The App's install URL, or null if it couldn't be determined (unconfigured/failed).
- * With `repo` ("owner/name"), targets that owner's account when its id resolves
- * (`/installations/new/permissions?suggested_target_id=…&target_id=…&repository_ids[]=0`, the placeholder
- * pre-selecting "Only select repositories"); otherwise the generic page.
- */
-export async function appInstallUrl(repo?: string): Promise<string | null> {
-  if (!cachedInstallUrl) {
-    if (!config.githubAppId || !config.githubAppPrivateKey) return null;
-    const r = await ghFetch("https://api.github.com/app", await appJwt());
-    const slug = r?.ok ? r.json?.slug : null;
-    if (typeof slug === "string" && slug) cachedInstallUrl = `https://github.com/apps/${slug}/installations/new`;
-    if (!cachedInstallUrl) return null;
-  }
-  const owner = repo?.split("/")[0];
-  if (!owner) return cachedInstallUrl;
-  const id = await accountIdForLogin(owner);
-  if (id === null) return cachedInstallUrl;
-  return `${cachedInstallUrl}/permissions?suggested_target_id=${id}&target_id=${id}${INSTALL_REPO_PLACEHOLDER}`;
-}
+export { accountIdForLogin, appInstallUrl } from "./github-app-install-url.ts";
 
 // ---------------------------------------------------------------------------
 // Installation lookup + token minting
@@ -318,8 +216,7 @@ export async function userRepoPermission(repo: string, login: string): Promise<P
 /** Clears in-process caches. Test-only — production code never needs this. */
 export function __resetCachesForTest(): void {
   resetAppJwtCache();
-  cachedInstallUrl = null;
-  ownerIdCache.clear();
+  resetInstallUrlCaches();
   installationCache.clear();
   installationTokenCache.clear();
 }

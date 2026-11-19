@@ -27,16 +27,10 @@
  * formatting pass can interpret wad/ray/rad units later.
  */
 
-import fs from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import { CHAIN_RPC } from "../lib/chains.mjs";
-
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const ADDRS_PATH = path.join(ROOT, "public/addresses.json");
-const CACHE_DIR = path.join(ROOT, ".cache/etherscan");
+import { buildCalls, loadChainlogEntries } from "../lib/chain-state-calls.ts";
 
 function serializeResult(value) {
   if (value === null || value === undefined) return null;
@@ -51,68 +45,6 @@ function serializeResult(value) {
     return out;
   }
   return String(value);
-}
-
-async function loadAbi(addr) {
-  try {
-    const entry = JSON.parse(await fs.readFile(path.join(CACHE_DIR, "1", `${addr}.json`), "utf8"));
-    if (!entry.abi) return null;
-    return JSON.parse(entry.abi);
-  } catch { return null; }
-}
-
-/** The ethereum chainlog entries of public/addresses.json; throws when there are none. */
-async function loadChainlogEntries(log, rpcUrl) {
-  const addresses = JSON.parse(await fs.readFile(ADDRS_PATH, "utf8"));
-  const chainlogEntries = Object.entries(addresses).filter(
-    ([, info]) => info.chainlogId && info.chain === "ethereum",
-  );
-  log(`Chainlog addresses: ${chainlogEntries.length}`);
-  log(`RPC: ${rpcUrl}`);
-
-  if (chainlogEntries.length === 0) {
-    throw new Error(
-      "No chainlog addresses in public/addresses.json — refusing to produce an empty " +
-      "chain-state snapshot (likely a failed chainlog/address build upstream).",
-    );
-  }
-  return chainlogEntries;
-}
-
-/** One call per zero-argument view/pure function of each contract, using the implementation ABI for proxies. */
-async function buildCalls(chainlogEntries, log) {
-  const calls = [];
-  let proxyUpgraded = 0;
-  for (const [addr, info] of chainlogEntries) {
-    let abi = null;
-    if (info.isProxy && info.implementation) {
-      abi = await loadAbi(info.implementation);
-      if (abi) { proxyUpgraded++; }
-      else { console.warn(`  ! proxy ${info.chainlogId}: no impl ABI for ${info.implementation}, falling back to proxy ABI`); }
-    }
-    if (!abi) { abi = await loadAbi(addr); }
-    if (!abi) { console.warn(`  ! no ABI for ${info.chainlogId} (${addr})`); continue; }
-    const viewFns = abi.filter(
-      (fn) =>
-        fn.type === "function" &&
-        (fn.stateMutability === "view" || fn.stateMutability === "pure") &&
-        (fn.inputs ?? []).length === 0,
-    );
-    for (const fn of viewFns) { calls.push({ address: addr, chainlogId: info.chainlogId, fnName: fn.name, abi }); }
-  }
-  log(`Total calls: ${calls.length} across ${chainlogEntries.length} contracts (${proxyUpgraded} using impl ABI)`);
-
-  if (calls.length === 0) {
-    // The ABIs come from the read-through Etherscan cache in .cache/etherscan/1/,
-    // which ships in the worker image (see .dockerignore's negation). An empty
-    // call list means that cache is missing, not that the contracts have no
-    // view functions — refuse instead of storing an empty snapshot.
-    throw new Error(
-      `No contract ABIs found in ${path.relative(ROOT, CACHE_DIR)}/1 — refusing to produce an ` +
-      "empty chain-state snapshot (run `pnpm build:addresses` with ETHERSCAN_API_KEY to populate the cache).",
-    );
-  }
-  return calls;
 }
 
 /** Multicall every call in batches of 500 at one block; results line up with `calls`. */
@@ -130,6 +62,35 @@ async function multicallAll(client, calls, block, log) {
     rawResults.push(...batch);
   }
   return rawResults;
+}
+
+/** The pinned block (option, then BLOCK_NUMBER), else the latest. */
+async function resolveBlock(client, opts, log) {
+  const pinned = opts.blockNumber != null || Boolean(process.env.BLOCK_NUMBER);
+  const block = opts.blockNumber != null
+    ? BigInt(opts.blockNumber)
+    : process.env.BLOCK_NUMBER
+      ? BigInt(process.env.BLOCK_NUMBER)
+      : await client.getBlockNumber();
+  log(`Fetching at block ${block}${pinned ? " (pinned)" : " (latest)"}`);
+  return block;
+}
+
+/** Serialize each call's result into values[address][fnName]; a reverted call is null. */
+function collectValues(calls, rawResults, log) {
+  const values = {};
+  for (let i = 0; i < calls.length; i++) {
+    const { address, fnName } = calls[i];
+    const { status, result } = rawResults[i];
+    if (!values[address]) values[address] = {};
+    values[address][fnName] = status === "success" ? serializeResult(result) : null;
+  }
+  let successCount = 0; let failCount = 0;
+  for (const fns of Object.values(values)) {
+    for (const v of Object.values(fns)) { if (v !== null) successCount++; else failCount++; }
+  }
+  log(`Values: ${successCount} ok, ${failCount} reverted, across ${Object.keys(values).length} addresses`);
+  return values;
 }
 
 /**
@@ -151,27 +112,10 @@ export async function fetchChainState(opts = {}) {
   const chainlogEntries = await loadChainlogEntries(log, rpcUrl);
   const calls = await buildCalls(chainlogEntries, log);
 
-  const block = opts.blockNumber != null
-    ? BigInt(opts.blockNumber)
-    : process.env.BLOCK_NUMBER
-      ? BigInt(process.env.BLOCK_NUMBER)
-      : await client.getBlockNumber();
-  log(`Fetching at block ${block}${opts.blockNumber != null || process.env.BLOCK_NUMBER ? " (pinned)" : " (latest)"}`);
+  const block = await resolveBlock(client, opts, log);
 
   const rawResults = await multicallAll(client, calls, block, log);
-
-  const values = {};
-  for (let i = 0; i < calls.length; i++) {
-    const { address, fnName } = calls[i];
-    const { status, result } = rawResults[i];
-    if (!values[address]) values[address] = {};
-    values[address][fnName] = status === "success" ? serializeResult(result) : null;
-  }
-  let successCount = 0; let failCount = 0;
-  for (const fns of Object.values(values)) {
-    for (const v of Object.values(fns)) { if (v !== null) successCount++; else failCount++; }
-  }
-  log(`Values: ${successCount} ok, ${failCount} reverted, across ${Object.keys(values).length} addresses`);
+  const values = collectValues(calls, rawResults, log);
 
   return { block: block.toString(), values };
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
 import { refreshRecent } from "../lib/recentSearches";
+import { useDropdownKeys } from "./recentDropdownKeys";
 
 // Open/close + keyboard state for the recent-searches dropdown. Implements the
 // ARIA combobox + listbox pattern: DOM focus stays on the input the whole time
@@ -42,25 +42,17 @@ function useDropdownState(query: string) {
   }, []);
 
   const onFocus = useCallback(() => {
-    if (skipMountFocus.current) {
-      skipMountFocus.current = false;
-      return;
-    }
-    openDropdown();
+    if (!skipMountFocus.current) openDropdown();
+    skipMountFocus.current = false;
   }, [openDropdown]);
 
-  const onBlur = useCallback(() => {
-    blurTimer.current = setTimeout(close, 120);
-  }, [close]);
+  const onBlur = useCallback(() => void (blurTimer.current = setTimeout(close, 120)), [close]);
 
   return { open, active, setActive, close, openDropdown, onFocus, onBlur };
 }
 
-export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
-  const { open, active, setActive, close, openDropdown, onFocus, onBlur } = useDropdownState(query);
-  const visible = open && suggestions.length > 0;
-
-  const select = useCallback(
+function useSelect(suggestions: string[], onSelect: Args["onSelect"], close: () => void) {
+  return useCallback(
     (i: number) => {
       const q = suggestions[i];
       if (q === undefined || !onSelect) return;
@@ -69,36 +61,23 @@ export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
     },
     [suggestions, onSelect, close],
   );
+}
 
-  const onKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        close();
-        return;
-      }
-      if (!visible) {
-        // Re-summon by pressing Backspace/Delete on an already-empty field.
-        if ((e.key === "Backspace" || e.key === "Delete") && query.trim() === "") openDropdown();
-        return;
-      }
-      const last = suggestions.length - 1;
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setActive((a) => Math.min(a + 1, last));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setActive((a) => Math.max(a - 1, -1));
-      } else if (e.key === "Tab" && !e.shiftKey && active === -1) {
-        // Step into the dropdown so Enter runs the first suggestion.
-        e.preventDefault();
-        setActive(0);
-      } else if (e.key === "Enter" && active >= 0) {
-        e.preventDefault();
-        select(active);
-      }
-    },
-    [visible, query, suggestions.length, active, close, openDropdown, select, setActive],
-  );
+export function useRecentDropdown({ suggestions, query, onSelect }: Args) {
+  const { open, active, setActive, close, openDropdown, onFocus, onBlur } = useDropdownState(query);
+  const visible = open && suggestions.length > 0;
+
+  const select = useSelect(suggestions, onSelect, close);
+  const onKeyDown = useDropdownKeys({
+    visible,
+    query,
+    last: suggestions.length - 1,
+    active,
+    close,
+    openDropdown,
+    select,
+    setActive,
+  });
 
   // Mouse hover writes the same `active` index the keyboard uses, so the two
   // can never both highlight a row — whichever moved last wins. setActive bails

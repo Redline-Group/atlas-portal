@@ -114,6 +114,18 @@ export function buildChildrenIndex(allDocs) {
   return childrenByDocNo;
 }
 
+// A leaf's stated values: expanded bullet/sentence pairs, else one formatted
+// param. A key already taken is prefixed with the nearest parent's title.
+function addLeafParams(params, doc, content, expanded, parents) {
+  const keyFor = (key) =>
+    key in params ? `${parents[parents.length - 1] ?? ""} / ${key}`.trim() : key;
+  if (!expanded) {
+    params[keyFor(doc.title)] = [formatParam(doc.title, content), doc.id, doc.doc_no];
+    return;
+  }
+  for (const [key, value] of expanded) params[keyFor(key)] = [value, doc.id, doc.doc_no];
+}
+
 // Walk down from ANY param-container root and flatten leaves into
 // { key: [formattedValue, srcUuid, srcDocNo] }. Handles both flat (DR/IB/
 // agent-token) and nested (Allocation System: Parameters → Instance Identifiers
@@ -138,17 +150,7 @@ export function extractParamsFromRoot(rootDoc, childrenByDocNo) {
     // Expansion order: per-title expander → generic bullet-list → formatter (leaves only).
     const expanded = stated ? (PARAM_EXPANDERS[doc.title]?.(content) ?? expandBulletList(content, doc.title)) : null;
     if (kids.length === 0) {
-      if (!stated) continue;
-      if (expanded) {
-        for (const [key, value] of expanded) {
-          const finalKey = key in params ? `${parents[parents.length - 1] ?? ""} / ${key}`.trim() : key;
-          params[finalKey] = [value, doc.id, doc.doc_no];
-        }
-      } else {
-        const baseKey = doc.title;
-        const key = baseKey in params ? `${parents[parents.length - 1] ?? ""} / ${baseKey}`.trim() : baseKey;
-        params[key] = [formatParam(doc.title, content), doc.id, doc.doc_no];
-      }
+      if (stated) addLeafParams(params, doc, content, expanded, parents);
     } else {
       // Skip the "Custom Instance Parameters" subtree at any depth — it's a
       // reserved extension slot, almost always empty/placeholder in practice.

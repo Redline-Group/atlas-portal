@@ -90,10 +90,63 @@ function emitValidatorEdges(names, rosterDocNo, bridge, nameIndex, edges, addEnt
   }
 }
 
+// The roster/quorum pair at one parent, or null when it is not a bridge
+// (pair of containers / spec prose), is half-parsed, or has no root doc.
+function resolvePair(parentDocNo, slot, docByDocNo, warn) {
+  if (!slot.roster || !slot.quorum) return null;
+  const rosterMatch = (slot.roster.content ?? "").match(ROSTER_RE);
+  const quorumMatch = (slot.quorum.content ?? "").match(QUORUM_RE);
+  if (!rosterMatch && !quorumMatch) return null;
+  if (!rosterMatch || !quorumMatch) {
+    warn(`pair at ${parentDocNo} only half-parsed (roster: ${!!rosterMatch}, quorum: ${!!quorumMatch})`);
+    return null;
+  }
+  const root = docByDocNo.get(parentDocNo);
+  if (!root) { warn(`no root doc for pair at ${parentDocNo}`); return null; }
+  return { root, rosterMatch, quorumMatch };
+}
+
+// Component subject, network qualifier and display name of one pair; warns
+// when roster and quorum sentences name different subjects.
+function bridgeIdentity(parentDocNo, pair, docByDocNo, warn) {
+  const { root, rosterMatch, quorumMatch } = pair;
+  const subject = rosterMatch[1].trim();
+  const quorumSubject = quorumMatch[1].trim();
+  if (normalizeKey(subject) !== normalizeKey(quorumSubject)) {
+    warn(`subject mismatch at ${parentDocNo}: "${subject}" vs "${quorumSubject}"`);
+  }
+  const network = normalizeKey(root.title) !== normalizeKey(subject) ? root.title.trim() : null;
+  const displayName = bridgeDisplayName(parentDocNo, root, subject, network, docByDocNo);
+  return { subject, network, displayName };
+}
+
+// Mints the bridge entity and its defines_entity edge; null on a slug collision.
+function addBridge(parentDocNo, slot, pair, ctx) {
+  const { root, quorumMatch } = pair;
+  const { docByDocNo, entityMap, edges, addEntity, warn } = ctx;
+  const { subject, network, displayName } = bridgeIdentity(parentDocNo, pair, docByDocNo, warn);
+  const slug = slugify(displayName);
+  if (entityMap.has(slug)) { warn(`slug collision, skipped: ${root.doc_no} (${slug})`); return null; }
+  const ent = addEntity(slug, displayName, "bridge", null, root.id, {
+    source: "bridge_pattern",
+    component: subject,
+    network,
+    quorum: `${quorumMatch[2]}/${quorumMatch[3]}`,
+    quorum_doc_no: slot.quorum.doc_no,
+  });
+  ent.id = root.id; // doc UUID is the entity id, like instances and multisigs
+  edges.push({
+    fromId: root.id, fromType: "doc", toId: ent.id, toType: "entity",
+    edgeType: "defines_entity", sourceDocNos: [],
+  });
+  return ent;
+}
+
 export function extractBridges(allDocs, docById, docByDocNo, entityMap, edges, addEntity) {
   const nameIndex = buildNameIndex(entityMap);
   const stats = { roots: 0, validatorEdges: 0, created: 0, warnings: 0 };
   const warn = makeWarn("  bridge:", stats);
+  const ctx = { docByDocNo, entityMap, edges, addEntity, warn };
 
   // Group candidate children by parent doc_no (slot shape: { roster?, quorum? }).
   // Container docs also titled "Validators" ("The documents herein specify…")
@@ -101,45 +154,12 @@ export function extractBridges(allDocs, docById, docByDocNo, entityMap, edges, a
   const byParent = groupChildrenByParent(allDocs, (d) => childKind(d.title));
 
   for (const [parentDocNo, slot] of [...byParent.entries()].sort()) {
-    if (!slot.roster || !slot.quorum) continue;
-    const rosterMatch = (slot.roster.content ?? "").match(ROSTER_RE);
-    const quorumMatch = (slot.quorum.content ?? "").match(QUORUM_RE);
-    if (!rosterMatch && !quorumMatch) continue; // pair of containers / spec prose
-    if (!rosterMatch || !quorumMatch) {
-      warn(`pair at ${parentDocNo} only half-parsed (roster: ${!!rosterMatch}, quorum: ${!!quorumMatch})`);
-      continue;
-    }
-    const root = docByDocNo.get(parentDocNo);
-    if (!root) { warn(`no root doc for pair at ${parentDocNo}`); continue; }
+    const pair = resolvePair(parentDocNo, slot, docByDocNo, warn);
+    if (!pair) continue;
     stats.roots++;
-
-    const subject = rosterMatch[1].trim();
-    const quorumSubject = quorumMatch[1].trim();
-    if (normalizeKey(subject) !== normalizeKey(quorumSubject)) {
-      warn(`subject mismatch at ${parentDocNo}: "${subject}" vs "${quorumSubject}"`);
-    }
-    const quorum = `${quorumMatch[2]}/${quorumMatch[3]}`;
-
-    const network = normalizeKey(root.title) !== normalizeKey(subject) ? root.title.trim() : null;
-    const displayName = bridgeDisplayName(parentDocNo, root, subject, network, docByDocNo);
-
-    const slug = slugify(displayName);
-    if (entityMap.has(slug)) { warn(`slug collision, skipped: ${root.doc_no} (${slug})`); continue; }
-
-    const ent = addEntity(slug, displayName, "bridge", null, root.id, {
-      source: "bridge_pattern",
-      component: subject,
-      network,
-      quorum,
-      quorum_doc_no: slot.quorum.doc_no,
-    });
-    ent.id = root.id; // doc UUID is the entity id, like instances and multisigs
-    edges.push({
-      fromId: root.id, fromType: "doc", toId: ent.id, toType: "entity",
-      edgeType: "defines_entity", sourceDocNos: [],
-    });
-
-    const names = parseNameList(rosterMatch[2]);
+    const ent = addBridge(parentDocNo, slot, pair, ctx);
+    if (!ent) continue;
+    const names = parseNameList(pair.rosterMatch[2]);
     if (!names.length) warn(`roster yielded no names: ${slot.roster.doc_no}`);
     emitValidatorEdges(names, slot.roster.doc_no, ent, nameIndex, edges, addEntity, stats);
   }

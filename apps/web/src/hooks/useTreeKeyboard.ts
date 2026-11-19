@@ -63,68 +63,35 @@ function openRow(c: KeyContext, shiftKey: boolean) {
   c.setFocusedIndex(-1);
 }
 
+type KeyAction = (c: KeyContext, e: React.KeyboardEvent) => void;
+
+const KEY_ACTIONS = new Map<string, KeyAction>([
+  ["ArrowDown", (c) => moveFocus(c, 1)],
+  ["ArrowUp", (c) => moveFocus(c, -1)],
+  ["ArrowRight", expandRow],
+  ["ArrowLeft", collapseRow],
+  ["Enter", (c, e) => openRow(c, e.shiftKey)],
+]);
+
 function handleTreeKey(e: React.KeyboardEvent, p: Params) {
-  if (p.visibleNodes.length === 0) return;
-  const c = { ...p, idx: p.focusedIndex >= 0 ? p.focusedIndex : p.selectedIndex };
-  switch (e.key) {
-    case "ArrowDown":
-      e.preventDefault();
-      moveFocus(c, 1);
-      break;
-    case "ArrowUp":
-      e.preventDefault();
-      moveFocus(c, -1);
-      break;
-    case "ArrowRight":
-      e.preventDefault();
-      expandRow(c);
-      break;
-    case "ArrowLeft":
-      e.preventDefault();
-      collapseRow(c);
-      break;
-    case "Enter":
-      e.preventDefault();
-      openRow(c, e.shiftKey);
-      break;
-  }
+  const action = KEY_ACTIONS.get(e.key);
+  if (!action || p.visibleNodes.length === 0) return;
+  e.preventDefault();
+  action({ ...p, idx: p.focusedIndex >= 0 ? p.focusedIndex : p.selectedIndex }, e);
 }
 
 export function useTreeKeyboard(params: Params) {
-  const {
-    visibleNodes,
-    focusedIndex,
-    selectedIndex,
-    expandedIds,
-    listRef,
-    onNavigate,
-    onShiftNavigate,
-    setFocusedIndex,
-    setExpandedIds,
-  } = params;
+  const { visibleNodes, focusedIndex, selectedIndex, expandedIds, listRef } = params;
+  const { onNavigate, onShiftNavigate, setFocusedIndex, setExpandedIds } = params;
   return useCallback(
     (e: React.KeyboardEvent) =>
       handleTreeKey(e, {
-        visibleNodes,
-        focusedIndex,
-        selectedIndex,
-        expandedIds,
-        listRef,
-        onNavigate,
-        onShiftNavigate,
-        setFocusedIndex,
-        setExpandedIds,
+        visibleNodes, focusedIndex, selectedIndex, expandedIds, listRef,
+        onNavigate, onShiftNavigate, setFocusedIndex, setExpandedIds,
       }),
     [
-      visibleNodes,
-      focusedIndex,
-      selectedIndex,
-      expandedIds,
-      listRef,
-      onNavigate,
-      onShiftNavigate,
-      setFocusedIndex,
-      setExpandedIds,
+      visibleNodes, focusedIndex, selectedIndex, expandedIds, listRef,
+      onNavigate, onShiftNavigate, setFocusedIndex, setExpandedIds,
     ],
   );
 }
