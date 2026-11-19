@@ -246,7 +246,7 @@
       "severity": "high",
       "pass": "factual",
       "quote": "Using the finalized `Atlas Edit Proposal` content",
-      "issue": "Every sibling input/output document names this document `Artifact Edit Proposal`; `Atlas Edit Proposal` does not exist in the process.",
+      "issue": "`Atlas Edit Proposal` is the Sky Core Atlas proposal Core GovOps publishes for a Sky Governance Poll (A.1.10.2.3.2.1.1.1.4). This step is a Prime Agent token-holder Snapshot vote on an Agent Artifact change: the next step edits the `Artifact Edit Proposal` Document (A.2.2.9.1.2.3.5.3) and no Sky Core Atlas document is updated (A.2.2.9.1.2.3.5.4.1), so `Artifact Edit Proposal` is meant here.",
       "fix": "Using the finalized `Artifact Edit Proposal` content"
     },
     {
@@ -282,7 +282,7 @@
       "severity": "high",
       "pass": "factual",
       "quote": "Using the finalized `Atlas Edit Proposal` content",
-      "issue": "Every sibling input/output document names this document `Artifact Edit Proposal`; `Atlas Edit Proposal` does not exist in the process.",
+      "issue": "`Atlas Edit Proposal` is the Sky Core Atlas proposal Core GovOps publishes for a Sky Governance Poll (A.1.10.2.3.2.1.1.1.4). This step is a Prime Agent token-holder Snapshot vote on an Agent Artifact change: the next step edits the `Artifact Edit Proposal` Document (A.2.2.9.2.2.3.5.3) and no Sky Core Atlas document is updated (A.2.2.9.2.2.3.5.4.1), so `Artifact Edit Proposal` is meant here.",
       "fix": "Using the finalized `Artifact Edit Proposal` content"
     },
     {

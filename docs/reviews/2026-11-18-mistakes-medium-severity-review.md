@@ -1614,3 +1614,8 @@ The reviewer kept row 129 as real at `low`, reading the shared address as likely
 ### Row 141 — Osero Mainnet token symbol `ogusdcp`
 
 The reviewer kept row 141 as real at `low`, reading the all-lowercase Token identifier in A.6.1.1.7.2.6.1.3.1.1.1.2.1.4 as an inconsistency with the Base Instance's `ogUSDCb` (A.6.1.1.7.2.6.1.3.2.1.1.2.1.4). On human review it is a false positive: the Mainnet vault contract (`0x802148d518a6de2af866f9a61ffb5e5c39156db2`) reports its symbol as `ogusdcp` itself, so the Atlas records the token exactly as deployed. The two Instances differ because the deployed tokens differ; the suggested fix `ogUSDCp` would make the Atlas wrong. This is the one verdict in these reviews that rests on on-chain state rather than Atlas text, supplied by the human reviewer. The row is moved to `rejected`; its low-severity twin was already rejected as its duplicate.
+
+### Rows 25 and 27 — `Atlas Edit Proposal` in the offchain-vote Process Flow
+
+Kept, with the issue text reworded. The stored text said `Atlas Edit Proposal` "does not exist in the process", which read as a claim that the term is not an Atlas concept. It is one: Core GovOps publishes an Atlas Edit Proposal for a Sky Governance Poll (A.1.10.2.3.2.1.1.1.4). The defect stands in context: A.2.2.9.1.2.3.5.2 and A.2.2.9.2.2.3.5.2 set up a Prime Agent token-holder Snapshot vote on an Agent Artifact change, their next steps edit the `Artifact Edit Proposal` Document (A.2.2.9.1.2.3.5.3, A.2.2.9.2.2.3.5.3), and no Sky Core Atlas document is updated (A.2.2.9.1.2.3.5.4.1, A.2.2.9.2.2.3.5.4.1). The issue text now says so.
+
