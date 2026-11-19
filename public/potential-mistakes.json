@@ -4075,7 +4075,8 @@
       "fix": "",
       "rejectedReason": "The conditional refers to the Nested Contributor exception on the child A.6.1.1.1.2.2.2.2.1.2.1.1.1 — a general rule with a named exception, not a clash.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.3.2.1.1.2.1.18#contradiction",
@@ -4090,7 +4091,8 @@
       "fix": "",
       "rejectedReason": "USDS (A.6.1.1.1.3.2.1.1.2.1.3) is also 0%/0% with Collateral: Yes, and cbBTC/sUSDS also omit the Flash Loan line; the text sets no rule pyUSD breaks.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.2.2.1.1.3#contradiction",
@@ -4105,7 +4107,8 @@
       "fix": "ALM Controller contracts are accessed via the Relayer Role and configured via the Default Admin Role.",
       "rejectedReason": "General operational sentence beside the Default Admin Role (A.6.1.1.1.2.6.1.2.2.1.1.1), which covers admin functions; loose wording, not incompatible rules.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.4.4.1.3.8.5.1#contradiction",
@@ -4120,7 +4123,8 @@
       "fix": "State the initial `str` as approximately 4,000 basis points (40%), or reconcile A.4.4.1.3.8.6.1.1 to the 0 bps deployment value",
       "rejectedReason": "Fixed upstream: The counterpart A.4.4.1.3.8.6.1.1 (uuid c4523493, initial `str` of about 40%) is no longer in the Atlas, so only the 0 bps value in A.4.4.1.3.8.5.1 remains.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.2.2.1.3#contradiction",
@@ -4135,7 +4139,8 @@
       "fix": "Add the Needed Research exception to this rule (and to A.1.2.1.1), as A.1.2.2.2.30 itself does for the Supporting Root derivation.",
       "rejectedReason": "A.1.2.2.2.30 explicitly sets Needed Research apart ('Unlike other Supporting Documents') with its own NR- numbering; a named type-level exception to the general identifier rules in A.1.2.2.1.3 / A.1.2.1.1.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.6.10#contradiction",
@@ -4150,7 +4155,8 @@
       "fix": "Route the failure through the Graduated Response Framework (Tier 1 notice, escalating to Tier 2), or state explicitly why this requirement is carved out of A.1.6.6.1 the way A.1.6.1.4.1 carves out the Probationary Period.",
       "rejectedReason": "A.1.6.10 is a named rule for one security mechanism tied to AD opsec (A.1.6.7), and opsec breaches are already Tier 2 derecognition in A.1.6.6.1.2; lex specialis beside the general tiers in A.1.6.6.1.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.10.2.4.8.2.6#contradiction",
@@ -4165,7 +4171,8 @@
       "fix": "Either narrow the Authorization link to Atlas documents / Governance Polls, or carve out in A.1.10.2.4.5.1.1 which forum posts (e.g. by a party holding Atlas authority) count as sufficient provenance",
       "rejectedReason": "A.1.10.2.4.5.1.1 bars informal stakeholder comments; A.1.10.2.4.5.1.5 says provenance comments authorize via authority the Atlas gives the commenter, and A.1.10.2.3.2.1.2.1.3 names the Core Facilitator's forum approval.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.5.4.1.1.3#contradiction",
@@ -4180,7 +4187,8 @@
       "fix": "Status should be `Completed`, matching the Agent Creation and Prime Transformation Primitive Instances.",
       "rejectedReason": "A token remains in use, which fits `Active` (A.2.2.1.3.2.1); the Agent Token doc names its own status (lex specialis), and A.2.2.1.2.4.2.1.1's `Completed` is the Global Status, a separate field.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.10.1.1.1.2.5.2.5.3.3#contradiction",
@@ -4195,7 +4203,8 @@
       "fix": "unclear — needs author: either state that swaps are also bounded by the pool's configured maxSlippage, or amend A.2.2.10.1.1.1.2.1.6 so `maxSlippage` is scoped to liquidity operations only",
       "rejectedReason": "A.2.2.10.1.1.1.2.1.6 is a generic parameter gloss; the Uniswap v3 swap doc states precisely that its control is the max tick deviation. The specific facet text governs (lex specialis); sibling liquidity ops are different functions.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.8.1.1.1.2#contradiction",
@@ -4210,7 +4219,8 @@
       "fix": "Either drop 'exclusively' here, or in A.2.8.1.1.2.3.2 say the parties' arguments reach the Facilitator only through the Core GovOps analysis",
       "rejectedReason": "The GovOps analysis must include 'a structured presentation of the arguments in favor of each party' (A.2.8.1.1.2.3.1), so the parties' arguments reach the Facilitator through GovOps-prepared material. The texts fit together.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-backlog.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.10.2.4.7.4.4#typo-2",
@@ -4225,7 +4235,8 @@
       "fix": null,
       "rejectedReason": "Duplicate of A.1.10.2.4.7.4.4#typo, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.9.1.2.4.1.4.1.1.2#markdown",
@@ -4240,7 +4251,8 @@
       "fix": null,
       "rejectedReason": "A.2.2.9.1.2.4.1.4.1.1.2 has two adjacent bold spans (bold code, then bold text) separated by a space, not empty bold markers; it renders correctly.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.8.2.2.2.7.4#stale",
@@ -4255,7 +4267,8 @@
       "fix": "The cut-off should probably read 'before the Prime's TGE' or 'prior to July 1, 2025', matching the document title and the 4.4m deduction it authorizes; otherwise the Spark deduction is unauthorized by the clause it cites.",
       "rejectedReason": "The 'after July 1, 2025' window is intentional: A.2.8.2.2.2.7.5 credits income from July 1 until TGE net of A.2.8.2.2.2.7.4 expenses, and the Spark 2m/2.4m advances are authorized by their own children .4.1/.4.2.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.6.1.2.2.3.2.1#structural-call",
@@ -4271,7 +4284,8 @@
       "fix": "",
       "rejectedReason": "All four ERC-4626 Withdrawal Action docs direct the same call, redeemERC4626(address(token), token.balanceOf(address(proxy))); only the wording (execute action vs call function) differs.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.3.5.3.2.3.7#xref",
@@ -4286,7 +4300,8 @@
       "fix": null,
       "rejectedReason": "The link resolves to the right doc (A.6.1.1.1.3.5.3.2.2 'Operational Process'); the label just prefixes the parent title A.6.1.1.1.3.5.3.2 'Rewards Rate', the same pattern every sibling uses.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.3.5.3.2.3.7#xref-3",
@@ -4301,7 +4316,8 @@
       "fix": null,
       "rejectedReason": "The link resolves to the right doc (A.6.1.1.1.3.5.3.2.1 'Definition'); the label just prefixes the parent title 'Rewards Rate' (A.6.1.1.1.3.5.3.2), the same pattern every sibling uses.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.1.15.1.2.2.1#entity",
@@ -4316,7 +4332,8 @@
       "fix": "Token Address should be the USDG token address 0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
       "rejectedReason": "Every Paxos conversion ICD sets Token Address = Underlying = supplied asset, not Token to Receive (e.g. Spark USDC To PYUSD A.6.1.1.1.2.6.1.3.1.7.1.2.2.1 uses USDC), so USDC here follows the convention.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.7.1.1.2.5.1#numeric",
@@ -4331,7 +4348,8 @@
       "fix": "Should probably read 'may not exceed 100 million USDG' (or state the USD-equivalent basis explicitly).",
       "rejectedReason": "Maximum Exposure caps are stated in USDS house-wide regardless of asset (e.g. ACRDX exposure in USDS at A.6.1.1.2.2.6.1.3.1.1.3.2.5.1), so a USDS-denominated USDG cap is consistent.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.1.1.3.2.2.2#copy-paste",
@@ -4346,7 +4364,8 @@
       "fix": "The maximum amount of USDC that can be swapped for USDS by the Keel Liquidity Layer on Solana is specified in the document herein.",
       "rejectedReason": "Duplicate of A.6.1.1.3.2.6.1.2.1.1.3.2.2.2#wrong-word, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-high-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.9.1.2.3.1.4.2#naming-2",
@@ -4361,7 +4380,8 @@
       "fix": "Edit `Primitive Hub Document/In Progress Invocations Directory/Instance Name`",
       "rejectedReason": "Duplicate of A.2.2.9.1.2.3.1.4.2#naming, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.3.4.2.2.2#naming",
@@ -4376,7 +4396,8 @@
       "fix": "",
       "rejectedReason": "Duplicate of A.6.1.1.1.3.4.2.2.2#xref, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.2.2.3.2.2#copy-paste-2",
@@ -4391,7 +4412,8 @@
       "fix": "A reallocation freeze prevents any movement of funds within the Controller",
       "rejectedReason": "Duplicate of A.6.1.1.3.2.6.1.2.2.2.3.2.2#copy-paste, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming-2",
@@ -4406,7 +4428,8 @@
       "fix": "ogUSDCp",
       "rejectedReason": "Duplicate of A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.6.3.0.3.1#structural",
@@ -4421,7 +4444,8 @@
       "fix": "Define the element once, as the quantity of voting power delegated to a Delegate Contract, and describe the act of entrusting separately.",
       "rejectedReason": "Element Annotations are scoped to their own Target Documents; A.1.6.3.0.3.1 explains the delegation mechanism for A.1.6.3 while A.1.6.4.1.3.3.0.3.1 gives the quantity sense for the ranking rule. Not a contradiction.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.9.1.3.2#governance",
@@ -4436,7 +4460,8 @@
       "fix": "'This emergency contact mechanism is validated by the Protocol Security Workstream Lead and approved through the process in A.1.9.1.3.2.3', or amend A.1.9.1.3.2.3 to give the PSWL the selection authority.",
       "rejectedReason": "A.1.9.1.3.2 covers selection/validation of the mechanism; A.1.9.1.3.2.3 is a specific process for changing the approved one and still requires PSWL consultation. A general rule beside a named change process.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.10.2.3.2.2.1.4.1.1.1#governance",
@@ -4451,7 +4476,8 @@
       "fix": "Use one determining authority consistently (e.g. 'as determined by the Core Facilitator and Core GovOps') or state that the Core Council acts through them",
       "rejectedReason": "The Atlas has the Core Facilitator and Core Spell Teams act on behalf of the Core Council (A.0.1.2.1, A.1.10.2.3.2.2.1.4.1.2), so 'as determined by the Core Council' fits A.1.10.2.3.2.2.1.3.3 rather than naming a rival authority.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.10.2.4.9.2.3#structural",
@@ -4466,7 +4492,8 @@
       "fix": "A.1.10.2.4.9.2.3 - Spell Reviewer Direct Authoring Ban",
       "rejectedReason": "Duplicate of A.1.10.2.4.9.2.3#copy-paste, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.10.2.4.11.1.6#xref",
@@ -4481,7 +4508,8 @@
       "fix": "Executive Validator ([https://vote.sky.money/executive/create](https://vote.sky.money/executive/create)) — drop the vote.makerdao.com link.",
       "rejectedReason": "Duplicate of A.1.10.2.4.11.1.6#markdown, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.9.1.2.3.5.2#naming",
@@ -4496,7 +4524,8 @@
       "fix": "Using the finalized `Artifact Edit Proposal` content",
       "rejectedReason": "Duplicate of A.2.2.9.1.2.3.5.2#entity, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.9.2.2.3.5.2#naming",
@@ -4511,7 +4540,8 @@
       "fix": "Using the finalized `Artifact Edit Proposal` content",
       "rejectedReason": "Duplicate of A.2.2.9.2.2.3.5.2#entity, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.7.1.2.1.1.3#wrong-word",
@@ -4526,7 +4556,8 @@
       "fix": "the ban on users approved for unbanning will be lifted across all communication channels",
       "rejectedReason": "In A.2.7.1.2.1.1.3 \"unbanned users\" means users unbanned by the binding Governance Poll; the sentence extends that lifting to all channels. This is redundant wording, not a contradiction.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.9.1.1.1.4.2.2.6#governance",
@@ -4541,7 +4572,8 @@
       "fix": "Either populate the member list to at least three members, or state the quorum as a proportion of appointed members; unclear — needs author.",
       "rejectedReason": "The Committee is 'a group of Ecosystem Actors' (A.2.9.1.1.1.2) whose 'individual members' serve on its behalf (A.2.9.1.1.1.2.2); listed member Gallagher is an entity that can supply three experts, so the quorum is satisfiable.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.3.2.2.1.1.1.5.2.6#numeric",
@@ -4556,7 +4588,8 @@
       "fix": "State one capital ratio for Instance Financial RRC, or say explicitly that the RWA/Basel path deliberately uses 8% while the lending-market model uses 8.75%.",
       "rejectedReason": "The RWA path (A.3.2.2.1.1.1.5.2.6) and the lending-market model are distinct methodologies; in the latter CR divides K and is offset by ECR (A.3.2.2.1.1.1.1.1.5), so 8.75% plays a different role than the RWA 8% ratio.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.3.2.2.1.2.2.1#structural",
@@ -4571,7 +4604,8 @@
       "fix": "unclear — needs author: either raise/remove the cap, or state that the High/Extreme methodologies are dormant while the temporary cap is in force.",
       "rejectedReason": "A.3.2.2.1.2.2.1 and A.3.2.2.1.3.1.1 expressly call CAP a temporary cap; higher-band methodologies being dormant while a named temporary override is in force is by design, not a defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.4.4.1.3.8.5.1#numeric",
@@ -4586,7 +4620,8 @@
       "fix": "unclear — needs author: either the initial `str` must be at least 200 bps, or the document should note that the deployment Executive Vote sets `str` directly rather than through the BEAM bounds",
       "rejectedReason": "The initial values were set by the deploying Executive Vote, which the BEAM bounds do not limit (A.4.4.1.3.8.5), and BEAM params are modifiable (A.4.4.1.3.8.3); a historical 0 bps start does not breach the current min.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.2.2.2.1.2.1.1#structural-total",
@@ -4602,7 +4637,8 @@
       "fix": "",
       "rejectedReason": "Spark (A.6.1.1.1.2.2.2.2.1.2.1.1) and Grove use total supply consistently within their own doc; per-agent Root Edit thresholds may differ and nothing in the text says they must match.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.2.2.2.1.2.3#structural-urgent",
@@ -4618,7 +4654,8 @@
       "fix": "",
       "rejectedReason": "Each agent's Emergency Protocol matches its own child: Obex's A.6.1.1.5.2.2.2.2.1.2.3.1 covers only Emergency Situations, Spark's A.6.1.1.1.2.2.2.2.1.2.3.1 covers Urgent and Emergency; a per-agent difference, not a defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.3.2#structural-groves",
@@ -4634,7 +4671,8 @@
       "fix": "",
       "rejectedReason": "Duplicate of A.6.1.1.2.2.3.2#grammar, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.5.1.1#structural-groves",
@@ -4650,7 +4688,8 @@
       "fix": "",
       "rejectedReason": "Duplicate of A.6.1.1.2.2.5.1.1#grammar, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.6.1.1.4#structural-toa61126112",
@@ -4666,7 +4705,8 @@
       "fix": "",
       "rejectedReason": "Duplicate of A.6.1.1.3.2.6.1.1.4#markdown, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.6.1.2.2.3#structural-event",
@@ -4682,7 +4722,8 @@
       "fix": "",
       "rejectedReason": "\"in the event of\" vs \"in case of\" is harmless wording variation; Osero's A.6.1.1.7.2.6.1.2.2.3 has since been rewritten to point to A.2.2.10.1.1.1.2.5.4 anyway.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.6.1.3.1.1.1.2.4#structural-deposit",
@@ -4698,7 +4739,8 @@
       "fix": "",
       "rejectedReason": "Keel's A.6.1.1.3.2.6.1.3.1.1.1.2.4 says deposit and withdrawal because its children are a Deposit Rate Limit and a Withdrawal Rate Limit; accurate per-instance wording, not a defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.*.2.6.3#structural-groves",
@@ -4714,7 +4756,8 @@
       "fix": "",
       "rejectedReason": "Duplicate of A.6.1.1.2.2.6.3#typo, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.1.2.1.4.4#xref",
@@ -4729,7 +4772,8 @@
       "fix": "",
       "rejectedReason": "Duplicate of A.6.1.1.1.2.6.1.1.2.1.4.4#naming, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.3.1.6.5.2.1.4#typo",
@@ -4744,7 +4788,8 @@
       "fix": "OUSD/USDS",
       "rejectedReason": "Every sibling Uniswap v4 Token parameter (A.6.1.1.1.2.6.1.3.1.6.1-.6.4 .2.1.4) concatenates the pair, as in PYUSDUSDS and USDTUSDS, so OUSDUSDS follows house style. The slash form appears only in rate-limit text.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.4.3#structural",
@@ -4759,7 +4804,8 @@
       "fix": "Move the Blackrock and Centrifuge groups under A.6.1.1.1.2.6.1.4.3, or reword this document so it does not claim to hold all Ethereum Mainnet Completed instances.",
       "rejectedReason": "Fixed upstream: The container is now A.6.1.1.1.2.6.1.4.1, and the Blackrock and Centrifuge groups sit inside it as A.6.1.1.1.2.6.1.4.1.8 and .9.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.3.2.1.1.3.2.2#numeric",
@@ -4774,7 +4820,8 @@
       "fix": "unclear - needs author: `max` looks like a unit/decimal slip (compare WETH's `max`: Unlimited), or the wstETH borrow cap is deliberately disabled and should be stated as such.",
       "rejectedReason": "A borrow-cap max of 1 with a larger gap is a deliberate pattern: rETH (A.6.1.1.1.3.2.1.1.3.2.3) has the same shape and also lists Borrowing: Yes (A.6.1.1.1.3.2.1.1.2.1.11); max simply bounds the automator.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.2.1.1.3.1.2.3#numeric",
@@ -4789,7 +4836,8 @@
       "fix": "`slope`: 0 (matching the unlimited-limit convention used for LIMIT_USDC_TO_CCTP_ETH)",
       "rejectedReason": "'slope: Unlimited' alongside 'maxAmount: Unlimited' is a common convention across the rate-limit tables, e.g. A.6.1.1.3.2.6.1.2.1.1.3.1.1.2 and A.6.1.1.1.2.6.1.2.1.1.3.6.1.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.1.1.3.2.5.1#numeric",
@@ -4804,7 +4852,8 @@
       "fix": "State the cap in USDC to match the Instance's supplied asset and rate limits, or state the conversion basis if USDS is deliberate.",
       "rejectedReason": "Grove states Maximum Exposure caps in USDS whatever the supplied asset: the USDG (A.6.1.1.2.2.6.1.3.7.1.1.2.5.1) and USDC/AUSD (A.6.1.1.2.2.6.1.3.1.12.3.2.5.1) Instances do the same, so USDS is the unit of account here.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.2.1.1.2.2.1#entity",
@@ -4819,7 +4868,8 @@
       "fix": "unclear — needs author: supply the Avalanche JTRSY share-token address, or relabel this field as the vault address",
       "rejectedReason": "The address is still present, so this is not fixed, but the Ethereum Centrifuge JTRSY ICD (A.6.1.1.2.2.6.1.3.1.1.1.2.2.1) also gives 0xFE69…d77A as its 'Token Address'. The Avalanche doc follows that convention, and the text cannot show the address is wrong.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.7.2.1.2.2.1#entity",
@@ -4834,7 +4884,8 @@
       "fix": "Token Address should be the USDC contract address on Robinhood Chain, not 0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168 (USDG).",
       "rejectedReason": "In Paxos conversion ICDs, Token Address = Underlying = the supplied asset, not the received one: e.g. the Grove USDC-to-USDG Instance A.6.1.1.2.2.6.1.3.1.15.1.2.2.1 lists the USDC address.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.3.6.7#xref",
@@ -4849,7 +4900,8 @@
       "fix": "Link target should be https://gateway.pinata.cloud/ipfs/bafkreierc3rxu3d64xakeeibkqujkqbhlz3lcsnjymcckaacix55vhya6u.",
       "rejectedReason": "Duplicate of A.6.1.1.2.3.6.7#markdown, which reports the same defect in the same document.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.3.2.6.1.2.1.1.3.1.1.1#numeric",
@@ -4864,7 +4916,8 @@
       "fix": "Probably 100,000,000 USDS maxAmount / 50,000,000 USDS per day to match the sibling limits — unclear, needs author.",
       "rejectedReason": "10,000 USDS is low but self-consistent (maxAmount and slope agree) and plausibly a deliberate near-zero mint cap. LIMIT_USDS_TO_USDC is not 'unreachable', because USDS can enter other ways. The text alone shows no error.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.7.2.5.1.2.2.2.1#copy-paste",
@@ -4879,7 +4932,8 @@
       "fix": "In future iterations of the Osero Artifact, a version of the full process definition customized to Nightly will be included herein.",
       "rejectedReason": "'customized to <Agent>' names the Agent, not the Instance, across every Prime. A.6.1.1.1.2.5.1.2.1.2.1 says 'customized to Spark' and all Osero instances say 'Osero', so 'Osero' is correct here.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.1.11.2.5.2#naming-2",
@@ -4894,7 +4948,8 @@
       "fix": "If there are two conflicting Atlas Edit Weekly Cycle Proposals",
       "rejectedReason": "Duplicate of the language-pass row on the same document (A.1.11.2.5.2), which reports the same defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.9.1.2.3.4.4.2#copy-paste",
@@ -4909,7 +4964,8 @@
       "fix": "",
       "rejectedReason": "'The Process' is the Operational Facilitator Review process (A.2.2.9.1.2.3.4), which its inputs do complete; triggering the next process is standard boilerplate used across every sibling Agent Artifact Updates doc.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.9.2.2.3.1.4.2#naming-2",
@@ -4924,7 +4980,8 @@
       "fix": "Edit `Primitive Hub Document/In Progress Invocations Directory/Instance Name`",
       "rejectedReason": "Duplicate of the language-pass row on the same document (A.2.2.9.2.2.3.1.4.2), which reports the same defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.9.2.2.3.4.4.2#copy-paste",
@@ -4939,7 +4996,8 @@
       "fix": "",
       "rejectedReason": "'The Process' here is the Operational Facilitator Review process (A.2.2.9.2.2.3.4), which its inputs complete; the same boilerplate sentence appears in every sibling Agent Artifact Updates doc.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.10.1.1.1.2.3.1.2.20.1#numeric",
@@ -4954,7 +5012,8 @@
       "fix": "",
       "rejectedReason": "Per A.2.2.10.1.1.1.2.3.1.2 these are historical highs of maxAmount and slope, recorded separately; a slope above maxAmount is a valid fast refill, and nothing in the text shows the figure is wrong.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.2.10.1.1.2.2.3#entity",
@@ -4969,7 +5028,8 @@
       "fix": "",
       "rejectedReason": "'Operational Executor Facilitator' is a defined Atlas term (A.0.1.1.50, A.1.7.1) and is used the same way in sibling steps A.2.2.10.1.1.2.2.1-2 and A.2.2.8.1.1.1.2.3.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.3.1.4#grammar",
@@ -4984,7 +5044,8 @@
       "fix": "The documents herein define the intended operation of the Sky Treasury Management Function;",
       "rejectedReason": "A.2.3.1.4 is grammatical: changes to the documents define the intended operation, while on-chain effect needs an Executive Vote. That contrast is deliberate.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.8.2.2.2.7.2.1#naming-2",
@@ -4999,7 +5060,8 @@
       "fix": "2.4 million USDS transferred from the Sky Ecosystem Liquidity Bootstrapping Budget",
       "rejectedReason": "Duplicate of the language-pass row on the same document (A.2.8.2.2.2.7.2.1), which reports the same defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.8.2.7.2.2.2.2#naming-2",
@@ -5014,7 +5076,8 @@
       "fix": "Transfer Of Genesis Capital Allocation To USDS Demand Subsidies Multisig",
       "rejectedReason": "Duplicate of the language-pass row on the same document (A.2.8.2.7.2.2.2.2), which reports the same defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.2.8.2.7.2.2.3.2#entity",
@@ -5029,7 +5092,8 @@
       "fix": "",
       "rejectedReason": "The November grant is explicitly for the November Executive Vote, and a Sky Core Spell can execute SubProxy actions (A.1.10.2.3.2.3.2.1, A.4.6.2.1.3); a different vehicle from the July grant is not an error.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.4.4.1.3.8.5.3.5.1#entity",
@@ -5044,7 +5108,8 @@
       "fix": "",
       "rejectedReason": "A.4.4.1.3.8.5.3.5.1 has the specifier review Sidestream's implementation, which is a coherent workflow; no Atlas rule requires an independent reviewer, so the claim is speculation.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.2.2.2.1.2.1.4#xref",
@@ -5059,7 +5124,8 @@
       "fix": "update the Atlas GitHub repository located at [https://github.com/sky-ecosystem/next-gen-atlas](https://github.com/sky-ecosystem/next-gen-atlas)",
       "rejectedReason": "The link text is the URL itself, so label and target agree. The pulls page is part of the repository and is where Atlas updates are made. The same template text appears in every Prime artifact (e.g. A.6.1.1.2.2.2.2.2.1.2.1.5).",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.1.2.1.9.1#naming-2",
@@ -5074,7 +5140,8 @@
       "fix": "Ethereum Mainnet - Transfer USDC to Binance (receive USDT) Instance Configuration Document Location",
       "rejectedReason": "Duplicate of the language-pass row on the same document (A.6.1.1.1.2.6.1.1.2.1.9.1), which reports the same defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.1.2.3.1#naming",
@@ -5089,7 +5156,8 @@
       "fix": "Spark Savings v2",
       "rejectedReason": "Every Spark Savings directory heading (e.g. A.6.1.1.1.2.6.1.1.2.1.4, A.6.1.1.1.2.6.1.3.1.4) writes \"V2\", so this is a consistent Title Case heading convention, not a one-off slip.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.1.3.2.1.1#xref",
@@ -5104,7 +5172,8 @@
       "fix": "",
       "rejectedReason": "Duplicate of the language-pass row on the same document (A.6.1.1.1.2.6.1.1.3.2.1.1), which reports the same defect.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.2.1.1.3.6.3.1#entity",
@@ -5119,7 +5188,8 @@
       "fix": "",
       "rejectedReason": "Spark labels its per-destination CCTP limits with a chain suffix throughout (`LIMIT_USDC_TO_CCTP_BASE` in A.6.1.1.1.2.6.1.2.1.1.3.2.7.1, `_ETH` in .3.1.4.1), so `_AVALANCHE` follows house style and is not a misnaming.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.3.1.5.1.2.2.3#entity",
@@ -5134,7 +5204,8 @@
       "fix": "",
       "rejectedReason": "A pool whose share token is the pool contract itself has the same Token and Pool Address; the Curve ICD (A.6.1.1.1.2.6.1.3.1.2.1.2.2.1/.4) shows the same identical pairing.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.2.6.1.3.1.9.2.2.3.1#entity",
@@ -5149,7 +5220,8 @@
       "fix": "",
       "rejectedReason": "The two Binance ICDs state that their OTC swap rate limit is shared with each other (A.6.1.1.1.2.6.1.3.1.9.2.2.4.1 and 9.1.2.4.1), so an identical RateLimitID is intended.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.1.3.9.7.2.4#entity",
@@ -5164,7 +5236,8 @@
       "fix": "",
       "rejectedReason": "No Atlas rule bars one multisig from holding both the Sentinel and Allocator roles. A.6.1.1.1.3.9.7.2.4 lists both deliberately, and the finding only asks for confirmation.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.2.2.2.1.2.1.5#xref",
@@ -5179,7 +5252,8 @@
       "fix": "",
       "rejectedReason": "This is the same template text as A.6.1.1.1.2.2.2.2.1.2.1.4. The link text is the URL itself, and the pulls page is part of the repository and is where Atlas updates are made.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.1.11.1.2.3#structural",
@@ -5194,7 +5268,8 @@
       "fix": "",
       "rejectedReason": "A.6.1.1.2.2.6.1.3.1.11.1.2.3 has Inflow, Outflow, Mint and Redeem RateLimitID children, and sibling Rate Limits .4 has Deposit, Withdrawal, Mint and Redeem limits; all four operations are covered.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.2.2.6.1.3.1.11.1.2.4#structural",
@@ -5209,7 +5284,8 @@
       "fix": "",
       "rejectedReason": "A.6.1.1.2.2.6.1.3.1.11.1.2.4 has four children: Deposit, Withdrawal, Mint (.4.3) and Redeem (.4.4) Rate Limits, matching the four operations named.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.3.2.2.2.2.1.2.1.5#xref",
@@ -5224,7 +5300,8 @@
       "fix": "[https://github.com/sky-ecosystem/next-gen-atlas](https://github.com/sky-ecosystem/next-gen-atlas)",
       "rejectedReason": "Same Root Edit template as A.6.1.1.1.2.2.2.2.1.2.1.4 and A.6.1.1.2.2.2.2.2.1.2.1.5: the link text is the URL itself and the pulls page is where Atlas updates are made.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-low-severity-review.md",
+      "rejectedBy": "ai-review"
     },
     {
       "id": "A.6.1.1.4.2.5.2.2.3.1.2#entity",
@@ -5239,7 +5316,8 @@
       "fix": "unclear — needs author; one of the two partner reward addresses is almost certainly a copy-paste of the other",
       "rejectedReason": "Morpho and Curve (A.6.1.1.4.2.5.2.2.2.1.2) share one Integration Partner Reward Address because that address receives the rewards for both integrations; nothing requires it to be unique.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "human"
     },
     {
       "id": "A.6.1.1.7.2.6.1.3.1.1.1.2.1.4#naming",
@@ -5254,7 +5332,8 @@
       "fix": "ogUSDCp",
       "rejectedReason": "The Mainnet vault contract 0x802148d518a6de2af866f9a61ffb5e5c39156db2 reports its symbol as `ogusdcp`, so the Atlas records the deployed token exactly; Base's ogUSDCb is a different token.",
       "rejectedOn": "2026-11-18",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-medium-severity-review.md",
+      "rejectedBy": "human"
     },
     {
       "id": "A.6.1.1.4.2.2.2.2.1.2.1.1#copy-paste",
@@ -5269,7 +5348,8 @@
       "fix": "The post must include cryptographic proof",
       "rejectedReason": "The conditional refers to the buyback-or-grant waiver of the 1% requirement in the child A.6.1.1.4.2.2.2.2.1.2.1.1.1; the contradiction review missed it by looking only for a Nested Contributor exception.",
       "rejectedOn": "2026-11-19",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md",
+      "rejectedBy": "human"
     },
     {
       "id": "A.6.1.1.3.2.2.2.2.1.2.1.1#copy-paste",
@@ -5284,7 +5364,8 @@
       "fix": "The post must include cryptographic proof",
       "rejectedReason": "The conditional refers to the buyback-or-grant waiver of the 1% requirement in the child A.6.1.1.3.2.2.2.2.1.2.1.1.1; this row was added by the contradiction review, which missed that waiver.",
       "rejectedOn": "2026-11-19",
-      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md"
+      "rejectedIn": "docs/reviews/2026-11-18-mistakes-contradiction-review.md",
+      "rejectedBy": "human"
     }
   ]
 }

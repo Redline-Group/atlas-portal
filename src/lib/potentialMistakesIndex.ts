@@ -38,7 +38,7 @@ export interface Mistake {
   fix: string | null;
 }
 
-/** A finding a human read against the source and ruled out. */
+/** A finding a review read against the source and ruled out. */
 export interface RejectedMistake extends Mistake {
   /** One line on why it is not a real defect. */
   rejectedReason: string;
@@ -46,6 +46,13 @@ export interface RejectedMistake extends Mistake {
   rejectedOn: string;
   /** Repo path of the review that carries the full reasoning. */
   rejectedIn: string;
+  /**
+   * Who decided the veto: a person, or an AI reviewer whose verdict no person
+   * has confirmed. An `ai-review` veto suppresses re-adds like any other, so it
+   * stays open to audit: a person confirms it (→ `human`) or moves the row back
+   * to `findings`. Absent on vetoes recorded before the field existed.
+   */
+  rejectedBy?: "human" | "ai-review";
 }
 
 export interface MistakesFile {

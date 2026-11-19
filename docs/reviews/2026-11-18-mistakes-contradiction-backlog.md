@@ -4,6 +4,7 @@
 **Corpus as reviewed:** `public/potential-mistakes.json` after the 2026-11-18 incremental sweep and the review of its five new rows ([2026-11-18-mistakes-contradiction-review.md](2026-11-18-mistakes-contradiction-review.md)); atlas SHA `6daa01968a0fc3fe67fdedc45761cf33ba114515`. These 32 `contradiction` rows predate that sweep (13 sweep-severity high, 19 medium).
 **Question:** which of them hold up when each flagged document is read beside the documents it was said to conflict with?
 **Method:** the strict test from [2026-09-16-mistakes-contradiction-false-positives.md](2026-09-16-mistakes-contradiction-false-positives.md) — a contradiction is two texts asserting incompatible operative rules with no exception, override or present/future split between them. Each row was read against the atlas at the SHA above; every quote below was checked mechanically as a verbatim substring of the document it is attributed to. Rows that are real defects but not contradictions were re-filed under the category that fits.
+**Who decided:** AI reviewers (Claude subagents) read each row and gave the verdicts; Claude checked every cited quote mechanically and made the review calls listed below. No person re-checked the rows. In `public/potential-mistakes.json`, each veto this review recorded carries `rejectedBy`: `human` for a person's call, `ai-review` otherwise, so the AI-decided vetoes can be audited and confirmed or reopened.
 
 ---
 

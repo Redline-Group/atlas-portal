@@ -4,6 +4,7 @@
 **Corpus as reviewed:** `public/potential-mistakes.json` after the incremental sweep of 2026-11-18 (atlas SHA `6daa01968a0fc3fe67fdedc45761cf33ba114515`, 1,957 documents re-read, 360 findings, 5 of them new `contradiction` rows)
 **Question:** which of the five new contradiction rows hold up when each flagged document is read beside the documents it was said to conflict with?
 **Method:** the strict test the factual pass was given (from [2026-09-16-mistakes-contradiction-false-positives.md](2026-09-16-mistakes-contradiction-false-positives.md)): a contradiction is two texts asserting incompatible operative rules with no exception, override or present/future split between them. The Atlas text at the SHA above is ground truth; the sweep's `quote` / `issue` / `fix` are the claim under review.
+**Who decided:** Claude (an AI assistant) read each row and proposed the verdicts below; a person approved the list as proposed without re-checking each row. The two Skybase/Keel rows in the addendum are a person's call. In `public/potential-mistakes.json`, each veto this review recorded carries `rejectedBy`: `human` for a person's call, `ai-review` otherwise, so the AI-decided vetoes can be audited and confirmed or reopened.
 
 ---
 

@@ -4,6 +4,7 @@
 **Corpus as reviewed:** `public/potential-mistakes.json` after the 2026-11-18 incremental sweep and both contradiction reviews ([2026-11-18-mistakes-contradiction-review.md](2026-11-18-mistakes-contradiction-review.md), [2026-11-18-mistakes-contradiction-backlog.md](2026-11-18-mistakes-contradiction-backlog.md)); atlas SHA `6daa01968a0fc3fe67fdedc45761cf33ba114515`. Scope: every `high` row those reviews did not already cover — 125 rows (73 language-pass, 34 factual-pass, 18 mechanical).
 **Question:** does each defect hold as described, under the right category, at the right confidence?
 **Method:** each row was read against the flagged document and whatever siblings, parents or linked documents the claim depends on, at the SHA above. Severity is the sweep's confidence that the defect is real, so a real but cosmetic defect keeps `high` unless the reading is uncertain; where a reviewer lowered it, the reason is in the row. Every quote below was checked mechanically as a verbatim substring of the document it is attributed to.
+**Who decided:** AI reviewers (Claude subagents) read each row and gave the verdicts; Claude checked every cited quote mechanically and made the review calls listed below. No person re-checked the rows. In `public/potential-mistakes.json`, each veto this review recorded carries `rejectedBy`: `human` for a person's call, `ai-review` otherwise, so the AI-decided vetoes can be audited and confirmed or reopened.
 
 ---
 
