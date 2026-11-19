@@ -66,6 +66,41 @@ describe("Sky Core Halos", () => {
     warn.mockRestore();
   });
 
+  it("skips a list child that states no contracts, and stays silent for an empty list", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const withNote = [...docs, doc("note", "A.1.14.6.3.2", "Retired Sky Core Halos", "The documents herein list retired halos.")];
+    const { map, add } = entities();
+    expect(addSkyCoreHalos(withNote, buildChildrenIndex(withNote), add)).toBe(1);
+    expect([...map.keys()]).toEqual(["test-halo"]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("Retired Sky Core Halos"));
+    warn.mockClear();
+    const empty = docs.filter((d) => !d.doc_no.startsWith("A.1.14.6.3.1"));
+    expect(addSkyCoreHalos(empty, buildChildrenIndex(empty), entities().add)).toBe(0);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it("gives a halo that shares another entity's name its own slug, leaving that entity's id alone", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { map, add } = entities();
+    const other = add("test-halo", "Test Halo", "ecosystem_actor", null as unknown as string, "other-doc", {});
+    const dedupe = (slug: string, ...rest: [string, string, string, string, object]) => map.get(slug) ?? add(slug, ...rest);
+    expect(addSkyCoreHalos(docs, children, dedupe)).toBe(1);
+    expect(other.id).toBe("test-halo");
+    expect(map.get("test-halo-halo")).toMatchObject({ id: "halo", subtype: "halo" });
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("shares its name"));
+    warn.mockRestore();
+  });
+
+  it("applies the executor rule to Sky Core Halos only", () => {
+    const { map, add } = entities();
+    add("nested", "Nested Halo", "agent", "halo", "nested-doc", { source: "prime_artifact" });
+    add("ozone", "Ozone", "agent", "operational_executor", OZONE, {});
+    const { ctx, edges } = context(map);
+    haloExecutorFor.run(ctx);
+    expect(edges).toEqual([]);
+  });
+
   it("links the cited Operational Executor Agent to every Sky Core Halo", () => {
     const { map, add } = entities();
     addSkyCoreHalos(docs, children, add);
@@ -91,6 +126,8 @@ describe("Sky Core Halos", () => {
     addSkyCoreHalos(docs, children, add);
     add("spark", "Spark", "agent", "prime", "spark-doc", {});
     add("spark-creation", "Spark's Instance", "instance", "agent-creation", "icd", { agent_doc_id: "spark-doc", params: { "StarGuard Contract / Ethereum Mainnet": [GUARD, "g", "A.6.1.1.1.2.1.1.3.1.1.3"], "StarGuard Max Delay": ["7 days", "d", "A.6"] } });
+    add("far", "Far Agent", "agent", "halo", "far-doc", { params: { "SubProxy Account / Zzyzx Network": [SUB, "s", "A.9"] } });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const { ctx, edges } = context(map);
     agentContractAddress.run(ctx);
     expect(edges.map((e) => [e.fromId, e.toId, JSON.parse(e.meta).role])).toEqual([
@@ -98,5 +135,7 @@ describe("Sky Core Halos", () => {
       ["halo", `${GUARD.toLowerCase()}:ethereum`, "starguard"],
       ["spark", `${GUARD.toLowerCase()}:ethereum`, "starguard"],
     ]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("Far Agent SubProxy Account / Zzyzx Network"));
+    warn.mockRestore();
   });
 });

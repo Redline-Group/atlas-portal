@@ -201,7 +201,8 @@ const addressOnNetwork = (label) => (content) => {
 };
 const PARAM_EXPANDERS = {
   "SubProxy Account": addressOnNetwork("SubProxy Account"),
-  "StarGuard Contract": addressOnNetwork("StarGuard Contract"),
+  "StarGuard Contract": (content) =>
+    /will be specified/i.test(content) ? [["StarGuard Contract", "TBD"]] : addressOnNetwork("StarGuard Contract")(content),
   "Genesis Account": (content) =>
     /will be specified/i.test(content) ? [["Genesis Account", "TBD"]] : addressOnNetwork("Genesis Account")(content),
   "Token Address": (content) => {

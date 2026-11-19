@@ -2,7 +2,7 @@
 // schema (doc-type taxonomy, entity-type traversal graph) straight off the
 // in-memory indexes, plus the tool guide, citation rules, and the current page
 // context. Built per request so taxonomy + counts always match what's loaded.
-import { AGENT_FAMILIES, agentFamily, type AgentFamilyId } from "../../lib/agentKinds.ts";
+import { AGENT_FAMILIES, UNLISTED_AGENT, agentFamily, type AgentFamilyId } from "../../lib/agentKinds.ts";
 import { atlasDescribe } from "./tools/tools.ts";
 import { config } from "../config.ts";
 import type { Indexes } from "../retrieval/indexes.ts";
@@ -58,6 +58,8 @@ export function agentArtifactRoster(ix: Indexes): string | null {
     const members = rows.filter((r) => agentFamily(r.subtype) === family);
     if (members.length) parts.push(`${ROSTER_HEADING[family.family] ?? family.plural}: ${fmt(members)}.`);
   }
+  const unlisted = rows.filter((r) => !agentFamily(r.subtype));
+  if (unlisted.length) parts.push(`${UNLISTED_AGENT.plural}: ${fmt(unlisted)}.`);
   return parts.join(" ");
 }
 

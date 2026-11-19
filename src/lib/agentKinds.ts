@@ -12,6 +12,9 @@ export const AGENT_FAMILIES = [
   { family: "halo", label: "Halo Agent", plural: "Halo Agents", served: true },
 ] as const;
 
+/** Where an agent whose subtype the registry does not list is shown, so a missing entry is visible. */
+export const UNLISTED_AGENT = { label: "Agent", plural: "Agents" } as const;
+
 export type AgentFamilyId = (typeof AGENT_FAMILIES)[number]["family"];
 export type AgentFamily = (typeof AGENT_FAMILIES)[number];
 

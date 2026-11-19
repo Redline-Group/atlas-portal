@@ -4,7 +4,7 @@ import { pushTo, groupBy } from "@/lib/collections";
 import { cmpDocNo } from "@/lib/docNo";
 import { parseMeta } from "@/lib/meta";
 import { EXEC_EDGES, FAC_EDGES, GOV_EDGES } from "@/lib/roleEdges";
-import { AGENT_FAMILIES, agentFamily, isServedSubtype } from "@/lib/agentKinds";
+import { AGENT_FAMILIES, UNLISTED_AGENT, agentFamily, isServedSubtype } from "@/lib/agentKinds";
 import type { GraphData } from "./graph";
 import type { InstanceMeta, InvocationMeta, RewardsAgent } from "@/lib/rewardsTypes";
 import type { ActiveDataRow } from "@/lib/activeDataIndex";
@@ -131,7 +131,7 @@ export function buildSidebarActors(
       })
       .map((e) => ({ id: e.id, slug: e.slug, name: e.name, et: e.et, st: e.st, docId: e.did }));
   return [
-    ...AGENT_FAMILIES.map((f) => ({ label: f.plural, actors: by((e) => e.et === "agent" && agentFamily(e.st) === f) })),
+    ...[...AGENT_FAMILIES, null].map((f) => ({ label: (f ?? UNLISTED_AGENT).plural, actors: by((e) => e.et === "agent" && e.st !== null && agentFamily(e.st) === f) })),
     { label: "Facilitators", actors: by((e) => e.et === "facilitator_org") },
     { label: "GovOps", actors: by((e) => e.et === "govops_org") },
   ].filter((g) => g.actors.length > 0);

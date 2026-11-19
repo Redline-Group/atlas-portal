@@ -52,6 +52,11 @@ describe("ActorChain", () => {
     expect(screen.getByText("Prime Agent").closest("tr")).not.toHaveTextContent("Halo One");
   });
 
+  it("lists a served agent whose subtype the registry does not list under Agent", () => {
+    render(<ActorChain chain={{ ...emptyChain(), served: [node({ id: "x1", slug: "x-1", name: "Odd One", st: "satellite" })] }} currentSlug="ozone" />);
+    expect(screen.getByText("Agent").closest("tr")).toHaveTextContent("Odd One");
+  });
+
   it("filters out the node matching currentSlug", () => {
     const chain: ActorChainData = {
       served: [

@@ -2,7 +2,7 @@
 // states them as params of its Agent Creation instance; a Sky Core Halo states
 // them on its own entity. The edge's meta names the param and the role.
 import { ETH_ADDR_EXACT_RE, normalizeAddress } from "../address-chains.mjs";
-import { normalizeChainLabel } from "../chains.mjs";
+import { classifyChainLabel } from "../chains.mjs";
 
 const ROLE: Record<string, string> = { "SubProxy Account": "subproxy", "StarGuard Contract": "starguard" };
 const CONTRACT_PARAM_RE = new RegExp(`^(${Object.keys(ROLE).join("|")}) / (.+)$`);
@@ -21,7 +21,11 @@ function run(ctx: any) {
     for (const [key, [value, , srcDocNo]] of Object.entries(meta.params) as [string, [string, string, string]][]) {
       const m = key.match(CONTRACT_PARAM_RE);
       if (!m || !ETH_ADDR_EXACT_RE.test(value)) continue;
-      const chain = normalizeChainLabel(m[2], "icd-chain");
+      const { kind, chain } = classifyChainLabel(m[2]);
+      if (kind === "unknown") {
+        console.warn(`  [drift] ${owner.name} ${key} (${srcDocNo}) names a network the chain registry does not list; no has_address edge`);
+        continue;
+      }
       ctx.addEdge(owner.id, "entity", `${normalizeAddress(value)}:${chain}`, "address", "has_address", [srcDocNo], JSON.stringify({ param: key, role: ROLE[m[1]] }));
     }
   }

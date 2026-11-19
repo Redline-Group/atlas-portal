@@ -284,6 +284,11 @@ describe("extractInstanceParams", () => {
     expect(paramsResult["StarGuard Max Delay"][1]).toBe("sgd");
   });
 
+  it("reads a StarGuard Contract that is still to be specified as TBD, above its child", () => {
+    const pending = [params_, { ...starGuard, content: "The address of Test Agent's StarGuard contract will be specified in a future iteration." }, starGuardDelay];
+    expect(extractInstanceParams(icd, buildChildrenIndex(pending))["StarGuard Contract"]).toEqual(["TBD", "sg", `${PARAMS_NO}.11`]);
+  });
+
   it("special-cases the 'will be specified' Genesis Account placeholder", () => {
     expect(paramsResult["Genesis Account"]).toEqual(["TBD", "ga", `${PARAMS_NO}.3`]);
   });

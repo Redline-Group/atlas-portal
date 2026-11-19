@@ -35,10 +35,11 @@ describe("firstLine", () => {
     expect(firstLine(content)).toBe(content);
   });
 
-  it("reads the bullets under a header that leads with a condition, and keeps a header naming a linked list", () => {
+  it("keeps a header that leads with a condition or names a linked list, and reads the bullets under a bare created header", () => {
     const created =
       "After Operational GovOps confirms that the request is feasible, the Document is created as follows.\n\n- Fields\n    - Invocation Status\n        - New value: set to `Proposal drafting in progress`\n- Responsible Party: Operational GovOps\n- Trigger - Process: [A.2.2.9.1.2.3.3 - Process Definition For Artifact Update Draft](240e0e2c-64b6-4290-aa23-ec19eb2f6e59)";
-    expect(firstLine(created)).toBe("Responsible Party: Operational GovOps · Trigger: A.2.2.9.1.2.3.3 - Process Definition For Artifact Update Draft");
+    expect(firstLine(created)).toBe("After Operational GovOps confirms that the request is feasible, the Document is created as follows.");
+    expect(firstLine(created.replace(/^After[^,]+, t/, "T"))).toBe("Responsible Party: Operational GovOps · Trigger: A.2.2.9.1.2.3.3 - Process Definition For Artifact Update Draft");
     const list =
       "[A.2.2.9.1.2.1.4.2.0.6.1 - List Of Onboarding Integrators](eb644108-94fc-430f-ae5a-e3294b9dd9be) is updated as follows:\n\n- Required Primitive Input Trigger: Proposal Fails (see [A.2.2.9.1.2.3.5.3 - Required Primitive Inputs](b593ff77-2c46-418d-a7b3-9730437ce804))\n- Updated fields\n    - `Onboarding Integrators`\n        - New value: Delete the Integrator.\n- Responsible Party: Operational GovOps\n- Trigger - Process: None";
     expect(firstLine(list)).toBe("A.2.2.9.1.2.1.4.2.0.6.1 - List Of Onboarding Integrators is updated as follows:");

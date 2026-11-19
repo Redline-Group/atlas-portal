@@ -4,7 +4,7 @@ import { actorHref } from "@/lib/routes";
 import type { ActorChain, ChainNode } from "../../lib/actorIndex";
 import { SourceMark } from "../SourceMark";
 import { SectionTitle } from "./RadarSection";
-import { AGENT_FAMILIES, agentFamily } from "@/lib/agentKinds";
+import { AGENT_FAMILIES, UNLISTED_AGENT, agentFamily } from "@/lib/agentKinds";
 
 const EXECUTOR_LABEL = AGENT_FAMILIES.find((f) => f.family === "executor")!.label;
 
@@ -25,6 +25,7 @@ export function ActorChain({ chain, currentSlug }: Props) {
 
   const groups: ChainGroup[] = [
     ...AGENT_FAMILIES.filter((f) => f.served).map((f) => ({ role: f.label, nodes: served.filter((n) => agentFamily(n.st) === f) })),
+    { role: UNLISTED_AGENT.label, nodes: served.filter((n) => !agentFamily(n.st)?.served) },
     { role: EXECUTOR_LABEL, nodes: others(executors) },
     { role: "Facilitator", nodes: others(facilitators) },
     { role: "GovOps", nodes: others(govops) },

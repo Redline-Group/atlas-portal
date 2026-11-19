@@ -2,11 +2,13 @@
 // rule "Operational Executor Agent For Sky Core Halos", whose content cites the
 // executor's defining doc and applies to every Sky Core Halo.
 import { UUID_LINK_RE } from "../graph-patterns.mjs";
+import { SKY_CORE_HALO_SOURCE } from "../graph-halos.ts";
 
 const RULE_TITLE_RE = /^Operational Executor Agent For Sky Core Halos$/i;
 
 function run(ctx: any) {
-  const halos = [...ctx.entityMap.values()].filter((e: any) => e.subtype === "halo");
+  // The rule speaks for Sky Core Halos only, not for a Halo Agent inside a Prime's artifact.
+  const halos = [...ctx.entityMap.values()].filter((e: any) => e.subtype === "halo" && JSON.parse(e.meta ?? "{}").source === SKY_CORE_HALO_SOURCE);
   const rules = ctx.allDocs.filter((d: any) => RULE_TITLE_RE.test(d.title));
   if (halos.length > 0 && rules.length === 0)
     console.warn("  [drift] tripwire: Sky Core Halos exist but no executor rule document was found — their operational_executor_agent_for edges will be empty (rule title in halo-executor-for.ts likely renamed)");
