@@ -41,7 +41,7 @@ function decide(cacheDir: string, model: string, state: unknown, questions: Reco
   });
 }
 
-async function cachedCall<T>(cacheDir: string, arm: string, keyObj: unknown, fn: () => Promise<T>): Promise<T | null> {
+export async function cachedCall<T>(cacheDir: string, arm: string, keyObj: unknown, fn: () => Promise<T>): Promise<T | null> {
   const file = path.join(cacheDir, arm, `${crypto.createHash("sha256").update(JSON.stringify(keyObj)).digest("hex")}.json`);
   if (fs.existsSync(file)) return JSON.parse(fs.readFileSync(file, "utf8")) as T;
   try {

@@ -65,6 +65,7 @@
     "eval:slices": "bun scripts/eval/eval-verifier-slices.ts",
     "eval:wiki-ab": "bun scripts/eval/eval-wiki-ab.ts",
     "eval:bakeoff": "bun scripts/eval/eval-bakeoff.ts",
+    "eval:edit-candidates": "bun scripts/eval/eval-edit-candidates.ts",
     "eval:quote-attribution": "bun scripts/eval/eval-quote-attribution.ts",
     "eval:retrieval": "bun scripts/eval/eval-retrieval.ts",
     "eval:embed-latency": "bun scripts/eval/eval-embed-latency.ts",
