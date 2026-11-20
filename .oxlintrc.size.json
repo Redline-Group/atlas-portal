@@ -95,10 +95,6 @@
     { "files": ["src/server/external/msc-views.ts"], "rules": { "max-lines": ["error", { "max": 467, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 263, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/server/og.ts"], "rules": { "max-lines": ["error", { "max": 184, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 80, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/server/preview/build.ts"], "rules": { "max-lines": ["error", { "max": 333, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 105, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["src/server/preview/diff-base-backfill.ts"], "rules": { "max-lines": ["error", { "max": 230, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 60, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["src/server/preview/diff-base-write.ts"], "rules": { "max-lines-per-function": ["error", { "max": 72, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["src/server/preview/github-app.ts"], "rules": { "max-lines": ["error", { "max": 203, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["src/server/preview/handler.ts"], "rules": { "max-lines": ["error", { "max": 249, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/server/preview/resolve.ts"], "rules": { "max-lines": ["error", { "max": 313, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 60, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/server/retrieval/embed-units.ts"], "rules": { "max-lines": ["error", { "max": 515, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 52, "skipBlankLines": true, "skipComments": true }] } },
     // Raised by 3: `_clearIndexes` resets this module's own `state`, so it cannot live

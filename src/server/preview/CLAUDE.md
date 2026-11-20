@@ -4,7 +4,7 @@ A preview builds the atlas from another ref (an nga PR, a fork branch, a private
 
 ## Flow and where each step lives
 
-`/api/preview/*` → `handler.ts` `drive()`: rate limit → resolve the id to a sha (`resolve.ts`) → private-access check → blocked-sha check → serve the ready bundle or `getOrStartBuild`. `build.ts` `runBuild`: takedown → trust/quota (`trust.ts`) → tarball fetch (`tarball.ts`) → `build-index`, then graph and glossary concurrently → diff bases → `meta.json` → DB upsert → LRU eviction → detached identity refine. Phases: fetching → building → ready | failed.
+`/api/preview/*` → `handler.ts` routes to `handler-events.ts` (the SSE stream), whose `drive()` (`handler-drive.ts`) runs: rate limit → resolve the id to a sha (`resolve.ts`) → private-access check → blocked-sha check → serve the ready bundle or `getOrStartBuild`. `build.ts` `runBuild`: takedown → trust/quota (`trust.ts`) → tarball fetch (`tarball.ts`) → `build-index`, then graph and glossary concurrently → diff bases → `meta.json` → DB upsert → LRU eviction → detached identity refine. Phases: fetching → building → ready | failed.
 
 - **Diff base**: `pr-diff.ts` (candidates `sky` and `repo`), `pr-diff-auto.ts` (`pickAuto`), `diff-base*.ts`, `base-drift.ts`.
 - **Diff artifacts**: `snapshot.ts`, `diff-artifacts.ts` (`diff.json` lists added, changed and removed docs; `before.json` holds each changed doc's old side; `removed.json` each removed doc with its placement, from `removed-docs.ts`). No line diff is stored: the reader and the chat/MCP tools build each redline from those files and the preview's own docs with `src/lib/previewPatch.ts`.

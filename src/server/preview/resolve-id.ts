@@ -12,7 +12,7 @@ export const gh = makeGhClient(config.githubToken);
 // Resolution TTL cache (per raw id). Tracks the branch/PR tip so a pushed commit
 // is picked up within ~60s without re-hitting GitHub on every request.
 // Exported (with the cap) for the eviction regression test only — not otherwise
-// consumed outside this module. Mirrors handler.ts's diffCache/DIFF_CACHE_MAX pattern.
+// consumed outside this module. Mirrors handler-artifacts.ts's diffCache/DIFF_CACHE_MAX pattern.
 export type ResolveResult = Resolved | { error: ResolveError } | PendingPrivate;
 // The `{ at, v }` entry shape and the TTL check live here because the eviction test seeds entries in that shape.
 export const RESOLVE_CACHE_MAX = 1000; // FIFO cap — prevents indefinite growth under scanner traffic

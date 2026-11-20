@@ -40,6 +40,85 @@ function stripKey(c: Candidate): BaseCandidateMeta {
 }
 
 
+type Key = "sky" | "repo";
+
+interface LoadedBases {
+  /** Base snapshots by merge base, for every candidate whose tree was fetched. */
+  loaded: Map<string, Snapshot>;
+  /** Why a merge base has no snapshot, by merge base. */
+  failed: Map<string, string>;
+}
+
+/** Load each present candidate's base snapshot, deduped by merge base. */
+async function loadCandidateBases(candidates: Candidates, present: Key[], opts: WriteCandidateDiffsOpts): Promise<LoadedBases> {
+  const { resolved, sha8, paths, fetchTree, mainDocs, live } = opts;
+  const loaded = new Map<string, Snapshot>();
+  const failed = new Map<string, string>();
+  const load = async (mergeBase: string) => {
+    try {
+      const dir = path.join(paths.dir, `base-${mergeBase.slice(0, 8)}`);
+      const main = { atlasCommit: live.meta.atlasCommit, snapshot: () => mainDocs };
+      loaded.set(mergeBase, await loadBaseSnapshot(mergeBase, dir, (s, d) => fetchTree(resolved.repo, s, d), main));
+    } catch (e) {
+      const why = `base ${mergeBase.slice(0, 8)} unavailable (${(e as Error).message})`;
+      failed.set(mergeBase, why);
+      console.warn(`[preview] ${sha8}: ${why} — diffing against live main`);
+    }
+  };
+  await Promise.all([...new Set(present.map((k) => candidates[k]!.mergeBase))].map(load));
+  return { loaded, failed };
+}
+
+/** Write one diff set per kept candidate, under its own `.<key>` names. */
+function writeKeptDiffs(candidates: Candidates, kept: Key[], loaded: Map<string, Snapshot>, opts: WriteCandidateDiffsOpts): RefineJob[] {
+  const { resolved, paths, head, mainDocs } = opts;
+  return kept.map((key) => {
+    const base = loaded.get(candidates[key]!.mergeBase)!;
+    // Both compare against their own merge base. sky also drops what live
+    // main already has, unless the PR is merged (diff-artifacts.ts); repo's
+    // base is another repo's branch, which live main says nothing about.
+    const a = computeDiffArtifacts(base, head, key === "sky" && resolved.pr?.state !== "merged" ? mainDocs : undefined);
+    writeDiffArtifacts(paths.outDir, a, `.${key}`);
+    return refineJob([`identity.${key}.json`], base, head, a.diff);
+  });
+}
+
+/** Write the plain-named set: the `auto` candidate's, or the vs-main one. */
+function writeAutoDiffs(auto: PreviewBases["auto"], kept: Key[], refine: RefineJob[], opts: WriteCandidateDiffsOpts): void {
+  const { paths, head, mainDocs } = opts;
+  if (auto === "live-main") {
+    const a = computeDiffArtifacts(mainDocs, head);
+    writeDiffArtifacts(paths.outDir, a);
+    refine.push(refineJob(["identity.json"], mainDocs, head, a.diff));
+    return;
+  }
+  // identity.json is the `auto` verdict, as diff.json is the `auto` diff.
+  refine[kept.indexOf(auto)].files.push("identity.json");
+  for (const name of DIFF_FILES) {
+    fs.copyFileSync(path.join(paths.outDir, `${name}.${auto}.json`), path.join(paths.outDir, `${name}.json`));
+  }
+}
+
+/** Base-drift for the `repo` candidate. Banner meta, never build-blocking. */
+async function repoDrift(repoCandidate: Candidate, mergeBaseSnapshot: Snapshot | undefined, opts: WriteCandidateDiffsOpts) {
+  const { resolved, token, priv, paths, fetchTree, mainDocs, live } = opts;
+  try {
+    return await computeBaseDrift({
+      candidate: repoCandidate,
+      prBaseSha: resolved.prBase?.sha,
+      priv,
+      repoGh: makeGhClient(token),
+      canonicalGh: makeGhClient(config.githubToken),
+      live: { atlasCommit: live.meta.atlasCommit ?? "", snapshot: () => mainDocs },
+      mergeBaseSnapshot,
+      fetchTree: (s, d) => fetchTree(repoCandidate.repo, s, d),
+      scratchDir: paths.dir,
+    });
+  } catch {
+    return null; // computeBaseDrift is already soft internally; guard anyway
+  }
+}
+
 /**
  * Load (deduped by mergeBase, so two candidates sharing one merge base fetch
  * it once) each present candidate's base snapshot, write a diff set (diff,
@@ -52,42 +131,10 @@ function stripKey(c: Candidate): BaseCandidateMeta {
  * "live-main" with a reason (and the vs-main set goes to the plain names).
  */
 export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCandidateDiffsOpts): Promise<{ bases: PreviewBases; refine: RefineJob[] }> {
-  const { resolved, token, priv, sha8, paths, fetchTree, head, mainDocs, live } = opts;
-
   const present = (["sky", "repo"] as const).filter((k) => candidates[k]);
-  const loaded = new Map<string, Snapshot>();
-  const failed = new Map<string, string>();
-  await Promise.all(
-    [...new Set(present.map((k) => candidates[k]!.mergeBase))].map(async (mergeBase) => {
-      try {
-        loaded.set(
-          mergeBase,
-          await loadBaseSnapshot(
-            mergeBase,
-            path.join(paths.dir, `base-${mergeBase.slice(0, 8)}`),
-            (s, d) => fetchTree(resolved.repo, s, d),
-            { atlasCommit: live.meta.atlasCommit, snapshot: () => mainDocs },
-          ),
-        );
-      } catch (e) {
-        const why = `base ${mergeBase.slice(0, 8)} unavailable (${(e as Error).message})`;
-        failed.set(mergeBase, why);
-        console.warn(`[preview] ${sha8}: ${why} — diffing against live main`);
-      }
-    }),
-  );
-
+  const { loaded, failed } = await loadCandidateBases(candidates, present, opts);
   const kept = present.filter((k) => loaded.has(candidates[k]!.mergeBase));
-  const refine: RefineJob[] = [];
-  for (const key of kept) {
-    const base = loaded.get(candidates[key]!.mergeBase)!;
-    // Both compare against their own merge base. sky also drops what live
-    // main already has, unless the PR is merged (diff-artifacts.ts); repo's
-    // base is another repo's branch, which live main says nothing about.
-    const a = computeDiffArtifacts(base, head, key === "sky" && resolved.pr?.state !== "merged" ? mainDocs : undefined);
-    writeDiffArtifacts(paths.outDir, a, `.${key}`);
-    refine.push(refineJob([`identity.${key}.json`], base, head, a.diff));
-  }
+  const refine = writeKeptDiffs(candidates, kept, loaded, opts);
 
   let auto: PreviewBases["auto"] = candidates.auto;
   let reason = candidates.reason;
@@ -95,40 +142,15 @@ export async function writeCandidateDiffs(candidates: Candidates, opts: WriteCan
     reason = failed.get(candidates[auto]!.mergeBase) ?? reason;
     auto = kept[0] ?? "live-main";
   }
-  if (auto === "live-main") {
-    const a = computeDiffArtifacts(mainDocs, head);
-    writeDiffArtifacts(paths.outDir, a);
-    refine.push(refineJob(["identity.json"], mainDocs, head, a.diff));
-  } else {
-    // identity.json is the `auto` verdict, as diff.json is the `auto` diff.
-    refine[kept.indexOf(auto)].files.push("identity.json");
-    for (const name of DIFF_FILES) {
-      fs.copyFileSync(path.join(paths.outDir, `${name}.${auto}.json`), path.join(paths.outDir, `${name}.json`));
-    }
-  }
+  writeAutoDiffs(auto, kept, refine, opts);
 
   const bases: PreviewBases = { auto };
   if (reason) bases.reason = reason;
   if (kept.includes("sky")) bases.sky = stripKey(candidates.sky!);
   if (kept.includes("repo")) {
-    const repoCandidate = candidates.repo!;
-    bases.repo = stripKey(repoCandidate);
-    try {
-      const drift = await computeBaseDrift({
-        candidate: repoCandidate,
-        prBaseSha: resolved.prBase?.sha,
-        priv,
-        repoGh: makeGhClient(token),
-        canonicalGh: makeGhClient(config.githubToken),
-        live: { atlasCommit: live.meta.atlasCommit ?? "", snapshot: () => mainDocs },
-        mergeBaseSnapshot: loaded.get(repoCandidate.mergeBase),
-        fetchTree: (s, d) => fetchTree(repoCandidate.repo, s, d),
-        scratchDir: paths.dir,
-      });
-      if (drift) bases.repo.drift = drift;
-    } catch {
-      /* computeBaseDrift is already soft internally; guard anyway — banner meta, never build-blocking */
-    }
+    bases.repo = stripKey(candidates.repo!);
+    const drift = await repoDrift(candidates.repo!, loaded.get(candidates.repo!.mergeBase), opts);
+    if (drift) bases.repo.drift = drift;
   }
   return { bases, refine };
 }

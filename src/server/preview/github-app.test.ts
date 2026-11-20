@@ -6,14 +6,13 @@
 import { test, expect, beforeEach, afterEach } from "bun:test";
 import crypto from "node:crypto";
 import { config } from "../config.ts";
+import { appJwt, normalizePem } from "./github-app-jwt.ts";
 import {
-  appJwt,
   appInstallUrl,
   installationIdForRepo,
   installationInfoForRepo,
   installationToken,
   userRepoPermission,
-  normalizePem,
   permissionsUpdateUrl,
   installationHasPullsRead,
   __resetCachesForTest,

@@ -1,11 +1,11 @@
-// Regression test for the SSE unsubscribe race in eventsResponse (handler.ts):
+// Regression test for the SSE unsubscribe race in eventsResponse (handler-events.ts):
 // a client cancel arriving before drive() resolves used to hit the stale
 // initial noop, so the real unsubscribe from subscribeBuild() never ran and
 // the dead `send` stayed in Inflight.subscribers until the build ended.
 // makeUnsubGate() is the extracted fix; exercised directly here since driving
 // the real SSE stream needs a live build (network + subprocess).
 import { test, expect } from "bun:test";
-import { makeUnsubGate } from "./handler.ts";
+import { makeUnsubGate } from "./handler-events.ts";
 
 test("cancel before resolve still invokes the real unsubscribe once it arrives", () => {
   const gate = makeUnsubGate();
