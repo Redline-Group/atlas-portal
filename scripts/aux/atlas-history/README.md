@@ -12,7 +12,7 @@ Each script writes its manifest **into this folder**, so script ↔ output stay 
 | Script | Output | Source |
 |---|---|---|
 | `enumerate-atlas-proposals.mjs` | `atlas-edit-proposals.json` | Sky forum Discourse API — the Atlas Edit proposal series |
-| `enumerate-onchain-polls.mjs` | `atlas-onchain-polls.json` | Ethereum mainnet (Etherscan) — on-chain ratification polls + IPFS poll hashes |
+| `enumerate-onchain-polls.ts` | `atlas-onchain-polls.json` | Ethereum mainnet (Etherscan) — on-chain ratification polls + IPFS poll hashes |
 
 ## Run
 
@@ -21,7 +21,7 @@ Each script writes its manifest **into this folder**, so script ↔ output stay 
 bun scripts/aux/atlas-history/enumerate-atlas-proposals.mjs
 
 # on-chain poll enumeration (needs an Etherscan key)
-bun scripts/aux/atlas-history/enumerate-onchain-polls.mjs
+bun scripts/aux/atlas-history/enumerate-onchain-polls.ts
 ```
 
 On-chain history is immutable, so re-runs are deterministic apart from the `captured`

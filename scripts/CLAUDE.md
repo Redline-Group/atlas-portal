@@ -7,7 +7,7 @@ This file covers the `scripts/` tree. It holds the build pipeline and its step l
 Each build pass is its own script. They run in order in `pnpm build`.
 
 - `scripts/required/` holds the build pipeline entry-points wired into `pnpm build:*`.
-- `scripts/lib/` holds shared modules (parsing, regexes, extraction phases) imported by those entry-points. It also holds `atlas-html.mjs`, `history-identity.mjs`, `ordered-containment.mjs` and `run-thread.mjs`. These are HTML-era parsing and matching primitives shared between `scripts/htmlhist/` and `scripts/prehist/` (same reasoning as `history-classify.mjs`).
+- `scripts/lib/` holds shared modules (parsing, regexes, extraction phases) imported by those entry-points. It also holds `atlas-html.mjs`, `history-identity.mjs`, `ordered-containment.mjs` and `run-thread.mjs`. These are HTML-era parsing and matching primitives shared between `scripts/htmlhist/` and `scripts/prehist/` (same reasoning as `history-classify.ts`).
 - `scripts/aux/` holds offline, one-off and experimental scripts that are not part of the core build chain. Examples are `tva.sh`, `add-chain.mjs` (the `chains:add` fetcher, deliberately off the build chain since it hits the network) and `coverage-areas.mjs` (the CI coverage meter, not a build entry-point). knip's unused-file check excludes the whole directory for that reason, so a new script there needs no `knip.json` entry.
 - `scripts/assess/` and `scripts/eval/` are their own feature subsystems, not one-offs.
   - `scripts/assess/` is the OEA/risk LLM-assessment pipeline (`assess-*.ts`, `oea:assess`/`risk:assess`).
@@ -35,7 +35,7 @@ Each build pass is its own script. They run in order in `pnpm build`.
   - **Phase 4.5** (five passes) enriches `public/addresses.atlas.json` with ICD-derived roles and labels, entity-linked labels, doc-title labels, and chainlog fallback.
   - It emits `public/graph.json` and `public/relations.json`. There is no loopback to `build-index`. See `.claude/skills/parse-atlas/SKILL.md`.
   - A Prime Agent entity's `meta.params` holds the controller-wide RateLimitIDs it states outside any instance (its "… Rate Limit IDs" sections), read with the same param walk as an instance's (`lib/graph-prime-rate-limits.ts`).
-  - It imports `lib/graph-patterns.mjs`, `lib/graph-instances.mjs`, `lib/graph-entities.mjs` (Phase 1), `lib/graph-doc-edges.mjs` (Phase 2 doc edges 2a–2h), `lib/graph-entity-edges.mjs` (Phase 2 entity/address edges 2i–2x, one module per pattern under `lib/graph-entity-edges/`, run in the order `patterns.mjs` lists), `lib/graph-multisigs.mjs`, `lib/graph-transfers.mjs`, `lib/graph-bridges.mjs`, `lib/graph-omni.mjs`, `lib/graph-transitions.mjs` (Phase 2.8 patterns 17/18/21/22/23), `lib/address-chains.mjs` and `lib/address-annotate.mjs`.
+  - It imports `lib/graph-patterns.mjs` (content readers in `lib/graph-content-extract.ts`), `lib/graph-instances.mjs` (leaf formatting in `lib/graph-param-format.ts`), `lib/graph-entities.mjs` (Phase 1), `lib/graph-doc-edges.mjs` (Phase 2 doc edges 2a–2h), `lib/graph-entity-edges.mjs` (Phase 2 entity/address edges 2i–2x, one module per pattern under `lib/graph-entity-edges/`, run in the order `patterns.mjs` lists), `lib/graph-multisigs.mjs`, `lib/graph-transfers.mjs`, `lib/graph-bridges.ts`, `lib/graph-omni.mjs`, `lib/graph-transitions.mjs` (Phase 2.8 patterns 17/18/21/22/23), `lib/address-chains.mjs` and `lib/address-annotate.mjs`.
 - **`scripts/required/build-manifest.mjs`** writes a sha256 digest of every shipping artifact.
 - **`scripts/required/build-at.mjs`** does a reproducible build at a pinned atlas commit. It orchestrates the other `build:*` scripts.
 
@@ -91,7 +91,7 @@ See `.claude/skills/address-extraction/SKILL.md` for the full reference: EVM/Sol
 They were four separate lists until every one of them was shown to fail silently when missed: wrong explorer, never-attributed prose, no balances. Add a chain with `pnpm chains:add <name>`, not by hand, and run `pnpm census:chains` after. Order in the file is load-bearing (ethereum last for label matching, `CHAIN_HINTS` derives the reverse). See the `$order` note in the JSON.
 
 - `pnpm chains:add` resolves a chain from ethereum-lists/chains (the dataset behind chainid.network, via its gh-pages mirror) and writes its entry into `src/data/chain-registry.json`, the single source of truth all four chain structures derive from. It verifies the chainId with an `eth_chainId` round-trip. It refuses a half-entry when the source lists no explorer or no key-free RPC. `--dry-run` prints without writing. `--no-verify` skips the round-trip. It is deliberately OFF the `pnpm build` chain: the build is offline and deterministic (`REPRO=1`), so the fetch happens here and the result is committed as data.
-- `pnpm census:chains` is the chain registry census (runs under bun, imports `src/lib/explorer.ts` + `tokens.ts`). It reads every chain string the pipeline reads:
+- `pnpm census:chains` is the chain registry census (`scripts/required/check-chains-census.ts`, with its scans, registry checks and `--rpc` probe in `scripts/lib/chains-census/`; runs under bun, imports `src/lib/explorer.ts` + `tokens.ts`). It reads every chain string the pipeline reads:
   - `Token Address (X)` titles, `Network`/`Integration Partner Chain` params, and the multisig `address of ... on X is` regex.
   - An inverted prose scan for `<Proper Noun> Chain|Network|Mainnet|Rollup|L2`.
   - An address-anchored scan (`scripts/lib/chain-candidates.ts`) for chain-keyed address lists with a row naming no known chain. This is the half that catches single-word chain names in plain bullet rows, which the other two structurally cannot see.
@@ -128,7 +128,7 @@ They were four separate lists until every one of them was shown to fail silently
 
 ## Edit Candidates hand sweep
 
-These commands are the hand-run, whole-corpus path behind the Edit Candidates report (`/reports/edit-candidates`); they keep the `mistakes:*` names. The atlas worker reads new and changed documents on its own (`pnpm sync:edit-candidates`, `src/server/edit-candidates/CLAUDE.md`) and seeds from the two files these commands write, so commit them together.
+These commands are the hand-run, whole-corpus path behind the Edit Candidates report (`/reports/edit-candidates`); they keep the `mistakes:*` names. The entry point is `scripts/aux/mistakes-sweep.ts`, a command table over one module per subcommand in `scripts/lib/mistakes-sweep-cli/`; the pure logic is `scripts/lib/mistakes-sweep.mjs`. The atlas worker reads new and changed documents on its own (`pnpm sync:edit-candidates`, `src/server/edit-candidates/CLAUDE.md`) and seeds from the two files these commands write, so commit them together.
 
 - `pnpm mistakes:plan` computes the INCREMENTAL work plan for the sweep. It writes `.cache/mistakes-sweep/{plan.json,chunks/NNN.md}` for subagents to read.
   - It queues documents whose title, type or body digest moved since `.github/mistakes-sweep-state.json`. `doc_no` is deliberately excluded, so a renumbering does not re-queue 11k docs.

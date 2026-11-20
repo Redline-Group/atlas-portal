@@ -15,7 +15,7 @@
 //      nothing", so an unreturned chunk must stay in the next plan rather than
 //      being recorded as clean.
 //
-// Everything here is pure — the CLI (scripts/aux/mistakes-sweep.mjs) owns I/O.
+// Everything here is pure — the CLI (scripts/aux/mistakes-sweep.ts) owns I/O.
 
 import { sha256 } from "./atlas-parser.mjs";
 import { UUID_LINK_RE } from "./graph-patterns.mjs";

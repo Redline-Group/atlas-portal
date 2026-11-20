@@ -298,4 +298,4 @@ Files stay ≤ ~150 lines (case builders split from runners); tests colocated; `
 
 - TypeSafe docs index: https://docs.typesafe.ai/llms.txt — API (`/api.md`), models (`/models.md`), primitives (`/primitives/*.md`), jaggedness (`/model-jaggedness/jev-1.13.md`), cookbooks `citation_check`, `semantic_find`, `classifying_rag_passages`, `rerank_typesafe`, `function_calling`, `llm_guardrails`.
 - OpenRouter integration guide: https://openrouter.ai/docs/guides/community/typesafe-sdk
-- Repo survey (2026-09-21): chat judgment sites in `src/server/chat/`, `src/server/facts/`; offline pipelines in `scripts/assess/`, `scripts/aux/mistakes-sweep.mjs`, `scripts/lib/graph-duties.mjs`, the `census:*` scripts; evals under `scripts/eval/`.
+- Repo survey (2026-09-21): chat judgment sites in `src/server/chat/`, `src/server/facts/`; offline pipelines in `scripts/assess/`, `scripts/aux/mistakes-sweep.ts`, `scripts/lib/graph-duties.mjs`, the `census:*` scripts; evals under `scripts/eval/`.

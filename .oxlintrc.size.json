@@ -40,15 +40,11 @@
     { "files": ["apps/web/src/test/workerFixtures.ts"], "rules": { "max-lines": ["error", { "max": 229, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 153, "skipBlankLines": true, "skipComments": true }] } },
     // The semantic lane's helpers live in searchWorkerLanes.ts, but binding
     // them to this worker's own index, corpus and hit renderer can only happen here.
-    { "files": ["scripts/aux/atlas-history/enumerate-onchain-polls.mjs"], "rules": { "max-lines-per-function": ["error", { "max": 73, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/aux/coverage-areas.mjs"], "rules": { "max-lines": ["error", { "max": 316, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 74, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/aux/identity-campaign-check.ts"], "rules": { "max-lines-per-function": ["error", { "max": 79, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/aux/identity-long-body.ts"], "rules": { "max-lines-per-function": ["error", { "max": 83, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/aux/identity-real-corpus.ts"], "rules": { "max-lines-per-function": ["error", { "max": 82, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["scripts/aux/identity-search-vector.ts"], "rules": { "max-lines": ["error", { "max": 207, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["scripts/aux/leaf-attribution-experiment.ts"], "rules": { "max-lines": ["error", { "max": 242, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/aux/load/run.mjs"], "rules": { "max-lines": ["error", { "max": 333, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 60, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["scripts/aux/mistakes-sweep.mjs"], "rules": { "max-lines": ["error", { "max": 259, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/eval/eval-facts.ts"], "rules": { "max-lines": ["error", { "max": 202, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 143, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/eval/eval-retrieval-queries.ts"], "rules": { "max-lines": ["error", { "max": 208, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 159, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/eval/eval-retrieval.ts"], "rules": { "max-lines": ["error", { "max": 277, "skipBlankLines": true, "skipComments": true }] } },
@@ -68,7 +64,6 @@
     { "files": ["scripts/lib/patch-notes-validate.mjs"], "rules": { "max-lines-per-function": ["error", { "max": 75, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/lib/settlement-xlsx.mjs"], "rules": { "max-lines": ["error", { "max": 341, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 92, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/required/build-graph.mjs"], "rules": { "max-lines": ["error", { "max": 443, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["scripts/required/check-chains-census.mjs"], "rules": { "max-lines": ["error", { "max": 231, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/required/fetch-chain-state.mjs"], "rules": { "max-lines-per-function": ["error", { "max": 75, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/lib/activeDataIndex.ts"], "rules": { "max-lines": ["error", { "max": 344, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 159, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/lib/conceptsCensus.ts"], "rules": { "max-lines": ["error", { "max": 280, "skipBlankLines": true, "skipComments": true }] } },
