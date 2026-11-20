@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { chunkDocs, docsToEvaluate, planSweep, type MistakeSweepNode, type SweepPlan } from "../mistakes-sweep.mjs";
+import { chunkDocs, docsToEvaluate, planSweep, type MistakeSweepNode, type SweepPlan } from "../../lib/mistakes-sweep.mjs";
 import { CHUNKS, FINDINGS, ROOT, WORK, atlasSha, backlinksFor, describe, flag, load, opt } from "./context.ts";
 
 type ByUuid = Map<string, MistakeSweepNode>;

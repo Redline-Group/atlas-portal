@@ -1,7 +1,7 @@
 // Opt-in live RPC verification for the chain census (--rpc): round-trips
 // eth_chainId against every registry rpcUrl and checks it against the declared
 // chainId. It needs network access, so the default census run never calls it.
-import { CHAINS, type ChainEntry } from "../chains.mjs";
+import { CHAINS, type ChainEntry } from "../../lib/chains.mjs";
 import type { RegistryWarn } from "./registry-check.ts";
 
 interface Unreachable {

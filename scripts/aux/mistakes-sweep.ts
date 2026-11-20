@@ -13,13 +13,13 @@
 // public/potential-mistakes.json is committed data, not a build artifact, and
 // the atlas worker seeds from it (src/server/edit-candidates/CLAUDE.md).
 //
-// Each subcommand is one module under scripts/lib/mistakes-sweep-cli/ and
+// Each subcommand is one module under scripts/aux/mistakes-sweep/ and
 // returns the process exit code.
-import { bootstrap } from "../lib/mistakes-sweep-cli/bootstrap.ts";
-import { cmd } from "../lib/mistakes-sweep-cli/context.ts";
-import { merge } from "../lib/mistakes-sweep-cli/merge.ts";
-import { plan } from "../lib/mistakes-sweep-cli/plan.ts";
-import { status } from "../lib/mistakes-sweep-cli/status.ts";
+import { bootstrap } from "./mistakes-sweep/bootstrap.ts";
+import { cmd } from "./mistakes-sweep/context.ts";
+import { merge } from "./mistakes-sweep/merge.ts";
+import { plan } from "./mistakes-sweep/plan.ts";
+import { status } from "./mistakes-sweep/status.ts";
 
 const COMMANDS: Record<string, () => number> = { status, bootstrap, plan, merge };
 

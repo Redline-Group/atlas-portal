@@ -5,8 +5,8 @@
 // hole in it. The derived maps (EXPLORER, NATIVE_TOKEN, CHAIN_HINTS) are still
 // read through their real modules rather than from the JSON, so a broken
 // derivation shows up here too.
-import { CHAINS, FUTURE_TO_ETHEREUM, type ChainEntry } from "../chains.mjs";
-import { CHAIN_HINTS } from "../address-chains.mjs";
+import { CHAINS, FUTURE_TO_ETHEREUM, type ChainEntry } from "../../lib/chains.mjs";
+import { CHAIN_HINTS } from "../../lib/address-chains.mjs";
 import { EXPLORER } from "../../../src/lib/explorer.ts";
 import { NATIVE_TOKEN } from "../../../src/lib/tokens.ts";
 

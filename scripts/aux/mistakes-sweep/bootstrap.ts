@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { advanceState } from "../mistakes-sweep.mjs";
+import { advanceState } from "../../lib/mistakes-sweep.mjs";
 import { ARTIFACT, ROOT, STATE, atlasSha, flag, load, readJson, type Artifact } from "./context.ts";
 
 /** Why the artifact cannot be adopted, or null when it can. */

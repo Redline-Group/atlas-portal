@@ -327,7 +327,7 @@ subagent-writing pipeline, including the invariants that matter here.
 - `validateFinding`'s shape (:184-226): identity fields **stamped from the atlas**, never taken from
   the model.
 - `mergeFindings`'s `evaluated` semantics (:259-266) and the merge driver's missing/truncated-file
-  handling (`scripts/lib/mistakes-sweep-cli/merge-read.ts`): **a chunk with no output file, or a truncated
+  handling (`scripts/aux/mistakes-sweep/merge-read.ts`): **a chunk with no output file, or a truncated
   last JSONL line, stays queued.** A killed agent's silence must never be recorded as "described it".
 
 **Chunk content** — per doc_no parent, packed to 40 KB:

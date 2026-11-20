@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 
-import { loadAtlasSource } from "../atlas-source.mjs";
+import { loadAtlasSource } from "../../lib/atlas-source.mjs";
 import {
   buildBacklinks,
   emptyState,
@@ -12,7 +12,7 @@ import {
   type MistakeSweepNode,
   type SweepPlan,
   type SweepState,
-} from "../mistakes-sweep.mjs";
+} from "../../lib/mistakes-sweep.mjs";
 import { sourceFiles } from "./source-files.ts";
 
 export const ROOT = path.resolve(import.meta.dirname, "../../..");

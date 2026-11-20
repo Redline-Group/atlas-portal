@@ -2,7 +2,7 @@
 //
 // One observation = one raw chain string seen at one doc. The census keys them
 // by the lowercased string, so the residue is per-chain-name, not per-mention.
-import { findChainKeyedOddRows } from "../chain-candidates.ts";
+import { findChainKeyedOddRows } from "../../lib/chain-candidates.ts";
 
 export interface CensusDoc {
   id: string;

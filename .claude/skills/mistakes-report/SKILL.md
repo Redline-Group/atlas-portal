@@ -51,7 +51,7 @@ The worker's rows go live without review. To rule one out, add it to `rejected` 
 | `.github/mistakes-sweep-state.json` | Per-document digests of what was last evaluated. Committed — without it every run is a full sweep. |
 | `.cache/mistakes-sweep/` | Scratch for one run: `plan.json`, `chunks/`, `findings/`. Gitignored, rebuilt by every `plan`. |
 | `scripts/lib/mistakes-sweep.mjs` | The pure logic (digest, plan, validate, merge). Tested by `scripts_tests/mistakes-sweep.test.ts`. |
-| `scripts/aux/mistakes-sweep.ts` + `scripts/lib/mistakes-sweep-cli/` | The CLI: a command table over one module per subcommand (`status`, `bootstrap`, `plan`, `merge`), which own the file I/O. |
+| `scripts/aux/mistakes-sweep.ts` + `scripts/aux/mistakes-sweep/` | The CLI: a command table over one module per subcommand (`status`, `bootstrap`, `plan`, `merge`), which own the file I/O. |
 | `scripts/lib/mistakes-corpus.mjs` | Corpus-wide detectors — the cross-document comparisons the chunked fan-out cannot see. Tested by `scripts_tests/mistakes-corpus.test.ts`. |
 
 ## The cycle

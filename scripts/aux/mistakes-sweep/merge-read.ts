@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { validateFinding, type Mistake, type MistakeSweepNode } from "../mistakes-sweep.mjs";
+import { validateFinding, type Mistake, type MistakeSweepNode } from "../../lib/mistakes-sweep.mjs";
 import { FINDINGS } from "./context.ts";
 
 export interface PlanChunk {

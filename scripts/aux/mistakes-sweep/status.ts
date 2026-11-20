@@ -1,5 +1,5 @@
 // `mistakes:status`: what changed since the last sweep. Read-only.
-import { planSweep } from "../mistakes-sweep.mjs";
+import { planSweep } from "../../lib/mistakes-sweep.mjs";
 import { backlinksFor, describe, flag, load } from "./context.ts";
 
 export function status(): number {
