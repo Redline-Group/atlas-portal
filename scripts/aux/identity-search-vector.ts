@@ -22,111 +22,22 @@
 // --detail   adds the score spreads, the combined rules and the group documents
 // --samples  prints the real retitles a rule flags, to read and judge by hand
 
-import { planEmbedRows, shippedPolicy } from "../../src/server/retrieval/embed-rows.ts";
-import { buildEmbedText } from "../../src/server/retrieval/embed-text.ts";
-import { bodyWhollyReplaced, bodyWordsKept, detectIdentitySwaps, lineOverlap, JUDGEABLE_MIN_WORDS, REPLACE_MAX_OVERLAP, SHORT_BODY_MAX_LINES, type SwapNode } from "../../src/server/preview/identity.ts";
-import { auc, dot, lineCount, parentOf, prng, quantile, qwenVectors, share, swappable, walkRetitles, wordCount, type HistoryNode } from "./identity-corpus.ts";
-import { groupBy } from "../../src/lib/collections.ts";
+import { bodyWordsKept, lineOverlap, REPLACE_MAX_OVERLAP } from "../../src/server/preview/identity.ts";
+import { auc, dot, quantile, qwenVectors, share } from "./identity-corpus.ts";
+import { addSyntheticSwaps, collectRetitles, world, type Pair } from "./identity-search-vector-pairs.ts";
 
 const args = process.argv.slice(2);
 
-type Node = HistoryNode;
-// `anchors` holds every document whose stored text is NOT simply its own title
-// and body: a group anchor, and also a unit of one that carries a breadcrumb or
-// key:value form. A document can enter or leave that set between two commits,
-// and the two vectors are then texts of different shapes.
-interface World { byId: Map<string, Node>; stored: Map<string, string>; anchors: Set<string> }
-
-/** A snapshot as search would see it: every document's node, and the text
- *  stored under its id. The rows are production's own (planEmbedRows), so the
- *  script and the preview build agree on which documents are stored as a group. */
-function world(byId: Map<string, Node>): World {
-  const { rows } = planEmbedRows([...byId.values()] as any, shippedPolicy());
-  return {
-    byId,
-    stored: new Map(rows.map((r) => [r.id, r.text])),
-    anchors: new Set(rows.filter((r) => !r.plain).map((r) => r.id)),
-  };
-}
-
-interface Pair {
-  group: "retitle" | "sibling" | "unrelated";
-  band: "short" | "mid" | "long";
-  anchor: boolean;
-  shapeChanged: boolean;
-  oldTitle: string; newTitle: string;
-  bodyA: string; bodyB: string; searchA: string; searchB: string;
-  bodyTest: boolean; // bodyWhollyReplaced, the shipped body test
-  gate: boolean; // the whole shipped gate (retitles only)
-  note: string;
-  body: number; search: number;
-  word: number; line: number;
-}
 const pairs: Pair[] = [];
-const band = (t: string): Pair["band"] => { const n = lineCount(t); return n <= SHORT_BODY_MAX_LINES ? "short" : n <= 20 ? "mid" : "long"; };
 
 // ---- real retitles, from the atlas git history ------------------------------
-let lastWorld: { of: Map<string, Node>; world: World } | null = null;
-const latest = await walkRetitles((c, beforeNodes, afterNodes, ids) => {
-  // Rows are planned over the whole atlas, so only for commits that need it,
-  // and the "after" of one such commit is often the "before" of the next.
-  const before = lastWorld?.of === beforeNodes ? lastWorld.world : world(beforeNodes);
-  const after = world(afterNodes);
-  lastWorld = { of: afterNodes, world: after };
-  const changed = [...after.byId.keys()].filter((id) => {
-    const a = before.byId.get(id), b = after.byId.get(id)!;
-    return a && (a.content !== b.content || a.title !== b.title);
-  });
-  const added = [...after.byId.keys()].filter((id) => !before.byId.has(id));
-  const swapNodes = (w: World) => w.byId as Map<string, SwapNode>;
-  const { identitySwap } = detectIdentitySwaps({ changed, added, mainById: swapNodes(before), previewById: swapNodes(after) });
-  for (const id of ids) {
-    const a = before.byId.get(id)!, b = after.byId.get(id)!;
-    if (!a.content.trim() || !b.content.trim()) continue; // the gate skips a stub on either side
-    if (wordCount(a.content) < JUDGEABLE_MIN_WORDS) continue; // …and a body too small to judge
-    pairs.push({
-      group: "retitle", band: band(a.content), anchor: before.anchors.has(id) || after.anchors.has(id),
-      shapeChanged: before.anchors.has(id) !== after.anchors.has(id),
-      oldTitle: a.title, newTitle: b.title,
-      bodyA: a.content, bodyB: b.content, searchA: before.stored.get(id)!, searchB: after.stored.get(id)!,
-      bodyTest: bodyWhollyReplaced(a.content, b.content), gate: id in identitySwap,
-      note: `${c.hash.slice(0, 7)} ${c.date.slice(0, 10)} ${id.slice(0, 8)}`, body: NaN, search: NaN, word: NaN, line: NaN,
-    });
-  }
-});
+const latest = await collectRetitles(pairs);
 const live0 = world(latest);
 const retitleCount = pairs.length;
 
 // ---- synthetic swaps, from the latest snapshot -------------------------------
-const live = live0;
-const liveNodes = [...live.byId.values()].filter((n) => wordCount(n.content) >= JUDGEABLE_MIN_WORDS && !live.anchors.has(n.id));
-const { pick, rnd } = prng(7);
-const byParent = groupBy(liveNodes, parentOf);
-const swap = (group: Pair["group"], o: Node, c: Node) => pairs.push({
-  group, band: band(o.content), anchor: false, shapeChanged: false, oldTitle: o.title, newTitle: c.title,
-  bodyA: o.content, bodyB: c.content,
-  // The slot keeps its place in the tree and takes the other document's title
-  // and body — which, for a document that anchors no group, is all search stores.
-  searchA: live.stored.get(o.id)!, searchB: buildEmbedText({ title: c.title, content: c.content }),
-  bodyTest: bodyWhollyReplaced(o.content, c.content), gate: false, note: `${o.id.slice(0, 8)}>${c.id.slice(0, 8)}`, body: NaN, search: NaN, word: NaN, line: NaN,
-});
-for (const [name, per, cap] of [["short", 1, 1500], ["mid", 3, 1e9]] as const) {
-  const olds = liveNodes.filter((n) => band(n.content) === name);
-  // Shuffle, then take each old body once, so no pair repeats.
-  for (let i = olds.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [olds[i], olds[j]] = [olds[j], olds[i]]; }
-  let n = 0;
-  for (const o of olds) {
-    if (n >= cap) break;
-    // A sibling of similar size: a one-line slot holding a table is not the
-    // repurposing that is hard to see.
-    const sibs = (byParent.get(parentOf(o)) ?? []).filter((c) => swappable(o, c) && (name === "short" || band(c.content) !== "short"));
-    if (!sibs.length) continue;
-    n++;
-    for (let k = 0; k < per && sibs.length; k++) swap("sibling", o, sibs.splice(Math.floor(rnd() * sibs.length), 1)[0]);
-    const c = pick(liveNodes);
-    if (swappable(o, c)) swap("unrelated", o, c);
-  }
-}
+addSyntheticSwaps(pairs, live0);
+
 
 const KINDS = ["body", "search"] as const;
 // ---- score ------------------------------------------------------------------

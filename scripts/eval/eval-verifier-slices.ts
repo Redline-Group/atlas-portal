@@ -31,12 +31,12 @@ import type { Contradiction } from "../../src/server/chat/verify/verifier.ts";
 import { runSlice, type SliceName } from "../../src/server/chat/verify/verifier-slices.ts";
 import { runConfirm } from "../../src/server/chat/verify/confirm.ts";
 import { buildMutations, type SavedRun } from "./eval-verifier-mutations.ts";
+import { mapPool } from "../../src/server/pool.ts";
+import { flag } from "./eval-cli.ts";
 
 const ROOT = path.resolve(import.meta.dir, "../..");
 const EVIDENCE_DIR = process.env.EVAL_EVIDENCE_DIR ?? path.join(ROOT, "scripts", "eval", "eval-corpora", "evidence");
 const REPORT_PATH = path.join(ROOT, ".cache", "eval-slices.json");
-const argv = process.argv.slice(2);
-const flag = (n: string) => argv.flatMap((a, i) => (a === `--${n}` && argv[i + 1] ? [argv[i + 1]] : []));
 
 const MODELS = (flag("models")[0]?.split(",") ?? ["google/gemma-4-31b-it", "anthropic/claude-haiku-4.5", "openai/gpt-5.6-luna"]).map((m) => m.trim());
 const LIMIT = Number(flag("limit")[0] ?? 10);
@@ -140,18 +140,11 @@ for (const model of MODELS) {
 console.log(`sliced-verifier bakeoff — ${MODELS.length} models × ${ROUTED_SLICES.length} slices (+ conditional confirm on refute)`);
 console.log(`corpus ${runs.length} runs + ${realDefects.length} audited real defect(s) → ${work.length} calls\n`);
 
-let cursor = 0;
-async function worker() {
-  for (;;) {
-    const i = cursor++;
-    if (i >= work.length) return;
-    const w = work[i];
-    cells.push(await judge(w.model, w.slice, w.run, w.answer, w.kind, w.caught));
-    save();
-    if (cells.length % 20 === 0) console.log(`  [${cells.length}/${work.length}]`);
-  }
-}
-await Promise.all(Array.from({ length: Math.max(1, CONCURRENCY) }, worker));
+await mapPool(work, Math.max(1, CONCURRENCY), async (w) => {
+  cells.push(await judge(w.model, w.slice, w.run, w.answer, w.kind, w.caught));
+  save();
+  if (cells.length % 20 === 0) console.log(`  [${cells.length}/${work.length}]`);
+});
 
 // ── Scoreboard ─────────────────────────────────────────────────────────────
 const pct = (n: number, d: number) => (d ? `${((100 * n) / d).toFixed(0)}%` : "  —");

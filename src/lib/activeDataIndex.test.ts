@@ -200,7 +200,7 @@ describe("buildActiveDataRows", () => {
   it("descriptive RP declarations stay unresolved but keep their declared text", () => {
     // A.2.7.1.1.1.1.4 declares "The Responsible Party is the entity to which
     // the registration pertains" — a phrase, not an entity. The extractor
-    // (isDescriptiveRP in scripts/lib/graph-patterns.mjs) must not mint an
+    // (isDescriptiveRP in scripts/lib/graph-content-extract.ts) must not mint an
     // entity from it, and the row must carry the text as declaredRP instead.
     const phrase = "entity to which the registration pertains";
     expect(participants.some((e) => e.name === phrase)).toBe(false);

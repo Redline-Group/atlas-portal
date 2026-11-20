@@ -1,13 +1,18 @@
 // Phone layout for Edit Candidates: one candidate at a time, stacked
 // vertically. Swipe left for the next row, right for the previous; the
 // previous/next buttons and arrow keys do the same for anyone who isn't swiping.
-import { useCallback, useRef, useState, type PointerEvent } from "react";
+import { useCallback, useState, type KeyboardEvent } from "react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { useSwipe } from "../../hooks/useSwipe";
 import type { MistakeRow } from "@/lib/potentialMistakesIndex";
 import type { ReportQuery } from "@/lib/reportFilter";
 import { MistakeCard } from "./MistakeCard";
+import { PotentialMistakesPagerNav } from "./PotentialMistakesPagerNav";
 
 const SWIPE_PX = 48;
+
+/** Where the candidate on screen sits in the list, for `data-state`. */
+const position = (index: number, count: number) => (index === 0 ? "first" : index === count - 1 ? "last" : "middle");
 
 export type PotentialMistakesPagerProps = {
   rows: readonly MistakeRow[];
@@ -17,12 +22,9 @@ export type PotentialMistakesPagerProps = {
 export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps) {
   const [id, setId] = useState(rows[0]?.id);
   const reduce = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const start = useRef<{ x: number; y: number; pointer: number } | null>(null);
-  const [dx, setDx] = useState(0);
 
   const index = Math.max(0, rows.findIndex((r) => r.id === id));
   const row = rows[index] ?? rows[0];
-  const at = index === 0 ? "first" : index === rows.length - 1 ? "last" : "middle";
 
   const go = useCallback(
     (i: number) => {
@@ -31,31 +33,14 @@ export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps
     },
     [rows],
   );
+  const { dx, handlers } = useSwipe((step) => go(index + step), SWIPE_PX);
 
   if (!row) return null;
 
-  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    start.current = { x: e.clientX, y: e.clientY, pointer: e.pointerId };
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-  };
-  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    const s = start.current;
-    if (!s || e.pointerId !== s.pointer) return;
-    const x = e.clientX - s.x;
-    const y = e.clientY - s.y;
-    if (Math.abs(x) < 8 || Math.abs(x) < Math.abs(y)) return;
-    setDx(x);
-  };
-  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
-    const s = start.current;
-    start.current = null;
-    setDx(0);
-    if (!s || e.pointerId !== s.pointer) return;
-    const x = e.clientX - s.x;
-    const y = e.clientY - s.y;
-    if (Math.abs(x) < SWIPE_PX || Math.abs(x) < Math.abs(y)) return;
-    go(index + (x < 0 ? 1 : -1));
+  const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    go(index + (e.key === "ArrowLeft" ? -1 : 1));
   };
 
   return (
@@ -63,53 +48,13 @@ export function PotentialMistakesPager({ rows, rq }: PotentialMistakesPagerProps
       aria-roledescription="carousel"
       aria-label="Potential mistakes"
       data-focus-hint="mistakes-pager"
-      data-state={at}
+      data-state={position(index, rows.length)}
       tabIndex={0}
       className="outline-none"
-      onKeyDown={(e) => {
-        if (e.key === "ArrowLeft") {
-          e.preventDefault();
-          go(index - 1);
-        } else if (e.key === "ArrowRight") {
-          e.preventDefault();
-          go(index + 1);
-        }
-      }}
+      onKeyDown={onKeyDown}
     >
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <button
-          type="button"
-          aria-label="Previous candidate"
-          disabled={index === 0}
-          className="min-h-11 min-w-11 text-tan-2 disabled:text-tan-3"
-          onClick={() => go(index - 1)}
-        >
-          ←
-        </button>
-        <p className="mono text-xs text-tan-3 m-0" aria-live="polite">
-          {index + 1} of {rows.length}
-        </p>
-        <button
-          type="button"
-          aria-label="Next candidate"
-          disabled={index === rows.length - 1}
-          className="min-h-11 min-w-11 text-tan-2 disabled:text-tan-3"
-          onClick={() => go(index + 1)}
-        >
-          →
-        </button>
-      </div>
-      <div
-        className="touch-pan-y"
-        style={reduce || !dx ? undefined : { transform: `translateX(${dx}px)` }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={() => {
-          start.current = null;
-          setDx(0);
-        }}
-      >
+      <PotentialMistakesPagerNav index={index} count={rows.length} onGo={go} />
+      <div className="touch-pan-y" style={reduce || !dx ? undefined : { transform: `translateX(${dx}px)` }} {...handlers}>
         <MistakeCard r={row} rq={rq} />
       </div>
     </section>

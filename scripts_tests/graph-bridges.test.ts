@@ -1,10 +1,9 @@
 // Unit tests for bridge validator set extraction (Pattern 21,
-// scripts/lib/graph-bridges.mjs). Doc_no shapes mirror the real SkyLink /
+// scripts/lib/graph-bridges.ts). Doc_no shapes mirror the real SkyLink /
 // SLL Governance Bridge trees from the parse-atlas skill (A.1.10.4.1.*).
 
 import { describe, it, expect, vi, afterEach } from "vitest";
-// @ts-expect-error — .mjs without types; runtime-only import.
-import { extractBridges } from "../scripts/lib/graph-bridges.mjs";
+import { extractBridges } from "../scripts/lib/graph-bridges.ts";
 import { makeEntity } from "../scripts/lib/graph-patterns.mjs";
 
 afterEach(() => vi.restoreAllMocks());

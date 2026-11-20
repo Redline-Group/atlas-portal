@@ -3,12 +3,9 @@
 
 import { config } from "./config.ts";
 import { monthsFromMscTitle } from "../lib/forumMonths.ts";
-import {
-  fetchAllowlistedTopics,
-  type DiscourseFetch,
-  type DiscoursePost,
-  type DiscourseTopic,
-} from "./forum-discourse.ts";
+import { fetchAllowlistedTopics } from "./forum-discourse.ts";
+import type { DiscourseFetch } from "./forum-discourse-http.ts";
+import type { DiscoursePost, DiscourseTopic } from "./forum-discourse-parse.ts";
 import { toIso } from "./to-iso.ts";
 import type { SqlTag } from "./sql-types.ts";
 

@@ -1,6 +1,7 @@
 // 2k. {operational,core}_facilitator_for (Pattern 5): the facilitator named in a
 // facilitator-assignment doc → the executor agent that doc sits under.
-import { isFacilitatorDoc, extractAssignment } from "../graph-patterns.mjs";
+import { isFacilitatorDoc } from "../graph-patterns.mjs";
+import { extractAssignment } from "../graph-content-extract.ts";
 
 // Regex source handed to extractAssignment; graph-entities.mjs reads the same assignment sentence.
 export const FACILITATOR_FOR_PREFIX =

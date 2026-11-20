@@ -1,11 +1,6 @@
 import { SourceMark } from "../SourceMark";
-import {
-  formatMonth,
-  formatUsd,
-  threeWayPeaks,
-  barFillStyle,
-  type ThreeWayMonth,
-} from "../../lib/settlements";
+import { formatMonth, formatUsd } from "../../lib/settlements";
+import { threeWayPeaks, barFillStyle, type ThreeWayMonth } from "@/lib/settlementCharts";
 
 export function SettlementBars({
   months,

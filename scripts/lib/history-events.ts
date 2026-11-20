@@ -12,7 +12,7 @@ import { capDiff, lineDiff } from "../../src/lib/diffCore.ts";
 import { CHANGE_TYPES, type ChangeType } from "../../src/lib/changeTypes.ts";
 import type { DiffLine } from "../../src/lib/history.ts";
 import type { GitSnapshot, GitSnapshotEntry } from "./atlas-git-parse.ts";
-import { classifyDiff } from "./history-classify.mjs";
+import { classifyDiff } from "./history-classify.ts";
 
 /** `modified`: the body changed. `retitled`: the title changed. `renumbered`: the
  *  doc number changed. `retyped`: the heading's `[Type]` changed. Each is its own

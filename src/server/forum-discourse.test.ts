@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchAllowlistedTopics, getJson, parseTopicJson } from "./forum-discourse";
+import { fetchAllowlistedTopics } from "./forum-discourse";
+import { getJson } from "./forum-discourse-http";
+import { parseTopicJson } from "./forum-discourse-parse";
 import { FORUM_ORIGIN } from "../lib/forumKinds";
 
 const USER = { id: 1, username: "SoterLabs" };

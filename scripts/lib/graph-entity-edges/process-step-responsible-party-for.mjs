@@ -5,7 +5,7 @@
 // skipped to avoid duplicating 2s. One edge per (doc, resolved entity, declared
 // role): a repeated role collapses, but an Operational and a Core declaration on the
 // same doc both stay even when they resolve to the same entity.
-import { extractAllRP, extractAutomation } from "../graph-patterns.mjs";
+import { extractAllRP, extractAutomation } from "../graph-content-extract.ts";
 import { warnDriftCount } from "../graph-tripwires.mjs";
 import { resolveResponsibleParty } from "./resolve-responsible-party.mjs";
 

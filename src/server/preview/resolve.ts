@@ -34,6 +34,7 @@
 // happen downstream (build.ts).
 
 import { config } from "../config.ts";
+import { SHA_RE } from "../../lib/patterns.ts";
 import {
   installationIdForRepo,
   installationToken,
@@ -56,7 +57,6 @@ export type ParsedId =
   | { kind: "pr"; prNumber: number }
   | { kind: "branch"; owner: string; repo: string; ref: string };
 
-const SHA_RE = /^[0-9a-f]{40}$/i;
 const PULL_RE = /^pull-(\d+)$/;
 
 /** Is this resolved `ref` a PR? True only for a PR whose HEAD came from the

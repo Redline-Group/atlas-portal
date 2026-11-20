@@ -1,10 +1,6 @@
 import { useState } from "react";
-import {
-  hasMultiVenuePnl,
-  hasVenueAum,
-  isDemandSideCycle,
-  type SettlementReport,
-} from "../../lib/settlements";
+import { isDemandSideCycle, type SettlementReport } from "../../lib/settlements";
+import { hasMultiVenuePnl, hasVenueAum } from "@/lib/settlementCharts";
 import { Tooltip } from "../Tooltip";
 import { SettlementVenuePnl } from "./SettlementSankey";
 import { SettlementAum } from "./SettlementAum";

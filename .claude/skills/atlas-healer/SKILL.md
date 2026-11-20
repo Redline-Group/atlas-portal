@@ -94,7 +94,7 @@ in `graph-tripwires.mjs` catch "Active Data Controller" / "Active Data" /
 
 If the spec diff defines a new supporting-doc pattern (like `.0.3.X` /
 `.varX` / `NR-X`), it must be threaded through **four independent doc_no
-regexes** — `src/lib/docRefResolver.ts`, `scripts/lib/history-classify.mjs`,
+regexes** — `src/lib/docRefResolver.ts`, `scripts/lib/history-classify.ts`,
 `scripts/required/check-atlas-census.mjs`, `src/lib/dutyCollapse.ts` — plus
 `isAnnotation` in `graph-patterns.mjs` and `semParent` in
 `src/lib/crossviewShape.ts`. Missing one fails differently per consumer, all

@@ -182,7 +182,7 @@ test.skipIf(NO_ARTIFACTS)("handler: malformed percent-encoding on the events id 
 
 test.skipIf(NO_ARTIFACTS)("handler: diffCache evicts FIFO once it exceeds DIFF_CACHE_MAX", async () => {
   const { call } = await setup();
-  const { diffCache, DIFF_CACHE_MAX } = await import("./handler.ts");
+  const { diffCache, DIFF_CACHE_MAX } = await import("./handler-artifacts.ts");
   const { previewPaths, writeMeta } = await import("./cache.ts");
 
   diffCache.clear();
@@ -941,7 +941,7 @@ test("/events: a ready Contents-only bundle that already redlines against the de
 });
 
 test("syncBroadGrantMeta: clears, sets, and no-ops", async () => {
-  const { syncBroadGrantMeta } = await import("./handler.ts");
+  const { syncBroadGrantMeta } = await import("./handler-open.ts");
   const base: PreviewMeta = {
     sha: "x", repo: "o/r", ref: "main", kind: "branch", resolvedAt: "t", docCount: 0, buildMs: 1,
     grantTooBroad: true, installSettingsUrl: "https://github.com/settings/installations/1",
@@ -1399,7 +1399,7 @@ test("there is no public preview listing route any more", async () => {
 
 test("rememberPreviewOpen records against the account, and does nothing when signed out", async () => {
   await freshHandler();
-  const { rememberPreviewOpen } = await import("./handler.ts");
+  const { rememberPreviewOpen } = await import("./handler-open.ts");
 
   sessionUser = { id: "user-1", provider: "github" };
   dbQueued = [[]];

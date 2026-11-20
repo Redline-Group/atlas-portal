@@ -6,35 +6,8 @@
  * context object consumed by graph-doc-edges and graph-entity-edges.
  */
 
-import {
-  slugify,
-  makeEntity,
-  ERG_MEMBERSHIP_UUID,
-  ALIGNED_DELEGATES_UUID,
-  RANKED_DELEGATE_UUIDS,
-  SPELL_TEAM_UUID,
-  ACTIVE_ECOSYSTEM_ACTORS_UUID,
-  CCRA_BINDING_UUID,
-  isPrimeAgent,
-  isExecutorAgent,
-  isFacilitatorDoc,
-  isGovOpsDoc,
-  isGrantDoc,
-  isPartyDetails,
-  isICD,
-  COMPRISES_RE,
-  ATOMIC_PARTY_RE,
-  extractAssignment,
-  extractRP,
-  rpRoleAndName,
-  isDescriptiveRP,
-  parseNameList,
-  extractListItems,
-  primitiveRootFor,
-  PRIME_FOUNDATION_RE,
-  PROVIDES_SERVICES_RE,
-  cleanOrgProseName,
-} from "./graph-patterns.mjs";
+import { slugify, makeEntity, ERG_MEMBERSHIP_UUID, ALIGNED_DELEGATES_UUID, RANKED_DELEGATE_UUIDS, SPELL_TEAM_UUID, ACTIVE_ECOSYSTEM_ACTORS_UUID, CCRA_BINDING_UUID, isPrimeAgent, isExecutorAgent, isFacilitatorDoc, isGovOpsDoc, isGrantDoc, isPartyDetails, isICD, COMPRISES_RE, ATOMIC_PARTY_RE, primitiveRootFor, PRIME_FOUNDATION_RE, PROVIDES_SERVICES_RE, cleanOrgProseName } from "./graph-patterns.mjs";
+import { extractAssignment, extractRP, rpRoleAndName, isDescriptiveRP, parseNameList, extractListItems } from "./graph-content-extract.ts";
 import { normalizeAddress } from "./address-chains.mjs";
 import { FACILITATOR_FOR_PREFIX } from "./graph-entity-edges/facilitator-for.mjs";
 import { GOVOPS_FOR_PREFIX } from "./graph-entity-edges/govops-for.mjs";

@@ -1,6 +1,7 @@
 // 2l. {operational,core}_govops_for (Pattern 5): the GovOps org named in a
 // GovOps-assignment doc → the executor agent that doc sits under.
-import { isGovOpsDoc, extractAssignment } from "../graph-patterns.mjs";
+import { isGovOpsDoc } from "../graph-patterns.mjs";
+import { extractAssignment } from "../graph-content-extract.ts";
 
 // Regex source handed to extractAssignment; graph-entities.mjs reads the same assignment sentence.
 export const GOVOPS_FOR_PREFIX = "(?:(?:Operational|Core) )?GovOps for [^.]+";

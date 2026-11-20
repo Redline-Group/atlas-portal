@@ -33,7 +33,7 @@ import {
 import { checkGateTripwires, warnDriftCount } from "../lib/graph-tripwires.mjs";
 import { extractMultisigs } from "../lib/graph-multisigs.mjs";
 import { extractTransfers } from "../lib/graph-transfers.mjs";
-import { extractBridges } from "../lib/graph-bridges.mjs";
+import { extractBridges } from "../lib/graph-bridges.ts";
 import { extractOmni } from "../lib/graph-omni.mjs";
 import { extractTransitions } from "../lib/graph-transitions.mjs";
 import { extractEntities } from "../lib/graph-entities.mjs";

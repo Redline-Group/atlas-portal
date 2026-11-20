@@ -48,7 +48,7 @@ Vote" is the executive *dated* 2025-09-18).
     parameters`, `index.json`, `meta/tags.json`, `meta/poll-tags.json` keyed by pollId 1504–1649).
     The markdown carries **no pollId / multihash**; that join needs the API or chain logs
     (`PollCreated` on `0xD3A9FE…`, already enumerated once by
-    `scripts/aux/atlas-history/enumerate-onchain-polls.mjs` for the severed era).
+    `scripts/aux/atlas-history/enumerate-onchain-polls.ts` for the severed era).
   - `https://github.com/makerdao/community` (`governance/polls/meta/polls.json` 1,215 polls with
     pollId/slug/multihash, `governance/votes/*.md` 227 executives) — the 2019 → May 2025 archive.
 - **Atlas side, already in the repo**: `public/docs.json`, `atlas_history` rows (`commit_sha`,

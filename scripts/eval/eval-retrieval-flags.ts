@@ -5,10 +5,9 @@ import path from "node:path";
 import { config, queryPrefixFor } from "../../src/server/config.ts";
 import type { GroupPolicy } from "../../src/server/retrieval/embed-units.ts";
 import type { Reranker } from "./eval-rerankers.ts";
+import { argv, flag } from "./eval-cli.ts";
 
 export const ROOT = path.resolve(import.meta.dir, "../..");
-export const argv = process.argv.slice(2);
-export const flag = (name: string) => argv.flatMap((a, i) => (a === `--${name}` && argv[i + 1] ? [argv[i + 1]] : []));
 export const listFlag = (name: string, dflt: string[]) => flag(name)[0]?.split(",").map((x) => x.trim()).filter(Boolean) ?? dflt;
 const die = (message: string): never => {
   console.error(message);

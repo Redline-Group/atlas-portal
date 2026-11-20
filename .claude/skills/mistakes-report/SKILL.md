@@ -7,7 +7,7 @@ description: >
   "re-run the mistakes sweep", "full sweep of the edit candidates", "update
   the potential mistakes report", "refresh atlas findings", "reject this
   candidate", "review the edit candidates", "mistakes:plan", or any work on
-  scripts/aux/mistakes-sweep.mjs. Covers the incremental plan/merge cycle, the
+  scripts/aux/mistakes-sweep.ts. Covers the incremental plan/merge cycle, the
   subagent fan-out and model split, the JSONL finding contract, the veto list,
   and the rules that stop a killed agent from silently retiring documents.
 license: MIT
@@ -51,6 +51,7 @@ The worker's rows go live without review. To rule one out, add it to `rejected` 
 | `.github/mistakes-sweep-state.json` | Per-document digests of what was last evaluated. Committed — without it every run is a full sweep. |
 | `.cache/mistakes-sweep/` | Scratch for one run: `plan.json`, `chunks/`, `findings/`. Gitignored, rebuilt by every `plan`. |
 | `scripts/lib/mistakes-sweep.mjs` | The pure logic (digest, plan, validate, merge). Tested by `scripts_tests/mistakes-sweep.test.ts`. |
+| `scripts/aux/mistakes-sweep.ts` + `scripts/aux/mistakes-sweep/` | The CLI: a command table over one module per subcommand (`status`, `bootstrap`, `plan`, `merge`), which own the file I/O. |
 | `scripts/lib/mistakes-corpus.mjs` | Corpus-wide detectors — the cross-document comparisons the chunked fan-out cannot see. Tested by `scripts_tests/mistakes-corpus.test.ts`. |
 
 ## The cycle

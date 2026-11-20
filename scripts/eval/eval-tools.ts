@@ -33,6 +33,8 @@ import { TOOL_CASES } from "./eval-tools-cases.ts";
 import { scoreRun, validateCases, type ToolCase } from "./eval-tools-score.ts";
 import { reportPath, type ToolEvalReport } from "./eval-tools-report.ts";
 import type { Arm, RunRecord } from "./eval-tools-run.ts";
+import { mapPool } from "../../src/server/pool.ts";
+import { argv, flag } from "./eval-cli.ts";
 
 // Before any server module loads: posthog-node.ts reads POSTHOG_KEY at import
 // and Bun auto-loads .env.local, so without this every eval generation would
@@ -48,8 +50,6 @@ const { prepareTurn } = await import("../../src/server/chat/turn-setup.ts");
 const { runCase, resolveCase } = await import("./eval-tools-run.ts");
 const { printReport } = await import("./eval-tools-print.ts");
 
-const argv = process.argv.slice(2);
-const flag = (n: string) => argv.flatMap((a, i) => (a === `--${n}` && argv[i + 1] ? [argv[i + 1]] : []));
 const LABEL = flag("label")[0] ?? "latest";
 const PASSES = Number(flag("passes")[0] ?? 3);
 const ARMS = [...new Set((flag("tiers")[0] ?? "routed,default").split(",").map((s) => s.trim()))].sort((a, b) => (a === "routed" ? -1 : b === "routed" ? 1 : 0)) as Arm[];
@@ -143,25 +143,20 @@ const isDefaultRun = (r: RunRecord) => !r.error && JSON.stringify(r.models) === 
 const items = Array.from({ length: PASSES }, (_, i) => cases.map((c) => ({ c, pass: i + 1 }))).flat();
 const total = items.length * ARMS.length;
 let finished = items.flatMap(({ c, pass }) => ARMS.map((a) => key(c.id, a, pass))).filter((k) => done.has(k)).length;
-let cursor = 0;
-async function worker() {
-  for (let i = cursor++; i < items.length; i = cursor++) {
-    const { c, pass } = items[i];
-    for (const arm of ARMS) {
-      if (done.has(key(c.id, arm, pass))) continue;
-      const routed = done.get(key(c.id, "routed", pass));
-      const rec = arm === "default" && DEDUPE && routed && isDefaultRun(routed)
-        ? { ...routed, arm, reusedFrom: "routed" as const }
-        : await runCase({ ix, c, arm, pass, timeoutMs: TIMEOUT_MS });
-      done.set(key(c.id, arm, pass), rec);
-      save();
-      const s = rec.score;
-      const verdict = rec.error ? `ERROR ${rec.error.slice(0, 50)}` : `${s?.firstOk ? "ok  " : "MISS"} ${s?.firstCalls.join("+") || "(none)"}`;
-      console.log(`[${++finished}/${total}] ${c.id} ${arm}#${pass} ${rec.route.tier}/${rec.route.reason} → ${verdict}${rec.reusedFrom ? " (reused)" : ` ${(rec.latencyMs / 1000).toFixed(1)}s`}`);
-    }
+await mapPool(items, CONCURRENCY, async ({ c, pass }) => {
+  for (const arm of ARMS) {
+    if (done.has(key(c.id, arm, pass))) continue;
+    const routed = done.get(key(c.id, "routed", pass));
+    const rec = arm === "default" && DEDUPE && routed && isDefaultRun(routed)
+      ? { ...routed, arm, reusedFrom: "routed" as const }
+      : await runCase({ ix, c, arm, pass, timeoutMs: TIMEOUT_MS });
+    done.set(key(c.id, arm, pass), rec);
+    save();
+    const s = rec.score;
+    const verdict = rec.error ? `ERROR ${rec.error.slice(0, 50)}` : `${s?.firstOk ? "ok  " : "MISS"} ${s?.firstCalls.join("+") || "(none)"}`;
+    console.log(`[${++finished}/${total}] ${c.id} ${arm}#${pass} ${rec.route.tier}/${rec.route.reason} → ${verdict}${rec.reusedFrom ? " (reused)" : ` ${(rec.latencyMs / 1000).toFixed(1)}s`}`);
   }
-}
-await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+});
 save();
 printReport(report);
 console.log(`\nwrote ${OUT}`);

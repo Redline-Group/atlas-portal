@@ -1,30 +1,12 @@
 import { useEffect, useState } from "react";
-import { useCopyState } from "../hooks/useCopyState";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { ENDPOINT, CLIENTS, USAGE_EXAMPLES } from "./connectData";
+import { ENDPOINT } from "./connectData";
 import { loadTools, type ToolInfo } from "../lib/tools";
-
-function CodeBlock({ code }: { code: string }) {
-  const { copied, copy } = useCopyState(1500);
-  return (
-    <div className="relative group mb-4">
-      <pre
-        className="mono text-xs overflow-x-auto rounded-md p-3 pr-16"
-        style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--tan-2)" }}
-      >
-        {code}
-      </pre>
-      <button
-        type="button"
-        onClick={() => void copy(code)}
-        className="mono text-xs absolute top-2 right-2 px-2 py-1 rounded"
-        style={{ background: "var(--hover)", color: "var(--tan-3)" }}
-      >
-        {copied ? "copied" : "copy"}
-      </button>
-    </div>
-  );
-}
+import { ConnectClients } from "./connect/ConnectClients";
+import { ConnectCodeBlock } from "./connect/ConnectCodeBlock";
+import { ConnectTools } from "./connect/ConnectTools";
+import { ConnectUsage } from "./connect/ConnectUsage";
+import { ConnectVerify } from "./connect/ConnectVerify";
 
 export function ConnectPage() {
   useDocumentTitle("Connect (MCP) — Redline Portal");
@@ -51,84 +33,12 @@ export function ConnectPage() {
         </p>
 
         <p className="mono text-xs text-tan-3 uppercase tracking-wider mb-2">endpoint</p>
-        <CodeBlock code={ENDPOINT} />
+        <ConnectCodeBlock code={ENDPOINT} />
 
-        <h2 className="text-base font-semibold mt-8 mb-3" style={{ color: "var(--tan)" }}>
-          Add it to your client
-        </h2>
-        {CLIENTS.map((c) => (
-          <section key={c.name} className="mb-6">
-            <p className="text-sm font-semibold mb-1" style={{ color: "var(--tan-2)" }}>
-              {c.name}
-            </p>
-            <p className="text-xs mb-2" style={{ color: "var(--tan-3)" }}>
-              {c.note}
-            </p>
-            <CodeBlock code={c.code} />
-          </section>
-        ))}
-
-        <h2 className="text-base font-semibold mt-8 mb-3" style={{ color: "var(--tan)" }}>
-          Using it
-        </h2>
-        <p className="text-sm mb-4" style={{ color: "var(--tan-2)" }}>
-          You don't call the tools by hand. Ask your assistant governance questions in plain language and it
-          picks the right atlas tools on its own — starting broad (search) and drilling down (get, neighbors,
-          traverse). Every result carries UUIDs, doc numbers, and ancestor chains, so you can always ask it to{" "}
-          <em>cite the exact sections</em> and get verifiable references instead of a paraphrase.
-        </p>
-        <ul className="space-y-2 mb-8">
-          {USAGE_EXAMPLES.map((e) => (
-            <li key={e.ask} className="text-xs" style={{ color: "var(--tan-2)" }}>
-              <span style={{ color: "var(--tan)" }}>“{e.ask}”</span>{" "}
-              <span className="text-tan-3">
-                <span className="enlargen">→</span> {e.tools.map((t) => (
-                  <span key={t} className="mono mcp-tool-name">
-                    {t}{" "}
-                  </span>
-                ))}
-              </span>
-            </li>
-          ))}
-        </ul>
-
-        <h2 className="text-base font-semibold mt-8 mb-3" style={{ color: "var(--tan)" }}>
-          Verify the connection
-        </h2>
-        <p className="text-xs mb-2" style={{ color: "var(--tan-3)" }}>
-          A raw <span className="mono">tools/list</span> call should return{" "}
-          {tools ? `the ${tools.length} tools` : "the tools"}:
-        </p>
-        <CodeBlock
-          code={`curl -s ${ENDPOINT} \\
-  -H 'Content-Type: application/json' \\
-  -H 'Accept: application/json, text/event-stream' \\
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'`}
-        />
-
-        <h2 className="text-base font-semibold mt-8 mb-3" style={{ color: "var(--tan)" }}>
-          Tools
-        </h2>
-        <ul className="space-y-2 mb-8">
-          {tools === null && (
-            <li className="text-xs" style={{ color: "var(--tan-3)" }}>
-              Loading tools…
-            </li>
-          )}
-          {tools?.length === 0 && (
-            <li className="text-xs" style={{ color: "var(--tan-3)" }}>
-              Couldn't load the tool list.
-            </li>
-          )}
-          {tools?.map((t) => (
-            <li key={t.name} className="text-xs" style={{ color: "var(--tan-2)" }}>
-              <span className="mono mcp-tool-name">
-                {t.name}
-              </span>{" "}
-              — {t.desc}
-            </li>
-          ))}
-        </ul>
+        <ConnectClients />
+        <ConnectUsage />
+        <ConnectVerify tools={tools} />
+        <ConnectTools tools={tools} />
       </div>
     </div>
   );

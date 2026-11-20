@@ -36,3 +36,11 @@ export function makeEntity(
 
 export function slugify(name: string): string;
 export const UUID_LINK_RE: RegExp;
+
+export function normalizeKey(name: string): string;
+export function buildNameIndex<E>(entityMap: Map<string, E>): Map<string, E>;
+export function makeWarn(tag: string, stats: { warnings: number }): (msg: string) => void;
+export function groupChildrenByParent<D extends { doc_no: string }, K extends string>(
+  allDocs: D[],
+  kindOf: (d: D) => K | null,
+): Map<string, { [P in K]?: D }>;

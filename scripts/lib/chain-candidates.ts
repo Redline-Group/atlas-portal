@@ -1,6 +1,6 @@
 /**
  * Address-anchored chain-candidate detection — the drift detector for chain
- * names the label and prose halves of check-chains-census.mjs structurally
+ * names the label and prose halves of check-chains-census.ts structurally
  * cannot see.
  *
  * Why this exists: the census's prose scan anchors on `<Proper Noun>

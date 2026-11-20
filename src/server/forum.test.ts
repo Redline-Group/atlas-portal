@@ -12,7 +12,7 @@
 // while this file's tests run (see freshness.test.ts / zz-db-integration.test.ts).
 import { describe, it, expect, beforeEach, afterEach, afterAll, mock } from "bun:test";
 import { toUuidArrayLiteral, fromUuidArray } from "./pg-array.ts";
-import type { DiscourseTopic } from "./forum-discourse.ts";
+import type { DiscourseTopic } from "./forum-discourse-parse.ts";
 
 interface Recorded {
   text: string;

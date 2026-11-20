@@ -31,7 +31,7 @@ export interface HistoryEntry {
   diff?: DiffLine[];
   /** Significance of a modified edit: "lint" = whitespace-only, "typo" =
    *  ≤4 alphanumeric chars changed with no run over 2, "semantic" = real
-   *  content change (scripts/lib/history-classify.mjs is the implementation —
+   *  content change (scripts/lib/history-classify.ts is the implementation —
    *  it is stricter than "≤8 chars", which this comment used to claim). Only set for
    *  `changeType: "modified"`. */
   changeKind?: "lint" | "typo" | "semantic";

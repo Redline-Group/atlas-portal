@@ -3,10 +3,7 @@
 
 import {
   SETTLEMENT_NEAR_ZERO as NEAR_ZERO,
-  collapseAum,
-  demandPart,
   demandSideRevenue,
-  DEMAND_SERIES,
   isDemandSideCycle,
   reportsForPrime,
   revenueGap,
@@ -15,6 +12,7 @@ import {
   type SettlementReport,
   type SettlementsBundle,
 } from "../../lib/settlements.ts";
+import { collapseAum, demandPart, DEMAND_SERIES } from "../../lib/settlementCharts.ts";
 import type { ForumMonthTopic } from "../../lib/forumMonths.ts";
 import { forumTopicUrlForMonth } from "../../lib/forumMonths.ts";
 import {

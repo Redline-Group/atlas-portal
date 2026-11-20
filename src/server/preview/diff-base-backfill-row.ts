@@ -28,7 +28,7 @@ export interface DiscoveredBase {
   defaultBranch?: string;
 }
 
-interface LiveAtlas {
+export interface LiveAtlas {
   commit: string;
   snapshot: Snapshot;
 }

@@ -1,10 +1,5 @@
-import {
-  formatMonth,
-  formatUsd,
-  demandPart,
-  type DemandKey,
-  type SettlementReport,
-} from "../../lib/settlements";
+import { formatMonth, formatUsd, type SettlementReport } from "../../lib/settlements";
+import { demandPart, type DemandKey } from "@/lib/settlementCharts";
 
 type Series = { key: DemandKey; label: string; barClass: string };
 

@@ -363,7 +363,7 @@ is real; what was wrong is the gate's reading of the edit, not its reading of
 the document.
 
 **The existing `change_kind` classifier — would not have fired.**
-`scripts/lib/history-classify.mjs` already classifies every historical edit as
+`scripts/lib/history-classify.ts` already classifies every historical edit as
 lint / typo / semantic, which looks like the same judgement this gate needs.
 It isn't, at the sizes that matter: `classifyDiff` requires ≤4 changed
 alphanumeric characters with no run over 2 to call something a typo, and

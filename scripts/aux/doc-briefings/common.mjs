@@ -1,39 +1,21 @@
 // Shared helpers for the briefings driver's subcommands: paths, flags, the
 // atlas load, and the database read.
-import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 
 import { loadAtlasSource } from "../../lib/atlas-source.mjs";
 import { BRIEFING_MAX_FAILURES } from "../../lib/doc-briefings.mjs";
 import { emptyState, isStateUsable } from "../../lib/mistakes-sweep.mjs";
+import { ATLAS, ROOT, readJson } from "../atlas-cli-common.ts";
 
-export const ROOT = path.resolve(import.meta.dirname, "../../..");
-const ATLAS = path.join(ROOT, "vendor/next-gen-atlas");
+export { ROOT, argv, atlasSha, flag, opt, readJson } from "../atlas-cli-common.ts";
+
 export const ARTIFACT = path.join(ROOT, "public/doc-briefings.json");
 export const STATE = path.join(ROOT, ".github/briefings-state.json");
 export const WORK = path.join(ROOT, ".cache/atlas-briefings");
 export const CHUNKS = path.join(WORK, "chunks");
 export const OUT = path.join(WORK, "out");
 
-export const argv = process.argv.slice(2);
-export const flag = (name) => argv.includes(`--${name}`);
-export const opt = (name, fallback) => {
-  const hit = argv.find((a) => a.startsWith(`--${name}=`));
-  return hit ? hit.slice(name.length + 3) : fallback;
-};
 export const rel = (file) => path.relative(ROOT, file);
-
-export const readJson = (file, fallback) =>
-  fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : fallback;
-
-export function atlasSha() {
-  try {
-    return execFileSync("git", ["-C", ATLAS, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-  } catch {
-    return null;
-  }
-}
 
 export function load() {
   const { nodes, nodeMap, layout } = loadAtlasSource(ATLAS);

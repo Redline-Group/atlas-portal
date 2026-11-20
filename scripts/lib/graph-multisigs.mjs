@@ -24,16 +24,8 @@
  * Never-silent: every detected root reports parse failures as warnings.
  */
 
-import {
-  slugify,
-  normalizeKey,
-  buildNameIndex,
-  parseNameList,
-  bulletField,
-  makeWarn,
-  groupChildrenByParent,
-  createProseParty,
-} from "./graph-patterns.mjs";
+import { slugify, normalizeKey, buildNameIndex, bulletField, makeWarn, groupChildrenByParent, createProseParty } from "./graph-patterns.mjs";
+import { parseNameList } from "./graph-content-extract.ts";
 import { normalizeChainLabel } from "./chains.mjs";
 import { normalizeAddress } from "./address-chains.mjs";
 
@@ -45,7 +37,7 @@ const THRESHOLD_RE = /The (.+?) (?:currently )?has a (?:default )?(\d+)\/(\d+) s
 const THRESHOLD_ALT_RE =
   /The (.+?)'s required number of signers is \S+ \((\d+)\) out of \S+ \((\d+)\)/;
 const ADDRESS_RE = /`([A-Za-z0-9]{32,64})`/;
-const ADDRESS_CHAIN_RE = /\baddress of .+? on (?:the )?([A-Z][\w ]*?) is/;
+export const ADDRESS_CHAIN_RE = /\baddress of .+? on (?:the )?([A-Z][\w ]*?) is/;
 // "three (3) addresses controlled by Operational GovOps Soter Labs"
 const SIGNER_GROUP_RE =
   /\((\d+)\)\s*address(?:es)?(?:\s+(?:are|is))?\s+controlled by\s+(.+?)(?=\s*[,;.]|\s+and\s+[a-z]+\s*\(\d+\)|$)/gi;

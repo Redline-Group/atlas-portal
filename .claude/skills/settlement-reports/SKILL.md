@@ -6,7 +6,7 @@ description: >
   Monthly settlement section. Use when running or changing pnpm
   settlements:parse, editing scripts/lib/settlement-xlsx.mjs,
   scripts/aux/settlement-stats-print.ts,
-  scripts/aux/parse-settlements.mjs, src/lib/settlements.ts,
+  scripts/aux/parse-settlements.mjs, src/lib/settlements.ts, src/lib/settlementCharts.ts,
   src/lib/settlementSankey.ts or src/components/radar/ActorSettlement*, when a
   new month or prime is published, or when asked to audit / reconcile / check
   the accounting of settlement figures. Covers what cost of funds is and its

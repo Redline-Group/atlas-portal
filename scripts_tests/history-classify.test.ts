@@ -1,4 +1,4 @@
-// Unit tests for the pure heuristics in scripts/lib/history-classify.mjs.
+// Unit tests for the pure heuristics in scripts/lib/history-classify.ts and history-bullet-match.ts.
 // Each case targets a behaviour iterated during the matcher work — they
 // lock in the chosen tradeoffs so a future tweak doesn't silently regress.
 
@@ -12,12 +12,14 @@ import {
   parentDocNo,
   ancestorWalkFor,
   matchScore,
+  nodeTokenSets,
+} from "../scripts/lib/history-classify.ts";
+import {
   explicitRefs,
   nodeInRefScope,
   detectAgentScope,
   matchBulletsToNodes,
-  nodeTokenSets,
-} from "../scripts/lib/history-classify.mjs";
+} from "../scripts/lib/history-bullet-match.ts";
 
 // ─────────────────────────────────── classifyPrTitle
 

@@ -6,7 +6,7 @@
 // functions take their `sql` tag as a parameter, so the tests pass a fake.
 import { describe, it, expect, beforeEach } from "bun:test";
 import { maybeSyncForum, upsertForumTopic } from "./forum-sync.ts";
-import type { DiscourseTopic } from "./forum-discourse.ts";
+import type { DiscourseTopic } from "./forum-discourse-parse.ts";
 
 interface Recorded {
   text: string;

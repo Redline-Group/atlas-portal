@@ -6,6 +6,7 @@ import { config } from "../../src/server/config.ts";
 import { embedBatch, embedQuery } from "../../src/server/retrieval/embed.ts";
 import { unitHash } from "../../src/server/retrieval/embed-units.ts";
 import { openVectorCache, type VectorCache } from "./eval-vector-cache.ts";
+import { parseVecLiteral } from "./eval-retrieval-rank.ts";
 import { BACKEND, DOC_PREFIX, LOCAL, MODELS, OFFLINE, OLLAMA_HOST, ROOT } from "./eval-retrieval-flags.ts";
 
 // Every neural embed goes through .cache/eval-vectors.{bin,idx.json}, keyed
@@ -22,9 +23,6 @@ export const vectorState: { vecCache: VectorCache | null; cachedVectors: Map<str
 // different vector under a different prefix.
 const vecKey = (model: string, hash: string) => `${model}${DOC_PREFIX ? `\u0001${DOC_PREFIX}` : ""}\u0000${hash}`;
 
-function parseVecLiteral(s: string): number[] {
-  return s.replace(/^\[|\]$/g, "").split(",").map(Number);
-}
 
 // Read-only: pull embeddings from DATABASE_URL keyed by content_hash. A unit
 // whose embed TEXT is byte-identical to an already-embedded doc (same
