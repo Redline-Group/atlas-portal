@@ -1,0 +1,10 @@
+{
+  "number": 383,
+  "title": "Atlas Edit Proposal — 2026-11-16",
+  "body": "## Summary\n\nThis proposal includes the following edits:\n\n- **Add Halo Agents And Sky Core Halos** - Defines Halo Agents and adds Sky Core Halos, starting with Test Halo, which is used to test new Agent architecture in production.\n- **Align The Distribution Reward And Integration Boost Invocation Processes** - Creates Invocation entries only after Operational GovOps confirms feasibility, and aligns the status and removal steps for rejected or failed proposals across both Primitives.\n- **Specify The hop And maxChange Bounds For The Osero Diamond PAU On Base** - Sets the hop to 16 hours and maxChange to 1.20, matching the Base defaults.\n- **Update The ERC-4626 Facet's Highest Production Deposit Rate Limit** - Records 12,441,600 USDC and 2,329,067 USDC per day as the highest deposit rate limit operated in production.\n- **Add File Links To The Operational Reference Materials** - Adds links to the Technical Scope Template, the Deployment Checklist and the Morpho Deployment Verification Guide.\n",
+  "author": "adamgfraser",
+  "url": "https://github.com/sky-ecosystem/next-gen-atlas/pull/383",
+  "commentCount": 0,
+  "reviewCount": 1,
+  "approvalCount": 1
+}

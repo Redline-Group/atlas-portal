@@ -1,8 +1,8 @@
 {
   "registry-liveness": {
     "counts": {
-      "total": 59,
-      "live": 19,
+      "total": 60,
+      "live": 20,
       "empty": 40
     },
     "members": [
@@ -46,6 +46,12 @@
         "uuid": "a5fa4c7d-f17b-4547-97dd-920a2b67b97d",
         "doc_no": "A.1.10.2.5.1.3.2",
         "title": "List Of Registered Spell Checklists",
+        "bucket": "live"
+      },
+      {
+        "uuid": "dc48d6fa-6831-4c06-ab0e-e3bf42fc0553",
+        "doc_no": "A.1.14.6.3",
+        "title": "List Of Sky Core Halos",
         "bucket": "live"
       },
       {
