@@ -172,7 +172,7 @@ export const areas = [
     id: "scripts-lib-graph",
     label: "Scripts lib · Graph extraction",
     // Every graph-* module, including the per-pattern folders (graph-entity-edges/…).
-    match: [/^scripts\/lib\/graph-[\w-]+(?:\/[\w-]+)*\.mjs$/],
+    match: [/^scripts\/lib\/graph-[\w-]+(?:\/[\w-]+)*\.(?:mjs|ts)$/],
   },
   {
     id: "scripts-lib-address",
