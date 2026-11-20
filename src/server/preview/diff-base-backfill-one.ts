@@ -1,18 +1,40 @@
 // One row of the diff-base backfill (diff-base-backfill.ts): hydrate the row,
 // resolve its candidates, materialize the base and store the record.
 
-import type { Resolved } from "./resolve.ts";
-import type { Candidates } from "./pr-diff.ts";
+import type { GhClient, Resolved } from "./resolve.ts";
+import type { Candidates, resolveCandidates } from "./pr-diff.ts";
 import type { Snapshot } from "./snapshot.ts";
 import { diffBaseLogLine } from "./diff-base-record.ts";
 import type { PreviewBases, PreviewMeta } from "./cache.ts";
-import { materializeDiffBase, resolveBackfillRow, type BackfillRow } from "./diff-base-backfill-row.ts";
-import type { BackfillDeps, LiveAtlas } from "./diff-base-backfill.ts";
+import {
+  materializeDiffBase,
+  resolveBackfillRow,
+  type BackfillRow,
+  type DiscoveredBase,
+  type LiveAtlas,
+} from "./diff-base-backfill-row.ts";
+
+/** The backfill’s I/O, injected so tests replace each piece. */
+export interface BackfillDeps {
+  list: () => Promise<BackfillRow[]>;
+  token: () => string;
+  installationToken: (repo: string) => Promise<string | null>;
+  gh: (token: string) => GhClient;
+  candidates: typeof resolveCandidates;
+  live: (token: string) => Promise<LiveAtlas>;
+  /** Checkout `sha` in `repo` and parse it. Throws if the archive is gone.
+   *  `apiTarball` is required for a private repo: an installation-token Bearer
+   *  is honored on api.github.com/.../tarball/..., and ignored on the public
+   *  github.com/.../archive/... URL. */
+  snapshotAt: (repo: string, sha: string, token: string, apiTarball?: boolean) => Promise<Snapshot>;
+  fill: (sha: string, meta: PreviewMeta, discovered: DiscoveredBase) => Promise<boolean>;
+}
+
 
 export interface BackfillCtx {
   deps: BackfillDeps;
-  /** The service token; a private row swaps in its installation token. */
-  token: string;
+  /** A private row never uses this: it swaps in its installation token. */
+  serviceToken: string;
   live: LiveAtlas;
   // Merge bases only. Heads are one-shot and must not accumulate — each is a
   // full atlas, and a table of old previews is a table of distinct heads.
@@ -40,8 +62,8 @@ function metaFor(resolved: Resolved, bases: PreviewBases, live: LiveAtlas, count
 // A private row with no installation token (app not configured, not installed,
 // or the lookup threw) gets null: the caller skips it rather than redline with
 // the service token. The row stays NULL and a later boot retries.
-async function rowToken(row: BackfillRow, { deps, token }: BackfillCtx): Promise<string | null> {
-  if (!row.private) return token;
+async function rowToken(row: BackfillRow, { deps, serviceToken }: BackfillCtx): Promise<string | null> {
+  if (!row.private) return serviceToken;
   try {
     return await deps.installationToken(row.repo);
   } catch {

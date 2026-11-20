@@ -3,6 +3,7 @@
 // One observation = one raw chain string seen at one doc. The census keys them
 // by the lowercased string, so the residue is per-chain-name, not per-mention.
 import { findChainKeyedOddRows } from "../../lib/chain-candidates.ts";
+import { ADDRESS_CHAIN_RE as MULTISIG_ADDRESS_CHAIN_RE } from "../../lib/graph-multisigs.mjs";
 
 export interface CensusDoc {
   id: string;
@@ -40,8 +41,8 @@ const TOKEN_ADDRESS_RE = /^Token Address \(([^)]+)\)/;
 // surfaces it early. Note the asymmetry: a `Chain` param naming a known chain
 // still buckets `known` even though nothing consumes it.
 const CHAIN_PARAM_TITLE_RE = /^(?:Network|Integration Partner Chain|Chain)$/i;
-// graph-multisigs.mjs ADDRESS_CHAIN_RE, made global to sweep every doc.
-const ADDRESS_CHAIN_RE = /\baddress of .+? on (?:the )?([A-Z][\w ]*?) is/g;
+// The multisig extractor’s own pattern, made global to sweep every doc.
+const ADDRESS_CHAIN_RE = new RegExp(MULTISIG_ADDRESS_CHAIN_RE.source, "g");
 
 function observeLabels(doc: CensusDoc, observe: Observe): void {
   const title = doc.title ?? "";

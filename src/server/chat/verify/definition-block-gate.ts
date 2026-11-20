@@ -14,7 +14,7 @@ import { canonicalDefLine, couldBeTitledDef } from "./definition-line.ts";
 
 // A complete definition line: ≤3 leading spaces, `[label]:`, an /atlas/ dest.
 // Restricted to /atlas/ so a stray CommonMark ref-def to some URL isn't buffered.
-const DEF = /^ {0,3}\[[^[\]\n]{1,120}\]:\s*<?\/atlas\//;
+export const DEF = /^ {0,3}\[[^[\]\n]{1,120}\]:\s*<?\/atlas\//;
 
 // A definition line in canonical form (see definition-line.ts), or null.
 const asDef = (line: string): string | null => {

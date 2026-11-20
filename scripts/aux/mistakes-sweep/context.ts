@@ -12,9 +12,7 @@ import {
   type SweepState,
 } from "../../lib/mistakes-sweep.mjs";
 import { scanSourceUuids } from "../../lib/atlas-uuid-scan.ts";
-import { ATLAS, ROOT, argv, flag, readJson } from "../atlas-cli-common.ts";
-
-export { ROOT, atlasSha, flag, opt, readJson } from "../atlas-cli-common.ts";
+import { ATLAS, ROOT, flag, readJson } from "../atlas-cli-common.ts";
 
 export const ARTIFACT = path.join(ROOT, "public/potential-mistakes.json");
 export const STATE = path.join(ROOT, ".github/mistakes-sweep-state.json");
@@ -30,7 +28,6 @@ export interface Artifact {
   [key: string]: unknown;
 }
 
-export const cmd = argv.find((a) => !a.startsWith("-")) ?? "status";
 export function load() {
   const { nodes: loaded, nodeMap: loadedMap, layout } = loadAtlasSource(ATLAS);
   const nodes: MistakeSweepNode[] = loaded;

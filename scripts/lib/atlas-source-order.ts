@@ -38,7 +38,7 @@ const isNr = (docNo: string) => docNo.startsWith("NR-");
  *  Research doc has no position of its own (flat `NR-<n>` namespace; its target
  *  is "the numbered document it follows"), so it travels inside the preceding
  *  block and is never sorted as a document. Mirror of split_into_blocks. */
-export function splitIntoBlocks(source: string, lines: string[]): Block[] {
+function splitIntoBlocks(source: string, lines: string[]): Block[] {
   const heads = headings(lines);
   if (!heads.length) throw new AtlasSourceError(`${source} contains no Atlas document headings`);
   if (heads[0][0] !== 0)
@@ -63,7 +63,7 @@ export function splitIntoBlocks(source: string, lines: string[]): Block[] {
  *  subtree, which naive numeric order gets backwards in ~410 places), 2 = the
  *  non-integer `var1` Scenario Variation segment. A parent's key is a prefix of
  *  its children's, so it sorts first for free. Mirror of canonical_sort_key. */
-export function canonicalSortKey(docNo: string, realDocNos: Set<string>): SortKey {
+function canonicalSortKey(docNo: string, realDocNos: Set<string>): SortKey {
   const parts = docNo.split(".");
   const key: SortKey = [];
   for (let i = 1; i < parts.length; i++) {
@@ -128,7 +128,7 @@ function assertSourceOrderPreserved(ordered: Block[]): void {
 // hash count is lossy (10k+ docs sit at the cap), so subtracting a root level
 // would flatten every capped document onto the wrong level.
 // ---------------------------------------------------------------------------
-export const MAX_HEADING_LEVEL = 6;
+const MAX_HEADING_LEVEL = 6;
 
 /** How many documents sit above `docNo`. Segment count is NOT depth: `0`
  *  extension segments (`A.1.4.5.0.4`) and the leading `A` are phantoms no
@@ -149,11 +149,11 @@ export function structuralDepth(docNo: string, realDocNos: Set<string>): number 
 export function restoreAbsoluteLevels(text: string): string {
   const lines = text.split("\n");
   const heads = headings(lines);
-  const real = new Set(heads.map(([, dn]) => dn).filter((dn) => !dn.startsWith("NR-")));
+  const real = new Set(heads.map(([, dn]) => dn).filter((dn) => !isNr(dn)));
   let previous = 0;
   for (const [i, dn] of heads) {
     let level: number;
-    if (dn.startsWith("NR-")) {
+    if (isNr(dn)) {
       level = Math.min(previous + 1, MAX_HEADING_LEVEL);
     } else {
       level = Math.min(structuralDepth(dn, real) + 1, MAX_HEADING_LEVEL);

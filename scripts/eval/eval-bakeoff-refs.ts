@@ -1,6 +1,7 @@
 // Reference-format compliance metrics for the chat bakeoff (eval-bakeoff.ts).
 import { citationValues, extractCitations } from "../../src/server/chat/verify/verify-checks.ts";
 import type { ReferenceExpansion } from "../../src/server/chat/verify/citation-normalize.ts";
+import { DEF } from "../../src/server/chat/verify/definition-block-gate.ts";
 
 // Reference-style compliance (docs/plans/reference-citations.md). Prompt-behaviour
 // measurement, not grading: only `undefinedLabels` and `shippedBrackets` are
@@ -30,23 +31,22 @@ export const EMPTY_REFS: RefStats = { usedRefStyle: false, blockFirst: false, us
 // the definition block and rewrites every use — except the two that must be
 // counted after it: labels it could not resolve, and reference syntax that
 // somehow survived into the shipped text.
-// Restricted to /atlas/ destinations, matching definition-block-gate.ts's `DEF`
+// Definition lines are definition-block-gate.ts's `DEF`, restricted to /atlas/ destinations
 // — this measures compliance with the citation contract, so an unrelated
 // CommonMark ref-def to some other URL is not part of the block.
-const DEF_LINE_RE = /^ {0,3}\[[^[\]\n]{1,120}\]:\s*<?\/atlas\//;
 const MULTI_LABEL_RE = /\[[^[\]\n]{1,120}\]\[[^[\]\n]*,[^[\]\n]*\]/g;
 const REF_USE_RE = /\[[^[\]\n]{1,120}\]\[[^[\]\n]{0,200}\]/g;
 
 export function refStats(raw: string, refs: ReferenceExpansion, shipped: string): RefStats {
   const lines = raw.split("\n");
   const firstLine = lines.find((l) => l.trim() !== "") ?? "";
-  const lastDef = lines.reduce((last, l, i) => (DEF_LINE_RE.test(l) ? i : last), -1);
+  const lastDef = lines.reduce((last, l, i) => (DEF.test(l) ? i : last), -1);
   return {
     usedRefStyle: refs.definitions.size > 0,
-    blockFirst: DEF_LINE_RE.test(firstLine),
+    blockFirst: DEF.test(firstLine),
     usesBeforeBlock: lines
       .slice(0, Math.max(0, lastDef))
-      .filter((l) => !DEF_LINE_RE.test(l))
+      .filter((l) => !DEF.test(l))
       .reduce((n, l) => n + (l.match(REF_USE_RE) ?? []).length, 0),
     definitions: refs.definitions.size,
     undefinedLabels: refs.undefinedLabels.length,

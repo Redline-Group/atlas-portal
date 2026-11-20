@@ -3,7 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { chunkDocs, docsToEvaluate, planSweep, type MistakeSweepNode, type SweepPlan } from "../../lib/mistakes-sweep.mjs";
-import { CHUNKS, FINDINGS, ROOT, WORK, atlasSha, backlinksFor, describe, flag, load, opt } from "./context.ts";
+import { ROOT, atlasSha, flag, opt } from "../atlas-cli-common.ts";
+import { CHUNKS, FINDINGS, WORK, backlinksFor, describe, load } from "./context.ts";
 
 type ByUuid = Map<string, MistakeSweepNode>;
 const chunkId = (i: number) => String(i + 1).padStart(3, "0");

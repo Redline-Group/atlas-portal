@@ -5,7 +5,8 @@ import path from "node:path";
 import { CORPUS_DETECTORS, runCorpusDetectors } from "../../lib/mistakes-corpus.mjs";
 import { stampFirstSeen } from "../../lib/mistakes-first-seen.ts";
 import { advanceState, mergeFindings, suppressRejected, type Mistake, type MistakeSweepNode } from "../../lib/mistakes-sweep.mjs";
-import { ARTIFACT, ROOT, STATE, WORK, atlasSha, flag, load, readJson, type Artifact } from "./context.ts";
+import { ROOT, atlasSha, flag, readJson } from "../atlas-cli-common.ts";
+import { ARTIFACT, STATE, WORK, load, type Artifact } from "./context.ts";
 import { readChunks, type ChunkResults, type PlanChunk } from "./merge-read.ts";
 
 interface PlanFile {

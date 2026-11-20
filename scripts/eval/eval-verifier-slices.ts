@@ -31,7 +31,8 @@ import type { Contradiction } from "../../src/server/chat/verify/verifier.ts";
 import { runSlice, type SliceName } from "../../src/server/chat/verify/verifier-slices.ts";
 import { runConfirm } from "../../src/server/chat/verify/confirm.ts";
 import { buildMutations, type SavedRun } from "./eval-verifier-mutations.ts";
-import { flag, runPool } from "./eval-cli.ts";
+import { mapPool } from "../../src/server/pool.ts";
+import { flag } from "./eval-cli.ts";
 
 const ROOT = path.resolve(import.meta.dir, "../..");
 const EVIDENCE_DIR = process.env.EVAL_EVIDENCE_DIR ?? path.join(ROOT, "scripts", "eval", "eval-corpora", "evidence");
@@ -139,8 +140,7 @@ for (const model of MODELS) {
 console.log(`sliced-verifier bakeoff — ${MODELS.length} models × ${ROUTED_SLICES.length} slices (+ conditional confirm on refute)`);
 console.log(`corpus ${runs.length} runs + ${realDefects.length} audited real defect(s) → ${work.length} calls\n`);
 
-await runPool(work.length, CONCURRENCY, async (i) => {
-  const w = work[i];
+await mapPool(work, Math.max(1, CONCURRENCY), async (w) => {
   cells.push(await judge(w.model, w.slice, w.run, w.answer, w.kind, w.caught));
   save();
   if (cells.length % 20 === 0) console.log(`  [${cells.length}/${work.length}]`);

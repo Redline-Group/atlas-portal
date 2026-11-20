@@ -74,18 +74,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { CHAINS, classifyChainLabel } from "../lib/chains.mjs";
 import { naturalCompare } from "../lib/natural-sort.mjs";
+import { makeWarn } from "../lib/graph-patterns.mjs";
 import { collectObservations, type CensusDoc, type LabelEntry } from "./chains-census/observe.ts";
-import { checkRegistry, makeRegistryWarn } from "./chains-census/registry-check.ts";
+import { checkRegistry } from "./chains-census/registry-check.ts";
 import { checkRpcEndpoints } from "./chains-census/rpc-check.ts";
 
 const ROOT = path.resolve(import.meta.dir, "../..");
 const BASELINE_PATH = path.join(ROOT, ".github/chains-census-baseline.json");
-const update = process.argv.includes("--update");
-const checkRpc = process.argv.includes("--rpc");
+const [update, checkRpc] = ["--update", "--rpc"].map((f) => process.argv.includes(f));
 
-const allDocs = Object.values(
-  JSON.parse(fs.readFileSync(path.join(ROOT, "public/docs.json"), "utf8")).nodes as Record<string, CensusDoc>,
-);
+const docsJson = JSON.parse(fs.readFileSync(path.join(ROOT, "public/docs.json"), "utf8"));
+const allDocs = Object.values(docsJson.nodes as Record<string, CensusDoc>);
 
 // The three halves of observation collection live in chains-census/observe.ts.
 const { observations, oddRowCount } = collectObservations(allDocs);
@@ -139,8 +138,9 @@ const known = rows.filter((e) => e.kind === "known").sort((a, b) => naturalCompa
 
 // Registry completeness (chains-census/registry-check.ts). An incomplete
 // entry is a code bug, not atlas drift, so these warnings are never baselined.
-const registry = makeRegistryWarn();
-const chainKeys = checkRegistry(registry.warn);
+const registryStats = { warnings: 0 };
+const registryWarn = makeWarn("[drift] chains-census:", registryStats);
+const chainKeys = checkRegistry(registryWarn);
 
 // ---------------------------------------------------------------------------
 // Compare residue against baseline → [drift] warnings for new chain strings
@@ -182,7 +182,7 @@ if (baselineLabels) {
 console.log(
   `chains-census: ${counts.total} chain mention(s) — ${counts.known} known, ` +
     `${counts.deferred} deferred, ${counts.unknown} unknown, ${counts.empty} empty; ` +
-    `${residue.length} residue string(s), ${drift + registry.count()} drift warning(s)`,
+    `${residue.length} residue string(s), ${drift + registryStats.warnings} drift warning(s)`,
 );
 // "Seen" means two different things, and conflating them was itself a bug: a
 // chain can carry attributed addresses while never appearing in a label this
@@ -222,7 +222,7 @@ for (const d of deferred) {
   console.log(`  deferred → ethereum: "${d.label}" (${d.count} mention(s)) — promote to CHAINS when it goes live`);
 }
 
-if (checkRpc) await checkRpcEndpoints(registry.warn);
+if (checkRpc) await checkRpcEndpoints(registryWarn);
 
 if (update) {
   fs.writeFileSync(BASELINE_PATH, JSON.stringify({ residue }, null, 2) + "\n");

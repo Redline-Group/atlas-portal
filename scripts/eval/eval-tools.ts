@@ -33,7 +33,8 @@ import { TOOL_CASES } from "./eval-tools-cases.ts";
 import { scoreRun, validateCases, type ToolCase } from "./eval-tools-score.ts";
 import { reportPath, type ToolEvalReport } from "./eval-tools-report.ts";
 import type { Arm, RunRecord } from "./eval-tools-run.ts";
-import { argv, flag, runPool } from "./eval-cli.ts";
+import { mapPool } from "../../src/server/pool.ts";
+import { argv, flag } from "./eval-cli.ts";
 
 // Before any server module loads: posthog-node.ts reads POSTHOG_KEY at import
 // and Bun auto-loads .env.local, so without this every eval generation would
@@ -142,8 +143,7 @@ const isDefaultRun = (r: RunRecord) => !r.error && JSON.stringify(r.models) === 
 const items = Array.from({ length: PASSES }, (_, i) => cases.map((c) => ({ c, pass: i + 1 }))).flat();
 const total = items.length * ARMS.length;
 let finished = items.flatMap(({ c, pass }) => ARMS.map((a) => key(c.id, a, pass))).filter((k) => done.has(k)).length;
-await runPool(items.length, CONCURRENCY, async (i) => {
-  const { c, pass } = items[i];
+await mapPool(items, CONCURRENCY, async ({ c, pass }) => {
   for (const arm of ARMS) {
     if (done.has(key(c.id, arm, pass))) continue;
     const routed = done.get(key(c.id, "routed", pass));

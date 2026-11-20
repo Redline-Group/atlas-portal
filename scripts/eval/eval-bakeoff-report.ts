@@ -1,6 +1,7 @@
 // Scoreboards and console output for the chat bakeoff (eval-bakeoff.ts).
 import type { BakeoffQuery } from "./eval-bakeoff-queries.ts";
 import { hardFabs, type RunResult } from "./eval-bakeoff-result.ts";
+import { printTable } from "./eval-tools-report.ts";
 
 type Metric = (r: RunResult) => number;
 const mean = (rs: RunResult[], f: Metric) => (rs.length ? rs.reduce((s, r) => s + f(r), 0) / rs.length : 0);
@@ -55,16 +56,10 @@ function modelRefs(model: string, results: RunResult[]) {
 // placement are behavioural; undefLabels/multiLabel/shippedBrackets are defects.
 export const refBoard = (models: string[], results: RunResult[]) => models.map((model) => modelRefs(model, results));
 
-function table<T extends Record<string, unknown>>(rows: T[], cols: readonly (keyof T & string)[]) {
-  const width = (c: string) => Math.max(c.length, ...rows.map((r) => String(r[c as keyof T]).length)) + 2;
-  console.log(cols.map((c) => c.padEnd(width(c))).join(""));
-  for (const row of rows) console.log(cols.map((c) => String(row[c]).padEnd(width(c))).join(""));
-}
-
 export function printBoards(scores: ReturnType<typeof scoreboard>, refs: ReturnType<typeof refBoard>) {
-  table(scores, ["model", "meanScore", "support", "completeness", "honesty", "hardFabPerRun", "repairedPerRun", "citationsPerRun", "meanLatencyS", "meanTokens", "unjudged", "errors"]);
+  printTable(scores, ["model", "meanScore", "support", "completeness", "honesty", "hardFabPerRun", "repairedPerRun", "citationsPerRun", "meanLatencyS", "meanTokens", "unjudged", "errors"]);
   console.log(`\nreference-format compliance:`);
-  table(refs, ["model", "refStyle", "blockFirst", "defsPerRun", "valueCitePct", "undefLabels", "unusedLabels", "multiLabel", "shippedBrackets", "ungroundedValues"]);
+  printTable(refs, ["model", "refStyle", "blockFirst", "defsPerRun", "valueCitePct", "undefLabels", "unusedLabels", "multiLabel", "shippedBrackets", "ungroundedValues"]);
 }
 
 // Per-query score grid — spot which questions separate the field.

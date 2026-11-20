@@ -6,7 +6,7 @@ This file covers the `scripts/` tree. It holds the build pipeline and its step l
 
 Each build pass is its own script. They run in order in `pnpm build`.
 
-- `scripts/required/` holds the build pipeline entry-points wired into `pnpm build:*`.
+- `scripts/required/` holds the build pipeline entry-points wired into `pnpm build:*`. An entry point too large for one file keeps its private modules in a directory beside it (`scripts/required/chains-census/`, `scripts/aux/mistakes-sweep/`); `scripts/lib/` is for modules more than one entry point shares.
 - `scripts/lib/` holds shared modules (parsing, regexes, extraction phases) imported by those entry-points. It also holds `atlas-html.mjs`, `history-identity.mjs`, `ordered-containment.mjs` and `run-thread.mjs`. These are HTML-era parsing and matching primitives shared between `scripts/htmlhist/` and `scripts/prehist/` (same reasoning as `history-classify.ts`).
 - `scripts/aux/` holds offline, one-off and experimental scripts that are not part of the core build chain. Examples are `tva.sh`, `add-chain.mjs` (the `chains:add` fetcher, deliberately off the build chain since it hits the network) and `coverage-areas.mjs` (the CI coverage meter, not a build entry-point). knip's unused-file check excludes the whole directory for that reason, so a new script there needs no `knip.json` entry.
 - `scripts/assess/` and `scripts/eval/` are their own feature subsystems, not one-offs.
@@ -113,7 +113,7 @@ They were four separate lists until every one of them was shown to fail silently
 
 - `pnpm check:atlas` is the MERGE GATE for atlas bumps. It refuses a build that did not read the whole atlas.
   - It recounts documents in the source by a deliberately dumb, layout-blind scan (line-anchored `id:` frontmatter / `<!-- UUID: -->` headings over every `content/**.md`). It requires an exact match with `public/docs.json`, plus an absolute floor.
-  - The recount is INDEPENDENT of `atlas-source.mjs` on purpose. The failure class is the loader not recognising the layout, so a check that asked the loader would just agree with itself.
+  - The recount (`scripts/lib/atlas-uuid-scan.ts`, which the Edit Candidates sweep also reads for its Source File column) is INDEPENDENT of `atlas-source.mjs` on purpose, and must never import it. The failure class is the loader not recognising the layout, so a check that asked the loader would just agree with itself.
   - `--against <atlas-sha>` also fails a bump that drops more than `ATLAS_MAX_DOC_DROP` (default 10%) of documents.
   - It runs in `atlas-update.yml` BEFORE the PR is opened (a bad bump never becomes a mergeable PR), in `ci.yml` as a PR check, and in `atlas-healer.yml` against main.
 - `pnpm census:check` is the coverage census. It warns (`[drift]`) when uncovered structure clusters appear or grow vs `.github/atlas-census-baseline.json`. `--update` rewrites the baseline (`atlas-update.yml` does this per bump). It always exits 0.

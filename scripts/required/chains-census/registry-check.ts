@@ -14,16 +14,6 @@ export type RegistryWarn = (msg: string) => void;
 
 const REGISTRY = "the registry (src/data/chain-registry.json)";
 
-/** A `[drift]` warner for registry defects, and the number of warnings it has printed. */
-export function makeRegistryWarn(): { warn: RegistryWarn; count: () => number } {
-  let registryDrift = 0;
-  const warn = (msg: string) => {
-    console.warn(`[drift] chains-census: ${msg}`);
-    registryDrift++;
-  };
-  return { warn, count: () => registryDrift };
-}
-
 // Solana is the one intentional non-EVM entry: no chainId, no EVM rpcUrl,
 // and no CHAIN_HINTS entry either — detectChain only ever runs on EVM
 // (ETH_ADDR_RE) matches, and solana addresses are attributed by their base58

@@ -33,7 +33,8 @@ import { runDeterministicChecks } from "../../src/server/chat/verify/verify-chec
 import { normalizeAndRepair } from "../../src/server/chat/chat-orchestrator.ts";
 import { config } from "../../src/server/config.ts";
 import { BAKEOFF_QUERIES, type BakeoffQuery } from "./eval-bakeoff-queries.ts";
-import { argv, flag, runPool } from "./eval-cli.ts";
+import { mapPool } from "../../src/server/pool.ts";
+import { argv, flag } from "./eval-cli.ts";
 import { judgeAnswer } from "./eval-bakeoff-judge.ts";
 import { refStats } from "./eval-bakeoff-refs.ts";
 import { countFabrications, emptyResult, scoreOf, type RunResult } from "./eval-bakeoff-result.ts";
@@ -149,8 +150,7 @@ function saveReport(extra: Record<string, unknown> = {}) {
   fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
   fs.writeFileSync(REPORT_PATH, JSON.stringify({ judge: JUDGE, atlasCommit: ix.meta.atlasCommit ?? null, ranAt: new Date().toISOString(), ...extra, results }, null, 2));
 }
-await runPool(grid.length, CONCURRENCY, async (i) => {
-  const { model, q } = grid[i];
+await mapPool(grid, Math.max(1, CONCURRENCY), async ({ model, q }) => {
   const r = await runOne(model, q);
   results.push(r);
   saveReport(); // incremental — a killed run keeps everything paid for so far

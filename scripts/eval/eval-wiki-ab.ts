@@ -20,7 +20,8 @@ import { runDeterministicChecks } from "../../src/server/chat/verify/verify-chec
 import { evidenceFromTranscript } from "../../src/server/chat/verify/verifier.ts";
 import { config } from "../../src/server/config.ts";
 import { BAKEOFF_QUERIES, type BakeoffQuery } from "./eval-bakeoff-queries.ts";
-import { flag, runPool } from "./eval-cli.ts";
+import { mapPool } from "../../src/server/pool.ts";
+import { flag } from "./eval-cli.ts";
 import { WIKI_QUERIES } from "./eval-corpora/wiki-queries.ts";
 
 type Msg = OpenAI.Chat.Completions.ChatCompletionMessageParam;
@@ -130,16 +131,16 @@ const save = () => {
 console.log(`wiki-card A/B — chat=${config.chatModel} verifier=${config.chatVerifierModel || "(none)"}`);
 console.log(`${queries.length} queries × 2 arms, card ≈ ${Math.round(CARD.length / 4)} tokens\n`);
 
-await runPool(queries.length, CONCURRENCY, async (i) => {
+await mapPool(queries, Math.max(1, CONCURRENCY), async (query) => {
   // Both arms of a query run back-to-back in the same worker: paired in time.
   for (const arm of ["base", "wiki"] as const) {
-    const r = await runOne(queries[i], arm);
+    const r = await runOne(query, arm);
     results.push(r);
     save();
     const tag = r.error
       ? `ERROR ${r.error.slice(0, 40)}`
       : `rounds=${r.toolRounds} tools=${r.toolMsgs} fabs=${r.fabs} overall=${r.overall ?? "—"} ${(r.latencyMs / 1000).toFixed(0)}s`;
-    console.log(`[${results.length}/${queries.length * 2}] ${queries[i].id.padEnd(26)} ${arm.padEnd(4)} ${tag}`);
+    console.log(`[${results.length}/${queries.length * 2}] ${query.id.padEnd(26)} ${arm.padEnd(4)} ${tag}`);
   }
 });
 

@@ -2,7 +2,7 @@
 // decided by drive() (handler-drive.ts).
 
 import type { PreviewEvent } from "./build.ts";
-import { CORS } from "./handler-http.ts";
+import { PREVIEW_CORS } from "../http.ts";
 import { drive } from "./handler-drive.ts";
 
 const SSE_HEADERS = {
@@ -10,7 +10,7 @@ const SSE_HEADERS = {
   "Cache-Control": "no-cache",
   Connection: "keep-alive",
   "X-Accel-Buffering": "no",
-  ...CORS,
+  ...PREVIEW_CORS,
 };
 
 // A client cancel/close can land before the async unsubscribe fn is known

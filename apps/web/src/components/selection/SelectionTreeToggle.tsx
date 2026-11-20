@@ -30,6 +30,11 @@ export function SelectionTreeToggle() {
   // when there's already a selection to filter — otherwise hide the bar entirely.
   if (!inReader && count === 0) return null;
 
+  const openSave = () => {
+    track("collection_save_open", { count });
+    setShowSave(true);
+  };
+
   return (
     <div className={TREE_TOGGLE_BAR_CLASS} style={treeToggleBarStyle(selectedOnly && count > 0)}>
       <button
@@ -50,7 +55,7 @@ export function SelectionTreeToggle() {
       {/* Saving needs the auth + collections backend, which only exists when
           logins are enabled. In static builds hide the affordance rather than
           offer a sign-in that dead-ends at a disabled /api/auth. */}
-      {count > 0 && usersEnabled() && <SaveCollectionButton count={count} onOpen={() => setShowSave(true)} />}
+      {count > 0 && usersEnabled() && <SaveCollectionButton onOpen={openSave} />}
 
       {/* Jump to the full Collections page (a users feature, same gate as save). */}
       {usersEnabled() && <OpenCollectionsButton />}

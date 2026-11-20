@@ -16,16 +16,17 @@
 // Each subcommand is one module under scripts/aux/mistakes-sweep/ and
 // returns the process exit code.
 import { bootstrap } from "./mistakes-sweep/bootstrap.ts";
-import { cmd } from "./mistakes-sweep/context.ts";
+import { argv } from "./atlas-cli-common.ts";
 import { merge } from "./mistakes-sweep/merge.ts";
 import { plan } from "./mistakes-sweep/plan.ts";
 import { status } from "./mistakes-sweep/status.ts";
 
 const COMMANDS: Record<string, () => number> = { status, bootstrap, plan, merge };
+const cmd = argv.find((a) => !a.startsWith("-")) ?? "status";
 
 const run = Object.hasOwn(COMMANDS, cmd) ? COMMANDS[cmd] : undefined;
 if (!run) {
-  console.error(`unknown command "${cmd}" — expected status | bootstrap | plan | merge`);
+  console.error(`unknown command "${cmd}" — expected ${Object.keys(COMMANDS).join(" | ")}`);
   process.exit(1);
 }
 process.exit(run());

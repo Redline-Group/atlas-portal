@@ -44,4 +44,9 @@ describe("scanSourceUuids", () => {
     expect(Object.fromEntries(scanSourceUuids(mono).fileOf)).toEqual({ [A]: "Sky Atlas.md" });
     expect(scanSourceUuids(checkout({ "README.md": "x" }))).toEqual({ fileOf: new Map(), fileCount: 0 });
   });
+
+  it("stays independent of the atlas loaders it cross-checks", () => {
+    const source = fs.readFileSync(path.resolve(import.meta.dirname, "../scripts/lib/atlas-uuid-scan.ts"), "utf8");
+    expect(source.match(/from "[^"]*atlas-(source|git)[^"]*"/g)).toBeNull();
+  });
 });

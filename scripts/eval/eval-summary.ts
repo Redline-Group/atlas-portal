@@ -9,7 +9,7 @@ import { buildSyntheticThreads, loadRealThreads, threadChars, type Thread } from
 import { findFabrications, getProbes, gradeRetention, judgeUsage, prefixTextOf, unmatchedIds, type Probe } from "./eval-summary-judge.ts";
 import { atCap, runSummary } from "./eval-summary-run.ts";
 import { printBoard, printRows, type Row } from "./eval-summary-report.ts";
-import { runPool } from "./eval-cli.ts";
+import { mapPool } from "../../src/server/pool.ts";
 
 const argv = process.argv.slice(2);
 const flag = (name: string): string | undefined => argv.find((_a, i) => argv[i - 1] === `--${name}`);
@@ -19,14 +19,6 @@ const CONCURRENCY = Number(flag("concurrency") ?? 4);
 const RESUME = argv.includes("--resume");
 // One report per summary size, so arms run with different CHAT_SUMMARY_MAX_CHARS sit side by side.
 const OUT = path.resolve(import.meta.dir, `../../.cache/eval-summary-cap${config.chatSummaryMaxChars}.json`);
-
-async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Promise<R[]> {
-  const out: R[] = new Array(items.length);
-  await runPool(items.length, n, async (i) => {
-    out[i] = await fn(items[i]);
-  });
-  return out;
-}
 
 async function gradeOne(t: Thread, model: string, probes: Probe[]): Promise<Row> {
   const run = await runSummary(model, t, RESUME);
@@ -60,9 +52,9 @@ async function main(): Promise<void> {
   if (!argv.includes("--only-synthetic")) threads.push(...(await loadRealThreads()));
   if (!argv.includes("--only-real")) threads.push(...buildSyntheticThreads());
   console.log(`${threads.length} threads, models ${MODELS.join(", ")}, judge ${JUDGE}`);
-  const probeSets = await pool(threads, CONCURRENCY, (t) => getProbes(JUDGE, t, prefixTextOf(t)));
+  const probeSets = await mapPool(threads, CONCURRENCY, (t) => getProbes(JUDGE, t, prefixTextOf(t)));
   const jobs = threads.flatMap((t, i) => MODELS.map((m) => ({ t, m, probes: probeSets[i] })));
-  const rows = await pool(jobs, CONCURRENCY, (j) => gradeOne(j.t, j.m, j.probes));
+  const rows = await mapPool(jobs, CONCURRENCY, (j) => gradeOne(j.t, j.m, j.probes));
   printAll(rows);
   fs.writeFileSync(OUT, JSON.stringify({ models: MODELS, judge: JUDGE, judgeUsage, rows }, null, 2));
   console.log(`wrote ${OUT}`);

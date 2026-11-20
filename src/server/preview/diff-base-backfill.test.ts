@@ -14,7 +14,8 @@ import {
   type BackfillRow,
 } from "./diff-base-backfill-row.ts";
 import { setIndexes, type Indexes } from "../retrieval/indexes.ts";
-import { backfillPreviewDiffBases, loadSnapshot, servedAtlas, type BackfillDeps } from "./diff-base-backfill.ts";
+import { backfillPreviewDiffBases, loadSnapshot, servedAtlas } from "./diff-base-backfill.ts";
+import type { BackfillDeps } from "./diff-base-backfill-one.ts";
 import { fillPrivateDiffBaseOnOpen } from "./diff-base-on-open.ts";
 
 const SHA = "h".repeat(40);

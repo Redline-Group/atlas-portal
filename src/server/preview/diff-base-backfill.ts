@@ -14,44 +14,22 @@ import { sql } from "../db.ts";
 import { config } from "../config.ts";
 import { getIndexes } from "../retrieval/indexes.ts";
 import { installationToken } from "./github-app.ts";
-import { CANONICAL_REPO, makeGhClient, type GhClient } from "./resolve.ts";
+import { CANONICAL_REPO, makeGhClient } from "./resolve.ts";
 import { resolveCandidates } from "./pr-diff.ts";
 import { fetchAndExtract } from "./tarball.ts";
 import { snapshotFromSrcDir, type Snapshot } from "./snapshot.ts";
 import { diffBaseHasLca, diffBaseLabel, diffBaseType } from "./diff-base-record.ts";
-import type { PreviewMeta } from "./cache.ts";
 import {
   fillPreviewDiffBase,
   listPreviewsWithoutDiffBase,
-  type BackfillRow,
-  type DiscoveredBase,
+  type LiveAtlas,
 } from "./diff-base-backfill-row.ts";
-import { backfillOne, type BackfillCtx } from "./diff-base-backfill-one.ts";
+import { backfillOne, type BackfillCtx, type BackfillDeps } from "./diff-base-backfill-one.ts";
 
 export interface BackfillResult {
   filled: number;
   skipped: number;
   failed: number;
-}
-
-export interface LiveAtlas {
-  commit: string;
-  snapshot: Snapshot;
-}
-
-export interface BackfillDeps {
-  list: () => Promise<BackfillRow[]>;
-  token: () => string;
-  installationToken: (repo: string) => Promise<string | null>;
-  gh: (token: string) => GhClient;
-  candidates: typeof resolveCandidates;
-  live: (token: string) => Promise<LiveAtlas>;
-  /** Checkout `sha` in `repo` and parse it. Throws if the archive is gone.
-   *  `apiTarball` is required for a private repo: an installation-token Bearer
-   *  is honored on api.github.com/.../tarball/..., and ignored on the public
-   *  github.com/.../archive/... URL. */
-  snapshotAt: (repo: string, sha: string, token: string, apiTarball?: boolean) => Promise<Snapshot>;
-  fill: (sha: string, meta: PreviewMeta, discovered: DiscoveredBase) => Promise<boolean>;
 }
 
 export async function servedAtlas(token: string): Promise<LiveAtlas> {
@@ -109,7 +87,7 @@ export async function backfillPreviewDiffBases(over: Partial<BackfillDeps> = {})
   // rows NULL for a later boot that has one, rather than guessing.
   if (!token) return { ...result, skipped: rows.length };
   const live = await deps.live(token);
-  const ctx: BackfillCtx = { deps, token, live, baseCache: new Map([[live.commit, live.snapshot]]) };
+  const ctx: BackfillCtx = { deps, serviceToken: token, live, baseCache: new Map([[live.commit, live.snapshot]]) };
   for (const row of rows) {
     try {
       result[await backfillOne(row, ctx)]++;

@@ -69,7 +69,9 @@ export async function scoreCase(c: Case, ctx: ScoreContext): Promise<Picks> {
   const query = c.q.query;
   const anchor = ctx.byId.get(c.unit.anchorId)!;
   const members = c.unit.memberIds.map((id) => ctx.byId.get(id)).filter((x): x is AtlasNode => !!x);
-  const vecOf: VecOf = (n) => ctx.cache.get(contentHash(n));
+  // Hashed once per case: every method below asks for each member’s vector.
+  const vecs = new Map(members.map((m) => [m.id, ctx.cache.get(contentHash(m))]));
+  const vecOf: VecOf = (n) => (vecs.has(n.id) ? vecs.get(n.id) : ctx.cache.get(contentHash(n)));
   const pick = (score: (m: AtlasNode, v: number[]) => number) => argmaxMember(members, vecOf, score, anchor.id);
   const qv = await embedQuery(query);
   // RESIDUAL query: drop tokens the group ALREADY explains (the anchor's own title).

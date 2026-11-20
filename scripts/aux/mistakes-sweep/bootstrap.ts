@@ -8,7 +8,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { advanceState } from "../../lib/mistakes-sweep.mjs";
-import { ARTIFACT, ROOT, STATE, atlasSha, flag, load, readJson, type Artifact } from "./context.ts";
+import { ROOT, atlasSha, flag, readJson } from "../atlas-cli-common.ts";
+import { ARTIFACT, STATE, load, type Artifact } from "./context.ts";
 
 /** Why the artifact cannot be adopted, or null when it can. */
 function refusal(artifact: Artifact | null, head: string | null): string | null {
