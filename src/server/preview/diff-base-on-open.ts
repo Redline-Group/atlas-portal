@@ -65,7 +65,12 @@ export function fillPrivateDiffBaseOnOpen(
 ): Promise<void> | undefined {
   if (!resolved.private || openInflight.has(resolved.sha)) return;
   openInflight.add(resolved.sha);
-  const deps: OpenDeps = { ...realDeps, ...over };
+  // `??` per dependency: an override passed as undefined keeps the real one.
+  const deps: OpenDeps = {
+    loadRow: over.loadRow ?? realDeps.loadRow,
+    fill: over.fill ?? realDeps.fill,
+    backfill: over.backfill ?? realDeps.backfill,
+  };
   return (async () => {
     try {
       await fillOnOpen(resolved, meta, deps);

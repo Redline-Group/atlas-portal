@@ -121,7 +121,7 @@ export function routeTier(
 // Which citation format to ASK this model for. Keyed on the model, not the tier,
 // because format compliance is a property of the model — and because the evals
 // must be able to reproduce production's choice for any candidate they run
-// (scripts/aux/eval-bakeoff.ts). Everything downstream accepts both formats from
+// (scripts/eval/eval-bakeoff.ts). Everything downstream accepts both formats from
 // everyone; see system-prompt.ts and docs/plans/reference-citations.md.
 //
 // The prompt is fixed once per turn from the chain's PRIMARY model, so an
