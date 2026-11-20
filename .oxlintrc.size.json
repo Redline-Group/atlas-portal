@@ -37,8 +37,6 @@
     { "files": ["apps/web/src/components/selection/SelectionTreeToggle.tsx"], "rules": { "max-lines-per-function": ["error", { "max": 109, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/components/tree/TreeRow.tsx"], "rules": { "max-lines": ["error", { "max": 205, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 144, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/components/tree/TreeSidebar.tsx"], "rules": { "max-lines": ["error", { "max": 365, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 313, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["apps/web/src/hooks/useAtlasData.ts"], "rules": { "max-lines-per-function": ["error", { "max": 73, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["apps/web/src/hooks/useRecentDropdown.ts"], "rules": { "max-lines-per-function": ["error", { "max": 71, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/hooks/useTreeKeyboard.ts"], "rules": { "max-lines-per-function": ["error", { "max": 74, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/lib/actorIndex.ts"], "rules": { "max-lines": ["error", { "max": 337, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 212, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/lib/primitiveStats.ts"], "rules": { "max-lines-per-function": ["error", { "max": 107, "skipBlankLines": true, "skipComments": true }] } },
