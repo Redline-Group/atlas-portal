@@ -1,11 +1,6 @@
 // The Atlas Edit Proposal files committed in the atlas checkout, and the poll-title
 // classifier that names which proposal a poll ratifies.
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const AEP_DIR = path.resolve(__dirname, "../../../vendor/next-gen-atlas/Atlas Edit Proposals");
+import { readAepFiles } from "./aep-files.ts";
 
 export interface RepoAep {
   aep: number;
@@ -24,19 +19,11 @@ export function classify(title: string): { kind: string; aep: number | null } {
 // Committed AEP files carry the ratification-poll URL (a vote.makerdao.com/polling/<slug>
 // where <slug> is the IPFS multiHash prefix) — it cross-links and integrity-checks each poll.
 export function readRepoAeps(): RepoAep[] {
-  let files: string[];
-  try {
-    files = fs.readdirSync(AEP_DIR).filter((f) => /^AEP-\d+\.md$/i.test(f));
-  } catch {
-    return [];
-  }
-  const field = (txt: string, name: string) => (txt.match(new RegExp(`^${name}\\s*:\\s*(.+)$`, "im")) || [])[1]?.trim() || null;
-  return files.map((f) => {
-    const txt = fs.readFileSync(path.join(AEP_DIR, f), "utf8");
-    const pollUrl = field(txt, "Ratification Poll URL");
+  return readAepFiles().map(({ file, aep, field }) => {
+    const pollUrl = field("Ratification Poll URL");
     return {
-      aep: Number((f.match(/\d+/) || [])[0]),
-      file: f,
+      aep,
+      file,
       ratification_poll_url: pollUrl,
       poll_slug: (pollUrl && (pollUrl.match(/polling\/([A-Za-z0-9]+)/) || [])[1]) || null,
     };

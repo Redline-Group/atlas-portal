@@ -6,13 +6,14 @@
 // week's Atlas edits; the pre-truncation ones (< 2025-05-28) are the only public
 // record of the HTML history that was garbage-collected from GitHub.
 //
-// Not part of `pnpm build`. Run on demand:  node scripts/aux/atlas-history/enumerate-atlas-proposals.mjs
+// Not part of `pnpm build`. Run on demand:  bun scripts/aux/atlas-history/enumerate-atlas-proposals.mjs
 // Hits the live Discourse JSON API (forum.skyeco.com); writes a checked-in JSON manifest.
 
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { readAepFiles } from "./aep-files.ts";
 
 const BASE = "https://forum.skyeco.com";
 const TAGS = ["atlas-edit-weekly-proposal", "atlas-edit"];
@@ -28,7 +29,6 @@ const FORUM_FLOOR = "2024-09-13"; // earliest weekly proposal observed
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(__dirname, "atlas-edit-proposals.json"); // co-located with this script
-const AEP_DIR = path.resolve(__dirname, "../../../vendor/next-gen-atlas/Atlas Edit Proposals");
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -60,25 +60,17 @@ function classify(title, tagNames) {
 // ratification status the forum topics lack. Parse it as an authoritative
 // cross-reference. Graceful if the submodule isn't populated.
 function readRepoAeps() {
-  let files;
-  try {
-    files = fs.readdirSync(AEP_DIR).filter((f) => /^AEP-\d+\.md$/i.test(f));
-  } catch {
-    return [];
-  }
-  const field = (txt, name) => (txt.match(new RegExp(`^${name}\\s*:\\s*(.+)$`, "im")) || [])[1]?.trim() || null;
-  return files
-    .map((f) => {
-      const txt = fs.readFileSync(path.join(AEP_DIR, f), "utf8");
-      const forumUrl = field(txt, "Forum URL");
+  return readAepFiles()
+    .map(({ file, aep, field }) => {
+      const forumUrl = field("Forum URL");
       const topicId = forumUrl && Number((forumUrl.match(/(\d+)\/?$/) || [])[1]) || null;
       return {
-        file: f,
-        aep: Number((f.match(/\d+/) || [])[0]),
-        date_proposed: field(txt, "Date Proposed"),
-        date_ratified: field(txt, "Date Ratified") || null,
-        status: field(txt, "Status"),
-        authors: field(txt, "Author\\(s\\)"),
+        file,
+        aep,
+        date_proposed: field("Date Proposed"),
+        date_ratified: field("Date Ratified") || null,
+        status: field("Status"),
+        authors: field("Author\\(s\\)"),
         forum_topic_id: topicId,
         forum_url: forumUrl,
       };

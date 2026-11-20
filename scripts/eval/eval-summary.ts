@@ -9,6 +9,7 @@ import { buildSyntheticThreads, loadRealThreads, threadChars, type Thread } from
 import { findFabrications, getProbes, gradeRetention, judgeUsage, prefixTextOf, unmatchedIds, type Probe } from "./eval-summary-judge.ts";
 import { atCap, runSummary } from "./eval-summary-run.ts";
 import { printBoard, printRows, type Row } from "./eval-summary-report.ts";
+import { runPool } from "./eval-cli.ts";
 
 const argv = process.argv.slice(2);
 const flag = (name: string): string | undefined => argv.find((_a, i) => argv[i - 1] === `--${name}`);
@@ -21,13 +22,9 @@ const OUT = path.resolve(import.meta.dir, `../../.cache/eval-summary-cap${config
 
 async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Promise<R[]> {
   const out: R[] = new Array(items.length);
-  let next = 0;
-  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => {
-    while (next < items.length) {
-      const i = next++;
-      out[i] = await fn(items[i]);
-    }
-  }));
+  await runPool(items.length, n, async (i) => {
+    out[i] = await fn(items[i]);
+  });
   return out;
 }
 
