@@ -24,7 +24,7 @@ const unwrapBt: Formatter = (s) => s.match(/^`([^`\n]+)`\.?$/)?.[1] ?? s;
 // Both patterns come from address-chains, the canonical home: the backtick
 // branch tests the whole literal, and the fallback carries the hex-boundary
 // lookarounds so a 64-hex transaction hash (the atlas writes those in the same
-// backtick style) can no longer yield its leading 40 hex as an "address".
+// backtick style) never yields its leading 40 hex as an "address".
 // Preserve the formatter's historical 32–44 base58 acceptance separately:
 // these isolated ICD values are passed through, not classified as canonical
 // Solana addresses (whose shared pattern correctly remains 43–44 chars).
