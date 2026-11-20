@@ -92,7 +92,7 @@
       "samples": []
     },
     "Core|addr,s:addr-of-is": {
-      "total": 207,
+      "total": 209,
       "uncovered": 0,
       "samples": []
     },
@@ -163,7 +163,7 @@
       "samples": []
     },
     "Core|plain": {
-      "total": 8301,
+      "total": 8305,
       "uncovered": 6325,
       "samples": [
         "A.0.1.1.1",
@@ -312,7 +312,7 @@
       "samples": []
     },
     "Core|uuid-link": {
-      "total": 1793,
+      "total": 1804,
       "uncovered": 0,
       "samples": []
     },
@@ -363,8 +363,8 @@
       ]
     },
     "Section|plain": {
-      "total": 108,
-      "uncovered": 82,
+      "total": 109,
+      "uncovered": 83,
       "samples": [
         "A.0.1.1",
         "A.0.1.2",

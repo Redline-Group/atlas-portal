@@ -55,6 +55,18 @@
       "title": "Technical Scope Template"
     },
     {
+      "taskKey": "u:2ac3532b-784f-4a09-be7f-b3d0ca360fe7",
+      "uuid": "2ac3532b-784f-4a09-be7f-b3d0ca360fe7",
+      "docNo": "A.1.10.2.5.2.2",
+      "title": "Deployment Checklist"
+    },
+    {
+      "taskKey": "u:45adb133-13b4-402c-8c2b-2473d78ff72e",
+      "uuid": "45adb133-13b4-402c-8c2b-2473d78ff72e",
+      "docNo": "A.1.10.2.5.2.3",
+      "title": "Morpho Deployment Verification Guide"
+    },
+    {
       "taskKey": "u:f82537ec-50d1-44a0-ae01-0270cc091793",
       "uuid": "f82537ec-50d1-44a0-ae01-0270cc091793",
       "docNo": "A.1.10.2.5.2.4",
@@ -379,6 +391,12 @@
       "title": "Default Admin Role"
     },
     {
+      "taskKey": "u:24faa338-1e0b-41fb-b21c-82b12f0d01e4",
+      "uuid": "24faa338-1e0b-41fb-b21c-82b12f0d01e4",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.7.1",
+      "title": "Highest Production Rate Limit For ERC-4626 Facet"
+    },
+    {
       "taskKey": "u:eb4e8e2e-2a55-4c67-aa11-d26b07a481d9",
       "uuid": "eb4e8e2e-2a55-4c67-aa11-d26b07a481d9",
       "docNo": "A.2.2.10.1.1.1.2.3.3.1",
@@ -467,6 +485,12 @@
       "uuid": "fe7c0ccf-c570-471a-815a-6b4b9cda5e29",
       "docNo": "A.2.2.10.1.1.1.3.2.3.2",
       "title": "Eligible Collateral Oracle Methodologies"
+    },
+    {
+      "taskKey": "u:c7723797-b2c8-4334-a185-592797456f87",
+      "uuid": "c7723797-b2c8-4334-a185-592797456f87",
+      "docNo": "A.2.2.10.1.1.1.3.2.3.3",
+      "title": "New Collateral Oracle Approval"
     },
     {
       "taskKey": "u:c48c0416-46a3-47ee-845b-4b5f365bbf1c",

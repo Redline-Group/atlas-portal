@@ -91,9 +91,19 @@
       "title": "Light Agent Primitive"
     },
     {
+      "uuid": "abb8f0ef-eae6-4af5-8a70-20630a33e7c9",
+      "doc_no": "A.2.2.9.1.2.3.2.1.2",
+      "title": "Dependencies"
+    },
+    {
       "uuid": "ccb71126-1333-453c-aaeb-4359a8013f32",
       "doc_no": "A.2.2.9.1.2.3.3.2",
       "title": "Process Flow"
+    },
+    {
+      "uuid": "921d945d-5e36-4ffd-8c30-447aeca18045",
+      "doc_no": "A.2.2.9.2.2.3.2.1.2",
+      "title": "Dependencies"
     },
     {
       "uuid": "c860168e-b88e-4d2a-ad0b-388288d1e0cb",

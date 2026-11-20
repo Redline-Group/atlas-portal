@@ -291,6 +291,36 @@
       "ethereum"
     ]
   },
+  "0xf12be1673758f8fbc275755401774ec45c80c0f0": {
+    "chain": "ethereum",
+    "chains": [
+      "ethereum"
+    ],
+    "etherscanName": "SubProxy",
+    "isContract": true,
+    "isProxy": false,
+    "codeByChain": {
+      "ethereum": true
+    },
+    "presentOnChains": [
+      "ethereum"
+    ]
+  },
+  "0x5dc7a3700dc0508f5e127fa23acd83cc2e1d6056": {
+    "chain": "ethereum",
+    "chains": [
+      "ethereum"
+    ],
+    "etherscanName": "StarGuard",
+    "isContract": true,
+    "isProxy": false,
+    "codeByChain": {
+      "ethereum": true
+    },
+    "presentOnChains": [
+      "ethereum"
+    ]
+  },
   "0x5e2fec3a3c4e63a422e45c1bb83edb3a5ad0543b": {
     "chain": "ethereum",
     "chains": [
