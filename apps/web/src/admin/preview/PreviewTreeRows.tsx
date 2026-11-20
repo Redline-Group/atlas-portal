@@ -1,4 +1,5 @@
 import { PreviewTreeRow } from "./PreviewTreeRow";
+import { PreviewBlock } from "./PreviewBlock";
 
 const TREE_SAMPLES = [
   { docNo: "A.1",         title: "Scope — Sky Atlas" },
@@ -11,15 +12,12 @@ const TREE_SAMPLES = [
 /** Doc-tree rows: depth chiclets, the depth bar, and one selected row. */
 export function PreviewTreeRows() {
   return (
-    <div>
-      <p className="mono" style={{ fontSize: 10, color: "var(--tan-3)", margin: "0 0 6px" }}>
-        doc-tree rows (depth chiclets + bar)
-      </p>
+    <PreviewBlock label="doc-tree rows (depth chiclets + bar)">
       <div style={{ background: "var(--bg-deep)", border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden" }}>
         {TREE_SAMPLES.map(({ docNo, title }, i) => (
           <PreviewTreeRow key={docNo} docNo={docNo} heading={title} first={i === 0} selected={i === 2} />
         ))}
       </div>
-    </div>
+    </PreviewBlock>
   );
 }

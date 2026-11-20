@@ -1,10 +1,9 @@
+import { PreviewBlock } from "./PreviewBlock";
+
 /** The text tiers, the accent link, error text and a search highlight. */
 export function PreviewTextHierarchy() {
   return (
-    <div>
-      <p className="mono" style={{ fontSize: 10, color: "var(--tan-3)", margin: "0 0 6px" }}>
-        text hierarchy + interactive
-      </p>
+    <PreviewBlock label="text hierarchy + interactive">
       <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "baseline", background: "var(--bg)", padding: "10px 12px", borderRadius: 4 }}>
         <span style={{ color: "var(--tan)", fontSize: 14 }}>Primary</span>
         <span style={{ color: "var(--tan-2)", fontSize: 13 }}>Secondary</span>
@@ -16,6 +15,6 @@ export function PreviewTextHierarchy() {
           highlighted term
         </mark>
       </div>
-    </div>
+    </PreviewBlock>
   );
 }

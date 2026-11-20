@@ -28,13 +28,13 @@
 
 import { listPreviewsByShas, listPreviewOpens, type MinePreviewRow, type PreviewOpenRow } from "./db.ts";
 import { authorizePreviewAccess, type AccessDecision } from "./access.ts";
+import { SHA_RE } from "../../lib/patterns.ts";
 
 /** A row as it leaves the server. The account half carries the id it was opened
  *  under and this visitor's own last open of it; the browser half carries
  *  neither, because the client already holds both in localStorage. */
 export type MineRow = MinePreviewRow | PreviewOpenRow;
 
-const SHA_RE = /^[0-9a-f]{40}$/i;
 
 /** Headroom over previewLocal.ts's MAX_LOCAL (30): a browser cannot legitimately
  *  hold more, and the cap keeps one request's DB work bounded. */

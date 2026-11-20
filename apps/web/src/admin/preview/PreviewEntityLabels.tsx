@@ -1,3 +1,5 @@
+import { PreviewBlock } from "./PreviewBlock";
+
 const ENTITY_SAMPLES = [
   { label: "Agent",            token: "entity-agent" },
   { label: "Facilitator",      token: "entity-facilitator-org" },
@@ -9,10 +11,7 @@ const ENTITY_SAMPLES = [
 /** One outlined label per entity-type colour token. */
 export function PreviewEntityLabels() {
   return (
-    <div>
-      <p className="mono" style={{ fontSize: 10, color: "var(--tan-3)", margin: "0 0 6px" }}>
-        entity type labels
-      </p>
+    <PreviewBlock label="entity type labels">
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         {ENTITY_SAMPLES.map(({ label, token }) => (
           <span
@@ -24,6 +23,6 @@ export function PreviewEntityLabels() {
           </span>
         ))}
       </div>
-    </div>
+    </PreviewBlock>
   );
 }

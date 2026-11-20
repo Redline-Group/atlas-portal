@@ -41,6 +41,11 @@ export function cosine(a: Map<string, number>, b: Map<string, number>): number {
   return s;
 }
 
+/** A pgvector text literal (`[0.1,0.2,…]`) as numbers. */
+export function parseVecLiteral(s: string): number[] {
+  return s.replace(/^\[|\]$/g, "").split(",").map(Number);
+}
+
 export const dot = (a: number[], b: number[]) => {
   let d = 0;
   for (let j = 0; j < a.length; j++) d += a[j]! * b[j]!;

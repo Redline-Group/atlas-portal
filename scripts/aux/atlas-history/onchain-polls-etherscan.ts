@@ -2,6 +2,7 @@
 // poll-creation emitter, and the calldata decoder for them.
 import process from "node:process";
 import { Buffer } from "node:buffer";
+import { sleep } from "../../../src/server/retry.ts";
 
 export const API_KEY = process.env.ETHERSCAN_API_KEY;
 const V2 = "https://api.etherscan.io/v2/api?chainid=1";
@@ -15,7 +16,6 @@ export interface Tx {
   blockNumber: string;
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Etherscan envelopes vary by action, so the body stays untyped.
 async function getJson(url: string, tries = 4): Promise<any> {

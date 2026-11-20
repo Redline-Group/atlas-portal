@@ -1,4 +1,5 @@
 import { track } from "../../lib/analytics";
+import { TreeBarIconButton } from "../tree/TreeBarIconButton";
 
 export type SaveCollectionButtonProps = {
   /** How many documents are selected; reported with the open event. */
@@ -10,11 +11,8 @@ export type SaveCollectionButtonProps = {
 /** The save (disk) icon that opens the save-as-collection modal. */
 export function SaveCollectionButton({ count, onOpen }: SaveCollectionButtonProps) {
   return (
-    <button
-      type="button"
-      className="px-1 py-0.5 rounded text-tan-3 hover:text-tan shrink-0"
-      title="Save as collection"
-      aria-label="Save as collection"
+    <TreeBarIconButton
+      label="Save as collection"
       onClick={() => {
         track("collection_save_open", { count });
         onOpen();
@@ -25,6 +23,6 @@ export function SaveCollectionButton({ count, onOpen }: SaveCollectionButtonProp
         <path d="M3.5 1.5 v3 h4 v-3" />
         <path d="M3 8 h6" />
       </svg>
-    </button>
+    </TreeBarIconButton>
   );
 }

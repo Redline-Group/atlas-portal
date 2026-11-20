@@ -5,7 +5,7 @@ import type { Resolved } from "./resolve.ts";
 import type { PreviewMeta } from "./cache.ts";
 import { recordPreviewOpen } from "./db.ts";
 import { getSessionUser } from "../session.ts";
-import { SHA_RE } from "./handler-http.ts";
+import { SHA_RE } from "../../lib/patterns.ts";
 
 /** Overlay a freshly-resolved All-repos grant flag onto a ready bundle's meta.
  *  The banner reads meta.json, not the resolve, and a same-sha ready bundle

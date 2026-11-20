@@ -22,7 +22,8 @@ import { PRIVATE_HEADERS } from "./sha-gate.ts";
 import { getSessionUser } from "../session.ts";
 import { mineRateLimited } from "./rate-limit.ts";
 import { openAtlasPrs } from "./open-prs.ts";
-import { json, SHA_RE } from "./handler-http.ts";
+import { SHA_RE } from "../../lib/patterns.ts";
+import { json } from "./handler-http.ts";
 import { eventsResponse } from "./handler-events.ts";
 import { artifactResponse, diffResponse } from "./handler-artifacts.ts";
 

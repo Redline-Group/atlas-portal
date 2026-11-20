@@ -34,6 +34,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { makeAtlasGitSource } from "../lib/atlas-git-source.ts";
+import { scanSourceUuids } from "../lib/atlas-uuid-scan.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "../..");
@@ -50,43 +51,6 @@ const MAX_DROP = Number(process.env.ATLAS_MAX_DOC_DROP ?? 0.1);
 
 const againstIdx = process.argv.indexOf("--against");
 const AGAINST = againstIdx >= 0 ? process.argv[againstIdx + 1] : null;
-
-// The two forms that define a document, in every layout the atlas has shipped:
-//   atomized      frontmatter `id: <uuid>` (the heading carries no uuid)
-//   consolidated  a heading line ending `<!-- UUID: <uuid> -->`
-//   monolith      same heading form, in one file
-// Both are line-anchored, so a uuid merely quoted in prose cannot match.
-const FRONTMATTER_ID_RE = /^id: ([0-9a-f-]{36})$/;
-const HEADING_UUID_RE = /^#{1,6} .+<!-- UUID: ([0-9a-f-]{36}) -->\s*$/;
-
-/** Every document uuid in the source tree, found without asking the loader. */
-function scanSourceUuids(srcDir) {
-  const uuids = new Set();
-  const files = [];
-
-  const contentRoot = path.join(srcDir, "content");
-  if (fs.existsSync(contentRoot)) {
-    const stack = [contentRoot];
-    while (stack.length) {
-      for (const e of fs.readdirSync(stack.pop(), { withFileTypes: true })) {
-        const full = path.join(e.parentPath ?? e.path, e.name);
-        if (e.isDirectory()) stack.push(full);
-        else if (e.name.endsWith(".md")) files.push(full);
-      }
-    }
-  } else {
-    const monolith = path.join(srcDir, "Sky Atlas/Sky Atlas.md");
-    if (fs.existsSync(monolith)) files.push(monolith);
-  }
-
-  for (const f of files) {
-    for (const line of fs.readFileSync(f, "utf8").split("\n")) {
-      const m = FRONTMATTER_ID_RE.exec(line) ?? HEADING_UUID_RE.exec(line);
-      if (m) uuids.add(m[1]);
-    }
-  }
-  return { uuids, fileCount: files.length };
-}
 
 // ---------------------------------------------------------------------------
 
@@ -127,7 +91,8 @@ if (orphans.length) {
 }
 
 // 2. Independent recount of the source tree.
-const { uuids: srcIds, fileCount } = scanSourceUuids(SRC_DIR);
+const { fileOf, fileCount } = scanSourceUuids(SRC_DIR);
+const srcIds = new Set(fileOf.keys());
 console.log(`check:atlas — ${srcIds.size} documents found in ${SRC_DIR} (${fileCount} .md files)`);
 
 if (srcIds.size === 0) {

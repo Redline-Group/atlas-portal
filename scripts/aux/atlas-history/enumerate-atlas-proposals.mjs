@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { sleep } from "../../../src/server/retry.ts";
 import { readAepFiles } from "./aep-files.ts";
 
 const BASE = "https://forum.skyeco.com";
@@ -30,7 +31,6 @@ const FORUM_FLOOR = "2024-09-13"; // earliest weekly proposal observed
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(__dirname, "atlas-edit-proposals.json"); // co-located with this script
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function getJson(url, tries = 3) {
   for (let i = 0; i < tries; i++) {

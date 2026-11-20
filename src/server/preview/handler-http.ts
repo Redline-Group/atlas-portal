@@ -2,7 +2,6 @@
 
 import { json as httpJson, PREVIEW_CORS } from "../http.ts";
 
-export const SHA_RE = /^[0-9a-f]{40}$/i;
 // noindex on every preview response: unreviewed (possibly fork) content must
 // never be search-indexed under our domain (SEO-laundering defense). Defined
 // in http.ts alongside the router's own header set — same home, distinct value:

@@ -7,6 +7,7 @@ import { buildUnits } from "../../src/server/retrieval/embed-units.ts";
 import { contentHash, buildEmbedText } from "../../src/server/retrieval/embed-text.ts";
 import { embedBatch } from "../../src/server/retrieval/embed.ts";
 import { generateRetrievalQueries } from "../eval/eval-retrieval-queries.ts";
+import { parseVecLiteral } from "../eval/eval-retrieval-rank.ts";
 
 const ROOT = path.resolve(import.meta.dir, "../..");
 const POLICY = (process.argv.find((a) => a.startsWith("--policy="))?.split("=")[1] ??
@@ -21,10 +22,6 @@ export interface Case {
 /** content hash → L2-normalised vector */
 export type VectorCache = Map<string, number[]>;
 export type DocsById = Map<string, AtlasNode>;
-
-function parseVec(s: string): number[] {
-  return s.replace(/^\[|\]$/g, "").split(",").map(Number);
-}
 
 export function loadCases(): { byId: DocsById; units: Unit[]; cases: Case[] } {
   const docs = Object.values(
@@ -57,7 +54,7 @@ export async function loadVectorCache(): Promise<VectorCache> {
       content_hash: string;
       embedding: string;
     }[];
-    for (const r of rows) cache.set(r.content_hash, parseVec(r.embedding));
+    for (const r of rows) cache.set(r.content_hash, parseVecLiteral(r.embedding));
   } finally {
     await sql.end();
   }

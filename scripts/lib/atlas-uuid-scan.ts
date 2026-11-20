@@ -1,10 +1,15 @@
-// uuid → the source file the document lives in, found WITHOUT asking the
-// loader — the same deliberately dumb, layout-blind scan check:atlas uses, for
-// the same reason: this is the value shown as `Source File` in the report's
-// CSV, and a loader that mis-parses a layout would agree with itself.
+// Every document uuid in an atlas checkout and the file that holds it, found
+// WITHOUT asking the loader. Deliberately dumb and layout-blind: a loader that
+// mis-reads a layout would agree with itself, so the merge gate (check:atlas)
+// and the Edit Candidates `Source File` column both read the source this way.
 import fs from "node:fs";
 import path from "node:path";
 
+// The two forms that define a document, in every layout the atlas has shipped:
+//   atomized      frontmatter `id: <uuid>` (the heading carries no uuid)
+//   consolidated  a heading line ending `<!-- UUID: <uuid> -->`
+//   monolith      same heading form, in one file
+// Both are line-anchored, so a uuid merely quoted in prose cannot match.
 const FRONTMATTER_ID_RE = /^id: ([0-9a-f-]{36})$/;
 const HEADING_UUID_RE = /^#{1,6} .+<!-- UUID: ([0-9a-f-]{36}) -->\s*$/;
 
@@ -28,14 +33,16 @@ function markdownFiles(srcDir: string): string[] {
   return files;
 }
 
-export function sourceFiles(srcDir: string): Map<string, string> {
-  const byUuid = new Map<string, string>();
-  for (const f of markdownFiles(srcDir)) {
+/** uuid → the basename of the source file it is defined in, and how many files were read. */
+export function scanSourceUuids(srcDir: string): { fileOf: Map<string, string>; fileCount: number } {
+  const fileOf = new Map<string, string>();
+  const files = markdownFiles(srcDir);
+  for (const f of files) {
     const name = path.basename(f);
     for (const line of fs.readFileSync(f, "utf8").split("\n")) {
       const m = FRONTMATTER_ID_RE.exec(line) ?? HEADING_UUID_RE.exec(line);
-      if (m) byUuid.set(m[1]!, name);
+      if (m) fileOf.set(m[1]!, name);
     }
   }
-  return byUuid;
+  return { fileOf, fileCount: files.length };
 }

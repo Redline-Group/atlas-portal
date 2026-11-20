@@ -1,7 +1,5 @@
 // Paths, flags and atlas loading shared by the `mistakes:*` subcommands.
-import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 
 import { loadAtlasSource } from "../../lib/atlas-source.mjs";
 import {
@@ -13,10 +11,11 @@ import {
   type SweepPlan,
   type SweepState,
 } from "../../lib/mistakes-sweep.mjs";
-import { sourceFiles } from "./source-files.ts";
+import { scanSourceUuids } from "../../lib/atlas-uuid-scan.ts";
+import { ATLAS, ROOT, argv, flag, readJson } from "../atlas-cli-common.ts";
 
-export const ROOT = path.resolve(import.meta.dirname, "../../..");
-const ATLAS = path.join(ROOT, "vendor/next-gen-atlas");
+export { ROOT, atlasSha, flag, opt, readJson } from "../atlas-cli-common.ts";
+
 export const ARTIFACT = path.join(ROOT, "public/potential-mistakes.json");
 export const STATE = path.join(ROOT, ".github/mistakes-sweep-state.json");
 export const WORK = path.join(ROOT, ".cache/mistakes-sweep");
@@ -31,32 +30,14 @@ export interface Artifact {
   [key: string]: unknown;
 }
 
-const argv = process.argv.slice(2);
 export const cmd = argv.find((a) => !a.startsWith("-")) ?? "status";
-export const flag = (name: string) => argv.includes(`--${name}`);
-export const opt = (name: string, fallback: string) => {
-  const hit = argv.find((a) => a.startsWith(`--${name}=`));
-  return hit ? hit.slice(name.length + 3) : fallback;
-};
-
-export const readJson = <T>(file: string, fallback: T): T =>
-  fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as T) : fallback;
-
-export function atlasSha(): string | null {
-  try {
-    return execFileSync("git", ["-C", ATLAS, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-  } catch {
-    return null; // A checkout without git history still sweeps fine.
-  }
-}
-
 export function load() {
   const { nodes: loaded, nodeMap: loadedMap, layout } = loadAtlasSource(ATLAS);
   const nodes: MistakeSweepNode[] = loaded;
   const nodeMap: Record<string, MistakeSweepNode> = loadedMap;
   // Attach the source file so validateFinding can stamp it, the way it stamps
   // id and docNo — agents are told not to supply `file`.
-  const fileOf = sourceFiles(ATLAS);
+  const { fileOf } = scanSourceUuids(ATLAS);
   for (const node of nodes) node.file = fileOf.get(node.id) ?? "";
   const raw = readJson<SweepState | null>(STATE, null);
   // A state from an older digest recipe cannot be compared against the current
