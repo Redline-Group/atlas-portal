@@ -20,81 +20,18 @@ import { runDeterministicChecks } from "../../src/server/chat/verify/verify-chec
 import { evidenceFromTranscript } from "../../src/server/chat/verify/verifier.ts";
 import { config } from "../../src/server/config.ts";
 import { BAKEOFF_QUERIES, type BakeoffQuery } from "./eval-bakeoff-queries.ts";
+import { flag, runPool } from "./eval-cli.ts";
+import { WIKI_QUERIES } from "./eval-corpora/wiki-queries.ts";
 
 type Msg = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 type Arm = "base" | "wiki";
 
 const ROOT = path.resolve(import.meta.dir, "../..");
-const argv = process.argv.slice(2);
-const flag = (n: string) => argv.flatMap((a, i) => (a === `--${n}` && argv[i + 1] ? [argv[i + 1]] : []));
 const ONLY = new Set(flag("only"));
 const CONCURRENCY = Number(flag("concurrency")[0] ?? 3);
 const REPORT_PATH = path.join(ROOT, ".cache", "eval-wiki-ab.json");
 const CARD = fs.readFileSync(path.join(import.meta.dir, "eval-corpora", "wiki-card.md"), "utf8");
 
-// Queries chosen to differentiate the card's entries (W-refs in comments), plus four
-// reused bakeoff queries that already probe scaffolding/abstention and template shape.
-const WIKI_QUERIES: BakeoffQuery[] = [
-  {
-    id: "spark-root-edit", // W4
-    query: "How can SPK holders change the Spark Agent Artifact? What are the thresholds and review periods?",
-    expect:
-      "≥1% of circulating supply to propose, 7-day Operational Facilitator alignment review, 3-day Snapshot poll with ≥10% participation and 50% in favor, plus Spark's parallel 7-day Risk Council review — cited from Spark's OWN docs. Quoting Sky Core weekly-cycle thresholds instead is a fail.",
-  },
-  {
-    id: "december-cycle", // W4
-    query: "Is there a monthly governance cycle in December? How does the AEP schedule handle it?",
-    expect:
-      "No Monthly Governance Cycle in December, cited. Good answers also surface the 7-day text freeze and the no-unamended-resubmission rule.",
-  },
-  {
-    id: "emissions-entrenchment", // W5
-    query: "Can Spark Governance re-enable token emissions beyond the Genesis Supply?",
-    expect:
-      "No — permanently disabled and not revertible by Spark Governance; the only override is Sky-held under Risk Capital violation. Cited.",
-  },
-  {
-    id: "immutable-docs-change", // W3
-    query: "Can Immutable Documents in the Atlas ever be changed?",
-    expect:
-      "Yes, through normal governance until the Endgame State is reached; only then do they become truly immutable. ≤3 layers deep. A flat 'never' is a fail.",
-  },
-  {
-    id: "capital-ratio", // W7
-    query: "What is the Capital Ratio required by the Atlas and where is it defined?",
-    expect: "Exactly 8.75%, with the defining doc cited. Rounding or hedging the number is a fail.",
-  },
-  {
-    id: "keel-rate-limit", // W7/W8
-    query: "What is Keel's USDS minting rate limit?",
-    expect:
-      "The (maxAmount, slope) pair from Keel's own rate-limit doc, cited. Reusing another agent's limit or presenting the template value as Keel-specific without Keel's doc is a fail.",
-  },
-  {
-    id: "lawyer-registry", // W9
-    query: "Which approved legal counsels are listed in the Atlas Lawyer Registry?",
-    expect:
-      "None — the registry doc itself says there are no active legal counsels; a good answer cites that empty doc (grounded abstention). Inventing counsels is a hard fail.",
-  },
-  {
-    id: "atlas-silence", // W11
-    query: "What is a Facilitator supposed to do when the Atlas gives no explicit guidance for a situation?",
-    expect:
-      "Describes the atlas's own meta-rules: extrapolation from the Spirit of the Atlas, Chesterton's Fence, and (for Executor ambiguity) erring on the side of no changes / routing through Root Edit. Inventing a procedure is a fail.",
-  },
-  {
-    id: "reviewer-pr", // W6
-    query: "Can a Spell Reviewer contribute code to a spell through a pull request?",
-    expect:
-      "No — indirect contribution via PRs is separately and explicitly prohibited (distinct from the direct-commit ban). Cited.",
-  },
-  {
-    id: "agent-customizations", // W8
-    query: "Have any Prime Agents defined custom routine protocols beyond the Sky Core baseline?",
-    expect:
-      "No — the customization fence doc says '[No customization presently.]'; a good answer cites it rather than just failing to find customizations.",
-  },
-];
 const REUSED_BAKEOFF = new Set(["rewards-paid", "integration-boost-vendors", "spell-history", "primitives-structure"]);
 const ALL = [...BAKEOFF_QUERIES.filter((q) => REUSED_BAKEOFF.has(q.id)), ...WIKI_QUERIES];
 const queries = ONLY.size ? ALL.filter((q) => ONLY.has(q.id)) : ALL;
@@ -124,13 +61,38 @@ interface Result {
   error: string | null;
 }
 
+const emptyResult = (id: string, arm: Arm): Result => ({
+  id, arm, toolRounds: 0, toolMsgs: 0, fabs: 0, overall: null,
+  emptyAnswer: false, latencyMs: 0,
+  usage: { input: 0, output: 0 }, harnessTokens: 0, finalAnswer: "", error: null,
+});
+
+/** The metrics of one finished run, read off its transcript and verdicts. */
+function measure(q: BakeoffQuery, done: HarnessDone): Partial<Result> {
+  const t: Msg[] = done.transcript;
+  const toolTexts = t.filter((m) => m.role === "tool" && typeof m.content === "string").map((m) => m.content as string);
+  const c = runDeterministicChecks(done.content, toolTexts, ix, {
+    question: q.query,
+    evidence: evidenceFromTranscript(t),
+  });
+  const meta = done.checksMeta ?? [];
+  return {
+    toolRounds: t.filter((m) => m.role === "assistant" && "tool_calls" in m && Array.isArray(m.tool_calls) && m.tool_calls.length > 0).length,
+    toolMsgs: t.filter((m) => m.role === "tool").length,
+    fabs: c.invalidCitations.length + c.invalidDocNos.length + c.docNoMismatches.length + c.ungroundedQuotes.length,
+    overall: meta.find((m) => m.kind === "verify")?.overall ?? null,
+    emptyAnswer: !done.content.trim(),
+    usage: done.usage,
+    harnessTokens: meta
+      .filter((m) => m.kind === "verify")
+      .reduce((s, m) => s + (m.inputTokens ?? 0) + (m.outputTokens ?? 0), 0),
+    finalAnswer: done.content,
+  };
+}
+
 async function runOne(q: BakeoffQuery, arm: Arm): Promise<Result> {
   const started = Date.now();
-  const base: Result = {
-    id: q.id, arm, toolRounds: 0, toolMsgs: 0, fabs: 0, overall: null,
-    emptyAnswer: false, latencyMs: 0,
-    usage: { input: 0, output: 0 }, harnessTokens: 0, finalAnswer: "", error: null,
-  };
+  const base = emptyResult(q.id, arm);
   try {
     const messages: Msg[] = [
       { role: "system", content: SYSTEM[arm] },
@@ -147,28 +109,7 @@ async function runOne(q: BakeoffQuery, arm: Arm): Promise<Result> {
       if (ev.type === "done") done = ev as HarnessDone;
     }
     if (!done) throw new Error("no done event");
-
-    const t: Msg[] = done.transcript;
-    const toolTexts = t.filter((m) => m.role === "tool" && typeof m.content === "string").map((m) => m.content as string);
-    const c = runDeterministicChecks(done.content, toolTexts, ix, {
-      question: q.query,
-      evidence: evidenceFromTranscript(t),
-    });
-    const meta = done.checksMeta ?? [];
-    return {
-      ...base,
-      toolRounds: t.filter((m) => m.role === "assistant" && "tool_calls" in m && Array.isArray(m.tool_calls) && m.tool_calls.length > 0).length,
-      toolMsgs: t.filter((m) => m.role === "tool").length,
-      fabs: c.invalidCitations.length + c.invalidDocNos.length + c.docNoMismatches.length + c.ungroundedQuotes.length,
-      overall: meta.find((m) => m.kind === "verify")?.overall ?? null,
-      emptyAnswer: !done.content.trim(),
-      latencyMs: Date.now() - started,
-      usage: done.usage,
-      harnessTokens: meta
-        .filter((m) => m.kind === "verify")
-        .reduce((s, m) => s + (m.inputTokens ?? 0) + (m.outputTokens ?? 0), 0),
-      finalAnswer: done.content,
-    };
+    return { ...base, ...measure(q, done), latencyMs: Date.now() - started };
   } catch (e) {
     return { ...base, latencyMs: Date.now() - started, error: e instanceof Error ? e.message : String(e) };
   }
@@ -189,24 +130,18 @@ const save = () => {
 console.log(`wiki-card A/B — chat=${config.chatModel} verifier=${config.chatVerifierModel || "(none)"}`);
 console.log(`${queries.length} queries × 2 arms, card ≈ ${Math.round(CARD.length / 4)} tokens\n`);
 
-let cursor = 0;
-async function worker() {
-  for (;;) {
-    const i = cursor++;
-    if (i >= queries.length) return;
-    // Both arms of a query run back-to-back in the same worker: paired in time.
-    for (const arm of ["base", "wiki"] as const) {
-      const r = await runOne(queries[i], arm);
-      results.push(r);
-      save();
-      const tag = r.error
-        ? `ERROR ${r.error.slice(0, 40)}`
-        : `rounds=${r.toolRounds} tools=${r.toolMsgs} fabs=${r.fabs} overall=${r.overall ?? "—"} ${(r.latencyMs / 1000).toFixed(0)}s`;
-      console.log(`[${results.length}/${queries.length * 2}] ${queries[i].id.padEnd(26)} ${arm.padEnd(4)} ${tag}`);
-    }
+await runPool(queries.length, CONCURRENCY, async (i) => {
+  // Both arms of a query run back-to-back in the same worker: paired in time.
+  for (const arm of ["base", "wiki"] as const) {
+    const r = await runOne(queries[i], arm);
+    results.push(r);
+    save();
+    const tag = r.error
+      ? `ERROR ${r.error.slice(0, 40)}`
+      : `rounds=${r.toolRounds} tools=${r.toolMsgs} fabs=${r.fabs} overall=${r.overall ?? "—"} ${(r.latencyMs / 1000).toFixed(0)}s`;
+    console.log(`[${results.length}/${queries.length * 2}] ${queries[i].id.padEnd(26)} ${arm.padEnd(4)} ${tag}`);
   }
-}
-await Promise.all(Array.from({ length: Math.max(1, CONCURRENCY) }, worker));
+});
 
 // ── Summary ────────────────────────────────────────────────────────────────
 const byArm = (arm: Arm) => results.filter((r) => r.arm === arm && !r.error);
