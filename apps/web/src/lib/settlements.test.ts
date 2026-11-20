@@ -17,6 +17,13 @@ import {
   supplyKept,
   isDemandSideCycle,
   teaserFigure,
+  EMPTY_SETTLEMENTS,
+  settlementsArtifactMissing,
+  type SettlementHeadline,
+  type SettlementReport,
+  type SettlementsBundle,
+} from "./settlements";
+import {
   summaryThreeWay,
   threeWayPeaks,
   barFillStyle,
@@ -25,12 +32,7 @@ import {
   hasMultiVenuePnl,
   hasVenueAum,
   collapseAum,
-  EMPTY_SETTLEMENTS,
-  settlementsArtifactMissing,
-  type SettlementHeadline,
-  type SettlementReport,
-  type SettlementsBundle,
-} from "./settlements";
+} from "@/lib/settlementCharts";
 
 function report(over: Partial<SettlementReport> = {}): SettlementReport {
   return {

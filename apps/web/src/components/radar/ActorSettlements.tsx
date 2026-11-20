@@ -6,12 +6,9 @@ import {
   reportsForPrime,
   formatUsd,
   revenueGap,
-  summaryThreeWay,
-  activeDemandSeries,
-  headlineFigures,
   settlementsArtifactMissing,
 } from "../../lib/settlements";
-import type { HeadlineFigure } from "../../lib/settlements";
+import { summaryThreeWay, activeDemandSeries, headlineFigures, type HeadlineFigure } from "@/lib/settlementCharts";
 import { loadForumTopics } from "../../lib/forumTopics";
 import { forumTopicUrlForMonth } from "@/lib/forumMonths";
 import { SettlementBars } from "./SettlementBars";

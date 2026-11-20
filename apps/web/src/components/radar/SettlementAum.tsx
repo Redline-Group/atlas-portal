@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { formatUsd, collapseAum, type SettlementVenue } from "../../lib/settlements";
+import { formatUsd, type SettlementVenue } from "../../lib/settlements";
+import { collapseAum } from "@/lib/settlementCharts";
 
 export function SettlementAum({ venues }: { venues: SettlementVenue[] }) {
   const rows = useMemo(() => collapseAum(venues), [venues]);
