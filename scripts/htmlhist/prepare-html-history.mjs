@@ -15,7 +15,7 @@ import path from "node:path";
 import { buildEvents } from "./history-html-era.mjs";
 import { isSynthetic, syntheticUuid } from "../lib/history-identity.mjs";
 import { detectLineage } from "./history-lineage.mjs";
-import { classifyDiff } from "../lib/history-classify.mjs";
+import { classifyDiff } from "../lib/history-classify.ts";
 import { lineDiff } from "../../src/lib/diffCore.ts";
 import { threadHtmlEra, SEED_HTML, MD117 } from "../lib/run-thread.mjs";
 

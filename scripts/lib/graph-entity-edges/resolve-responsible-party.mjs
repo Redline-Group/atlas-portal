@@ -5,7 +5,7 @@
 //            entities 1f/1g may have created for the same words
 //   direct — names an existing entity ("…is Soter Labs.")
 //   chain  — names a role; walk Prime Agent → Executor Agent → role edge
-import { rpRoleAndName, isDescriptiveRP } from "../graph-patterns.mjs";
+import { rpRoleAndName, isDescriptiveRP } from "../graph-content-extract.ts";
 import { inAgentArtifact, artifactExecId } from "./role-index.mjs";
 
 function roleTitleHolder(ctx, name) {

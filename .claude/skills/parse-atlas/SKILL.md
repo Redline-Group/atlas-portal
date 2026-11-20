@@ -533,7 +533,7 @@ Walk children of the ICD until you find `title === "Parameters"`, then walk that
 
 The source UUID is the leaf doc's id; `docs[uuid].content` is always the raw pre-formatted content. Consumers get display strings + navigation targets without re-walking the tree at render time.
 
-**Per-key formatters** (`scripts/lib/graph-instances.mjs:70`, `PARAM_FORMATTERS`). Each well-known leaf title has a registered formatter that turns raw prose into the value slot. Unknown keys fall through to `unwrapBackticks + trim`. Current registry keys:
+**Per-key formatters** (`scripts/lib/graph-param-format.ts`, `PARAM_FORMATTERS`). Each well-known leaf title has a registered formatter that turns raw prose into the value slot. Unknown keys fall through to `unwrapBackticks + trim`. Current registry keys:
 
 ```
 Reward Code / Integration Partner Name / Integration Partner Reward Address /
@@ -543,14 +543,14 @@ Allocator Role Address / Pool Address / Address / Network / Target Protocol /
 Token / Asset Supplied By Spark Liquidity Layer
 ```
 
-**Regex-keyed fallback** (`scripts/lib/graph-instances.mjs:71`, `RATE_LIMIT_ID_RE`). After the exact-match registry, `formatParam` checks a regex. Titles matching `/^(Inflow|Outflow|Swap) Rate ?Limit ?ID/i` (9 variants including token qualifiers like `(AUSD)`, `(USDC)`, and both spaced and unspaced forms) are dispatched to `extractRateLimitId`, which:
+**Regex-keyed fallback** (`scripts/lib/graph-param-format.ts`, `RATE_LIMIT_ID_RE`). After the exact-match registry, `formatParam` checks a regex. Titles matching `/^(Inflow|Outflow|Swap) Rate ?Limit ?ID/i` (9 variants including token qualifiers like `(AUSD)`, `(USDC)`, and both spaced and unspaced forms) are dispatched to `extractRateLimitId`, which:
 - Extracts the backtick-wrapped 64-char hex hash → bare `0x…` string
 - Preserves `N/A` and `N/A - swap only` for conduits where the direction is unused
 - Falls through to `unwrapBt` for any other content (e.g. placeholder prose)
 
 Content pattern: `"The inflow RateLimitID is: \`0x{64hex}\`."` (also handles newline before backtick). 77 param entries across ~40 Allocation System instances use this path today.
 
-**Per-key expanders** (`scripts/lib/graph-instances.mjs:98`, `PARAM_EXPANDERS`). When a single leaf packs multiple values into prose, a registered expander returns `Array<[key, value]>` and each tuple becomes its own param entry (sharing the source doc). The expander runs before the formatter; returning `null` falls through to the regular formatter path. Currently one entry:
+**Per-key expanders** (`scripts/lib/graph-param-format.ts`, `PARAM_EXPANDERS`). When a single leaf packs multiple values into prose, a registered expander returns `Array<[key, value]>` and each tuple becomes its own param entry (sharing the source doc). The expander runs before the formatter; returning `null` falls through to the regular formatter path. Currently one entry:
 
 - `Token Address` (Agent Token only). Pattern:
   _"The address of SPK on the Ethereum Mainnet is `0x…`. The address of SPK on Base is `0x…`."_
@@ -700,7 +700,7 @@ Every `Integration Partner Name` param value on an integration-boost instance/in
   - In both shapes either name may be followed by a parenthetical aside, which is matched but not captured: `"Grove Labs (formerly Grove Development Company) is a development company …"` (A.6.1.1.2.2.1.1.3.1.1.5, next-gen-atlas PR 370) yields the entity **Grove Labs**. The former name is not kept as an alias.
 - **Pattern 20b — agent Foundation/Development Company docs** (`graph-entities.mjs` 1p, runs last in Phase 1, BEFORE org prose — a Phase 2 step — ever runs): every Agent artifact (`A.6.1.1.N.*`) usually carries its own `"Foundation"` doc (`"<Name> is the Prime Foundation associated with <Agent>."`) and `"Development Company"` doc (same sentence shapes as org prose, and the SAME shared regexes — `PRIME_FOUNDATION_RE`/`PROVIDES_SERVICES_RE`/`cleanOrgProseName` in `graph-patterns.mjs`, so the two consumers can't drift on what counts as a match). Several agents' foundation/dev-co are named **nowhere else** in the atlas (no accord party list, no ERG membership) — e.g. Grove Development Company, Ekliptyka (Skybase), Pattern Dev Co. — so scanning free prose for edges alone silently drops them (found 2026-09-28 atlas-health sweep). This step title-anchors on the two doc titles (not free content scanning) to register/correct the entity directly: creates it if missing, or corrects `entity_type` if an accord already misclassified it by the name-suffix heuristic (Pattern 12) — Obex's Rubicon is the case that needs correcting. The correction only applies when the existing entity is itself `development_company` or `ecosystem_actor` — anything else (an agent, a composite_party, …) whose slug collides with the doc's named subject is left alone and a `[drift]` warning fires, since retyping it would be silent graph corruption, not a fix. It never overwrites an existing entity's `defining_doc_id`/`meta` — the correction (`corrected_type_by`, `corrected_type_source_doc_no`) is recorded alongside the original provenance. A title-anchored doc whose sentence doesn't match either shared regex also warns (`did not parse`), the same as the Spell Team parser (1k2).
 
-### Pattern 21: Bridge validator sets (`scripts/lib/graph-bridges.mjs`, Phase 2.8)
+### Pattern 21: Bridge validator sets (`scripts/lib/graph-bridges.ts`, Phase 2.8)
 
 Cross-chain bridges document validator configuration as a parent doc (the bridge-component root) with a uniform pair of child Cores:
 
@@ -1130,7 +1130,7 @@ For `et="instance"`, the parsed meta is:
 
 **v2.2 diff from v2.1** (2026-06 omni-doc sweep):
 
-- **Pattern 21 (new) — Bridge validator sets:** SkyLink + SLL Governance bridges via the Validators + Quorum Requirement child pair; `bridge` entity type, `ecosystem_actor/bridge_validator`, `validator_of` edge. `scripts/lib/graph-bridges.mjs`, Phase 2.8. (Edge vocabulary section + edge total were not bumped when the pattern body landed; reconciled here.)
+- **Pattern 21 (new) — Bridge validator sets:** SkyLink + SLL Governance bridges via the Validators + Quorum Requirement child pair; `bridge` entity type, `ecosystem_actor/bridge_validator`, `validator_of` edge. `scripts/lib/graph-bridges.ts`, Phase 2.8. (Edge vocabulary section + edge total were not bumped when the pattern body landed; reconciled here.)
 - **Pattern 22 (new) — Prime omni-doc governance metadata:** the uniform `A.6.1.1.X.3.1` Governance Information subtree → `governance_channel` (forum category / Discord URL) + `emergency_response` (scope + placeholder status) edges, `doc → entity(prime agent)`. `scripts/lib/graph-omni.mjs`, Phase 2.8. Both graph.json-only (chat / forum indexing, not the canvas). Omni accord nodes deliberately left to their existing `cites` linkage.
 - **Pattern 23 (new) — Pending operational transitions:** control-handoff prose (`control … transition to {agent}`, `temporarily controlled by Sky Core`) → `pending_transition` `doc → entity(future holder)` edges, meta `{current_holder?, est_date?}`. `scripts/lib/graph-transitions.mjs`, Phase 2.8, graph.json-only. The Stale Dates report gained a `DateClaim.transition` flag + `handoff` chip so the overdue Sept-2025 SparkLend handoff is visible client-side.
 - **relations.json filter:** `OMIT_EDGE_TYPES` grew `governance_channel` + `emergency_response` + `pending_transition`.

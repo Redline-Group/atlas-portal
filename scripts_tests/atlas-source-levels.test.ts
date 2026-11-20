@@ -3,8 +3,7 @@
 // is re-derived from doc numbers. Without this every artifact root parsed as a
 // depth-1 orphan (2026-09-10: 11 roots, 7,917 docs unreachable from A.6).
 import { describe, it, expect } from "vitest";
-// @ts-expect-error — .mjs without types
-import { orderDocuments, restoreAbsoluteLevels, structuralDepth } from "../scripts/lib/atlas-source.mjs";
+import { orderDocuments, restoreAbsoluteLevels, structuralDepth } from "../scripts/lib/atlas-source-order.ts";
 import { parse } from "../scripts/lib/atlas-parser.mjs";
 
 const U = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;

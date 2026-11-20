@@ -1,37 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-  resolveAliasedEntity,
-  buildNameIndex,
-  slugify,
-  isPrimeAgent,
-  isExecutorAgent,
-  isFacilitatorDoc,
-  isGovOpsDoc,
-  isActiveData,
-  isAnnotation,
-  isEcosystemAccord,
-  isPartyDetails,
-  isGrantDoc,
-  isICDLocation,
-  isICD,
-  isGlobalActivationStatus,
-  UUID_LINK_RE,
-  extractRP,
-  extractAllRP,
-  extractAutomation,
-  isDescriptiveRP,
-  rpRoleAndName,
-  parseNameList,
-  extractListItems,
-  ancestorByStripping,
-  primitiveRootFor,
-  extractAssignment,
-  bulletField,
-  makeWarn,
-  groupChildrenByParent,
-  MD_URL_RE,
-  UUID_SRC,
-} from "./graph-patterns.mjs";
+import { resolveAliasedEntity, buildNameIndex, slugify, isPrimeAgent, isExecutorAgent, isFacilitatorDoc, isGovOpsDoc, isActiveData, isAnnotation, isEcosystemAccord, isPartyDetails, isGrantDoc, isICDLocation, isICD, isGlobalActivationStatus, UUID_LINK_RE, ancestorByStripping, primitiveRootFor, bulletField, makeWarn, groupChildrenByParent, MD_URL_RE, UUID_SRC } from "./graph-patterns.mjs";
+import { extractRP, extractAllRP, extractAutomation, isDescriptiveRP, rpRoleAndName, parseNameList, extractListItems, extractAssignment } from "./graph-content-extract.ts";
 
 function entity(slug: string, name: string) {
   return { id: `id-${slug}`, slug, name, entity_type: "ecosystem_actor", subtype: null, defining_doc_id: null, is_active: 1, meta: null };

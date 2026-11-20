@@ -1,7 +1,7 @@
 // 2s. responsible_party_for (Pattern 6): every Active Data Controller declares a
 // Responsible Party (A.1.12.1.2). Resolution order is in resolve-responsible-party.mjs;
 // edges carry meta.role_declared (the raw declaration) and meta.resolution.
-import { extractRP } from "../graph-patterns.mjs";
+import { extractRP } from "../graph-content-extract.ts";
 import { warnDriftCount } from "../graph-tripwires.mjs";
 import { resolveResponsibleParty } from "./resolve-responsible-party.mjs";
 

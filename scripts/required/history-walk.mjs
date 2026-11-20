@@ -1,9 +1,5 @@
-import {
-  classifyPrTitle,
-  cleanDescription,
-  matchBulletsToNodes,
-  parsePrBullets,
-} from "../lib/history-classify.mjs";
+import { classifyPrTitle, cleanDescription, parsePrBullets } from "../lib/history-classify.ts";
+import { matchBulletsToNodes } from "../lib/history-bullet-match.ts";
 import { extractPrNumber, fetchPr } from "../lib/github-pr-cache.mjs";
 import { diffSnapshots, eventDiff, snapshotEvents } from "../lib/history-events.ts";
 import { BACKFILLED_CHANGE_TYPES } from "../../src/server/history/history-db.ts";

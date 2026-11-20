@@ -24,16 +24,8 @@
  * Never-silent: every detected root reports parse failures as warnings.
  */
 
-import {
-  slugify,
-  normalizeKey,
-  buildNameIndex,
-  parseNameList,
-  bulletField,
-  makeWarn,
-  groupChildrenByParent,
-  createProseParty,
-} from "./graph-patterns.mjs";
+import { slugify, normalizeKey, buildNameIndex, bulletField, makeWarn, groupChildrenByParent, createProseParty } from "./graph-patterns.mjs";
+import { parseNameList } from "./graph-content-extract.ts";
 import { normalizeChainLabel } from "./chains.mjs";
 import { normalizeAddress } from "./address-chains.mjs";
 
