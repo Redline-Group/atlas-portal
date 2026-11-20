@@ -34,6 +34,7 @@ import {
   type CreatePoll,
   type Tx,
 } from "./onchain-polls-etherscan.ts";
+import { classify, readRepoAeps, type RepoAep } from "./onchain-polls-aeps.ts";
 
 const VOTE_EMITTER = "0xD3A9FE267852281a1e6307a1C37CDfD76d39b133"; // PollingEmitter; Voted(voter,pollId,optionId) tallies
 
@@ -44,45 +45,8 @@ const CID_RE = /^(Qm[1-9A-HJ-NP-Za-km-z]{44}|baf[0-9a-z]{20,})$/;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(__dirname, "atlas-onchain-polls.json"); // co-located with this script
-const AEP_DIR = path.resolve(__dirname, "../../../vendor/next-gen-atlas/Atlas Edit Proposals");
-
-interface RepoAep {
-  aep: number;
-  file: string;
-  ratification_poll_url: string | null;
-  poll_slug: string | null;
-}
-
-function classify(title: string): { kind: string; aep: number | null } {
-  const m = title.match(/\(AEP-(\d+)\)/i);
-  if (m) return { kind: "monthly", aep: Number(m[1]) };
-  if (/weekly/i.test(title)) return { kind: "weekly", aep: null };
-  return { kind: "other", aep: null };
-}
 
 const isoDate = (tsSeconds: string | number) => new Date(Number(tsSeconds) * 1000).toISOString().slice(0, 10);
-
-// Committed AEP files carry the ratification-poll URL (a vote.makerdao.com/polling/<slug>
-// where <slug> is the IPFS multiHash prefix) — it cross-links and integrity-checks each poll.
-function readRepoAeps(): RepoAep[] {
-  let files: string[];
-  try {
-    files = fs.readdirSync(AEP_DIR).filter((f) => /^AEP-\d+\.md$/i.test(f));
-  } catch {
-    return [];
-  }
-  const field = (txt: string, name: string) => (txt.match(new RegExp(`^${name}\\s*:\\s*(.+)$`, "im")) || [])[1]?.trim() || null;
-  return files.map((f) => {
-    const txt = fs.readFileSync(path.join(AEP_DIR, f), "utf8");
-    const pollUrl = field(txt, "Ratification Poll URL");
-    return {
-      aep: Number((f.match(/\d+/) || [])[0]),
-      file: f,
-      ratification_poll_url: pollUrl,
-      poll_slug: (pollUrl && (pollUrl.match(/polling\/([A-Za-z0-9]+)/) || [])[1]) || null,
-    };
-  });
-}
 
 interface AtlasEditPoll {
   dec: CreatePoll;
