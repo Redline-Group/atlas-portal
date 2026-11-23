@@ -2,7 +2,7 @@ import { contrastRatio, rateContrast, SWATCH_WORST_BG } from "./contrast";
 import { Swatch } from "./Swatch";
 import type { PaletteToken } from "./palette-tokens";
 
-interface SwatchGridProps {
+export interface SwatchGridProps {
   tokens: readonly PaletteToken[];
   effectiveValue: (name: string) => string;
   draft: Record<string, string>;

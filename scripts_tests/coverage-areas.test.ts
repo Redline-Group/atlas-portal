@@ -164,7 +164,7 @@ describe("coverage areas — lib partition", () => {
     expect(areaFor("src/lib/graph.ts")).toBe("lib-graph");
     // Misc catch-alls.
     expect(areaFor("src/lib/format.ts")).toBe("lib-shared");
-    expect(areaFor("scripts/lib/graph-entities.mjs")).toBe("scripts-lib-graph");
+    expect(areaFor("scripts/lib/graph-entities.ts")).toBe("scripts-lib-graph");
     expect(areaFor("scripts/lib/address-chains.mjs")).toBe("scripts-lib-address");
     expect(areaFor("scripts/lib/atlas-parser.mjs")).toBe("scripts-lib-core");
   });

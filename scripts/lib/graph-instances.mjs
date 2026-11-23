@@ -158,7 +158,7 @@ export function extractParamsFromRoot(rootDoc, childrenByDocNo) {
 }
 
 // The canonical ICD case: params under the ICD's `Parameters` child. Unchanged
-// contract — the graph build (graph-entities.mjs) and the eval query generator
+// contract — the graph build (graph-entities.ts) and the eval query generator
 // both depend on exactly this behavior.
 export function extractInstanceParams(icd, childrenByDocNo) {
   const direct = childrenByDocNo.get(icd.doc_no) ?? [];

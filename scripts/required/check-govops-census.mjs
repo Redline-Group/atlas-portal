@@ -63,7 +63,7 @@ const orgRe = orgNames.length
 if (!orgNames.length) {
   console.warn(
     "[drift] govops-census: 0 GovOps org edges in the graph — the govops_for extraction " +
-      "(graph-entities.mjs assignment sentences or the isGovOpsDoc gate) has collapsed",
+      "(graph-entities.ts assignment sentences or the isGovOpsDoc gate) has collapsed",
   );
 }
 

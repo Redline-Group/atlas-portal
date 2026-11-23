@@ -1,121 +1,19 @@
 import type { AtlasNode, GraphEntity, RelationEdge } from "@/types";
-import { ROUTES } from "@/lib/routes";
-import { pushTo, groupBy } from "@/lib/collections";
+import { indexBy } from "@/lib/collections";
 import { cmpDocNo } from "@/lib/docNo";
-import { parseMeta } from "@/lib/meta";
-import { EXEC_EDGES, FAC_EDGES, GOV_EDGES } from "@/lib/roleEdges";
-import { AGENT_FAMILIES, UNLISTED_AGENT, agentFamily, isServedSubtype } from "@/lib/agentKinds";
+import { AGENT_FAMILIES, UNLISTED_AGENT, agentFamily } from "@/lib/agentKinds";
 import type { GraphData } from "./graph";
-import type { InstanceMeta, InvocationMeta, RewardsAgent } from "@/lib/rewardsTypes";
+import type { RewardsAgent } from "@/lib/rewardsTypes";
 import type { ActiveDataRow } from "@/lib/activeDataIndex";
-import {
-  EXCLUDED_INSTANCE_TYPES,
-  buildInstanceOfMap,
-  buildStatusDocMap,
-  type InstanceParam,
-} from "@/lib/radarRules";
 
-import { toRadarInstance, type RadarInstance } from "./radarInstance";
 import { buildActorRelations } from "./actorRelations";
-import type { RelationSourceDoc } from "./relationSources";
+import { buildActorChain, toChainNode } from "./actorChain";
+import { buildActorContact } from "./actorContact";
+import { buildActorHoldings } from "./actorHoldings";
+import { buildRecommendations } from "./actorRecommendations";
+import type { ActorProfile, SidebarActor, SidebarGroup } from "./actorTypes";
 
-export type { InstanceParam, RadarInstance };
-
-export interface ChainNode {
-  id: string;
-  slug: string;
-  name: string;
-  et: string;
-  st: string | null;
-  docId: string | null;
-}
-export interface ActorChain {
-  /** The agents an executor operates: Prime Agents and Halo Agents. On such an agent's own page, itself. */
-  served: ChainNode[];
-  executors: ChainNode[];
-  facilitators: ChainNode[];
-  govops: ChainNode[];
-}
-export interface ActorRelation {
-  edge: RelationEdge;
-  /** The documents the edge was read from, resolved from the profile's docs. */
-  sourceDocs: RelationSourceDoc[];
-  direction: "outbound" | "inbound";
-  otherLabel: string;
-  otherId: string;
-  otherSlug: string | null;
-  otherEt: string | null;
-}
-export interface RadarPrimitive {
-  title: string;
-  docId: string | null;
-  st: string;
-  category: string | null;
-  categoryDocId: string | null;
-  categoryOrder: number;
-  status: string | null;
-  /** The Global Activation Status document that states `status` (the primitive's `has_status` target). */
-  statusDocId: string | null;
-  isUnknown: boolean;
-  instances: RadarInstance[];
-  // Invocations share the RadarInstance shape (same ICD-derived fields) but
-  // are a distinct concept per atlas A.2.2.1.4 — kept in a separate array so
-  // the UI can render them as a peer section instead of conflating with
-  // operational instance statuses.
-  invocations: RadarInstance[];
-}
-// Contact surface for a Prime Agent — its governance channels (Sky Forum
-// category, Discord URL) and emergency-response docs. Sourced from the
-// Pattern 22 governance_channel / emergency_response edges (doc → entity).
-export interface ContactChannel {
-  platform: "forum" | "discord";
-  category?: string;
-  url?: string;
-  docId: string;
-}
-export interface ContactEmergency {
-  scope: "ecosystem" | "agent_specific";
-  status: string; // "placeholder" (not yet written) | "specified"
-  docId: string;
-}
-export interface ActorContact {
-  channels: ContactChannel[];
-  emergency: ContactEmergency[];
-}
-export interface Recommendation {
-  kind: "missing-rp" | "governance-edge" | "no-rewards";
-  label: string;
-  detail: string;
-  reportLink?: string;
-  entityLink?: string;
-}
-export interface ActorProfile {
-  entity: GraphEntity;
-  definingDoc: AtlasNode | null;
-  chain: ActorChain;
-  adRows: ActiveDataRow[];
-  rewardsAgent: RewardsAgent | null;
-  relations: ActorRelation[];
-  instances: RadarInstance[];
-  invocations: RadarInstance[];
-  primitives: RadarPrimitive[];
-  recommendations: Recommendation[];
-  comprisesMembers: { name: string; slug: string | null }[];
-  partOfComposite: { name: string; slug: string | null } | null;
-  contact: ActorContact;
-}
-export interface SidebarActor {
-  id: string;
-  slug: string;
-  name: string;
-  et: string;
-  st: string | null;
-  docId: string | null;
-}
-export interface SidebarGroup {
-  label: string;
-  actors: SidebarActor[];
-}
+export type * from "./actorTypes";
 
 export function buildSidebarActors(
   graph: GraphData,
@@ -129,7 +27,7 @@ export function buildSidebarActors(
         const db = (b.did && docs[b.did]?.doc_no) ?? "";
         return cmpDocNo(da, db);
       })
-      .map((e) => ({ id: e.id, slug: e.slug, name: e.name, et: e.et, st: e.st, docId: e.did }));
+      .map(toChainNode);
   return [
     ...[...AGENT_FAMILIES, null].map((f) => ({ label: (f ?? UNLISTED_AGENT).plural, actors: by((e) => e.et === "agent" && e.st !== null && agentFamily(e.st) === f) })),
     { label: "Facilitators", actors: by((e) => e.et === "facilitator_org") },
@@ -137,237 +35,57 @@ export function buildSidebarActors(
   ].filter((g) => g.actors.length > 0);
 }
 
-export function buildActorProfile(
-  slug: string,
-  graph: GraphData,
-  docs: Record<string, AtlasNode>,
-  rewardsIndex: { agents: RewardsAgent[] },
-  allActiveDataRows: ActiveDataRow[],
-): ActorProfile | null {
-  const entity = graph.participants.find((p) => p.slug === slug);
-  if (!entity) return null;
-  const definingDoc = entity.did ? (docs[entity.did] ?? null) : null;
-
-  const entityById = new Map(graph.participants.map((e) => [e.id, e]));
-  const edgesFrom = new Map<string, RelationEdge[]>();
-  const edgesTo = new Map<string, RelationEdge[]>();
-  for (const e of graph.edges) {
-    pushTo(edgesFrom, e.f, e);
-    pushTo(edgesTo, e.t, e);
-  }
-  const cn = (p: GraphEntity): ChainNode => ({
-    id: p.id,
-    slug: p.slug,
-    name: p.name,
-    et: p.et,
-    st: p.st,
-    docId: p.did,
-  });
-  const resolve = (ids: string[]) =>
-    ids.map((id) => entityById.get(id)).filter((p): p is GraphEntity => !!p);
-  const execsTo = (id: string) => (edgesTo.get(id) ?? []).filter((e) => EXEC_EDGES.has(e.e));
-  const execsFrom = (id: string) => (edgesFrom.get(id) ?? []).filter((e) => EXEC_EDGES.has(e.e));
-  const facsTo = (id: string) => (edgesTo.get(id) ?? []).filter((e) => FAC_EDGES.has(e.e));
-  const govsTo = (id: string) => (edgesTo.get(id) ?? []).filter((e) => GOV_EDGES.has(e.e));
-
-  const dedup = (nodes: ChainNode[]) => {
-    const seen = new Set<string>();
-    return nodes.filter((n) => (seen.has(n.id) ? false : (seen.add(n.id), true)));
-  };
-  const servedBy = (execs: GraphEntity[]) =>
-    dedup(
-      resolve(execs.flatMap((ex) => execsFrom(ex.id).map((e) => e.t))).map(cn),
-    );
-
-  let chain: ActorChain;
-  const { et, st } = entity;
-  if (et === "agent" && isServedSubtype(st)) {
-    const execs = resolve(execsTo(entity.id).map((e) => e.f));
-    chain = {
-      served: [cn(entity)],
-      executors: execs.map(cn),
-      facilitators: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(facsTo(ex.id).map((e) => e.f)).map(cn))) : [],
-      govops: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(govsTo(ex.id).map((e) => e.f)).map(cn))) : [],
-    };
-  } else if (et === "agent") {
-    const served = resolve(execsFrom(entity.id).map((e) => e.t));
-    chain = {
-      served: served.map(cn),
-      executors: [cn(entity)],
-      facilitators: dedup(resolve(facsTo(entity.id).map((e) => e.f)).map(cn)),
-      govops: dedup(resolve(govsTo(entity.id).map((e) => e.f)).map(cn)),
-    };
-  } else if (et === "facilitator_org") {
-    const facEdges = (edgesFrom.get(entity.id) ?? []).filter((e) => FAC_EDGES.has(e.e));
-    const execs = resolve(facEdges.map((e) => e.t));
-    chain = {
-      served: servedBy(execs),
-      executors: execs.map(cn),
-      facilitators: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(facsTo(ex.id).map((e) => e.f)).map(cn))) : [cn(entity)],
-      govops: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(govsTo(ex.id).map((e) => e.f)).map(cn))) : [],
-    };
-  } else {
-    const govEdges = (edgesFrom.get(entity.id) ?? []).filter((e) => GOV_EDGES.has(e.e));
-    const execs = resolve(govEdges.map((e) => e.t));
-    chain = {
-      served: servedBy(execs),
-      executors: execs.map(cn),
-      facilitators: dedup(execs.flatMap((ex) => resolve(facsTo(ex.id).map((e) => e.f)).map(cn))),
-      govops: execs.length > 0 ? dedup(execs.flatMap((ex) => resolve(govsTo(ex.id).map((e) => e.f)).map(cn))) : [cn(entity)],
-    };
-  }
-
+function actorAdRows(entity: GraphEntity, allActiveDataRows: ActiveDataRow[]): ActiveDataRow[] {
   const seenAd = new Set<string>();
-  const adRows = allActiveDataRows.filter((r) => {
+  return allActiveDataRows.filter((r) => {
     const hit =
       r.responsibleParty?.id === entity.id ||
       r.facilitator?.id === entity.id ||
-      (et === "agent" && st === "prime" && r.agent === entity.name);
+      (entity.et === "agent" && entity.st === "prime" && r.agent === entity.name);
     if (!hit || seenAd.has(r.activeDataId)) return false;
     seenAd.add(r.activeDataId);
     return true;
   });
+}
 
-  const rewardsAgent = rewardsIndex.agents.find((a) => a.agentEntity?.id === entity.id) ?? null;
-
-  // Collect comprises members for composite parties before filtering
-  const comprisesMembers: { name: string; slug: string | null }[] = graph.edges
-    .filter((e) => e.e === "comprises" && e.f === entity.id && e.tt === "entity")
+function actorComposite(
+  edges: readonly RelationEdge[],
+  entityId: string,
+  entityById: ReadonlyMap<string, GraphEntity>,
+): Pick<ActorProfile, "comprisesMembers" | "partOfComposite"> {
+  const comprisesMembers = edges
+    .filter((e) => e.e === "comprises" && e.f === entityId && e.tt === "entity")
     .map((e) => {
       const m = entityById.get(e.t);
       return { name: m?.name ?? e.t.slice(0, 8), slug: m?.slug ?? null };
     });
-
-  // If this entity is a member of a composite party, surface that for navigation
-  const compositeEdge = graph.edges.find(
-    (e) => e.e === "comprises" && e.t === entity.id && e.ft === "entity",
-  );
+  const compositeEdge = edges.find((e) => e.e === "comprises" && e.t === entityId && e.ft === "entity");
   const compositeParty = compositeEdge ? entityById.get(compositeEdge.f) : null;
-  const partOfComposite = compositeParty
-    ? { name: compositeParty.name, slug: compositeParty.slug ?? null }
-    : null;
+  const partOfComposite = compositeParty ? { name: compositeParty.name, slug: compositeParty.slug ?? null } : null;
+  return { comprisesMembers, partOfComposite };
+}
 
+export function buildActorProfile(
+  slug: string, graph: GraphData, docs: Record<string, AtlasNode>,
+  rewardsIndex: { agents: RewardsAgent[] }, allActiveDataRows: ActiveDataRow[],
+): ActorProfile | null {
+  const entity = graph.participants.find((p) => p.slug === slug);
+  if (!entity) return null;
+  const definingDoc = entity.did ? (docs[entity.did] ?? null) : null;
+  const entityById = indexBy(graph.participants, (e) => e.id);
+  const adRows = actorAdRows(entity, allActiveDataRows);
+  const rewardsAgent = rewardsIndex.agents.find((a) => a.agentEntity?.id === entity.id) ?? null;
   const relations = buildActorRelations(graph.edges, entity.id, entityById, docs);
-
-  // ICD doc ID → primitive doc ID. Both instance_of (operational instances)
-  // and invocation_of (in-progress invocations) resolve to the parent primitive.
-  const instanceOfMap = buildInstanceOfMap(graph.edges);
-  const statusDocOf = buildStatusDocMap(graph.edges);
-
-  const instances: RadarInstance[] = [];
-  const invocations: RadarInstance[] = [];
-  if (definingDoc) {
-    for (const inst of graph.instances) {
-      if (!inst.m || !inst.st || EXCLUDED_INSTANCE_TYPES.has(inst.st)) continue;
-      const meta = parseMeta<InstanceMeta>(inst.m);
-      if (!meta || meta.agent_doc_id !== definingDoc.id) continue;
-      instances.push(toRadarInstance(inst, meta, docs, instanceOfMap));
-    }
-    for (const invo of graph.invocations) {
-      if (!invo.m || !invo.st || EXCLUDED_INSTANCE_TYPES.has(invo.st)) continue;
-      const meta = parseMeta<InvocationMeta>(invo.m);
-      if (!meta || meta.agent_doc_id !== definingDoc.id) continue;
-      invocations.push(toRadarInstance(invo, meta, docs, instanceOfMap));
-    }
-  }
-
-  // Primitives — one row per primitive declared under the agent, regardless of
-  // whether it has instances. Instances (if any) are nested under each primitive.
-  const primitives: RadarPrimitive[] = [];
-  if (definingDoc) {
-    interface PrimitiveMeta {
-      agent_doc_id: string;
-      primitive_category_doc_id: string | null;
-      status: string | null;
-      is_unknown_primitive?: boolean;
-    }
-    const instancesBySt = groupBy(instances, (inst) => inst.st);
-    const invocationsBySt = groupBy(invocations, (invo) => invo.st);
-    for (const p of graph.primitives) {
-      if (!p.m || !p.st) continue;
-      const meta = parseMeta<PrimitiveMeta>(p.m);
-      if (!meta || meta.agent_doc_id !== definingDoc.id) continue;
-      const primDoc = p.did ? docs[p.did] : null;
-      const catDoc = meta.primitive_category_doc_id ? docs[meta.primitive_category_doc_id] : null;
-      const catDocNo = catDoc?.doc_no ?? "";
-      const lastSeg = catDocNo.split(".").pop() ?? "0";
-      primitives.push({
-        title: primDoc?.title ?? p.name,
-        docId: p.did,
-        st: p.st,
-        category: catDoc?.title ?? null,
-        categoryDocId: catDoc?.id ?? null,
-        categoryOrder: Number.parseInt(lastSeg, 10) || 0,
-        status: meta.status,
-        statusDocId: p.did ? (statusDocOf.get(p.did) ?? null) : null,
-        isUnknown: meta.is_unknown_primitive ?? false,
-        instances: instancesBySt.get(p.st) ?? [],
-        invocations: invocationsBySt.get(p.st) ?? [],
-      });
-    }
-    primitives.sort((a, b) => {
-      if (a.categoryOrder !== b.categoryOrder) return a.categoryOrder - b.categoryOrder;
-      const docA = a.docId ? docs[a.docId]?.doc_no ?? "" : "";
-      const docB = b.docId ? docs[b.docId]?.doc_no ?? "" : "";
-      return cmpDocNo(docA, docB);
-    });
-  }
-
-  const recommendations: Recommendation[] = [];
-  const missingRP = adRows.filter((r) => !r.responsibleParty).length;
-  if (missingRP > 0)
-    recommendations.push({
-      kind: "missing-rp",
-      label: `${missingRP} AD doc${missingRP > 1 ? "s" : ""} without a responsible party`,
-      detail: "These active data docs have no declared responsible party.",
-      reportLink: ROUTES.REPORTS_ACTIVE_DATA,
-    });
-  if (et === "agent" && st === "prime" && !rewardsAgent)
-    recommendations.push({
-      kind: "no-rewards",
-      label: "No DR or IB primitives found",
-      detail: "This prime agent has no distribution reward or integration boost instances.",
-      reportLink: ROUTES.REPORTS_REWARDS,
-    });
-  for (const r of relations) {
-    if (r.otherEt && ["governance_body", "composite_party"].includes(r.otherEt))
-      recommendations.push({
-        kind: "governance-edge",
-        label: `Governance relationship: ${r.otherLabel}`,
-        detail: `Edge type: ${r.edge.e}`,
-        entityLink: r.otherSlug ?? undefined,
-      });
-  }
-
-  // Contact — Pattern 22 governance_channel / emergency_response edges land on
-  // this entity (doc → entity). Only Prime Agents carry them today.
-  const contact: ActorContact = { channels: [], emergency: [] };
-  for (const e of edgesTo.get(entity.id) ?? []) {
-    if (e.ft !== "doc") continue;
-    if (e.e === "governance_channel") {
-      const m = parseMeta<{ platform: "forum" | "discord"; category?: string; url?: string }>(e.m);
-      if (m?.platform) contact.channels.push({ platform: m.platform, category: m.category, url: m.url, docId: e.f });
-    } else if (e.e === "emergency_response") {
-      const m = parseMeta<{ scope: "ecosystem" | "agent_specific"; status: string }>(e.m);
-      if (m?.scope) contact.emergency.push({ scope: m.scope, status: m.status, docId: e.f });
-    }
-  }
-  contact.channels.sort((a, b) => (a.platform === b.platform ? 0 : a.platform === "forum" ? -1 : 1));
-  contact.emergency.sort((a, b) => (a.scope === b.scope ? 0 : a.scope === "ecosystem" ? -1 : 1));
-
   return {
     entity,
     definingDoc,
-    chain,
+    chain: buildActorChain(entity, graph.edges, entityById),
     adRows,
     rewardsAgent,
     relations,
-    instances,
-    invocations,
-    primitives,
-    recommendations,
-    comprisesMembers,
-    partOfComposite,
-    contact,
+    ...buildActorHoldings(graph, docs, definingDoc),
+    recommendations: buildRecommendations(entity, adRows, rewardsAgent, relations),
+    ...actorComposite(graph.edges, entity.id, entityById),
+    contact: buildActorContact(graph.edges, entity.id),
   };
 }

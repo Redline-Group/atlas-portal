@@ -96,7 +96,7 @@ export const ATOMIC_PARTY_RE = /The party ['‘]([^'’]+)['’]\s+is\b/i;
 
 // Org-to-org prose (Pattern 20): the same two sentence shapes are read by two
 // consumers — graph-entity-edges.mjs's free-content scan (Phase 2w, emits
-// prime_foundation_of/provides_services_to edges) and graph-entities.mjs's
+// prime_foundation_of/provides_services_to edges) and graph-entities.ts's
 // title-anchored Foundation/Development Company doc read (Phase 1p, creates/
 // corrects the entities those edges need). Shared here so the two can't drift
 // apart the way they did before 2026-09-28 (one had its own `(?:The\s+)?`

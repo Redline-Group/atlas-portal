@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { SectionHeading } from "./PaletteSection";
 import { PALETTE_TOKENS } from "./palette-tokens";
 import { PreviewEntityLabels } from "./preview/PreviewEntityLabels";
 import { PreviewStatusPills } from "./preview/PreviewStatusPills";
@@ -17,12 +18,7 @@ export function PalettePreview({ effectiveValue }: Props) {
 
   return (
     <section style={{ marginBottom: 32 }}>
-      <h2
-        className="mono"
-        style={{ fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--tan-2)", margin: "0 0 6px" }}
-      >
-        Live Preview
-      </h2>
+      <SectionHeading gap={6}>Live Preview</SectionHeading>
       <p style={{ fontSize: 12, color: "var(--tan-3)", margin: "0 0 16px" }}>
         Reflects your draft before apply. CSS vars are overridden on this container.
       </p>

@@ -1,11 +1,10 @@
 // Unit tests for Pattern 18 transfer/grant event extraction
-// (scripts/lib/graph-transfers.mjs). Real doc_nos/content are used where
+// (scripts/lib/graph-transfers.ts). Real doc_nos/content are used where
 // convenient (verified against public/docs.json); synthetic fixtures cover
 // the warn/gate branches that don't have a naturally-occurring atlas example.
 
 import { describe, it, expect } from "vitest";
-// @ts-expect-error — .mjs without types; runtime-only import.
-import { extractTransfers } from "../scripts/lib/graph-transfers.mjs";
+import { extractTransfers } from "../scripts/lib/graph-transfers.ts";
 
 function entity(slug: string, name: string, entity_type = "ecosystem_actor", subtype: string | null = null): any {
   return { id: slug, slug, name, entity_type, subtype, defining_doc_id: null, is_active: 1, meta: null };

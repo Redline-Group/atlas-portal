@@ -1,6 +1,6 @@
 import type { AtlasNode, GraphEntity, RelationEdge } from "@/types";
 import { isRelationEdge } from "@/lib/radarRules";
-import type { ActorRelation } from "./actorIndex";
+import type { ActorRelation } from "./actorTypes";
 import { docIdByDocNo, relationSourceDocs } from "./relationSources";
 
 /**

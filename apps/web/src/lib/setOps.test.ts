@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { added, addedAll, removed, toggled } from "./setOps";
+import { added, addedAll, removed, removedAll, toggled } from "./setOps";
 
 describe("setOps", () => {
   it("added returns the same Set when the value is present", () => {
@@ -33,5 +33,14 @@ describe("setOps", () => {
     const next = addedAll(s, ["b", "c", "d", "c"]);
     expect([...next]).toEqual(["a", "b", "c", "d"]);
     expect([...s]).toEqual(["a", "b"]);
+  });
+
+  it("removedAll returns the same Set when nothing is present", () => {
+    const s = new Set(["a", "b", "c"]);
+    expect(removedAll(s, ["x"])).toBe(s);
+    expect(removedAll(s, [])).toBe(s);
+    const next = removedAll(s, ["a", "c", "a", "x"]);
+    expect([...next]).toEqual(["b"]);
+    expect([...s]).toEqual(["a", "b", "c"]);
   });
 });
