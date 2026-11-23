@@ -2,6 +2,7 @@ import { useEffect, useReducer, type ReactElement } from "react";
 import { Tooltip } from "./Tooltip";
 import { AddressTooltipOnchain } from "./AddressTooltipOnchain";
 import { AddressTooltipDocs } from "./AddressTooltipDocs";
+import { AddressTooltipPreview } from "./AddressTooltipPreview";
 import { TipRow } from "./AddressTooltipRow";
 import { useSharedAddressMap } from "../hooks/useSharedAddressMap";
 import { resolveAddressLabel } from "../lib/addressTooltip";
@@ -31,6 +32,7 @@ function AddressTooltipContent({ address, href, onSettled }: { address: string; 
       </div>
       <dl className="mt-1.5 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 mono text-[10px]">
         {named && <TipRow label="address"><span className="break-all">{address}</span></TipRow>}
+        <AddressTooltipPreview address={address} />
         {owner && (
           <TipRow label="named near">
             {owner}

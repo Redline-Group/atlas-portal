@@ -18,7 +18,12 @@ export interface SafeView extends SafeState {
   chains: string[];
   /** The atlas's threshold for this Safe, present only when it differs from the chain's. */
   atlas: AtlasDisagreement | null;
+  /** True when `chains` are not ones the atlas places the address on: it was
+   *  never read on any of those, and this is the same address read elsewhere. */
+  elsewhere: boolean;
 }
+
+type Balances = Record<string, AddressBalances>;
 
 // Safes return owners in their linked-list order, which differs across chains
 // for the same owner set, so the set is compared, not the order.
@@ -36,22 +41,42 @@ function disagreement(view: SafeView, atlas: readonly MultisigFact[]): AtlasDisa
   return { name: first.name, required: first.threshold.required, total: first.threshold.total, docId: first.docId };
 }
 
-/** The address's on-chain Safe setups; empty when it read as no Safe (or has not been read). */
-export function resolveSafes(
-  address: string,
-  addrMap: Record<string, AddressInfo>,
-  balancesByAddress: Record<string, AddressBalances>,
-  atlas: readonly MultisigFact[],
-): SafeView[] {
-  const key = address.toLowerCase();
-  const info = addrMap[address] ?? addrMap[key];
+/** The address's Safe setups on `chains`, chains with the same setup merged. */
+function setups(key: string, chains: readonly string[], balances: Balances, elsewhere: boolean): SafeView[] {
   const views: SafeView[] = [];
-  for (const chain of info?.chains ?? []) {
-    const safe = balancesByAddress[`${key}|${chain}`]?.safe;
+  for (const chain of chains) {
+    const safe = balances[`${key}|${chain}`]?.safe;
     if (!safe) continue;
     const twin = views.find((v) => sameSetup(v, safe));
     if (twin) twin.chains.push(chain);
-    else views.push({ ...safe, chains: [chain], atlas: null });
+    else views.push({ ...safe, chains: [chain], atlas: null, elsewhere });
   }
+  return views;
+}
+
+/** Every chain the balances hold a reading of the address on, in name order. */
+function chainsRead(key: string, balances: Balances): string[] {
+  const prefix = `${key}|`;
+  return Object.keys(balances)
+    .filter((k) => k.startsWith(prefix))
+    .map((k) => k.slice(prefix.length))
+    .sort();
+}
+
+/**
+ * The address's on-chain Safe setups; empty when it read as no Safe (or has
+ * not been read). The sweep reads the chains the live atlas places an address
+ * on, so a preview that moves a known address to another chain has no reading
+ * there. Only when none of the atlas's chains was read at all does this fall
+ * back to the same address read on other chains, flagged `elsewhere`; a chain
+ * that was read and holds no Safe is an answer, not a gap.
+ */
+export function resolveSafes(address: string, addrMap: Record<string, AddressInfo>, balancesByAddress: Balances, atlas: readonly MultisigFact[]): SafeView[] {
+  const key = address.toLowerCase();
+  const info = addrMap[address] ?? addrMap[key];
+  if (!info) return [];
+  const placed = info.chains;
+  const anyRead = placed.some((chain) => balancesByAddress[`${key}|${chain}`]);
+  const views = anyRead ? setups(key, placed, balancesByAddress, false) : setups(key, chainsRead(key, balancesByAddress), balancesByAddress, true);
   return views.map((v) => ({ ...v, atlas: disagreement(v, atlas) }));
 }

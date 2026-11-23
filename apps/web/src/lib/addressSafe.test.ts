@@ -20,7 +20,7 @@ describe("resolveSafes", () => {
   it("shows the chain's setup and no atlas line when the atlas agrees", () => {
     const { map, reads } = setup(["ethereum"], { [`${ADDR}|ethereum`]: read("ethereum", { threshold: 2, owners: [O1, O2, O3] }) });
     expect(resolveSafes(ADDR, map, reads, [atlas("ethereum", 2, 3)])).toEqual([
-      { threshold: 2, owners: [O1, O2, O3], chains: ["ethereum"], atlas: null },
+      { threshold: 2, owners: [O1, O2, O3], chains: ["ethereum"], atlas: null, elsewhere: false },
     ]);
   });
 
@@ -51,5 +51,35 @@ describe("resolveSafes", () => {
   it("shows nothing without an on-chain read, whatever the atlas states", () => {
     const { map } = setup(["ethereum"], {});
     expect(resolveSafes(ADDR, map, {}, [atlas("ethereum", 2, 3)])).toEqual([]);
+  });
+
+  it("falls back to the address read on other chains when none of the atlas's chains was read", () => {
+    // A preview moves the Spark Operator Multisig's address doc to Ethereum,
+    // while the sweep read the same Safe on Arbitrum and Base.
+    const same = { threshold: 2, owners: [O1, O2, O3] };
+    const { map, reads } = setup(["ethereum"], {
+      [`${ADDR}|base`]: read("base", same),
+      [`${ADDR}|arbitrum`]: read("arbitrum", same),
+      [`${O1}|ethereum`]: read("ethereum", { threshold: 1, owners: [O2] }),
+    });
+    expect(resolveSafes(ADDR, map, reads, [])).toEqual([{ ...same, chains: ["arbitrum", "base"], atlas: null, elsewhere: true }]);
+  });
+
+  it("compares a reading from elsewhere only with what the atlas states for that chain", () => {
+    const { map, reads } = setup(["ethereum"], { [`${ADDR}|arbitrum`]: read("arbitrum", { threshold: 1, owners: [O1] }) });
+    expect(resolveSafes(ADDR, map, reads, [atlas("ethereum", 2, 3)])[0].atlas).toBeNull();
+  });
+
+  it("does not fall back when an atlas chain was read and holds no Safe", () => {
+    const { map, reads } = setup(["ethereum"], {
+      [`${ADDR}|ethereum`]: read("ethereum", null),
+      [`${ADDR}|arbitrum`]: read("arbitrum", { threshold: 2, owners: [O1, O2, O3] }),
+    });
+    expect(resolveSafes(ADDR, map, reads, [])).toEqual([]);
+  });
+
+  it("does not fall back for an address the map does not hold yet", () => {
+    const reads = { [`${ADDR}|arbitrum`]: read("arbitrum", { threshold: 2, owners: [O1, O2, O3] }) };
+    expect(resolveSafes(ADDR, {}, reads, [])).toEqual([]);
   });
 });
