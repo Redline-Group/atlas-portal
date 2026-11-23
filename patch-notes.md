@@ -35,8 +35,7 @@
 
 ## 2026-11-23
 
-- Fixed address hover cards in previews showing no signers for a known multisig the preview places on another chain.
-- Marked addresses a preview brings in as new in their hover card.
+- Improved address handling in previews: hover cards show multisig signers and mark new addresses.
 
 ## 2026-11-19
 

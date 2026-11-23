@@ -22,7 +22,7 @@ describe("AddressTooltipPreview", () => {
   it("marks an address the preview brings in, matching a checksummed spelling", () => {
     diff.newAddresses = new Set([SPARK]);
     render(<dl><AddressTooltipPreview address="0x492aae70E59551768BAF3c7159d3f951B6ed76Fe" /></dl>);
-    expect(screen.getByText("+ new in this preview")).toBeInTheDocument();
+    expect(screen.getByText("+ new in this Edit")).toBeInTheDocument();
   });
 
   it("says nothing for an address the diff base names, or outside a preview", () => {
