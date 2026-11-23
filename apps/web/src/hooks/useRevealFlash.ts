@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { added, removed } from "../lib/setOps";
+import { ancestorsOf } from "../lib/treeExpansion";
 
 // Kept in sync with the --change-flash-ms CSS variable; falls back to 600 ms.
 const CHANGE_FLASH_MS = (() => {
@@ -21,10 +22,8 @@ function isTreeVisible(
   parentOf: Map<string, string | null>,
   expandedIds: Set<string>,
 ): boolean {
-  let pid = parentOf.get(id) ?? null;
-  while (pid) {
+  for (const pid of ancestorsOf(parentOf, id)) {
     if (!expandedIds.has(pid)) return false;
-    pid = parentOf.get(pid) ?? null;
   }
   return true;
 }

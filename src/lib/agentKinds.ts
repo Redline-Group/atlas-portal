@@ -1,5 +1,5 @@
 // The kinds of agent the graph holds, declared once. An agent entity's subtype
-// (build-graph: graph-entities.mjs, graph-halos.ts) names its kind; every label,
+// (build-graph: graph-entities.ts, graph-halos.ts) names its kind; every label,
 // badge, sidebar group and roster heading for agents derives from here. A new
 // subtype is one entry in AGENT_KINDS, plus a family when it is neither a
 // served agent nor an executor like the ones below.

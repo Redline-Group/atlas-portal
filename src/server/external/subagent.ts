@@ -5,7 +5,7 @@ import type { JsonCall } from "../chat/llm.ts";
 import { callWithTimeout } from "../chat/llm.ts";
 import { config } from "../config.ts";
 import { MSC_REQUIRED_DISCLAIMER } from "./envelope.ts";
-import { briefFromView } from "./msc-views.ts";
+import { briefFromView } from "./msc-brief.ts";
 
 const QUESTION_CAP = 500;
 const NOTES_CAP = 500;

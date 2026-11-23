@@ -1,3 +1,4 @@
+import { SectionHeading } from "./PaletteSection";
 import { AUDIT_PAIRS, contrastRatio, rateContrast, type ContrastLevel } from "./contrast";
 
 const LEVEL_COLOR: Record<ContrastLevel, string> = {
@@ -14,12 +15,7 @@ interface Props {
 export function ContrastAudit({ effectiveValue }: Props) {
   return (
     <section style={{ marginBottom: 32 }}>
-      <h2
-        className="mono"
-        style={{ fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--tan-2)", margin: "0 0 6px" }}
-      >
-        Contrast Audit
-      </h2>
+      <SectionHeading gap={6}>Contrast Audit</SectionHeading>
       <p style={{ fontSize: 12, color: "var(--tan-3)", margin: "0 0 12px" }}>
         WCAG 2.1 via <span className="mono">wcag-contrast</span>. AA = 4.5:1 (body text). AA Large = 3:1
         (large/bold/decorative). Live against your draft.

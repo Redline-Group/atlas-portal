@@ -4,8 +4,7 @@
 // leaves the eligible cases for a human.
 import { describe, it, expect } from "vitest";
 import crypto from "node:crypto";
-// @ts-expect-error — .mjs without types
-import { runAutoCurate } from "../scripts/htmlhist/auto-curate-run.mjs";
+import { runAutoCurate } from "../scripts/htmlhist/auto-curate-run.ts";
 
 const md5 = (s: string) => crypto.createHash("md5").update(s).digest("hex");
 const node = (content: string, structuralKey: string, order: number) => ({
@@ -450,7 +449,7 @@ describe("runAutoCurate — pass 1.6 (positional∩signal)", () => {
     expect(summary.resolvedByPositional).toBe(1);
     const d = decisions.find((x: { auto: string }) => x.auto === "positional");
     expect(d).toMatchObject({ chosenKey: "po:spark" }); // the Spark ancestor, not Grove
-    expect(d.corroborator).toBeTruthy();
+    expect(d?.corroborator).toBeTruthy();
     expect(asked).toBe(0); // deterministic lock — never reached the LLM
   });
 

@@ -1355,7 +1355,7 @@ mark {
    DURING the animation, not at the end of it.
    A keyframe animation rather than a transition, because `height: auto` cannot
    be transitioned — keyframes state both ends outright. --exit-h is measured
-   and pinned by markExiting (AtlasReader) while the row is still laid out.
+   and pinned by markExiting (useExitingRows) while the row is still laid out.
    `forwards` holds height 0 afterwards, so by the time EXIT_MS unmounts the row
    its space is already gone and the removal changes nothing on screen. */
 @keyframes atlas-node-exit {

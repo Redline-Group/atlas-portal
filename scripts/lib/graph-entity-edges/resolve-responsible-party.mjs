@@ -40,7 +40,7 @@ export function resolveResponsibleParty(ctx, d, raw) {
   const { role, name: rawName } = rpRoleAndName(raw);
   // Descriptive phrases ("entity to which the registration pertains") are not
   // entity names, so they never resolve by title or directly (mirrors the 1f
-  // skip in graph-entities.mjs) and count as unresolved.
+  // skip in graph-entities.ts) and count as unresolved.
   const name = rawName && isDescriptiveRP(rawName) ? null : rawName;
   const byRole = name ? roleTitleHolder(ctx, name) : null;
   if (byRole) return { entity: byRole, resolution: "role", role };

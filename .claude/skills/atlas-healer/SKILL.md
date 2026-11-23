@@ -110,7 +110,7 @@ citing the sentence) vs a *new convention* (finding; also update
 `.claude/skills/parse-atlas/SKILL.md`, per the atlas-pr-check taxonomy).
 Watch the patterns that **never warn** when they stop matching:
 facilitator/govops assignment sentences and composite parties
-(`graph-entities.mjs`), role bindings ("The X role is held by Y"),
+(`graph-entities.ts`), role bindings ("The X role is held by Y"),
 multisig/bridge *child titles* ("…Signers", "…Number Of Signers",
 "Validators", "Quorum Requirement"), ICD `Parameters` children, and the
 exact titles `Definitions` (glossary) and `Distribution Reward Payments`
@@ -161,7 +161,7 @@ build-side ↔ `NodeContent.tsx` / `rehypeEthAddresses.ts` (see the
 
 ### G. Hardcoded UUID anchors
 
-`graph-entities.mjs` registry-UUID "not found" warnings (ERG membership,
+`graph-entities.ts` registry-UUID "not found" warnings (ERG membership,
 Aligned/Ranked Delegates, CCRA binding, Spell Team) and
 `[drift] concepts-census: crossview GROUPS root UUID … no longer in the atlas`:
 find the successor doc by title/content, verify it is the same document

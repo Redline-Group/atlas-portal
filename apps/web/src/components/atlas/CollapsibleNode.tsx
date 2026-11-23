@@ -1,522 +1,69 @@
-import { memo, useMemo, useRef, useEffect } from "react";
-import { segmentDepths, nrChiclets } from "@/lib/depth";
-import { annotatedId, annotationTarget, ANNOTATION_TAIL_SEGMENTS } from "@/lib/annotation";
+import { memo } from "react";
 import { type FlatEntry } from "@/lib/atlasHelpers";
-import { DocNoChiclets } from "../DocNoChiclets";
-import { NodeContent } from "../NodeContent";
-import { AtlasLink } from "../AtlasLink";
-import { atlasHref } from "@/lib/routes";
 import { NodeMeta } from "./NodeMeta";
 import { useAtlasActions } from "./AtlasActionsContext";
-import { revealStore } from "../../lib/revealStore";
-import { PreviewMark } from "../preview/PreviewMark";
 import { usePreviewFade } from "../../lib/previewFilter";
 import { useDataSource } from "../../lib/dataSource";
 import { NodeSelectBox } from "./NodeSelectBox";
-import { track } from "../../lib/analytics";
-import { settleChevron } from "../../lib/chevronSettle";
-import {
-  nextRung,
-  reverseRung,
-  flatNextRung,
-  flatReverseRung,
-  rungAngle,
-  rungClass,
-  rungHoverAngle,
-  rungReverseHoverAngle,
-  type RungDir,
-  type RungLevel,
-} from "./subtreeState";
+import { NodeRowBar } from "./NodeRowBar";
+import { NodeBody } from "./NodeBody";
+import { HiddenChildrenTab } from "./HiddenChildrenTab";
+import { useRowActivation } from "./useRowActivation";
+import { nodeRowAttrs } from "./nodeRowAttrs";
+import { useRowColumns } from "./nodeRowLayout";
+import type { RungDir, RungLevel } from "./subtreeState";
 
-const DRAG_THRESHOLD_PX = 4;
-
-// The chevron's CURRENT on-screen angle, read out of the computed transform
-// (which reflects the live interpolated value mid-transition, not the endpoint).
-// The click animation starts from this rather than from the rung's resting
-// angle: a click landing mid hover-drift must carry on from where the lean got
-// to and simply speed up, instead of snapping back to rest and re-travelling.
-function currentAngleDeg(el: HTMLElement, fallback: number): number {
-  const t = getComputedStyle(el).transform;
-  if (!t || t === "none") return 0;
-  const m = t.match(/matrix\(([^)]+)\)/);
-  if (!m) return fallback;
-  const [a, b] = m[1].split(",").map(Number);
-  return (Math.atan2(b, a) * 180) / Math.PI;
-}
-
-// Body indent so expanded text lines up with where the title text begins:
-// pl-3 (12) + gap-2 (8) + expand-all (14) + gap-2 (8) + title margin+padding (5),
-// plus 15px per chiclet segment (.atlas-chiclet width — keep in sync with
-// index.css).
-const TITLE_TEXT_OFFSET = 47;
-const CHICLET_W = 15;
-// gap-2 (8) + the toggle chevron (14): the agent pill may extend past the doc
-// numbers to also cover the chevron column, giving a slightly wider cap. It is
-// also exactly what an annotation row reclaims by not rendering the chevron
-// column at all (see `annotates` below), so both the title's left edge and the
-// expanded body's gutter move in by this much.
-const CHEVRON_W = 22;
-
-const TITLE_CLASS = "text-lg font-bold";
-
-export const CollapsibleNode = memo(function CollapsibleNode({
-  entry,
-  isSelected,
-  isExpanded,
-  hasChildren = false,
-  isExiting = false,
-  rungLevel = 0,
-  rungDir = 1,
-  gatedCount = 0,
-  onExpandChildren,
-  idPrefix,
-  cradle,
-  cradleColor,
-  agentName,
-  inSelectedOnly = false,
-}: {
+export interface CollapsibleNodeProps {
   entry: FlatEntry;
   isSelected: boolean;
   isExpanded: boolean;
   hasChildren?: boolean;
-  /** Row is on its way out: still mounted so it can fade, but inert. It is
-   *  unmounted for real once the reader's exit timer clears. */
   isExiting?: boolean;
-  /** Primitives, never an object — passing an object here would break the
-   *  memo above on every render. dir never changes without level also
-   *  changing, so this adds zero extra re-renders in practice. */
+  /** Primitives, not a Rung object, so the memo holds. */
   rungLevel?: RungLevel;
   rungDir?: RungDir;
   gatedCount?: number;
   onExpandChildren?: (id: string) => void;
   idPrefix?: string;
-  /** Row is part of the selected node's descendant rail; "foot" closes it. */
   cradle?: "line" | "foot";
   cradleColor?: string;
-  /** Owning prime/executor agent name — shown as a pill under the doc number
-   *  whenever the row is expanded. Undefined for docs not under an agent. */
   agentName?: string | null;
-  /** A flat filtered view (selected-only OR changed-only) is active: hides the
-   *  hidden-descendants affordance, and swaps the pendulum's swing to the
-   *  flatNextRung/flatReverseRung variant (rung 0 is invisible in these views —
-   *  see AtlasReader's filterSet branch — so the ordinary 3-position swing
-   *  would let the chevron rest at/lean toward "hidden" for a click that does
-   *  nothing visible). Passed as a prop (not read from selection/preview
-   *  context) so switching views doesn't re-render every row; see
-   *  NodeSelectBox for the checkbox itself. */
+  /** A flat filtered view is active. A prop, not context, so switching views doesn't re-render every row. */
   inSelectedOnly?: boolean;
-}) {
-  const { navigate, toggle, splitNavigate, pendulum, docNoToId } = useAtlasActions();
+}
+
+export const CollapsibleNode = memo(function CollapsibleNode(props: CollapsibleNodeProps) {
+  const { entry, isSelected, isExpanded, hasChildren = false, rungLevel = 0, rungDir = 1 } = props;
+  const { gatedCount = 0, onExpandChildren, idPrefix, agentName, inSelectedOnly = false } = props;
+  const { node, depth, hasContent } = entry;
+  const { navigate, pendulum } = useAtlasActions();
   const isPreview = !!useDataSource().preview;
-  const { node, depth, color, hasContent } = entry;
-  const HeadingTag = `h${Math.min(depth, 6)}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-  // NR-X nodes carry an opaque global number ("NR-12"), not a positional doc_no.
-  // Render the bare token: the "NR-" prefix is neutral (depth 0), the number takes
-  // the node's true depth colour — the parent context lives in the tree.
-  // Memoised so DocNoChiclets (also memo'd) gets stable array references and
-  // skips re-render when only isSelected/isExpanded changes on this node.
-  const { docNoParts, docNoDepths } = useMemo(() => {
-    if (node.doc_no.startsWith("NR-")) {
-      const { parts, depths } = nrChiclets(node.doc_no, depth);
-      return { docNoParts: parts, docNoDepths: depths };
-    }
-    return {
-      docNoParts: node.doc_no.split("."),
-      docNoDepths: segmentDepths(node.doc_no),
-    };
-  }, [node.doc_no, depth]);
-  // Annotations hang directly off the doc they annotate, but their `.0.3.N`
-  // numbering indents them three columns past it — so they read as children of
-  // that doc's children. Three treatments pull them back: this label, the
-  // smaller trailing chiclets, and the dropped chevron column below.
-  const annotates = annotationTarget(node);
-  // The target is known by NUMBER; the route takes an id. Unresolvable (a
-  // provider without the map, or a target still in the un-merged deep tier)
-  // degrades to plain text rather than a dead link. A removed annotation
-  // resolves by where it was placed (annotatedId).
-  const annotatesId = annotatedId(node, docNoToId);
-  const mouseDownRef = useRef<{ x: number; y: number } | null>(null);
-  // In preview: faint when removed, slightly dimmed when untouched (unless selected).
+  const columns = useRowColumns(node, depth, hasChildren && !!pendulum);
   const fade = usePreviewFade(node.id, 0.92, isSelected);
-
-  const showExpandAll = hasChildren && !!pendulum;
-  // No annotation in the atlas has children, so its chevron column is pure
-  // reserved whitespace between the doc number and the title — the one place
-  // the indent can be given back for free. `showExpandAll` still wins, so an
-  // annotation that ever did gain children keeps the column it actually renders.
-  const reserveChevron = showExpandAll || !annotates;
-  const titleTextOffset = TITLE_TEXT_OFFSET - (reserveChevron ? 0 : CHEVRON_W);
-  // In a flat filtered view (selected-only/changed-only) rung 0 is invisible
-  // — the row never disappears for it (see AtlasReader's filterSet branch) —
-  // so the ordinary 3-position swing would let the chevron rest at (and lean
-  // toward) "hidden" for a click that visibly does nothing. flatNextRung/
-  // flatReverseRung skip 0 there, leaving a plain closed/open toggle.
-  const nextLevel = (inSelectedOnly ? flatNextRung : nextRung)({ level: rungLevel, dir: rungDir }).level;
-  // The verb describes what the UPCOMING click does, not the current state —
-  // matches the affordance-tab convention below ("View N hidden sections").
-  // rungLevel is never 0 in a flat view (AtlasReader clamps its display), and
-  // rungDir stops distinguishing anything there — both directions from rung 1
-  // land on rung 2 (flatNextRung), so the "hide children" wording never fires.
-  const pendulumVerb = inSelectedOnly
-    ? rungLevel === 2
-      ? "collapse child bodies"
-      : "expand child bodies"
-    : rungLevel === 0
-      ? "show children"
-      : rungLevel === 2
-        ? "collapse child bodies"
-        : rungDir === 1
-          ? "expand child bodies"
-          : "hide children";
-  // Alt is the only way to reach the opposite swing, so the tooltip has to
-  // say so — the affordance is otherwise invisible. With only two positions
-  // (flat view), alt-click lands on the same target a plain click would —
-  // there's no "other way" left to swing — so the verb is the same.
-  const reverseVerb = inSelectedOnly
-    ? pendulumVerb
-    : rungLevel === 0
-      ? "show children with bodies"
-      : rungLevel === 2
-        ? "hide children"
-        : rungDir === 1
-          ? "hide children"
-          : "expand child bodies";
-  // Expanding (not collapsing) also asks the tree sidebar to reveal the node.
-  const doToggle = () => {
-    track("reader_node_toggle", { node_id: node.id, action: isExpanded ? "collapse" : "expand" });
-    if (!isExpanded) revealStore.reveal([node.id]);
-    toggle(node.id);
-  };
-  // Instant click feedback for the pendulum: advancing a large subtree's rung
-  // blocks the main thread, so the CSS .is-open/.is-hidden rotation (which
-  // keys off rungLevel) only lands after the work finishes — the click feels
-  // dead. A Web Animation on the chevron runs on the compositor, so it turns
-  // to its target angle and gives a slight pop the moment the click
-  // registers, playing through the jank. CSS takes the angle back over once
-  // the pendulum lands (see the effect below).
-  const expandAllRef = useRef<HTMLButtonElement>(null);
-  const spinRef = useRef<Animation | null>(null);
-  const pulseRef = useRef<Animation | null>(null);
-  const settleRef = useRef<(() => void) | null>(null);
-  useEffect(() => () => settleRef.current?.(), []);
-  const doPendulum = (event?: React.MouseEvent) => {
-    // Alt reverses the swing: from the middle it goes back the way it came,
-    // from either end it crosses straight to the far end. The target level has
-    // to be resolved HERE too, not just in the reader, so the chevron animates
-    // to the angle it will actually land on. (Alt, not shift — shift on a row
-    // is already split-pane navigation.)
-    const reverse = !!event?.altKey;
-    const cur = { level: rungLevel, dir: rungDir };
-    const targetLevel = reverse ? (inSelectedOnly ? flatReverseRung : reverseRung)(cur).level : nextLevel;
-    track("reader_expand_all", { node_id: node.id, action: targetLevel, reverse });
-    // The heavy state update (a rung write across a node's immediate
-    // children, plus body-forcing), deferred below so the chevron feedback
-    // paints first.
-    const commit = () => pendulum?.(node.id, { reverse });
-    const btn = expandAllRef.current;
-    // Sample the live angle BEFORE settling: settleChevron switches the hover
-    // rule off, which starts a transition back toward the resting angle, and
-    // from then on this would read a value already in retreat.
-    const fromAngle = btn ? currentAngleDeg(btn, rungAngle(rungLevel)) : 0;
-    // Hold the new resting angle against a continuing hover before the drift
-    // toward the *next* rung is allowed to start (see settleChevron).
-    if (btn) {
-      settleRef.current?.();
-      settleRef.current = settleChevron(btn);
-    }
-    if (btn?.animate) {
-      // Carry on from wherever the hover drift had reached — the rotation never
-      // stops or reverses on click, it just suddenly gets fast.
-      const from = fromAngle;
-      const to = rungAngle(targetLevel);
-      spinRef.current?.cancel();
-      // rotate (transform) held via fill:forwards until CSS .is-open/.is-hidden catches up
-      const spin = btn.animate(
-        [{ transform: `rotate(${from}deg)` }, { transform: `rotate(${to}deg)` }],
-        { duration: 240, easing: "ease-out", fill: "forwards" },
-      );
-      spinRef.current = spin;
-      // Release the fill:forwards hold only once the spin has actually FINISHED.
-      // It used to be cancelled by the rungLevel-keyed effect below, which fires
-      // about two frames after the click — so the rotation was killed ~30ms into
-      // its 200ms and the chevron teleported to the new angle. Cancelling here
-      // instead is seamless: by this point CSS resolves to the same angle the
-      // animation is holding. (cancel() rejects `finished`, hence the catch.)
-      spin.finished
-        ?.then(() => {
-          if (spinRef.current === spin) {
-            spin.cancel();
-            spinRef.current = null;
-          }
-        })
-        .catch(() => {});
-      // pulse: a looping bright scale-up "working…" beat via the independent
-      // scale/opacity props (they compose with the rotate above instead of
-      // fighting it). Runs on the compositor, so it keeps pulsing through the
-      // expand's main-thread jank; the effect below stops it once the new
-      // rung's CSS class lands.
-      pulseRef.current?.cancel();
-      pulseRef.current = btn.animate(
-        [
-          { scale: "1", opacity: "1" },
-          { scale: "1.4", opacity: "1", offset: 0.5 },
-          { scale: "1", opacity: "1" },
-        ],
-        { duration: 520, easing: "ease-in-out", iterations: Infinity },
-      );
-      // Defer the heavy commit two frames so the chevron feedback commits to the
-      // compositor and PAINTS first. Committing now would let React flush the
-      // large synchronous re-render in this same task, before the browser ever
-      // paints the animation — so it'd only appear once the expand is done.
-      // Backstop: cancel the pulse one frame after the commit even if the rung
-      // state didn't change — otherwise the state-keyed effect below never
-      // fires and the pulse would spin forever.
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          commit();
-          requestAnimationFrame(() => {
-            pulseRef.current?.cancel();
-            pulseRef.current = null;
-          });
-        }),
-      );
-    } else {
-      commit();
-    }
-  };
-  // Once CSS reflects the new rung (the pendulum landed), stop the "working…"
-  // pulse. The rotation is deliberately NOT cancelled here: this effect fires
-  // roughly two frames after the click, which would cut the 200ms spin short and
-  // teleport the chevron. The spin releases itself when it finishes (see above).
-  useEffect(() => {
-    pulseRef.current?.cancel();
-    pulseRef.current = null;
-  }, [rungLevel]);
-  // Unmounting mid-spin would otherwise leave the animation running on a
-  // detached node.
-  useEffect(() => () => {
-    spinRef.current?.cancel();
-    pulseRef.current?.cancel();
-  }, []);
-
+  const activation = useRowActivation({ nodeId: node.id, isSelected, isExpanded, hasContent });
   return (
     <article
-      id={idPrefix ? `${idPrefix}-${node.id}` : node.id}
-      className={`atlas-node relative${isSelected ? " is-selected" : ""}${
-        cradle ? ` in-cradle${cradle === "foot" ? " cradle-foot" : ""}` : ""
-      }`}
-      data-has-hidden={gatedCount > 0 ? "true" : undefined}
-      // The selected-body height clamp (index.css, "R2") keys on this: the
-      // sticky pin it protects can only engage when the row has descendants
-      // to pin over, so a childless doc gets its full body, no inner scroller.
-      data-has-children={hasChildren ? "true" : undefined}
-      // Footer hint (useContextHints): the row is tabIndex={0}, so Enter/Space
-      // act on it once focused — but on WHAT depends on the row's state (see the
-      // keydown handler below), so the marker has to say which. The shift-click
-      // marker sits on the title alone — see the note there.
-      data-focus-hint={
-        isSelected && hasContent
-          ? isExpanded
-            ? "reader-row-hide"
-            : "reader-row-show"
-          : "reader-row-open"
-      }
-      data-exiting={isExiting ? "true" : undefined}
-      aria-hidden={isExiting ? true : undefined}
-      // `pointer-events: none` (index.css) only blocks the mouse — inert also
-      // pulls the row and everything in it out of the tab order and off the
-      // accessibility tree while it fades, so focus/keyboard nav can't land on
-      // (or act through) a row already marked aria-hidden.
-      inert={isExiting || undefined}
-      style={
-        {
-          ["--row-color" as string]: color,
-          opacity: fade,
-          ...(cradleColor ? { ["--cradle-color" as string]: cradleColor } : {}),
-        } as React.CSSProperties
-      }
+      {...nodeRowAttrs(props, fade)}
       aria-label={`${node.doc_no} — ${node.title}`}
       aria-expanded={hasContent ? isExpanded : undefined}
       tabIndex={0}
-      onMouseDown={(e: React.MouseEvent) => {
-        mouseDownRef.current = { x: e.clientX, y: e.clientY };
-      }}
-      onClick={(e: React.MouseEvent) => {
-        if ((e.target as Element).closest('a, button, [role="button"]')) return;
-        // Drag-text-select fires a click on mouseup — skip those so selecting
-        // a paragraph doesn't also toggle or navigate the row.
-        const down = mouseDownRef.current;
-        mouseDownRef.current = null;
-        if (down) {
-          const dx = Math.abs(e.clientX - down.x);
-          const dy = Math.abs(e.clientY - down.y);
-          if (dx > DRAG_THRESHOLD_PX || dy > DRAG_THRESHOLD_PX) return;
-        }
-        // inRowBar = click landed on the title row (chiclets/title), not the expanded body. See data-row-bar attr below.
-        const inRowBar = !!(e.target as Element).closest("[data-row-bar]");
-        if (e.shiftKey) {
-          e.preventDefault();
-          splitNavigate(node.id);
-          return;
-        }
-        if (!isSelected) {
-          // Click anywhere on the row (title or body) selects it.
-          track("reader_title_click", { node_id: node.id });
-          navigate(node.id);
-          return;
-        }
-        // Already selected: only title-bar clicks toggle the body. Body clicks do nothing.
-        if (inRowBar && hasContent) doToggle();
-      }}
-      onKeyDown={(e: React.KeyboardEvent) => {
-        if (e.key === "Enter" || e.key === " ") {
-          // Same bail as the onClick handler above: a nested control (pendulum
-          // chevron, selection checkbox, copy buttons, in-content links, "Open
-          // on Sky Atlas") should run its OWN Enter/Space behavior, not have it
-          // swallowed into toggling/navigating the row. Widened past onClick's
-          // `a, button, [role="button"]` to also cover form controls that
-          // natively respond to these keys.
-          if ((e.target as Element).closest('a, button, [role="button"], input, select, textarea, [contenteditable]')) return;
-          e.preventDefault();
-          if (isSelected && hasContent) {
-            doToggle();
-          } else {
-            navigate(node.id);
-          }
-        }
-      }}
+      {...activation}
     >
       {!isPreview && <NodeSelectBox nodeId={node.id} title={node.title} />}
-      {/* data-row-bar: marker the outer onClick uses to distinguish title-bar clicks from body clicks (see handler above). */}
-      <div data-row-bar className="flex items-center gap-2 pl-3">
-        {annotates ? (
-          <span className="atlas-docno-col">
-            <DocNoChiclets
-              parts={docNoParts}
-              depths={docNoDepths}
-              minorFrom={docNoParts.length - ANNOTATION_TAIL_SEGMENTS}
-            />
-            {/* Fits inside the chiclet column for every annotation in the atlas
-                (widest is 27 chars against a 165px column), so it names the
-                target without pushing the title back out. A link because the
-                target can be a long way up the reader — the atlas orders the
-                supporting `0` directory after every real sibling (compose.py's
-                sort key), so A.2.8's annotations sit 253 rows below it. The
-                row's own click handlers bail on `closest("a")`, so following it
-                doesn't also select or toggle the row. Primary click goes
-                through context navigate() (keeps ?view= / optimistic
-                selection); AtlasLink's href is for middle-click / copy —
-                AtlasLink only folds split/subset, not the active tab. */}
-            {annotatesId ? (
-              <AtlasLink to={atlasHref(annotatesId)} className="atlas-annotates" onOpen={() => navigate(annotatesId)}>
-                Annotates {annotates}
-              </AtlasLink>
-            ) : (
-              <span className="atlas-annotates">Annotates {annotates}</span>
-            )}
-          </span>
-        ) : (
-          <DocNoChiclets parts={docNoParts} depths={docNoDepths} />
-        )}
-        {showExpandAll ? (
-          <button
-            ref={expandAllRef}
-            type="button"
-            className={`atlas-node-toggle atlas-node-expand-all${
-              rungClass(rungLevel) ? ` ${rungClass(rungLevel)}` : ""
-            }`}
-            style={
-              {
-                ["--hover-deg" as string]: `${rungHoverAngle({ level: rungLevel, dir: rungDir }, inSelectedOnly)}deg`,
-                ["--hover-deg-alt" as string]: `${rungReverseHoverAngle({ level: rungLevel, dir: rungDir }, inSelectedOnly)}deg`,
-              } as React.CSSProperties
-            }
-            aria-label={`${pendulumVerb[0].toUpperCase()}${pendulumVerb.slice(1)} under ${node.doc_no}`}
-            title={`${pendulumVerb} (alt-click: ${reverseVerb})`}
-            data-mod-hint="pendulum"
-            onClick={doPendulum}
-          >
-            »
-          </button>
-        ) : reserveChevron ? (
-          <span className="atlas-node-toggle" style={{ visibility: "hidden" }} aria-hidden="true">
-            {"»"}
-          </span>
-        ) : null}
-        {isPreview && <PreviewMark nodeId={node.id} className="text-lg" />}
-        {/* Shift-click works anywhere on the row, but marking the whole row put
-            the hint up while crossing the chiclets, the pendulum chevron and
-            the body text as well — near-constantly. The title is where the
-            gesture is worth offering.
-
-            Inside the split pane a shift-click highlights the doc in the main
-            reader instead, so the hint says that — as does the CSS hint for
-            these rows (--split-hint on .junior-pane, index.css). */}
-        <div
-          data-mod-hint={idPrefix === "junior" ? "split-main" : "split"}
-          className="atlas-node-title flex items-center gap-2 py-1.5 flex-1 min-w-0"
-        >
-          <HeadingTag className={TITLE_CLASS}>
-            {node.title}
-          </HeadingTag>
-        </div>
-      </div>
+      <NodeRowBar
+        entry={entry}
+        columns={columns}
+        rung={{ level: rungLevel, dir: rungDir }}
+        flat={inSelectedOnly}
+        inSplit={idPrefix === "junior"}
+        isPreview={isPreview}
+      />
       {isSelected && isExpanded && <div className="atlas-node-meta"><NodeMeta node={node} /></div>}
-
-      {/* In selected-only mode the reader shows a flat list that ignores depth-6
-          gating, so revealing hidden descendants is a no-op — hide the affordance
-          rather than offer a dead button. */}
+      {/* The flat view ignores depth gating, so the tab would be a dead button. */}
       {gatedCount > 0 && onExpandChildren && !inSelectedOnly && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            track("reader_reveal_hidden", { node_id: node.id, hidden_count: gatedCount });
-            onExpandChildren(node.id);
-          }}
-          title={`View ${gatedCount} hidden ${gatedCount === 1 ? "section" : "sections"} under ${node.doc_no}`}
-          aria-label={`View ${gatedCount} hidden sections`}
-          className="view-children-affordance"
-        >
-          <span>{gatedCount} hidden</span>
-          <svg
-            width="8"
-            height="5"
-            viewBox="0 0 8 5"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path d="M0 0 L8 0 L4 5 Z" />
-          </svg>
-        </button>
+        <HiddenChildrenTab nodeId={node.id} docNo={node.doc_no} count={gatedCount} onReveal={onExpandChildren} />
       )}
-      {isExpanded && (hasContent || agentName) && (
-        <div className="flex items-start">
-          {/* Left gutter: the owning-agent pill, aligned under the doc-number
-              chiclets and never wider than them — a long name wraps to further
-              (centered) lines within that width. The column reserves the full
-              doc-number indent so the body keeps the exact left edge it had with
-              no pill. */}
-          <div
-            className="shrink-0 pl-3"
-            style={{ width: titleTextOffset + CHICLET_W * docNoParts.length, marginTop: 4.5 }}
-          >
-            {agentName && (
-              <span
-                className="atlas-agent-pill"
-                style={{ maxWidth: CHICLET_W * docNoParts.length + (reserveChevron ? CHEVRON_W : 0) }}
-              >
-                {agentName}
-              </span>
-            )}
-          </div>
-          {hasContent && (
-            <div className="atlas-node-body flex-1 min-w-0" style={{ marginLeft: 0 }}>
-              <NodeContent content={node.content} onNavigate={navigate} />
-            </div>
-          )}
-        </div>
-      )}
+      {isExpanded && <NodeBody entry={entry} agentName={agentName} columns={columns} onNavigate={navigate} />}
     </article>
   );
 });

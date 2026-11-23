@@ -2,10 +2,7 @@
 // facilitator-assignment doc → the executor agent that doc sits under.
 import { isFacilitatorDoc } from "../graph-patterns.mjs";
 import { extractAssignment } from "../graph-content-extract.ts";
-
-// Regex source handed to extractAssignment; graph-entities.mjs reads the same assignment sentence.
-export const FACILITATOR_FOR_PREFIX =
-  "(?:The )?(?:(?:Operational|Core) (?:Executor )?)?Facilitator for [^.]+";
+import { FACILITATOR_FOR_PREFIX } from "./assignment-prefixes.ts";
 
 function run(ctx) {
   for (const d of ctx.allDocs.filter(isFacilitatorDoc)) {

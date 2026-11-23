@@ -1,4 +1,4 @@
-// Unit tests for Phase 1 entity extraction (scripts/lib/graph-entities.mjs).
+// Unit tests for Phase 1 entity extraction (scripts/lib/graph-entities.ts).
 // Complements graph-entity-edges-drift.test.ts (empty-corpus drift signals):
 // this corpus is realistic and non-empty, exercising the actual extraction
 // patterns documented in .claude/skills/parse-atlas/SKILL.md. Doc_nos are
@@ -6,8 +6,7 @@
 // used as a runtime identifier here — that's fine in test fixtures).
 
 import { describe, it, expect, vi, afterEach } from "vitest";
-// @ts-expect-error — .mjs without types; runtime-only import.
-import { extractEntities } from "../scripts/lib/graph-entities.mjs";
+import { extractEntities } from "../scripts/lib/graph-entities.ts";
 import {
   ERG_MEMBERSHIP_UUID,
   ALIGNED_DELEGATES_UUID,

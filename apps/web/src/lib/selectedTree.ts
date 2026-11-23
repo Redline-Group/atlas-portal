@@ -1,6 +1,7 @@
 import { realDepth } from "@/lib/depth";
 import type { AtlasNode } from "@/types";
 import type { VisibleNode } from "../components/tree/TreeRow";
+import { ancestorsOf } from "./treeExpansion";
 
 // Nodes with at least one SELECTED descendant. Post-order DFS over the same
 // byParent structure the tree renders from, so it lines up exactly with the
@@ -77,10 +78,8 @@ export function selectedDescendantRunEnd(
   const sel = rows[selectedIndex];
   if (!sel) return selectedIndex + 1;
   const isDescendant = (id: string): boolean => {
-    let p = parentOf.get(id) ?? null;
-    while (p) {
+    for (const p of ancestorsOf(parentOf, id)) {
       if (p === sel.node.id) return true;
-      p = parentOf.get(p) ?? null;
     }
     return false;
   };

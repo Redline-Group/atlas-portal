@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { ROUTES } from "@/lib/routes";
 import { usePreviewChangedSet } from "./previewFilter";
 import { useSelectionSet } from "./selectionFilter";
+import type { AtlasSubset } from "./atlasSubset";
 
 /** The doc ids the reader and tree are narrowed to: a preview's "changed only"
  *  wins over "selected only" (which is also how an open collection shows).
@@ -10,6 +11,22 @@ export function useAtlasFilterSet(): Set<string> | null {
   const changed = usePreviewChangedSet();
   const selected = useSelectionSet();
   return changed ?? selected;
+}
+
+export interface AtlasFilter {
+  filterSet: Set<string> | null;
+  /** Which subset is narrowing the view; "all" when nothing is filtered. */
+  subset: AtlasSubset;
+}
+
+/** The filter set together with the subset it came from, for views that
+ *  behave differently per subset (the reader re-scrolls when it flips and
+ *  draws no cradle in "changed"). */
+export function useAtlasFilter(): AtlasFilter {
+  const changed = usePreviewChangedSet();
+  const selected = useSelectionSet();
+  const filterSet = useAtlasFilterSet();
+  return { filterSet, subset: changed ? "changed" : selected ? "selected" : "all" };
 }
 
 const HIDES_NOTHING = (): boolean => false;

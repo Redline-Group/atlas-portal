@@ -173,7 +173,7 @@ describe("first-seen", () => {
   it("atlasFirstSeen distinguishes 'entity found, no defining doc' from 'not found'", async () => {
     mockHistoryRows([]);
     // sky-core-style entity: real, resolvable, but bootstrapped with no defining doc
-    // (scripts/lib/graph-entities.mjs) — must not be reported the same as an unknown slug.
+    // (scripts/lib/graph-entities.ts) — must not be reported the same as an unknown slug.
     const ix = buildIndexes([], [entity("e1", "sky-core", null)], [], {});
 
     const result = (await atlasFirstSeen(ix, ["sky-core", "definitely-not-a-slug"])) as { results: Array<Record<string, unknown>> };

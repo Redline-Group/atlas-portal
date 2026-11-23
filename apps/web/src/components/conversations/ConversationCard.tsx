@@ -34,7 +34,7 @@ function ConversationTitle({ conversation }: { conversation: ConversationSummary
 // Bails an outer row handler when the event originated on (or inside) a
 // nested interactive element — the rename input, or the Rename/Delete
 // buttons — so the row's own open action doesn't also fire. Same
-// closest()-based pattern as CollapsibleNode.tsx's row-click handler, with
+// closest()-based pattern as the reader row's click handler (useRowActivation.ts), with
 // one addition: `container` (the row itself) is excluded from the match.
 // The row also carries role="button" for keyboard semantics, so a plain
 // closest() from a click anywhere in the row (e.g. the title text) would
