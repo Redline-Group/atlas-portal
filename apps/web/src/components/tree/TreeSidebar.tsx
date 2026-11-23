@@ -11,8 +11,6 @@ import { PreviewTreeToggle } from "../preview/PreviewTreeToggle";
 import { SelectionTreeToggle } from "../selection/SelectionTreeToggle";
 import { TreeRow, ROW_HEIGHT, type TreeRowData } from "./TreeRow";
 
-// Width the rows lay out against before the sidebar is first measured, and how
-// far the measured width has to move before they lay out again.
 const INITIAL_WIDTH = 242;
 const WIDTH_TOLERANCE = 10;
 
@@ -30,9 +28,7 @@ function TreeRows({ listRef, rowProps }: RowsProps) {
       rowComponent={TreeRow}
       rowProps={rowProps}
       overscanCount={20}
-      // scrollbar-gutter: stable permanently reserves the 8px scrollbar lane
-      // so rows never render under it — the JS title budget (SCROLLBAR_W) then
-      // adds a small extra gap on top. Prevents titles kissing the scrollbar.
+      // Reserve the scrollbar lane so rows never render under it.
       style={{ flex: 1, scrollbarGutter: "stable" }}
     />
   );
@@ -57,10 +53,7 @@ export function TreeSidebar({ nodeId, onNavigate, onShiftNavigate }: Props) {
   });
   const chevrons = useChevronActions({ bundle, expandedIds, setExpandedIds, rollup: marks.rollup, canCascade });
 
-  // canCascade goes to the rows too: selected-only view skips the shift branch
-  // in the chevron toggle, so shift-click there is a plain one-level toggle.
-  // TreeRow can't know that — it has no selectionSet — and without it the row
-  // advertises the cascade on a chevron that won't cascade.
+  // TreeRow has no selectionSet, so it needs canCascade to avoid advertising a cascade that won't happen.
   const rowProps: TreeRowData = useMemo(
     () => ({
       ...rows, ...marks, ...chevrons, expandedIds, focusedIndex, sidebarWidth, canCascade,
@@ -79,9 +72,7 @@ export function TreeSidebar({ nodeId, onNavigate, onShiftNavigate }: Props) {
       onKeyDown={handleKeyDown}
       role="tree"
       aria-label="Atlas tree"
-      // Arrow keys only do something while this container holds focus, so the
-      // footer only advertises them then. useContextHints reads the attribute
-      // off focusin/focusout — nothing to wire up here.
+      // useContextHints reads this on focusin/focusout; arrow keys only work while focused.
       data-focus-hint="tree"
     >
       <PreviewTreeToggle />

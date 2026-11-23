@@ -18,7 +18,6 @@ interface PrimitiveMeta {
   is_unknown_primitive?: boolean;
 }
 
-/** The instances or invocations (`icds`) declared under the agent whose defining doc is `agentDocId`. */
 function agentIcds(icds: GraphEntity[], agentDocId: string, docs: Docs, instanceOfMap: ReadonlyMap<string, string>): RadarInstance[] {
   const out: RadarInstance[] = [];
   for (const icd of icds) {
@@ -30,7 +29,6 @@ function agentIcds(icds: GraphEntity[], agentDocId: string, docs: Docs, instance
   return out;
 }
 
-/** A primitive's own fields; its category sorts by the last segment of the category's doc number. */
 function primitiveFields(p: GraphEntity, st: string, meta: PrimitiveMeta, docs: Docs, statusDocOf: ReadonlyMap<string, string>) {
   const primDoc = p.did ? docs[p.did] : null;
   const catDoc = meta.primitive_category_doc_id ? docs[meta.primitive_category_doc_id] : null;
@@ -56,10 +54,6 @@ const byCategoryThenDocNo = (docs: Docs) => (a: RadarPrimitive, b: RadarPrimitiv
   return cmpDocNo(docA, docB);
 };
 
-/**
- * Primitives — one row per primitive declared under the agent, regardless of
- * whether it has instances. Instances (if any) are nested under each primitive.
- */
 function agentPrimitives(graph: GraphData, docs: Docs, agentDocId: string, icds: Omit<Holdings, "primitives">): RadarPrimitive[] {
   const statusDocOf = buildStatusDocMap(graph.edges);
   const instancesBySt = groupBy(icds.instances, (inst) => inst.st);
@@ -78,11 +72,8 @@ function agentPrimitives(graph: GraphData, docs: Docs, agentDocId: string, icds:
   return primitives.sort(byCategoryThenDocNo(docs));
 }
 
-/** What an agent holds: its instances, its invocations, and its primitives with both nested. Empty without a defining doc. */
 export function buildActorHoldings(graph: GraphData, docs: Docs, definingDoc: AtlasNode | null): Holdings {
   if (!definingDoc) return { instances: [], invocations: [], primitives: [] };
-  // ICD doc ID → primitive doc ID. Both instance_of (operational instances)
-  // and invocation_of (in-progress invocations) resolve to the parent primitive.
   const instanceOfMap = buildInstanceOfMap(graph.edges);
   const instances = agentIcds(graph.instances, definingDoc.id, docs, instanceOfMap);
   const invocations = agentIcds(graph.invocations, definingDoc.id, docs, instanceOfMap);

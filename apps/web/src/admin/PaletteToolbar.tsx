@@ -39,17 +39,13 @@ function secondaryStyle(enabled: boolean): React.CSSProperties {
 }
 
 export type PaletteToolbarProps = {
-  /** The unsaved override values; "copy as css" exports them. */
   draft: Record<string, string>;
-  /** Whether the draft differs from what this browser has saved. */
   isDirty: boolean;
-  /** Whether this browser has saved overrides. */
   hasSaved: boolean;
   onApply: () => void;
   onReset: () => void;
 };
 
-/** The draft's actions (apply, reset, copy as CSS) and its status note. */
 export function PaletteToolbar({ draft, isDirty, hasSaved, onApply, onReset }: PaletteToolbarProps) {
   const { copied, copy } = useCopyState(COPIED_FLASH_MS);
   const hasDraft = Object.keys(draft).length > 0;

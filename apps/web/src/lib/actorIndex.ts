@@ -35,7 +35,6 @@ export function buildSidebarActors(
   ].filter((g) => g.actors.length > 0);
 }
 
-/** The Active Data rows an actor answers for, one per Active Data doc; a Prime Agent also owns the rows under its name. */
 function actorAdRows(entity: GraphEntity, allActiveDataRows: ActiveDataRow[]): ActiveDataRow[] {
   const seenAd = new Set<string>();
   return allActiveDataRows.filter((r) => {
@@ -49,7 +48,6 @@ function actorAdRows(entity: GraphEntity, allActiveDataRows: ActiveDataRow[]): A
   });
 }
 
-/** Both sides of `comprises`: a composite party's members, and the composite a member belongs to (for navigation). */
 function actorComposite(
   edges: readonly RelationEdge[],
   entityId: string,

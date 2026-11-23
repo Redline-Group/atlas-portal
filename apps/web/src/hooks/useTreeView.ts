@@ -7,11 +7,8 @@ import { visibleTreeRows, cradleRange } from "../lib/treeRows";
 import type { TreeRowData } from "../components/tree/TreeRow";
 import { useTreeExpansion } from "./useTreeExpansion";
 
-/** The rows on show and where the selection sits among them. */
 export type TreeRows = Pick<TreeRowData, "visibleNodes" | "selectedIndex" | "cradle">;
 
-/** What the sidebar shows: the expansion state, the active flat view ("changed
- *  only", "selected only") and the rows that follow from them. */
 export function useTreeView(bundle: AtlasBundle | null, nodeId: string | null) {
   const parentOf = useMemo(() => parentIndex(bundle), [bundle]);
   const [expandedIds, setExpandedIds] = useTreeExpansion(bundle, parentOf, nodeId);
@@ -35,7 +32,5 @@ export function useTreeView(bundle: AtlasBundle | null, nodeId: string | null) {
     [visibleNodes, selectedIndex, cradle],
   );
 
-  // The selected-only view holds selected docs alone, so a chevron there acts
-  // on one level only and never cascades through the full tree.
   return { parentOf, expandedIds, setExpandedIds, changedSet, canCascade: !selectionSet, rows };
 }

@@ -8,9 +8,7 @@ import type { TreeRows } from "./useTreeView";
 
 type ListRef = RefObject<ListImperativeAPI | null>;
 
-// Brings the selected row into view when the selection changes. The returned
-// callback marks the next selection change as coming from a click on a row,
-// which is already in view and must not move.
+// The returned callback marks the next selection as a row click, which is already in view and must not scroll.
 function useScrollToSelected(listRef: ListRef, nodeId: string | null, selectedIndex: number) {
   const clickedRef = useRef(false);
   const scrolledForRef = useRef<string | null>(null);
@@ -20,10 +18,7 @@ function useScrollToSelected(listRef: ListRef, nodeId: string | null, selectedIn
       scrolledForRef.current = nodeId;
       return;
     }
-    // Only scroll when the *selected node* changes (a real navigation). Expanding
-    // or collapsing another section shifts selectedIndex without changing nodeId —
-    // that must not jerk the view back to the selection (it would fight the user
-    // who is scrolling/expanding elsewhere).
+    // Expanding elsewhere shifts selectedIndex without changing nodeId; that must not scroll back.
     if (nodeId === scrolledForRef.current) return;
     if (selectedIndex >= 0 && listRef.current) {
       listRef.current.scrollToRow({ index: selectedIndex, align: "smart" });
@@ -45,19 +40,11 @@ interface Params {
   onShiftNavigate?: (id: string) => void;
 }
 
-/** Where the reader is in the tree: the keyboard-focused row, the arrow-key
- *  handler that moves it, the scroll that follows the selection, and the row
- *  click that navigates. */
 export function useTreeCursor({ rows, nodeId, onNavigate, listRef, ...keys }: Params) {
   const { visibleNodes, selectedIndex } = rows;
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
-  // A mouse-driven toggle (plain collapse, cascade collapse, switching flat
-  // views, …) can shrink visibleNodes out from under a keyboard-focused row,
-  // leaving focusedIndex stale and past the end of the new, shorter array.
-  // useTreeKeyboard guards its own indexing against that, but the stale index
-  // is still wrong to keep around — clamp it back into range (or to -1, "no
-  // focus", once the list is empty) whenever the visible list changes.
+  // A mouse toggle can shrink visibleNodes under the focused row; clamp the stale index.
   useEffect(() => {
     setFocusedIndex((prev) => (prev >= visibleNodes.length ? visibleNodes.length - 1 : prev));
   }, [visibleNodes]);

@@ -2,11 +2,6 @@ import type { RelationEdge } from "@/types";
 import { parseMeta } from "@/lib/meta";
 import type { ActorContact } from "./actorTypes";
 
-/**
- * Contact — Pattern 22 governance_channel / emergency_response edges land on
- * the entity (doc → entity). Only Prime Agents carry them today. Forum sorts
- * before Discord, ecosystem-wide emergency response before agent-specific.
- */
 export function buildActorContact(edges: readonly RelationEdge[], entityId: string): ActorContact {
   const contact: ActorContact = { channels: [], emergency: [] };
   for (const e of edges) {

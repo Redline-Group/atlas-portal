@@ -16,7 +16,7 @@ export interface ChainNode {
   docId: string | null;
 }
 export interface ActorChain {
-  /** The agents an executor operates: Prime Agents and Halo Agents. On such an agent's own page, itself. */
+  /** On a served agent's own page, itself. */
   served: ChainNode[];
   executors: ChainNode[];
   facilitators: ChainNode[];
@@ -24,7 +24,6 @@ export interface ActorChain {
 }
 export interface ActorRelation {
   edge: RelationEdge;
-  /** The documents the edge was read from, resolved from the profile's docs. */
   sourceDocs: RelationSourceDoc[];
   direction: "outbound" | "inbound";
   otherLabel: string;
@@ -40,19 +39,12 @@ export interface RadarPrimitive {
   categoryDocId: string | null;
   categoryOrder: number;
   status: string | null;
-  /** The Global Activation Status document that states `status` (the primitive's `has_status` target). */
   statusDocId: string | null;
   isUnknown: boolean;
   instances: RadarInstance[];
-  // Invocations share the RadarInstance shape (same ICD-derived fields) but
-  // are a distinct concept per atlas A.2.2.1.4 — kept in a separate array so
-  // the UI can render them as a peer section instead of conflating with
-  // operational instance statuses.
+  // Same shape as instances but a distinct concept, so kept apart for the UI.
   invocations: RadarInstance[];
 }
-// Contact surface for a Prime Agent — its governance channels (Sky Forum
-// category, Discord URL) and emergency-response docs. Sourced from the
-// Pattern 22 governance_channel / emergency_response edges (doc → entity).
 export interface ContactChannel {
   platform: "forum" | "discord";
   category?: string;
@@ -61,7 +53,7 @@ export interface ContactChannel {
 }
 export interface ContactEmergency {
   scope: "ecosystem" | "agent_specific";
-  status: string; // "placeholder" (not yet written) | "specified"
+  status: string; // "placeholder" | "specified"
   docId: string;
 }
 export interface ActorContact {

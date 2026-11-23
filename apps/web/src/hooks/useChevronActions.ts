@@ -11,11 +11,9 @@ interface Params {
   expandedIds: Set<string>;
   setExpandedIds: SetExpandedIds;
   rollup: TreeRowData["rollup"];
-  /** Whether shift-click on a chevron acts on the whole subtree. */
   canCascade: boolean;
 }
 
-/** What a row's chevron and its rollup badge do when clicked. */
 export function useChevronActions({ bundle, expandedIds, setExpandedIds, rollup, canCascade }: Params) {
   const { revealChanges, cascadeLevels, collapseSubtree } = useTreeCascade(bundle, setExpandedIds, rollup);
 
@@ -26,14 +24,9 @@ export function useChevronActions({ bundle, expandedIds, setExpandedIds, rollup,
       track("reader_sidebar_toggle", {
         node_id: id,
         action: wasExpanded ? "collapse" : "expand",
-        // Shift is the bulk gesture in both directions: cascade open from
-        // closed, collapse the whole subtree from open.
         cascade: e.shiftKey,
       });
-      // Skipped in selected-only view — its rows are filtered to selected docs
-      // only, so following the full tree would touch nodes that render nothing
-      // there and surprise the user once they leave selected-only. Falls
-      // through to a plain one-level toggle.
+      // Not in selected-only view: cascading the full tree would open rows that render nothing there.
       if (e.shiftKey && canCascade) return wasExpanded ? collapseSubtree(id) : cascadeLevels(id);
       setExpandedIds((prev) => toggled(prev, id));
     },

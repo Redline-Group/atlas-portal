@@ -15,11 +15,9 @@ const COPY_PATTERN_STYLE: React.CSSProperties = {
 };
 
 export type DepthSectionProps = Omit<SwatchGridProps, "tokens"> & {
-  /** Stages a draft value for one token; "copy pattern" calls it once per repeated depth. */
   onSetValue: (name: string, value: string) => void;
 };
 
-/** The doc-tree depth ramp: its swatches plus the "copy pattern" shortcut. */
 export function DepthSection({ onSetValue, ...grid }: DepthSectionProps) {
   function copyPattern() {
     for (const [name, value] of depthPatternEntries(grid.effectiveValue)) onSetValue(name, value);

@@ -18,11 +18,9 @@ function uniqueById(nodes: ChainNode[]): ChainNode[] {
   return nodes.filter((n) => (seen.has(n.id) ? false : (seen.add(n.id), true)));
 }
 
-/** Role-edge lookups around one entity. Ends that are not known participants are dropped. */
+/** Ends that are not known participants are dropped. */
 interface RoleWalk {
-  /** The entities holding a `kinds` role over `id` (the edges' sources). */
   holders(id: string, kinds: ReadonlySet<string>): GraphEntity[];
-  /** The entities `id` holds a `kinds` role over (the edges' targets). */
   subjects(id: string, kinds: ReadonlySet<string>): GraphEntity[];
 }
 
@@ -36,12 +34,7 @@ function roleWalk(edges: readonly RelationEdge[], entityById: ReadonlyMap<string
   };
 }
 
-/**
- * The served agent → executor → facilitator / govops chain an actor sits on.
- * A served agent and an executor read it from their own edges; a facilitator
- * or govops org (and any other actor) reads it through the executors it holds
- * its role over, and stands alone in its own slot when it holds none.
- */
+/** A facilitator or govops org reads its chain through its executors, and stands alone in its slot when it has none. */
 export function buildActorChain(entity: GraphEntity, edges: readonly RelationEdge[], entityById: ReadonlyMap<string, GraphEntity>): ActorChain {
   const walk = roleWalk(edges, entityById);
   const holdersOf = (execs: GraphEntity[], kinds: ReadonlySet<string>) =>

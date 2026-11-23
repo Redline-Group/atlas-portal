@@ -20,7 +20,6 @@ const governanceEdge = (r: ActorRelation): Recommendation => ({
   entityLink: r.otherSlug ?? undefined,
 });
 
-/** What the actor page suggests looking at: gaps in the actor's active data and rewards, then its governance relationships. */
 export function buildRecommendations(
   entity: GraphEntity,
   adRows: ActiveDataRow[],

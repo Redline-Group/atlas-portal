@@ -17,11 +17,7 @@ interface Run {
   timer: Timer;
 }
 
-// One tick of the unfold: expand `frontier`, then queue the children that
-// continue it. `frontier` is a parameter this tick never reassigns, because
-// React can defer invoking a functional setState updater until after this
-// synchronous block finishes — the updater must close over a value that never
-// changes out from under it.
+// `frontier` is never reassigned: React may run the setState updater after this block returns.
 function unfold(run: Run, frontier: string[], level: number): void {
   run.setExpandedIds((prev) => addedAll(prev, frontier));
   const nextFrontier: string[] = [];
@@ -37,12 +33,7 @@ function unfold(run: Run, frontier: string[], level: number): void {
     : null;
 }
 
-// Staggered BFS unfold, one level per REVEAL_STEP_MS tick (not all at once)
-// so the cascade is legible — each level appears, lingers, then the next
-// unfolds. `follow` decides which children continue the frontier; `maxLevels`
-// caps how many ticks run (the first tick expands `rootId` itself, so
-// maxLevels = 4 means 4 ticks). Shared by the preview rollup reveal and the
-// sidebar chevron's shift-click cascade. `cancel` stops a run in flight.
+// Staggered BFS, one level per tick so the cascade is legible; the first tick expands `rootId` itself.
 function useStaggeredUnfold(bundle: AtlasBundle | null, setExpandedIds: SetExpandedIds) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
@@ -62,7 +53,6 @@ function useStaggeredUnfold(bundle: AtlasBundle | null, setExpandedIds: SetExpan
   return { cascade, cancel };
 }
 
-/** The bulk expansion gestures, each acting on the subtree under one row. */
 export function useTreeCascade(
   bundle: AtlasBundle | null,
   setExpandedIds: SetExpandedIds,
@@ -70,26 +60,17 @@ export function useTreeCascade(
 ) {
   const { cascade, cancel } = useStaggeredUnfold(bundle, setExpandedIds);
 
-  // Expand from `id` down through every node that has a changed descendant
-  // (rollup keys), revealing the changes without unfolding unrelated subtrees.
-  // Changed leaves become visible once their (rollup-key) parent is expanded.
   const revealChanges = useCallback(
     (id: string) => cascade(id, (cid) => rollup.has(cid), Infinity),
     [cascade, rollup],
   );
 
-  // Shift-click on a collapsed chevron: unfold the next few levels of the real
-  // tree, regardless of rollup membership. The cap is the third argument below.
   const cascadeLevels = useCallback(
     (id: string) => cascade(id, (cid) => !!bundle?.byParent.has(cid), CASCADE_LEVELS),
     [cascade, bundle],
   );
 
-  // Shift-click on an already-open chevron: the mirror image — collapse the row
-  // and every descendant under it in one step, so the branch you unfolded with
-  // one gesture folds back with the same one. Instant rather than staggered:
-  // there is nothing to read on the way down, and a staggered collapse would
-  // just make the row you are aiming at move.
+  // Instant, not staggered: a staggered collapse would move the row you are aiming at.
   const collapseSubtree = useCallback(
     (id: string) => {
       cancel();

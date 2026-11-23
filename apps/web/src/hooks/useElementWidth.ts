@@ -1,9 +1,6 @@
 import { useEffect, useState, type RefObject } from "react";
 
-/** Content width of `ref`'s element, `initial` until it is first measured.
- *  Updates at most once per frame, and only when the width moves by more than
- *  `tolerance` px, so a consumer that lays out against it does not re-render on
- *  every pixel of a drag. */
+/** Throttled to one update per frame and `tolerance` px so a drag does not re-render every pixel. */
 export function useElementWidth(ref: RefObject<HTMLElement | null>, initial: number, tolerance: number): number {
   const [width, setWidth] = useState(initial);
   useEffect(() => {
