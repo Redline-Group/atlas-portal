@@ -119,11 +119,20 @@ const PARAM_EXPANDERS: Record<string, Expander> = {
 // Keys are prefixed with the leaf title so sibling groups stay distinct
 // ("Inflow Rate Limits / maxAmount" vs "Outflow Rate Limits / maxAmount").
 // Under a RateLimitID title each value is a backticked hash and is unwrapped.
+// A list that ticks some keys and not others ("- ALM Proxy: `0x…`" beside
+// "- `RateLimits`: `0x…`") is still one list, so once a ticked key is found
+// its plain-keyed siblings are read too; a list with no ticked key is prose.
 const BULLET_KV_RE = /^\s*[-*]\s+`([^`\n]+)`\s*:\s*(.+?)\s*$/gm;
+const BULLET_ANY_KV_RE = /^\s*[-*]\s+(?:`([^`\n]+)`|([^`:\n]+?))\s*:\s*(.+?)\s*$/gm;
 function expandBulletList(content: string, outerTitle: string): Pairs | null {
   const out: Pairs = [];
   const value: Formatter = RATE_LIMIT_ID_RE.test(outerTitle) ? (v) => extractRateLimitId(v.trim()) : (v) => v.trim();
-  for (const m of content.matchAll(BULLET_KV_RE)) out.push([`${outerTitle} / ${m[1].trim()}`, value(m[2])]);
+  const ticked = [...content.matchAll(BULLET_KV_RE)].length > 0;
+  for (const m of ticked ? content.matchAll(BULLET_ANY_KV_RE) : []) {
+    // A plain key whose value is itself ticked pairs is a per-token line, read below.
+    if (m[2] && /^`[^`\n]+`\s*:/.test(m[3])) continue;
+    out.push([`${outerTitle} / ${(m[1] ?? m[2]).trim()}`, value(m[3])]);
+  }
   out.push(...expandPerToken(content, outerTitle));
   return out.length ? out : null;
 }

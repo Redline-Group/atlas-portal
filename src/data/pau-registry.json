@@ -265,6 +265,36 @@
           ]
         },
         {
+          "role": "facet",
+          "address": "0x74d139d6e730f29d62f2acc6a3b59df2f2d6d9a8",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "78e90576-2104-4331-ad42-f60a937a2a45"
+            }
+          ]
+        },
+        {
+          "role": "facet",
+          "address": "0xfb0b4ff6507d57a0ac7bd10b53c1f2de827f87c1",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "cf231b22-ce7f-4719-b592-6c539c63cb22"
+            }
+          ]
+        },
+        {
+          "role": "facet",
+          "address": "0xdef461199cad81c65aba3ab406743fc40c68c5b6",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "768c5e08-f749-41ac-b96a-a67bb87cd90d"
+            }
+          ]
+        },
+        {
           "role": "beamState",
           "address": "0x1a1879e66547f90bff87d45a5b0335950e019e02",
           "label": "BeamState",
@@ -2291,6 +2321,108 @@
             {
               "source": "onchain",
               "note": "hasRole(RELAYER) on the X Layer ForeignController; the X Layer docs list it as the freezer."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prime": "59d23e0e-dcf8-4fdb-937a-678023849cf6",
+      "primeName": "Test Halo",
+      "chain": "ethereum",
+      "kind": "diamond",
+      "members": [
+        {
+          "role": "nfatFacility",
+          "address": "0x02cb9629b0806b11202c59433ece4e664c521128",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "f34d512c-f157-487f-b6cc-7ee8a5f49764",
+              "note": "Verified NFATFacility; name() and symbol() match the atlas, and wards(Test Halo SubProxy) is 1."
+            }
+          ]
+        },
+        {
+          "role": "almProxy",
+          "address": "0xbee5c2e8436e9834e6890a528e5b294d93b2eec7",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "eeb6a5dd-b0a0-4b27-a3fc-f8d6de4d74af"
+            }
+          ]
+        },
+        {
+          "role": "controller",
+          "address": "0x37f628d95cec5ada038a1cca734573dbcb79d1cb",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "eeb6a5dd-b0a0-4b27-a3fc-f8d6de4d74af",
+              "note": "Controller.proxy(), rateLimits() and accessControls() point at this deployment's contracts; RateLimits had not granted it CONTROLLER when added (the facility is switched on by a later executive)."
+            }
+          ]
+        },
+        {
+          "role": "rateLimits",
+          "address": "0x372d6d3f411039b2341203eab3ccc89d799ac0ae",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "eeb6a5dd-b0a0-4b27-a3fc-f8d6de4d74af"
+            }
+          ]
+        },
+        {
+          "role": "accessControls",
+          "address": "0x241c83227a30d5c28ab8641f99b2708ffb8b11e7",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "eeb6a5dd-b0a0-4b27-a3fc-f8d6de4d74af"
+            }
+          ]
+        },
+        {
+          "role": "administeredAgent",
+          "address": "0x1bbfc98a7d11e007cfa4119f8014df42a4d55577",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "eeb6a5dd-b0a0-4b27-a3fc-f8d6de4d74af"
+            }
+          ]
+        },
+        {
+          "role": "relayer",
+          "address": "0xfc6c70f76143565989385ab6b7f5acfa351c04e5",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "cb38b73d-9ea1-4a51-b308-fabf4c7c7672",
+              "note": "Atlas claim; the AdministeredAgent did not list it when added (the facility is switched on by a later executive)."
+            }
+          ]
+        },
+        {
+          "role": "freezer",
+          "address": "0xac18fbca42ac8ce3a22a5b057c88a877aab38dfd",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "78cc09de-ce5b-4e4b-aac4-40339f777245",
+              "note": "Atlas claim; the AdministeredAgent did not list it when added (the facility is switched on by a later executive)."
+            }
+          ]
+        },
+        {
+          "role": "starGuard",
+          "address": "0x5dc7a3700dc0508f5e127fa23acd83cc2e1d6056",
+          "provenance": [
+            {
+              "source": "atlas",
+              "doc": "c86c090c-8982-45c1-9454-2dd36723b99c"
             }
           ]
         }

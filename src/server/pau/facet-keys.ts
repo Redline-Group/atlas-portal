@@ -37,6 +37,14 @@ export const FACET_KEYS: FacetKeyRule[] = [
   { facet: "AaveFacet", getter: /^getDepositRateLimitKey$/, via: "aToken", unit: { role: "underlyingAsset", via: "self" } },
   // AaveFacet.withdraw decreases by amountWithdrawn, the underlying balance gained.
   { facet: "AaveFacet", getter: /^getWithdrawRateLimitKey$/, via: "aToken", unit: { role: "aToken", via: "underlying" } },
+  // NFATPrimeFacet.subscribe(facility, amount, …) decreases by the gem that leaves the proxy.
+  { facet: "NFATPrimeFacet", getter: /^getSubscribeRateLimitKey$/, via: "facility", unit: { role: "gem", via: "self" } },
+  // NFATPrimeFacet.withdraw / collect key on the facility alone; their amounts are in its gem(), which the key does not carry.
+  { facet: "NFATPrimeFacet", getter: /^get(Withdraw|Collect)RateLimitKey$/, via: "facility" },
+  // NFATHaloFacet.issue(facility, to, …) keys on the facility and the account the NFAT goes to, and decreases by the gem received.
+  { facet: "NFATHaloFacet", getter: /^getIssueRateLimitKey$/, via: "facility" },
+  // NFATHaloFacet.repayPrincipal / repayInterest decrease by the gem that leaves the proxy.
+  { facet: "NFATHaloFacet", getter: /^getRepay(Principal|Interest)RateLimitKey$/, via: "facility", unit: { role: "gem", via: "self" } },
 ];
 
 /** The registry entry for a derivation's facet getter. */

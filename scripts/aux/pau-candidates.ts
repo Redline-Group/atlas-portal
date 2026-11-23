@@ -2,7 +2,8 @@
  * `pnpm pau:candidates [--rpc] [--draft]`: the PAU registry's candidates queue.
  *
  * Compares the curated registry (src/data/pau-registry.json) with what the
- * atlas lists in each Prime agent's PAU address sections, and writes
+ * atlas lists in each Prime agent's PAU address sections and each Halo agent's
+ * NFAT Facilities, and writes
  * .cache/pau-candidates.{json,md} for the pau-triage skill. It never edits the
  * registry.
  *
@@ -58,21 +59,23 @@ function loadInputs() {
   const docsFile = readJson<{ atlasCommit: string; nodes: Record<string, never> }>("public/docs.json");
   const graph = readJson<{ entities: { id: string; name: string; entity_type: string; subtype: string | null }[] }>("public/graph.json");
   const atlasAddrs = readJson<{ addresses: Record<string, { chain?: string }> }>("public/addresses.atlas.json").addresses;
-  const primes = new Map(graph.entities.filter((e) => e.entity_type === "agent" && e.subtype === "prime").map((e) => [e.id, e.name]));
+  const agents = (subtype: string) => new Map(graph.entities.filter((e) => e.entity_type === "agent" && e.subtype === subtype).map((e) => [e.id, e.name]));
+  const primes = agents("prime");
+  const halos = agents("halo");
   // An absent registry would make every observation "missing" and draft a
   // registry with every curated decision gone, so it is required like the rest.
   const registry = readJson<PauRegistry>(path.relative(ROOT, REGISTRY_PATH), "it is the curated registry; restore it from git");
-  return { docs: docsFile.nodes, atlasCommit: docsFile.atlasCommit, primes, atlasAddrs, registry };
+  return { docs: docsFile.nodes, atlasCommit: docsFile.atlasCommit, primes, halos, owners: new Map([...primes, ...halos]), atlasAddrs, registry };
 }
 
 type Inputs = ReturnType<typeof loadInputs>;
 
 /** The queue, the optional draft and, with --rpc, the wiring checks (against the draft when there is one). */
 async function buildResult(args: Set<string>, inputs: Inputs) {
-  const { docs, atlasCommit, primes, atlasAddrs, registry } = inputs;
-  const observations = discoverPau({ docs, primes, atlasChain: (a) => atlasAddrs[a]?.chain });
+  const { docs, atlasCommit, primes, halos, owners, atlasAddrs, registry } = inputs;
+  const observations = discoverPau({ docs, primes, halos, atlasChain: (a) => atlasAddrs[a]?.chain });
   const missing = missingFromRegistry(expandPrimeWide(observations, registry), registry);
-  const draft = args.has("--draft") ? draftRegistry(missing, primes, registry) : null;
+  const draft = args.has("--draft") ? draftRegistry(missing, owners, registry) : null;
   const draftErrors = draft ? validatePauRegistry(draft).map((e) => `draft: ${e}`) : [];
   const result: CandidatesResult = {
     atlasCommit,
@@ -89,7 +92,7 @@ async function buildResult(args: Set<string>, inputs: Inputs) {
 function writeOutputs(result: CandidatesResult, draft: PauRegistry | null, inputs: Inputs): void {
   fs.mkdirSync(at(".cache"), { recursive: true });
   fs.writeFileSync(at(".cache/pau-candidates.json"), JSON.stringify(result, null, 2) + "\n");
-  fs.writeFileSync(at(".cache/pau-candidates.md"), renderCandidates(result, inputs.docs, inputs.primes) + "\n");
+  fs.writeFileSync(at(".cache/pau-candidates.md"), renderCandidates(result, inputs.docs, inputs.owners) + "\n");
   if (draft) fs.writeFileSync(at(".cache/pau-registry.draft.json"), JSON.stringify(draft, null, 2) + "\n");
 }
 

@@ -35,6 +35,7 @@ import {
   extractEthAddresses,
   extractUrl,
 } from "./table-parser.mjs";
+import { APPROVED_LIST_RE } from "./graph-nfat-facilities.ts";
 
 const CURRENT_DELEGATES_UUID = "5f584db8-f8d8-4118-988c-b2bc3f68ceb7";
 const DERECOGNIZED_UUID = "e7aec672-ed19-4329-aaf7-736950be2eb7";
@@ -346,6 +347,8 @@ export function extractActiveData(allDocs, docById, entityMap, edges, addressesA
   for (const d of allDocs) {
     if (d.type !== "Active Data") continue;
     if (HANDLED_TABLE_UUIDS.has(d.id) || KNOWN_UNEXTRACTED_TABLES.has(d.id)) continue;
+    // Read by graph-nfat-facilities.ts, which marks each listed facility approved.
+    if (APPROVED_LIST_RE.test(d.title)) continue;
     const rows = parseMarkdownTable(d.content ?? "").filter((row) =>
       Object.values(row).some((v) => v && v.trim()),
     );
