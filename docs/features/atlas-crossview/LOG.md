@@ -376,3 +376,32 @@ PR: https://github.com/Redline-Group/atlas-portal/pull/194 (27 commits, base mai
   72 distinct docs, overlapping buckets by design) + `:::census` marker + tests +
   baseline; Dn1 stays a documented one-off because it reads relations.json and
   conceptsCensus.ts is docs-bundle-only.
+
+## 2026-11-23 — concepts.md reconciled with census drift (atlas `85d7bde`)
+
+concepts.md had not been touched since the concepts-census baseline of 2026-11-02;
+four hourly atlas bumps auto-accepted drift since then. Diffed that baseline against
+today's, census by census, and read the affected documents from `public/docs.json`.
+All changes are in-place drift notes; no earlier text was rewritten.
+
+- **Lifecycle 6 (Data Repository triad) is gone upstream.** next-gen-atlas#369
+  (`315676e`) removed all 279 "Initial Planning" / "Operational GovOps Review" /
+  "Artifact Edit Proposal" documents (93 each → 0). 102 "Data Repository" containers
+  remain, 64 with no child, 38 holding payment lists only. Notes added at Lifecycle 2,
+  Lifecycle 6, the Root Edit / Artifact Edit Proposal entry, the II.7 topic row and the
+  Part III distinction.
+- **Instruments 10**: transitionary-measures 22 → 6; next-gen-atlas#377 (`65b0883`)
+  removed the 16 Root Edit pipeline copies in the Prime artifacts. Six survivors listed.
+- **Registries 1**: "List Of" prefix 46 → 60; new live registry List Of Sky Core Halos
+  (`dc48d6fa`, next-gen-atlas#383), quoted from source.
+- StarGuard Max Delay ×6 → ×10.
+- No prose change needed for: empty-scaffolding (two Osero directories moved to
+  populated), numbered-step-docs (48 → 57, Spark allocation procedures),
+  prohibition-language (55 → 54), cross-scope-duplication (152 → 159; the three
+  hand-picked exemplars are still members). Their numbers render live.
+
+Open, not done here: the `title-templates` census still carries three buckets that
+read 0, and the Lifecycle 6 heading still names the triad. Whether to retire the
+concept or redefine it around the bare container is a call for the user. Halo Agents
+are noted under Registries 1 only; a concept entry of their own is not written.
+

@@ -130,7 +130,7 @@ Each concept group carries four fields:
 
 - **Definition** — per-primitive per-agent status+directory root.
 
-- **Detection signature** — title template. A representative sample of the exact-title families cited across this catalog (Primitive Hub Document, Global Activation Status, Hub Data Repository, Parameters, Rate Limits, the Data Repository triad, Omni Documents, the ICD title) is censused together:
+- **Detection signature** — title template. A representative sample of the exact-title families cited across this catalog (Primitive Hub Document, Global Activation Status, Hub Data Repository, Parameters, Rate Limits, the Data Repository triad, Omni Documents, the ICD title) is censused together. *(Atlas drift since 315676e: the three Data Repository triad titles now census at 0 — see the note on Lifecycle 6. Their buckets stay in the census so a return would show.)*
 
 :::census title-templates
 
@@ -167,6 +167,8 @@ Each concept group carries four fields:
 - **Definition** — per-instance record-keeping: Initial Planning → Operational GovOps Review → Artifact Edit Proposal.
 
 - **Detection signature** — exact title triple (×83 each). **Discovery: 83 "Artifact Edit Proposal" docs are per-instance edit-history stubs living INSIDE artifacts** — a distributed change-log, distinct from the Root Edit pipeline (agents' Instruments group covers the distinction).
+
+- **Atlas drift (2026-11-23 pass, atlas `85d7bde`) — the triad no longer exists.** [evidence level 1 · censused] The 2026-11-02 Atlas Edit Proposal (sky-ecosystem/next-gen-atlas#369, commit `315676e`) removed every "Initial Planning", "Operational GovOps Review" and "Artifact Edit Proposal" document: the `title-templates` census read 93 each at the baseline before that commit and reads 0 each now, and no document carries any of the three titles. The definition and discovery above describe the Atlas before that commit and are kept as the record. What remains of this concept is the container: 102 documents titled "Data Repository" (exemplar `f1490752-03fe-4e21-ae1f-68a1ec44dbcc`: *"The documents herein contain data relevant to the Single Instance of the Agent Creation Primitive."*). 64 of them have no child document; the other 38 hold payment records only (child titles: "Distribution Reward Payments" ×27, "Third Party Partner Payment Addresses And Transaction Records" ×13, "Integration Boost Payments" ×10, "Core Governance Reward Payments And Transaction Records" ×1). *Our reading, not Atlas text:* per-instance record-keeping in the Atlas is now the payment lists of Registries 1 and nothing else; the per-instance change-log is gone.
 
 **Lifecycle 7 · Omni Documents** [evidence level 2 · source-read]
 
@@ -557,7 +559,8 @@ breach definition, graduated response, terminal measure — different subject
   Advisor Review → Facilitator Review → Token Holder Vote → Artifact Update, with
   Routine/Non-Routine/Emergency protocol variants and edit restrictions.
 - **Artifact Edit Proposal (per-instance record, ×83)**: data-repo stub inside
-  every ICD (Lifecycle 6) — the distributed change-log.
+  every ICD (Lifecycle 6) — the distributed change-log. *(Atlas drift since
+  315676e: these stubs were all removed upstream; none remain. See Lifecycle 6.)*
 - **Atlas Edit Proposal (AEP, atlas-level)**: amendments to the core Atlas via the
   Atlas Edit Weekly/Monthly Cycle `14e99d92` /A.1.11.2 + `d2cbddd2` /A.1.12.2;
   mandatory template (A.1.12.2.3), Ratification Poll [evidence level 2 · source-read ✓ 2026-07-27] per
@@ -618,6 +621,17 @@ breach definition, graduated response, terminal measure — different subject
   parameter hub, 18+14 cites).
 All three are EXPIRY-implying — prime staleness-signal candidates.
 
+*(Atlas drift, 2026-11-23 pass, atlas `85d7bde`: the title family fell from 22
+documents to 6. The 2026-11-09 Atlas Edit Proposal — sky-ecosystem/next-gen-atlas#377,
+commit `65b0883` — removed the 16 copies that sat inside the Root Edit pipelines of
+the eight Prime artifacts, two per Prime. The six left are
+`19f5f5b9-be0d-4a91-a5aa-3888c1c9b7e8` /A.1.10.1.3.4 (audit standards),
+`4fce0fd5` /A.1.14.4.7 (Executor Agents), `56c255d4` /A.2.2.6.2.2.2.8.1.5 (Agent
+Termination), `d33ac81e` /A.3.2.2.4.5 (Senior Risk Capital), and one each in
+Spark's and Grove's artifacts, `6ecef2b2-42c7-4bea-80f0-1cb1cd4e735d` and
+`a65302b4-5222-48a9-b37f-282498acb4d6`. The three examples in the first bullet
+above date from the earlier pass and were not re-read against these six.)*
+
 :::census transitionary-measures
 
 **Instruments 11 · Incubation frameworks** [evidence level 3 · corroborated]
@@ -643,9 +657,12 @@ All three are EXPIRY-implying — prime staleness-signal candidates.
   the rulebook is ~12% of the corpus by doc count.
 - **Spell machinery** — StarGuard: per-agent spell-whitelisting/execution contract
   (22 docs, A.1.10.2.3.2.3 subtree + per-artifact "StarGuard Max Delay" ×6 across
-  A.1+A.6); Registered Spell Checklists registry (13 cites).
+  A.1+A.6 — ×10 at atlas `85d7bde`, 2026-11-23: one per Prime artifact, one in the
+  A.1 spell rules, and "Test Halo StarGuard Max Delay" under Sky Core Halos); Registered Spell Checklists registry (13 cites).
 - **Transitionary measures** — "Short-Term Transitionary Measures" title family
   inside artifacts + root-edit pipelines; implies expiry review (staleness signal).
+  *(Atlas drift since 65b0883: the root-edit-pipeline copies were removed upstream;
+  see the note under Instruments 10.)*
 
 ### Quantitative concepts
 
@@ -871,6 +888,8 @@ contract maturity trust.
 
 - **Relationships** — registries are where concepts MATERIALIZE as data — the payment lists are the terminal nodes of the Distribution Rewards concept chain.
 
+- **Atlas drift (2026-11-23 pass, atlas `85d7bde`)** — the "List Of" prefix now matches 60 documents, not the 46 in the signature above. The newest is an agent registry, a sub-family the list above does not have: **List Of Sky Core Halos** `dc48d6fa-6831-4c06-ab0e-e3bf42fc0553` /A.1.14.6.3, added by sky-ecosystem/next-gen-atlas#383 and bucketed "live" in the census below. [evidence level 2 · source-read] Its text: *"The documents herein list and specify each Sky Core Halo. Currently, the only Sky Core Halo is Test Halo."* The sibling definition `097be889-3e2c-463a-ac49-8fc79059253c` /A.1.14.6.1 says: *"A Sky Core Halo is a Halo Agent that is controlled directly by the Core Council rather than by a Prime Agent. Sky Core Halos have no Agent Artifact."* So this registry lists agents in the Governance Scope, outside the Agent Scope's "List Of Prime Agent Artifacts" where every other agent is listed. Its one entry (`59d23e0e` Test Halo) is an `agent` entity of subtype `halo` in the graph, which belongs with Actors 1's entity types.
+
 **Registries 1-liveness** — no descendants, no data table, and no bulleted entries marks
 a registry as an EMPTY shell rather than a LIVE one; the split typically
 includes ALL/most Distribution Reward Payment lists, most Integration Boost
@@ -1039,7 +1058,7 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
 - Allocation Systems → Economics 2
 - ALM & Rental → Economics 2
 - Annotations → Meta 5
-- Artifact Edit Proposals (per-instance) → Instruments 3/Lifecycle 6
+- Artifact Edit Proposals (per-instance; removed upstream, see Lifecycle 6) → Instruments 3/Lifecycle 6
 - Atlas Edit Proposals → Instruments 3
 - Budgets → Economics 6
 - Bridges/SkyLink → Economics 8
@@ -1116,7 +1135,8 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
   mutation rights.
 - *Artifact Edit Proposal (per-instance record, ×83) vs Root Edit (governance
   instrument)*: same words, different concepts — the former is a data-repo stub, the
-  latter a voted pipeline.
+  latter a voted pipeline. *(Atlas drift since 315676e: the per-instance stubs were
+  removed upstream, so only the Root Edit sense is left in the Atlas. See Lifecycle 6.)*
 
 **Distinctions from the deep dives** (merged):
 - *Accord vs Agreement vs Instrument vs Protocol*: accord = named bilateral doc,
