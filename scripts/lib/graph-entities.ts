@@ -1,10 +1,4 @@
-/**
- * Phase 1 of build-graph: entity extraction.
- *
- * Walks all atlas docs and extracts agents, facilitators, govops, delegates,
- * accord parties, primitive instances, and bootstrap entities. Returns a
- * context object consumed by graph-doc-edges and graph-entity-edges.
- */
+// Phase 1 of build-graph: entity extraction.
 
 import { slugify } from "./graph-patterns.mjs";
 import { attachPrimeRateLimitParams } from "./graph-prime-rate-limits.ts";
@@ -19,9 +13,7 @@ import { addAccordParties, resolveAccordMember } from "./graph-entities/accord-p
 import { addPrimitiveInstances, addPrimitives } from "./graph-entities/primitives.ts";
 import { addAgentLegalEntities } from "./graph-entities/legal-entities.ts";
 
-// Order is load-bearing: a step never replaces an entity an earlier step
-// registered under the same slug, so the earlier source names its type and
-// provenance.
+// Order is load-bearing: an earlier step's entity keeps its slug, type and provenance.
 const STEPS: ((ctx: EntityCtx) => void)[] = [
   addBootstrapEntities, // 1a
   addPrimeAgents, // 1b
@@ -44,9 +36,7 @@ const STEPS: ((ctx: EntityCtx) => void)[] = [
   addAgentLegalEntities, // 1p
 ];
 
-// The registry as its callers read it. build-graph.mjs, the entity-edge
-// patterns and the tests are untyped readers that parse `meta` without a null
-// check, so the returned map is loose here and strict inside Phase 1.
+// Untyped callers parse `meta` without a null check, so the returned map is loose.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type LooseEntityMap = Map<string, any>;
 

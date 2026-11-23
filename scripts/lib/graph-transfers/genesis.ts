@@ -1,5 +1,3 @@
-// Shape B: genesis token distribution narratives (docs titled "Minting Of
-// Tokens…" / "Transfer Of Tokens…" under agent artifacts).
 import { normalizeKey } from "../graph-patterns.mjs";
 import { agentArtifactDoc, type Doc, type Entity } from "../graph-records.ts";
 import { eventProse, resolveKnownSender, resolveParty, trailingProperNoun, type TransferCtx } from "./context.ts";
@@ -7,9 +5,7 @@ import { addDataGap, addTransfer } from "./edges.ts";
 
 export const GENESIS_TITLE_RE = /^(Minting|Transfer) Of Tokens/i;
 
-// "X transferred 6.5 billion SPK tokens from … to the Y." / "X will transfer
-// SPK tokens … to the Y." Amount group is optional (some planned transfers
-// name no figure yet).
+// Amount group is optional: some planned transfers name no figure yet.
 const GENESIS_TRANSFER_RE =
   /\b(.+?)\s+(transferred|will transfer)\s+(?:all of (?:the )?)?(?:([\d,.]+(?:\s+(?:billion|million|thousand))?)\s+)?([A-Z]{2,10})\s+tokens?\b[^.]*?\bto\s+(?:the\s+)?([^.,]+?)(?:,|\.|$)/i;
 const GENESIS_TRANSFER_GAP_RE =
@@ -17,8 +13,6 @@ const GENESIS_TRANSFER_GAP_RE =
 const GENESIS_MINT_RE =
   /The Genesis Supply was minted to an account owned by\s+(?:the\s+)?(.+?)\./i;
 
-// Mint event: the agent's token comes into existence in this account.
-// Sender = the agent whose artifact this doc sits in.
 function recordMint(ctx: TransferCtx, d: Doc, holderName: string): void {
   const agentDoc = agentArtifactDoc(d, ctx.docByDocNo);
   const agent = agentDoc ? ctx.nameIndex.get(normalizeKey(agentDoc.title)) : null;
@@ -28,8 +22,6 @@ function recordMint(ctx: TransferCtx, d: Doc, holderName: string): void {
   ctx.stats.genesis++;
 }
 
-// A planned transfer that names its source but defers amount and recipient.
-// Returns false when the doc does not read as one.
 function recordGap(ctx: TransferCtx, d: Doc, content: string): boolean {
   const gap = content.match(GENESIS_TRANSFER_GAP_RE);
   const source = gap ? resolveParty(ctx, gap[1], d) : null;
@@ -40,13 +32,11 @@ function recordGap(ctx: TransferCtx, d: Doc, content: string): boolean {
   return true;
 }
 
-// Resolve-only first, so lead-in words never mint a junk entity; only the
-// trailing proper noun (or, without one, the raw capture) is created.
+// Resolve-only first, so lead-in words never mint a junk entity.
 function genesisSender(ctx: TransferCtx, fromRaw: string, d: Doc): Entity | null {
   return resolveKnownSender(ctx, fromRaw, d) ?? resolveParty(ctx, trailingProperNoun(fromRaw) || fromRaw, d);
 }
 
-// Past tense is a completed transfer; "will transfer" is a planned one.
 function recordTransfer(ctx: TransferCtx, d: Doc, t: RegExpMatchArray): void {
   const from = genesisSender(ctx, t[1].trim(), d);
   const to = resolveParty(ctx, t[5], d);

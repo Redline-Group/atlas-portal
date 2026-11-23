@@ -1,6 +1,3 @@
-// Shapes A and C: grants. A grant doc records a disbursement (funds_transfer);
-// a Grant Authorization doc in an accord authorizes payments without recording
-// them (funds_authorization).
 import { isGrantDoc, bulletField } from "../graph-patterns.mjs";
 import { ETH_ADDR_SRC } from "../address-chains.mjs";
 import type { Doc } from "../graph-records.ts";
@@ -12,16 +9,11 @@ const RECIPIENT_RE = bulletField("Recipient", String.raw`(.+?)`);
 const RECIPIENT_ADDR_RE = bulletField("Recipient Address", `\`?(${ETH_ADDR_SRC})\`?`);
 const TX_HASH_RE = bulletField("Transaction Hash", "`?(0x[0-9a-fA-F]{64})`?");
 
-// "per month" and the "for a N month period" tail are both optional: a
-// single-month or one-time grant drops the recurrence entirely ("a cash grant
-// of 800,000 USDS to the Grove Foundation from Grove's Prime Treasury for July
-// 2026", "a one-time cash grant of 700,000 USDS to the Skybase Foundation
-// from Skybase's SubProxy"). Source can be a Treasury or a SubProxy.
+// "per month" and the "for a N month period" tail are optional: one-time grants omit both.
 const AUTH_GRANT_RE =
   /grant of\s+([\d,.]+)\s+([A-Z]{2,10})\s+(?:(per month)\s+)?to (?:the )?(.+?) from (.+?)(?:['’]s)? (?:Prime\s+)?(?:Treasury|SubProxy)\b(?:[\s\S]*?for a\s+\w+\s*\((\d+)\)\s*month period)?/i;
 const AUTH_BEGIN_RE = /beginning on ([^.]+?)\./i;
 
-// "- USDS amount: 50,000,000" lines, keyed by token.
 function grantAmounts(content: string): Record<string, string> {
   const amounts: Record<string, string> = {};
   AMOUNT_LINE_RE.lastIndex = 0;
@@ -30,7 +22,6 @@ function grantAmounts(content: string): Record<string, string> {
 }
 
 function recordGrant(ctx: TransferCtx, d: Doc, content: string, recipientName: string): void {
-  // A Recipient line always carries a name, and a named party resolves or is created.
   const recipient = resolveParty(ctx, recipientName, d)!;
   const amounts = grantAmounts(content);
   if (!Object.keys(amounts).length) ctx.warn(`grant doc without amounts: ${d.doc_no}`);
@@ -46,7 +37,6 @@ function recordGrant(ctx: TransferCtx, d: Doc, content: string, recipientName: s
 }
 
 // --- Shape A: A.2.13 grant docs ---
-// Sender is Sky (treasury disbursement approved by governance) → sky-core.
 export function extractGrants(ctx: TransferCtx): void {
   for (const d of ctx.allDocs.filter(isGrantDoc)) {
     const content = d.content ?? "";
@@ -65,7 +55,6 @@ function recordAuthorization(ctx: TransferCtx, d: Doc, content: string, m: RegEx
     periodic,
     amounts: { [periodic ? `${m[2]} per month` : m[2]]: m[1] },
     period_months: m[6] ? Number(m[6]) : undefined,
-    // "Spark Foundation Grant Authorization: December 2025" → "December 2025"
     period: d.title.match(/Grant Authorization:?\s*(.+)$/i)?.[1]?.trim(),
     begin_date: content.match(AUTH_BEGIN_RE)?.[1]?.trim(),
   });

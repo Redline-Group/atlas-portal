@@ -1,41 +1,15 @@
-// Phase 1 step 1p: Agent Foundation and Development Company (dedicated
-// legal-entity docs). Runs last, after every other entity source (accord
-// parties, ERG, grants) has had first claim on a name. This step only fills a
-// gap or corrects a type, never overwrites an existing entity's provenance.
-// Every Agent artifact subtree (A.6.1.1.N.*) carries a "Foundation" doc
-// ("<Name> is the Prime Foundation associated with <Agent>.") and usually a
-// sibling "Development Company" doc ("<Name> is a|the ... company that
-// provides services to <Foundation|Agent>."). The org-prose edge extractor
-// (Phase 2w, prime_foundation_of / provides_services_to) reads these same
-// sentences but only creates EDGES: it requires both named entities to
-// already exist, and several agents' foundations and dev companies are named
-// nowhere else (no accord party list, no ERG membership). Anchoring on the
-// doc's own title (rather than scanning all content) keeps this precise.
+// Phase 2w only links these orgs; several are named nowhere else, so this step creates them.
 import { slugify, PRIME_FOUNDATION_RE, PROVIDES_SERVICES_RE, cleanOrgProseName } from "../graph-patterns.mjs";
 import { inAgentArtifact, patchEntityMeta, type Doc } from "../graph-records.ts";
 import { addNamedEntity, type EntityCtx } from "./context.ts";
 
-// Both title-anchored docs use ONE sentence each (Pattern 20's two shapes):
-// a single `exec` per doc, not `matchAll`, since a second "Foundation"-shaped
-// sentence later in the doc would not be this doc's own subject.
+// One `exec` per doc, not `matchAll`: a later matching sentence is not this doc's subject.
 const LEGAL_ENTITY_DOCS = [
   { title: "Foundation", re: PRIME_FOUNDATION_RE, entityType: "foundation", source: "agent_foundation_doc" },
   { title: "Development Company", re: PROVIDES_SERVICES_RE, entityType: "development_company", source: "agent_dev_co_doc" },
 ];
 
-// A dedicated legal-entity doc is the atlas's own canonical statement of
-// what this entity is — more reliable than the "Foundation" name-suffix
-// heuristic that classifies accord party members (1m), which mislabels a
-// foundation branded without the word "Foundation" itself (e.g. Obex's
-// "Rubicon", a development_company by that heuristic until corrected here).
-// Correction is intentionally narrow: only an entity the accord heuristic
-// could plausibly have produced (development_company or ecosystem_actor)
-// gets retyped. Anything else — an agent, composite_party, delegate_org,
-// etc. whose slug happens to collide with this doc's name — is left alone
-// and warned about, since a silent retype there would be a real graph
-// corruption, not a fix. The entity's original defining_doc_id/meta (e.g.
-// the accord party doc that first named it) is left untouched; the
-// correction is recorded alongside it, not over it.
+// Only types the accord name heuristic (1m) can mislabel get corrected; retyping anything else would corrupt the graph.
 const RETYPABLE = new Set(["development_company", "ecosystem_actor"]);
 
 function registerLegalEntity(ctx: EntityCtx, name: string, entityType: string, doc: Doc, source: string): void {

@@ -1,7 +1,3 @@
-// The one object every Active Data table extractor receives, and the writers
-// they share. Extractors mutate entityMap / edges / addressesAtlas /
-// addressesRaw in place (the convention for phase modules, see
-// graph-multisigs.mjs).
 import { slugify, makeEntity } from "../graph-patterns.mjs";
 import { parseMarkdownTable, type TableRow } from "../table-parser.ts";
 import type { Doc, Edge, Entity } from "../graph-records.ts";
@@ -16,7 +12,6 @@ export interface ActiveDataStats {
   breaches: number;
   driftWarnings: number;
 }
-/** Address artifact entries, keyed by address. This phase only adds entries. */
 export type AddressBook = Record<string, object | undefined>;
 
 export interface ActiveDataCtx {
@@ -26,16 +21,15 @@ export interface ActiveDataCtx {
   edges: Edge[];
   addressesAtlas: AddressBook;
   addressesRaw: AddressBook;
-  /** address (no chain suffix) → entity id, from the has_address edges earlier phases emitted */
+  /** address (no chain suffix) → entity id */
   addrToEntityId: Map<string, string>;
   skyGovernance: Entity | undefined;
   stats: ActiveDataStats;
 }
 
-/** One extracted table: the Active Data doc that holds it and what its rows become. */
 export interface ActiveDataTable {
   uuid: string;
-  /** Names the table in the warning for an absent doc. A table without one is skipped silently. */
+  /** Without it, an absent doc is skipped silently. */
   warnAs?: string;
   extract(ctx: ActiveDataCtx, doc: Doc): void;
 }
@@ -70,7 +64,7 @@ export function createContext(
 
 export const tableRows = (doc: Doc): TableRow[] => parseMarkdownTable(doc.content ?? "");
 
-/** Registers a row's entity under its name's slug. A row replaces an entity already holding that slug. */
+/** Replaces any entity already holding the slug. */
 export function addTableEntity(ctx: ActiveDataCtx, name: string, entityType: string, isActive: number, tableUuid: string, meta: object): Entity {
   const entity = makeEntity(slugify(name), name, entityType, { defining_doc_id: tableUuid, is_active: isActive, meta });
   ctx.entityMap.set(entity.slug, entity);
@@ -82,12 +76,10 @@ export function addTableEdge(ctx: ActiveDataCtx, fromId: string, toId: string, t
   ctx.edges.push({ fromId, fromType: "entity", toId, toType, edgeType, meta: meta ? JSON.stringify(meta) : undefined });
 }
 
-/** entity → the table doc that lists it. */
 export function listIn(ctx: ActiveDataCtx, entity: Entity, tableUuid: string, meta: object | null = null): void {
   addTableEdge(ctx, entity.id, tableUuid, "doc", "listed_in", meta);
 }
 
-/** entity → an ethereum address a row states, registering the address when the artifacts lack it. */
 export function linkAddress(ctx: ActiveDataCtx, entity: Entity, addr: string, role: { address: string; edge: string }, label: string): void {
   if (!ctx.addressesAtlas[addr]) {
     const atlas = { chain: "ethereum", chains: ["ethereum"], roles: [role.address], entityLabel: label };

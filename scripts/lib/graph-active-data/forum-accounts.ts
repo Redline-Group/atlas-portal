@@ -1,9 +1,4 @@
 // --- Table 4: Current Authorized Forum Accounts ---
-// Columns: Entity Name | Role | Entity Handle | Handles of Authorized
-// Representatives. Row entities get meta.forum_handle; each rep handle
-// becomes an ecosystem_actor (st="individual") with an authorized_rep_for
-// edge to the org. Reps that resolve to existing orgs (e.g. "SoterLabs" for
-// Amatsu) reuse that entity rather than creating an individual.
 import { normalizeKey, buildNameIndex, resolveAliasedEntity } from "../graph-patterns.mjs";
 import type { TableRow } from "../table-parser.ts";
 import { entityMeta, patchEntityMeta, type Doc, type Entity } from "../graph-records.ts";
@@ -13,10 +8,7 @@ const FORUM_ACCOUNTS_UUID = "b71564fd-22e0-4c69-99d1-5b23fc1fa329"; // A.2.7.1.1
 const NA = "N/A";
 type NameIndex = Map<string, Entity>;
 
-// Record a short-name alias ("Redline") on an entity resolved by its full
-// name ("Redline Facilitation Group") via resolveAliasedEntity's prefix
-// fallback, so entity search (entity-resolve.ts scoreEntity) can still find
-// it on the short form once the two rows have merged into one entity.
+// Keeps the short form searchable once it has merged into the full-name entity.
 function addAlias(entity: Entity, alias: string): void {
   const aliases = new Set((entityMeta(entity).aliases as string[] | undefined) ?? []);
   aliases.add(alias);
@@ -27,8 +19,6 @@ function registerInIndex(nameIndex: NameIndex, e: Entity): void {
   for (const key of [normalizeKey(e.name), normalizeKey(e.slug)]) if (key && !nameIndex.has(key)) nameIndex.set(key, e);
 }
 
-// The entity a table name refers to: an existing one (by name, slug or
-// unambiguous short name), else a new ecosystem_actor carrying `meta`.
 function resolveListed(ctx: ActiveDataCtx, nameIndex: NameIndex, name: string, meta: object, subtype?: string): Entity {
   const known = resolveAliasedEntity(nameIndex, ctx.entityMap, name);
   if (!known) {
@@ -42,7 +32,6 @@ function resolveListed(ctx: ActiveDataCtx, nameIndex: NameIndex, name: string, m
   return known;
 }
 
-// The row's own entity, with its forum handle and role on meta and on the listed_in edge.
 function listAccount(ctx: ActiveDataCtx, nameIndex: NameIndex, row: TableRow, name: string): Entity {
   const entity = resolveListed(ctx, nameIndex, name, { source: "forum_accounts_table" });
   const handle = row["Entity Handle"]?.trim();
@@ -59,7 +48,6 @@ function listAccount(ctx: ActiveDataCtx, nameIndex: NameIndex, row: TableRow, na
   return entity;
 }
 
-// Rep handles of one row, with parenthesized asides dropped.
 function repHandles(row: TableRow): string[] {
   const raw = (row["Handles of Authorized Representatives"] ?? "").replace(/\s*\([^)]*\)\s*/g, " ").trim();
   if (!raw || raw === NA) return [];

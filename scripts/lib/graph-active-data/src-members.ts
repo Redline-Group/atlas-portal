@@ -1,6 +1,4 @@
 // --- Table 3: SRC Membership Registry ---
-// Each row becomes an src_member entity; a verified governance address
-// becomes a has_address edge.
 import { slugify } from "../graph-patterns.mjs";
 import { extractEthAddresses } from "../table-parser.ts";
 import type { Doc } from "../graph-records.ts";

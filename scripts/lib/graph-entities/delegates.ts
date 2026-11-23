@@ -1,5 +1,3 @@
-// Phase 1 steps 1h to 1j: delegate orgs, from address labels and from the
-// Aligned and Ranked Delegate registry docs.
 import { pushTo } from "../../../src/lib/collections.ts";
 import { slugify, ALIGNED_DELEGATES_UUID, RANKED_DELEGATE_UUIDS } from "../graph-patterns.mjs";
 import { parseNameList, extractListItems } from "../graph-content-extract.ts";
@@ -15,15 +13,13 @@ export function addAddressLabelDelegates(ctx: EntityCtx): void {
   for (const [addr, info] of Object.entries(ctx.addressesRaw)) {
     if (!info.label) continue;
     const slug = slugify(info.label);
-    // `addr` is an addressesRaw key (already normalized), but call it explicitly
-    // so this doesn't lowercase case-sensitive Solana base58 into a split node id.
+    // Explicit normalize: lowercasing here would split case-sensitive Solana base58 ids.
     pushTo(ctx.labelToAddresses, slug, { addr: normalizeAddress(addr), chain: info.chain ?? "ethereum" });
     if (!info.roles?.includes("delegate")) continue;
     ctx.addEntity(slug, info.label, "delegate_org", null, null, { source: "addresses_json_delegate", address: addr });
   }
 }
 
-// Prefer explicit list items, fall back to prose "Aligned Delegates are X, Y, Z."
 function alignedDelegateNames(doc: Doc): string[] {
   const items = extractListItems(doc.content);
   if (items.length) return items;
@@ -32,9 +28,7 @@ function alignedDelegateNames(doc: Doc): string[] {
 }
 
 // --- 1i. Aligned Delegates (Pattern 10) ---
-// The doc is a registry table (parsed in build-graph Phase 2.7, which also
-// emits aligned_delegate_for edges from the rows); the list and prose readers
-// here are fallbacks for an atlas that states it as a plain list.
+// The doc is a table (read in Phase 2.7); these readers are a fallback for a plain list.
 export function addAlignedDelegates(ctx: EntityCtx): void {
   const doc = ctx.docById.get(ALIGNED_DELEGATES_UUID);
   if (!doc) {
@@ -46,7 +40,6 @@ export function addAlignedDelegates(ctx: EntityCtx): void {
 }
 
 // --- 1j. Ranked Delegates (Pattern 10) ---
-// Levels 1 and 2 have current-members docs; level 3 does not (verified in atlas).
 export function addRankedDelegates(ctx: EntityCtx): void {
   for (const [level, uuid] of RANKED_DELEGATE_UUIDS) {
     const d = ctx.docById.get(uuid);

@@ -1,6 +1,3 @@
-// The three edges Pattern 18 emits. Each writer owns its edge's meta contract:
-// what a record states, and for the two "silent" edges which fields a completed
-// record would carry.
 import type { Doc, Entity } from "../graph-records.ts";
 import type { TransferCtx } from "./context.ts";
 
@@ -12,14 +9,12 @@ function pushFundsEdge(ctx: TransferCtx, edgeType: string, from: { id: string; t
   });
 }
 
-/** A completed or planned token movement: sender entity → recipient entity. */
 export function addTransfer(ctx: TransferCtx, from: Entity, to: Entity, sourceDoc: Doc, meta: object): void {
   pushFundsEdge(ctx, "funds_transfer", { id: from.id, type: "entity" }, to, sourceDoc, meta);
 }
 
 const PAYMENT_RECORD_FIELDS = ["payee", "payment address", "amount paid", "transaction hash", "transaction date"];
 
-/** A payment the atlas authorizes without recording transfer rows: payer entity → payee entity. */
 export function addAuthorization(ctx: TransferCtx, from: Entity, to: Entity, sourceDoc: Doc, meta: { periodic?: boolean } & Record<string, unknown>): void {
   const { periodic = true, ...rest } = meta;
   pushFundsEdge(ctx, "funds_authorization", { id: from.id, type: "entity" }, to, sourceDoc, {
@@ -36,7 +31,7 @@ export function addAuthorization(ctx: TransferCtx, from: Entity, to: Entity, sou
   });
 }
 
-/** A planned movement whose amount or recipient the atlas defers: source doc → the entity it names. */
+/** From the source doc, not an entity: the atlas defers who sends what. */
 export function addDataGap(ctx: TransferCtx, sourceDoc: Doc, relatedEntity: Entity, meta: object): void {
   pushFundsEdge(ctx, "funds_data_gap", { id: sourceDoc.id, type: "doc" }, relatedEntity, sourceDoc, {
     ...meta,

@@ -1,14 +1,8 @@
-// Shape E: executed budget transfers (funds_transfer between existing entities).
 import { eventProse, resolveKnownSender, resolveParty, type TransferCtx } from "./context.ts";
 import { addTransfer } from "./edges.ts";
 import { GENESIS_TITLE_RE } from "./genesis.ts";
 
-// No title gate: the required "{amount} {TOKEN} from … to …" core makes the
-// sentence intrinsically monetary, and endpoints resolve-only (never created),
-// so prose like "the Spell Crafter has transferred the spell" can't produce an
-// edge.
-//   "Sky has transferred 2 million USDS from the Sky Ecosystem Liquidity
-//    Bootstrapping Budget to Spark to provide liquidity to market makers."
+// No title gate: the amount/token core plus resolve-only endpoints keep non-monetary prose out.
 const BUDGET_TRANSFER_RE =
   /\b(.+?)\s+has transferred\s+([\d,.]+(?:\s+(?:billion|million|thousand))?)\s+([A-Z]{2,10})\s+from\s+(?:the\s+)?([^.]+?)\s+to\s+([A-Z][\w-]*(?:\s+[A-Z][\w-]*)*)/;
 

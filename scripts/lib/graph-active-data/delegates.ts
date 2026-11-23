@@ -1,5 +1,3 @@
-// The three delegate registries: Current Aligned Delegates, Derecognized
-// Delegates and the Aligned Delegate Breach Registry.
 import { slugify, normalizeKey, buildNameIndex } from "../graph-patterns.mjs";
 import { extractEthAddresses, extractUrl, type TableRow } from "../table-parser.ts";
 import { patchEntityMeta, type Doc, type Entity } from "../graph-records.ts";
@@ -28,9 +26,7 @@ function readDelegateRow(row: TableRow): DelegateRow | null {
   return { name, eaAddr, contractAddr, forumUrl: extractUrl(row["Forum Post"] ?? "") };
 }
 
-// Enrich: add forum_url to meta, update has_address edge roles.
-// Also upgrade ecosystem_actor → delegate_org (e.g. entities that appear
-// in the ERG list get created as ecosystem_actor first; delegate table wins).
+// ERG-list entities arrive as ecosystem_actor; the delegate table wins.
 function enrichDelegate(ctx: ActiveDataCtx, entity: Entity, row: DelegateRow): Entity {
   if (entity.entity_type === "ecosystem_actor") entity.entity_type = "delegate_org";
   patchEntityMeta(entity, row.forumUrl ? { forum_url: row.forumUrl } : {});
@@ -44,7 +40,6 @@ function enrichDelegate(ctx: ActiveDataCtx, entity: Entity, row: DelegateRow): E
   return entity;
 }
 
-// New entity — register addresses, emit has_address edges
 function createDelegate(ctx: ActiveDataCtx, row: DelegateRow): Entity {
   const meta = { source: "active_data_table", forum_url: row.forumUrl };
   const ent = addTableEntity(ctx, row.name, "delegate_org", 1, CURRENT_DELEGATES_UUID, meta);
@@ -55,8 +50,6 @@ function createDelegate(ctx: ActiveDataCtx, row: DelegateRow): Entity {
 }
 
 // --- Table 1: Current Aligned Delegates ---
-// A delegate bootstrapped from the chainlog is found by its EA address and
-// enriched; one absent from the chainlog is created.
 function extractCurrentDelegates(ctx: ActiveDataCtx, doc: Doc): void {
   for (const tableRow of tableRows(doc)) {
     const row = readDelegateRow(tableRow);
@@ -65,8 +58,7 @@ function extractCurrentDelegates(ctx: ActiveDataCtx, doc: Doc): void {
     const known = ownerId ? ctx.entityById.get(ownerId) : undefined;
     const entity = known ? enrichDelegate(ctx, known, row) : createDelegate(ctx, row);
     listIn(ctx, entity, CURRENT_DELEGATES_UUID);
-    // Inclusion in this registry IS Aligned Delegate recognition (Pattern 10),
-    // so the role edge is emitted from the row.
+    // Inclusion in this registry IS Aligned Delegate recognition (Pattern 10).
     if (!ctx.skyGovernance) continue;
     ctx.edges.push({
       fromId: entity.id, fromType: "entity", toId: ctx.skyGovernance.id, toType: "entity",
@@ -91,8 +83,6 @@ function extractDerecognized(ctx: ActiveDataCtx, doc: Doc): void {
 }
 
 // --- Table 5: Aligned Delegate Breach Registry ---
-// Columns: Date | Identity | Breach Tier | Reasoning Post. Rows are dated
-// governance events attached to existing delegate entities via listed_in.
 function extractBreaches(ctx: ActiveDataCtx, doc: Doc): void {
   const nameIndex = buildNameIndex(ctx.entityMap);
   for (const row of tableRows(doc)) {
