@@ -37,6 +37,18 @@ describe("introducedAddresses", () => {
     expect(introducedAddresses(["1"], snap([]), head)).toEqual([]);
   });
 
+  test("a changed document that keeps its address does not make it new", () => {
+    const base = snap([doc("1", `Old wording, \`${SPARK}\`.`)]);
+    const head = snap([doc("1", `New wording, \`${SPARK}\`.`)]);
+    expect(introducedAddresses(["1"], base, head)).toEqual([]);
+  });
+
+  test("base and live as one snapshot, and candidates of both kinds", () => {
+    const base = snap([doc("2", `The program is \`${SOL}\`.`)]);
+    const head = snap([doc("1", `Pays \`${FRESH}\` through \`${SOL}\`.`)]);
+    expect(introducedAddresses(["1"], base, head, base)).toEqual([FRESH]);
+  });
+
   test("a base58 address keeps its case", () => {
     const head = snap([doc("1", `The program is \`${SOL}\`.`)]);
     expect(introducedAddresses(["1"], snap([]), head)).toEqual([SOL]);

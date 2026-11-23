@@ -7,7 +7,7 @@ import "@testing-library/jest-dom/vitest";
 import { AddressTooltipPreview } from "./AddressTooltipPreview";
 import { AddressTooltipSafe } from "./AddressTooltipSafe";
 
-const diff = vi.hoisted(() => ({ newAddresses: undefined as Set<string> | undefined }));
+const diff = vi.hoisted(() => ({ introducedAddresses: undefined as Set<string> | undefined }));
 vi.mock("../lib/previewDiff", () => ({ usePreviewDiff: () => diff }));
 
 const SPARK = "0x492aae70e59551768baf3c7159d3f951b6ed76fe";
@@ -15,12 +15,12 @@ const OWNERS = ["0x7577ebdccc61abe17e09d3cedea554d6ca0673ff", "0xf1aec1e61abc9f6
 
 afterEach(() => {
   cleanup();
-  diff.newAddresses = undefined;
+  diff.introducedAddresses = undefined;
 });
 
 describe("AddressTooltipPreview", () => {
   it("marks an address the preview brings in, matching a checksummed spelling", () => {
-    diff.newAddresses = new Set([SPARK]);
+    diff.introducedAddresses = new Set([SPARK]);
     render(<dl><AddressTooltipPreview address="0x492aae70E59551768BAF3c7159d3f951B6ed76Fe" /></dl>);
     expect(screen.getByText("+ new in this Edit")).toBeInTheDocument();
   });
@@ -28,7 +28,7 @@ describe("AddressTooltipPreview", () => {
   it("says nothing for an address the diff base names, or outside a preview", () => {
     const { container, rerender } = render(<dl><AddressTooltipPreview address={SPARK} /></dl>);
     expect(container.querySelector("[data-preview-new]")).toBeNull();
-    diff.newAddresses = new Set(["0xabcdef0000000000000000000000000000000001"]);
+    diff.introducedAddresses = new Set(["0xabcdef0000000000000000000000000000000001"]);
     rerender(<dl><AddressTooltipPreview address={SPARK} /></dl>);
     expect(container.querySelector("[data-preview-new]")).toBeNull();
   });

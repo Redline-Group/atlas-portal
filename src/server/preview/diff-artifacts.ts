@@ -51,10 +51,9 @@ export interface PreviewDiffJson {
   reusedSlot: Record<string, { title: string; movedTo?: string }>;
   identitySwap: Record<string, IdentitySwap>;
   formerUuid: Record<string, FormerUuid>;
-  /** On-chain addresses the branch brings in: named by a listed doc and by no
-   *  doc on the base or live main (diff-addresses.ts). Absent on bundles built
-   *  before it was recorded. */
-  newAddresses?: string[];
+  /** On-chain addresses the branch brings in (diff-addresses.ts). Absent on
+   *  bundles built before it was recorded. */
+  introducedAddresses?: string[];
 }
 
 export interface DiffArtifacts {
@@ -147,7 +146,7 @@ export function computeDiffArtifacts(base: Snapshot, head: Snapshot, live?: Snap
     formerUuid,
     ...(alreadyOnMain ? { alreadyOnMain } : {}),
     ...(live ? { mainAlsoChanged: mainAlsoChanged([...added, ...changed, ...removed], base, live) } : {}),
-    newAddresses: introducedAddresses([...added, ...changed], base, head, live),
+    introducedAddresses: introducedAddresses([...added, ...changed], base, head, live),
   };
   return { diff, before: beforeEntries(changed, base, head), removed: removedDocs(removed, base, head) };
 }
