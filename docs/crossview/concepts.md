@@ -168,7 +168,7 @@ Each concept group carries four fields:
 
 - **Detection signature** — exact title triple (×83 each). **Discovery: 83 "Artifact Edit Proposal" docs are per-instance edit-history stubs living INSIDE artifacts** — a distributed change-log, distinct from the Root Edit pipeline (agents' Instruments group covers the distinction).
 
-- **Atlas drift (2026-11-23 pass, atlas `85d7bde`) — the triad no longer exists.** [evidence level 1 · censused] The 2026-11-02 Atlas Edit Proposal (sky-ecosystem/next-gen-atlas#369, commit `315676e`) removed every "Initial Planning", "Operational GovOps Review" and "Artifact Edit Proposal" document: the `title-templates` census read 93 each at the baseline before that commit and reads 0 each now, and no document carries any of the three titles. The definition and discovery above describe the Atlas before that commit and are kept as the record. What remains of this concept is the container: 102 documents titled "Data Repository" (exemplar `f1490752-03fe-4e21-ae1f-68a1ec44dbcc`: *"The documents herein contain data relevant to the Single Instance of the Agent Creation Primitive."*). 64 of them have no child document; the other 38 hold payment records only (child titles: "Distribution Reward Payments" ×27, "Third Party Partner Payment Addresses And Transaction Records" ×13, "Integration Boost Payments" ×10, "Core Governance Reward Payments And Transaction Records" ×1). *Our reading, not Atlas text:* per-instance record-keeping in the Atlas is now the payment lists of Registries 1 and nothing else; the per-instance change-log is gone.
+- **Atlas drift (2026-11-23 pass, atlas `85d7bde`) — the triad no longer exists.** [evidence level 1 · censused] The 2026-11-02 Atlas Edit Proposal (sky-ecosystem/next-gen-atlas#369, commit `315676e`) removed every "Initial Planning", "Operational GovOps Review" and "Artifact Edit Proposal" document: the `title-templates` census read 93 each at the baseline before that commit and reads 0 each now, and no document carries any of the three titles. All 279 were one-sentence stubs with no children: each read *"The materials associated with initial planning of the Invocation of this Instance are contained herein."* or its Operational GovOps Review / Artifact Edit Proposal counterpart, so no recorded material was lost. The same commit rewrote the invocation process that was meant to fill them: in the Distribution Reward and Integration Boost specifications the Prime Agent no longer creates an `Initial Planning Document`; the text at `85d7bde` reads *"The Prime Agent drafts its request to Invoke a Distribution Reward Instance"* (`4d5482ad-7944-4073-8fbe-b9dbcd1a27a3` /A.2.2.9.1.2.3.1.3). Operational GovOps no longer writes an `Operational GovOps Review Document`; it *"gives the Prime Agent its feedback on the request"* (`9c4653fa-6afe-4567-9e85-54c0a84b9311` /A.2.2.9.1.2.3.2.3). The sentence *"The following inputs must be submitted into the Primitive using the Powerhouse interface."* was deleted from that second document. (The stub sentence and the Powerhouse sentence are quoted from the parent of `315676e`; they are no longer in the Atlas.) The definition and discovery above describe the Atlas before that commit and are kept as the record. What remains of this concept is the container: 102 documents titled "Data Repository" (exemplar `f1490752-03fe-4e21-ae1f-68a1ec44dbcc`: *"The documents herein contain data relevant to the Single Instance of the Agent Creation Primitive."*). 64 of them have no child document; the other 38 hold payment records only (child titles: "Distribution Reward Payments" ×27, "Third Party Partner Payment Addresses And Transaction Records" ×13, "Integration Boost Payments" ×10, "Core Governance Reward Payments And Transaction Records" ×1). *Our reading, not Atlas text:* per-instance record-keeping in the Atlas is now the payment lists of Registries 1 and nothing else; the per-instance change-log is gone.
 
 **Lifecycle 7 · Omni Documents** [evidence level 2 · source-read]
 
@@ -854,6 +854,27 @@ contract maturity trust.
 
 - **Relationships** — agents' economic-flows findings merge here.
 
+**Actors 4 · Halo Agents** [evidence level 2 · source-read] — read from source at atlas `85d7bde`, 2026-11-23.
+
+- **Definition** — the third Agent sub-type, beside Prime and Executor. Halo Agent `38cdad10-b80d-4b80-af94-79768fcc1818` /A.0.1.1.43: *"Halo Agents are Agents that wrap assets, such as real-world assets and business infrastructure, and provide a standardized interface through which Prime Agents can invest in those assets. Halo Agents do not access the Sky Primitives directly. Halo Agents will be further specified in a future iteration of the Atlas."* The Atlas describes two placements:
+  - **Halo inside a Prime.** Same document: *"The Agent Artifact of a Halo Agent is located inside the Agent Artifact of a Prime Agent."* No such artifact exists yet (gap: zero members).
+  - **Sky Core Halo.** Definition Of Sky Core Halos `097be889-3e2c-463a-ac49-8fc79059253c` /A.1.14.6.1: *"A Sky Core Halo is a Halo Agent that is controlled directly by the Core Council rather than by a Prime Agent. Sky Core Halos have no Agent Artifact."* Each is specified in List Of Sky Core Halos `dc48d6fa-6831-4c06-ab0e-e3bf42fc0553` /A.1.14.6.3.
+
+- **Detection signature** — two mechanical handles, both for Sky Core Halos only:
+  - *Structure:* a child of the document titled "List Of Sky Core Halos" that states its contracts in children titled `<Halo> SubProxy Account` / `<Halo> StarGuard Contract`, with `<Halo> StarGuard Max Delay` beneath the latter. `scripts/lib/graph-halos.ts` turns each into an `agent` entity of subtype `halo`.
+  - *Edges:* `operational_executor_agent_for` into a halo entity, and that entity's `has_address` edges (roles `subproxy`, `starguard`).
+  - A Halo inside a Prime's artifact has no signature yet; the word "Halo" in a title or body is the only lead. 17 documents carry it (11 in titles, 6 in body text only).
+
+- **Members / Spread** — one member: **Test Halo** `59d23e0e-dcf8-4fdb-937a-678023849cf6` /A.1.14.6.3.1 — *"Test Halo is used to test new Agent architecture and operations, and to prove the related on-chain architecture in production before wider use."* It states a SubProxy Account (`9e0b9059`), a StarGuard Contract (`c86c090c`) and a StarGuard `maxDelay` of *"seven (7) days"* (`ca45b70f`). The 17 mentioning documents sit in A.0 (2: the Agent and Halo Agent definitions), A.1 (12: the Sky Core Halos section `7a90e53d-3115-4bd0-a354-6c0aac682eeb` /A.1.14.6 and its 8 descendants, plus the two artifact rules below) and A.6 (3). The A.6 three name Halos without defining any: Grove's transitionary measure `a65302b4-5222-48a9-b37f-282498acb4d6` exempts the *"onboarding of Laniakea Halo class assets, once that framework is live"*; Obex's introduction `e395a323-3c53-4154-a7e6-d54c363f56f2` speaks of *"development and deployment of Prime and Halo Agents"*; Pattern's `b137d591-a3a2-482a-a18e-d4ff447964cf` says it *"will support new Halo projects"*.
+
+- **Relationships**
+  - *Lifecycle 1 (Primitive) — the exception.* Agent Artifact Primitives `a132233a-8ec0-44d5-b93a-3cff6ca49ad6` /A.1.14.2.4: *"All Agent Artifacts, except the Agent Artifacts of Halo Agents, contain a set of configured Primitive Instances"*. A Halo is an agent outside the primitive machine: no hubs, instances or invocations.
+  - *Agent Scope — the exception.* Agent Artifacts and the Agent Scope `178d80c7-832e-4b0c-b2f1-79b718f11e78` /A.1.14.1.4: *"As an exception, the documents of Sky Core Halos are located in"* the list document. A Sky Core Halo is the one kind of agent specified in the Governance Scope.
+  - *Actors 1 (role system).* Operational Executor Agent For Sky Core Halos `690b47e7-a688-47d2-ac3f-6fd17528efd5` /A.1.14.6.2.2: *"Sky Core Halos are operated by Operational Executor Agent Ozone."* This is the only role wiring a Halo has; it has no Facilitator or GovOps assignment of its own.
+  - *Spell machinery (StarGuard).* Spells For Sky Core Halos `69928d95-cfb3-4251-96a8-2e3737f7c61c` /A.1.14.6.2.1: *"Spell content for a Sky Core Halo follows the Prime Spell Process …, except that a Core Spell Team crafts the spell content."*
+  - *Registries 1.* The list document is the registry; see the drift note there.
+  - *Our reading, not Atlas text:* the concept is mostly promise. One test member, a definition that defers to *"a future iteration of the Atlas"*, and three Prime artifacts that already speak of Halos as planned business. It belongs with the spec'd-but-unrealized set in Part III until a Halo that wraps real assets appears.
+
 ### Duties & responsibilities
 
 *[evidence level 1 · censused] — duty_for/RP-edge counts are script-censused (see the accuracy correction on the relations.json point below).*
@@ -888,7 +909,7 @@ contract maturity trust.
 
 - **Relationships** — registries are where concepts MATERIALIZE as data — the payment lists are the terminal nodes of the Distribution Rewards concept chain.
 
-- **Atlas drift (2026-11-23 pass, atlas `85d7bde`)** — the "List Of" prefix now matches 60 documents, not the 46 in the signature above. The newest is an agent registry, a sub-family the list above does not have: **List Of Sky Core Halos** `dc48d6fa-6831-4c06-ab0e-e3bf42fc0553` /A.1.14.6.3, added by sky-ecosystem/next-gen-atlas#383 and bucketed "live" in the census below. [evidence level 2 · source-read] Its text: *"The documents herein list and specify each Sky Core Halo. Currently, the only Sky Core Halo is Test Halo."* The sibling definition `097be889-3e2c-463a-ac49-8fc79059253c` /A.1.14.6.1 says: *"A Sky Core Halo is a Halo Agent that is controlled directly by the Core Council rather than by a Prime Agent. Sky Core Halos have no Agent Artifact."* So this registry lists agents in the Governance Scope, outside the Agent Scope's "List Of Prime Agent Artifacts" where every other agent is listed. Its one entry (`59d23e0e` Test Halo) is an `agent` entity of subtype `halo` in the graph, which belongs with Actors 1's entity types.
+- **Atlas drift (2026-11-23 pass, atlas `85d7bde`)** — the "List Of" prefix now matches 60 documents, not the 46 in the signature above. The newest is an agent registry, a sub-family the list above does not have: **List Of Sky Core Halos** `dc48d6fa-6831-4c06-ab0e-e3bf42fc0553` /A.1.14.6.3, added by sky-ecosystem/next-gen-atlas#383 and bucketed "live" in the census below. [evidence level 2 · source-read] Its text: *"The documents herein list and specify each Sky Core Halo. Currently, the only Sky Core Halo is Test Halo."* The sibling definition `097be889-3e2c-463a-ac49-8fc79059253c` /A.1.14.6.1 says: *"A Sky Core Halo is a Halo Agent that is controlled directly by the Core Council rather than by a Prime Agent. Sky Core Halos have no Agent Artifact."* So this registry lists agents in the Governance Scope, outside the Agent Scope's "List Of Prime Agent Artifacts" where every other agent is listed. Its one entry (`59d23e0e` Test Halo) is an `agent` entity of subtype `halo` in the graph, which belongs with Actors 1's entity types. The concept itself is Actors 4.
 
 **Registries 1-liveness** — no descendants, no data table, and no bulleted entries marks
 a registry as an EMPTY shell rather than a LIVE one; the split typically
@@ -1081,6 +1102,7 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
 - Glossary → Meta 2
 - Governance votes → Instruments 4
 - Grants → Economics 7
+- Halo Agents → Actors 4
 - Hubs (primitive) → Lifecycle 2
 - ICDs/Instances → Lifecycle 4
 - Incubation → Instruments 11
@@ -1110,6 +1132,7 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
 - Root Edits → Instruments 3
 - RRC coverage → Quantities 5
 - Scenarios → Meta 7
+- Sky Core Halos → Actors 4/Registries 1
 - Smart Burn Engine → Economics 4
 - Spells/StarGuard → Instruments 5
 - Staking → Economics 3/Economics 4
@@ -1172,6 +1195,8 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
    unspecified), Purpose System funding (article exists, machinery thin).
 6. Executor Agents overall: "not yet operational" per definition — 10-doc
    artifacts vs primes' hundreds.
+7. Halo Agents (Actors 4): defined, with one test member (Test Halo) and no Halo
+   inside any Prime's artifact.
 
 **Open questions for the next pass**:
 - ~~The 854 duty_for edges live only in the DB graph~~ RESOLVED: they ship in

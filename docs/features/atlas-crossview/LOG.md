@@ -405,3 +405,14 @@ read 0, and the Lifecycle 6 heading still names the triad. Whether to retire the
 concept or redefine it around the bare container is a call for the user. Halo Agents
 are noted under Registries 1 only; a concept entry of their own is not written.
 
+- **Actors 4 · Halo Agents added** (user decision: Halo Agents are a concept of
+  their own). Source-read entry: definition from `38cdad10` and `097be889`, one member
+  (Test Halo `59d23e0e`), the two "exception" relationships (no primitives, not in the
+  Agent Scope), the Ozone executor rule and the spell rule. Topic index rows added;
+  listed as item 7 of the spec'd-but-unrealized set. Not censused: with one member a
+  standing census would add nothing the graph-halos warning does not already give.
+- **Lifecycle 6 note extended** with what the removal consisted of: all 279 documents
+  were one-sentence stubs, and #369 also rewrote the Distribution Reward and
+  Integration Boost invocation process so the planning and review documents are no
+  longer Atlas documents. Retire-or-redefine is still open with the user.
+
