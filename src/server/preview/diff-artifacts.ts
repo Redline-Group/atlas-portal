@@ -28,6 +28,7 @@ import type { BeforeEntry, RemovedDoc } from "../../lib/previewPatch.ts";
 import { detectIdentitySwaps, type IdentitySwap, type FormerUuid } from "./identity.ts";
 import { diffSides, findRenumberedOnly } from "./renumber-only.ts";
 import { removedDocs } from "./removed-docs.ts";
+import { introducedAddresses } from "./diff-addresses.ts";
 
 export interface PreviewDiffJson {
   added: string[];
@@ -50,6 +51,9 @@ export interface PreviewDiffJson {
   reusedSlot: Record<string, { title: string; movedTo?: string }>;
   identitySwap: Record<string, IdentitySwap>;
   formerUuid: Record<string, FormerUuid>;
+  /** On-chain addresses the branch brings in (diff-addresses.ts). Absent on
+   *  bundles built before it was recorded. */
+  introducedAddresses?: string[];
 }
 
 export interface DiffArtifacts {
@@ -142,6 +146,7 @@ export function computeDiffArtifacts(base: Snapshot, head: Snapshot, live?: Snap
     formerUuid,
     ...(alreadyOnMain ? { alreadyOnMain } : {}),
     ...(live ? { mainAlsoChanged: mainAlsoChanged([...added, ...changed, ...removed], base, live) } : {}),
+    introducedAddresses: introducedAddresses([...added, ...changed], base, head, live),
   };
   return { diff, before: beforeEntries(changed, base, head), removed: removedDocs(removed, base, head) };
 }

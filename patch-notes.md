@@ -36,6 +36,7 @@
 ## 2026-11-23
 
 - Added Halo Agents to the Atlas CrossView concept catalog and updated it for documents the Atlas removed this month.
+- Improved address handling in previews: hover cards show multisig signers and mark new addresses.
 
 ## 2026-11-19
 

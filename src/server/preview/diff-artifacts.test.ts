@@ -35,6 +35,14 @@ describe("computeDiffArtifacts: what counts as a change", () => {
     expect(removed).toEqual([]);
   });
 
+  test("lists the addresses a listed doc brings in, and not one the base names", () => {
+    const known = "0x492aae70e59551768baf3c7159d3f951b6ed76fe";
+    const fresh = "0xabcdef0000000000000000000000000000000001";
+    const base = snap([doc(ID2, "A.2", `Known \`${known}\`.`)]);
+    const head = snap([doc(ID1, "A.1", `Known \`${known}\`, fresh \`${fresh}\`.`)]);
+    expect(computeDiffArtifacts(base, head).diff.introducedAddresses).toEqual([fresh]);
+  });
+
   test("an edit main made after the fork is not the branch reverting it", () => {
     const base = snap([doc(ID1, "A.1", "fork-point text")]);
     const live = snap([doc(ID1, "A.1", "main's later text")]);

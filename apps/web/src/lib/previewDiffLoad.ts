@@ -42,6 +42,7 @@ function diffFromDoc(d: Record<string, unknown>, activeBase: ActiveBase | null):
     reusedSlot: reusedSlotOf(d.reusedSlot),
     identitySwap: (d.identitySwap as PreviewDiff["identitySwap"]) ?? {},
     formerUuid: (d.formerUuid as PreviewDiff["formerUuid"]) ?? {},
+    introducedAddresses: d.introducedAddresses ? ids(d.introducedAddresses) : undefined,
     activeBase,
   };
 }
