@@ -19,7 +19,6 @@
   "overrides": [
     { "files": ["**/*.tsx"], "rules": { "max-lines-per-function": ["error", { "max": 75, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/admin/ColorPickerModal.tsx"], "rules": { "max-lines-per-function": ["error", { "max": 124, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["apps/web/src/admin/PalettePage.tsx"], "rules": { "max-lines": ["error", { "max": 211, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 195, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/components/Tooltip.tsx"], "rules": { "max-lines-per-function": ["error", { "max": 149, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/components/atlas/AtlasReader.tsx"], "rules": { "max-lines": ["error", { "max": 431, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 385, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/components/atlas/CollapsibleNode.tsx"], "rules": { "max-lines": ["error", { "max": 362, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 320, "skipBlankLines": true, "skipComments": true }] } },
@@ -33,7 +32,6 @@
     { "files": ["apps/web/src/components/tree/TreeRow.tsx"], "rules": { "max-lines": ["error", { "max": 205, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 144, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/components/tree/TreeSidebar.tsx"], "rules": { "max-lines": ["error", { "max": 365, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 313, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/hooks/useTreeKeyboard.ts"], "rules": { "max-lines-per-function": ["error", { "max": 74, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["apps/web/src/lib/actorIndex.ts"], "rules": { "max-lines": ["error", { "max": 337, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 212, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/lib/primitiveStats.ts"], "rules": { "max-lines-per-function": ["error", { "max": 107, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/lib/rehypeEthAddresses.ts"], "rules": { "max-lines-per-function": ["error", { "max": 80, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["apps/web/src/lib/settlementSankey.ts"], "rules": { "max-lines-per-function": ["error", { "max": 74, "skipBlankLines": true, "skipComments": true }] } },

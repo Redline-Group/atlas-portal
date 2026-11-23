@@ -1,3 +1,5 @@
+import { groupBy } from "@/lib/collections";
+
 export type PaletteGroup =
   | "surface"
   | "brand"
@@ -118,4 +120,9 @@ export const PALETTE_TOKENS: readonly PaletteToken[] = [
 
 export const TOKEN_BY_NAME: ReadonlyMap<string, PaletteToken> = new Map(
   PALETTE_TOKENS.map((t) => [t.name, t]),
+);
+
+export const TOKENS_BY_GROUP: ReadonlyMap<PaletteGroup, readonly PaletteToken[]> = groupBy(
+  PALETTE_TOKENS,
+  (t) => t.group,
 );
