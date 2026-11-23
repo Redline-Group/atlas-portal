@@ -13,7 +13,7 @@ export function AddressTooltipPreview({ address }: { address: string }) {
   if (!newAddresses?.has(keyOf(address))) return null;
   return (
     <TipRow label="preview">
-      <span className="text-tan" data-preview-new>+ new in this preview</span>
+      <span className="text-tan" data-preview-new>+ new in this Edit</span>
     </TipRow>
   );
 }
