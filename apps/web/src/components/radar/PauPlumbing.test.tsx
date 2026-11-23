@@ -38,7 +38,7 @@ describe("PauPlumbing", () => {
   });
   it("draws the NFAT Facility's money cycle and its facts only on a deployment that runs one", () => {
     const contract = (role: string, extra: object = {}) => ({ role, address: `0x${role}`, events: 0, historyComplete: true, ...extra });
-    const facility = { gem: "0xdc03", recipient: "0x0000000000000000000000000000000000000000", stopped: false, operator: false, name: "Pilot Test Allocation", symbol: "$PTA" };
+    const facility = { gem: "0xdc03", gemSymbol: "USDS", recipient: "0x0000000000000000000000000000000000000000", stopped: false, operator: false, name: "Pilot Test Allocation", symbol: "$PTA" };
     const snap = { deployment: "d", prime: "h", primeName: "Test Halo", chain: "ethereum", kind: "diamond", fetchedAt: "2026-11-23T00:00:00Z", contracts: [contract("almProxy"), contract("nfatFacility", { facility })] };
     const { container } = render(<PauNfatFacility snap={snap as never} anchor={anchor} />);
     for (const n of NFAT_PLUMBING.nodes) expect(container.querySelector(`[data-node="${n.id}"]`)).toHaveTextContent(n.name);

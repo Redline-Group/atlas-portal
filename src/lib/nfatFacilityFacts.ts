@@ -30,6 +30,7 @@ export function nfatFacilityFacts(snap: PauSnapshot): FacilityFact[] | null {
   const f = snap.contracts.find((c) => c.role === "nfatFacility")?.facility;
   if (!f) return null;
   return [
+    { label: "asset", value: f.gem ? f.gemSymbol ?? f.gem : UNREAD, why: `gem(): the asset subscriptions, principal and repayments move in${f.gem ? ` (${f.gem})` : ""}` },
     { label: "NFAT", value: f.name ? `${f.name}${f.symbol ? ` (${f.symbol})` : ""}` : UNREAD, why: "name() and symbol() of the NFAT Facility Contract" },
     { label: "principal goes to", ...recipient(snap, f.recipient), why: "recipient(): where issue() sends the principal it claims" },
     { label: "ALM proxy", value: yesNo(f.operator, "may issue NFATs", "may not issue NFATs yet"), warn: f.operator === false, why: "buds(ALM proxy): issue() is open only to the facility's operators" },

@@ -38,7 +38,7 @@ describe("nfatFacilityFacts", () => {
     deployment: "d", prime: "h", primeName: "Test Halo", chain: "ethereum", kind: "diamond",
     contracts: [
       { role: "almProxy", address: "0xBEE5", events: 0, historyComplete: true },
-      { role: "nfatFacility", address: "0x02cb", events: 0, historyComplete: true, facility: { gem: "0xdc03", name: "Pilot Test Allocation", symbol: "$PTA", recipient: null, stopped: null, operator: null, ...f } },
+      { role: "nfatFacility", address: "0x02cb", events: 0, historyComplete: true, facility: { gem: "0xdc03", gemSymbol: "USDS", name: "Pilot Test Allocation", symbol: "$PTA", recipient: null, stopped: null, operator: null, ...f } },
     ],
   });
   const fact = (s: PauSnapshot, label: string) => nfatFacilityFacts(s)!.find((x) => x.label === label)!;
@@ -51,6 +51,11 @@ describe("nfatFacilityFacts", () => {
   it("names the deployment's own proxy as the recipient, and flags any other", () => {
     expect(fact(snap({ recipient: "0xbee5" }), "principal goes to")).toEqual(expect.objectContaining({ value: "this PAU's ALM proxy" }));
     expect(fact(snap({ recipient: "0xabc" }), "principal goes to")).toMatchObject({ value: "0xabc", warn: true });
+  });
+  it("names the asset by its symbol, with its address behind it", () => {
+    expect(fact(snap({}), "asset")).toMatchObject({ value: "USDS", why: expect.stringContaining("0xdc03") });
+    expect(fact(snap({ gemSymbol: null }), "asset").value).toBe("0xdc03");
+    expect(fact(snap({ gem: null, gemSymbol: null }), "asset").value).toBe("not read");
   });
   it("never reads a failed call as false", () => {
     const s = snap({});

@@ -1,4 +1,5 @@
-// An NFAT Facility Contract's own state, read live: the asset it takes, where
+// An NFAT Facility Contract's own state, read live: the asset it takes (and
+// that asset's symbol, in a second read once the gem is known), where
 // issued principal goes, whether it is stopped, and whether the deployment's
 // ALM proxy is one of its operators (the only accounts that may issue). It has
 // no admin events in the catalogue, so its history is never "unread".
@@ -15,8 +16,11 @@ export async function facilityContract(read: ChainReader, d: PauDeployment, m: P
   const call = (functionName: ChainCall["functionName"], args: readonly unknown[] = []): ChainCall => ({ address: m.address, functionName, args });
   const calls = [call("gem"), call("recipient"), call("stopped"), call("name"), call("symbol"), ...(proxy ? [call("buds", [proxy])] : [])];
   const [gem, recipient, stopped, name, symbol, bud] = await read(d.chain, calls);
+  const asset = address(gem);
+  const [gemSymbol] = asset ? await read(d.chain, [{ address: asset, functionName: "symbol", args: [] }]) : [null];
   const facility = {
-    gem: address(gem),
+    gem: asset,
+    gemSymbol: text(gemSymbol),
     recipient: address(recipient),
     stopped: typeof stopped === "boolean" ? stopped : null,
     operator: typeof bud === "bigint" ? bud === 1n : null,

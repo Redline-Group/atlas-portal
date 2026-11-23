@@ -37,6 +37,8 @@ export interface HaloFacilitiesMeta {
 export interface NfatFacilityState {
   /** The asset it takes subscriptions and repayments in (`gem()`). */
   gem: string | null;
+  /** That asset's own `symbol()`; null when the gem or its symbol was not read. */
+  gemSymbol: string | null;
   /** Where principal goes when an NFAT is issued (`recipient()`); the zero address until it is set. */
   recipient: string | null;
   /** Whether a freezer has stopped subscriptions, issuance, repayments and collection (`stopped()`). */

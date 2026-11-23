@@ -8,16 +8,16 @@ import type { DerivedKey, LiveRateLimit, PauSnapshot } from "../../lib/pau.ts";
 import type { ChainCall } from "./snapshot.ts";
 import { withUnits } from "./units.ts";
 
-const [VAULT, USDC, OFT, NATIVE_OFT, ATOKEN, BROKEN] = ["1", "2", "3", "4", "5", "6"].map((c) => "0x" + c.repeat(40));
-const TOKEN_OF: Record<string, string> = { [`asset:${VAULT}`]: USDC, [`token:${OFT}`]: USDC, [`UNDERLYING_ASSET_ADDRESS:${ATOKEN}`]: USDC };
-const DECIMALS: Record<string, number> = { [USDC]: 6, [NATIVE_OFT]: 18, [ATOKEN]: 6 };
-const SYMBOL: Record<string, string> = { [USDC]: "USDC", [ATOKEN]: "aEthUSDC" };
+const [VAULT, USDC, OFT, NATIVE_OFT, ATOKEN, BROKEN, FACILITY, USDS, PRIME_PROXY] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((c) => "0x" + c.repeat(40));
+const TOKEN_OF: Record<string, string> = { [`asset:${VAULT}`]: USDC, [`token:${OFT}`]: USDC, [`UNDERLYING_ASSET_ADDRESS:${ATOKEN}`]: USDC, [`gem:${FACILITY}`]: USDS };
+const DECIMALS: Record<string, number> = { [USDC]: 6, [NATIVE_OFT]: 18, [ATOKEN]: 6, [USDS]: 18 };
+const SYMBOL: Record<string, string> = { [USDC]: "USDC", [ATOKEN]: "aEthUSDC", [USDS]: "USDS" };
 
 const seen: ChainCall[] = [];
 const read = async (_chain: string, calls: ChainCall[]) => {
   seen.push(...calls);
   return calls.map((c) => {
-    if (c.functionName === "asset" || c.functionName === "token" || c.functionName === "UNDERLYING_ASSET_ADDRESS") return TOKEN_OF[`${c.functionName}:${c.address}`]?.toUpperCase().replace("0X", "0x") ?? null;
+    if (c.functionName === "asset" || c.functionName === "token" || c.functionName === "UNDERLYING_ASSET_ADDRESS" || c.functionName === "gem") return TOKEN_OF[`${c.functionName}:${c.address}`]?.toUpperCase().replace("0X", "0x") ?? null;
     if (c.functionName === "decimals") return DECIMALS[c.address] ?? null;
     return SYMBOL[c.address] ?? null;
   });
@@ -81,6 +81,18 @@ describe("withUnits", async () => {
       null,
       null,
     ]);
+  });
+  it("counts every NFAT key in the facility's gem, read from the facility when the key does not carry it", async () => {
+    const f = (facet: string, getter: string, roles: string[]) => ({ facet, getter, roles });
+    const diamond = await withUnits({ ...snap, kind: "diamond", contracts: [{ role: "rateLimits", address: "0xrl", events: 0, historyComplete: true, rateLimits: [
+      lim("n-issue", "LIMIT_NFAT_HALO_ISSUE", [FACILITY, PRIME_PROXY], f("NFATHaloFacet", "getIssueRateLimitKey", ["facility", "to"])),
+      lim("n-repay", "LIMIT_NFAT_HALO_REPAY_INTEREST", [USDS, FACILITY], f("NFATHaloFacet", "getRepayInterestRateLimitKey", ["gem", "facility"])),
+      lim("n-sub", "LIMIT_NFAT_PRIME_SUBSCRIBE", [USDS, FACILITY], f("NFATPrimeFacet", "getSubscribeRateLimitKey", ["gem", "facility"])),
+      lim("n-collect", "LIMIT_NFAT_PRIME_COLLECT", [FACILITY], f("NFATPrimeFacet", "getCollectRateLimitKey", ["facility"])),
+      lim("n-withdraw", "LIMIT_NFAT_PRIME_WITHDRAW", [FACILITY], f("NFATPrimeFacet", "getWithdrawRateLimitKey", ["facility"])),
+    ] }] }, read);
+    const usds = { decimals: 18, symbol: "USDS", token: USDS, source: "token" as const };
+    expect(diamond.contracts[0].rateLimits!.map((r) => r.unit ?? null)).toEqual([usds, usds, usds, usds, usds]);
   });
   it("keeps the asset a monolithic Aave key's aToken wraps, and only for an Aave key", () => {
     expect(unit("k-aave")).toEqual({ decimals: 6, symbol: "aEthUSDC", token: ATOKEN, underlying: USDC, source: "token" });
