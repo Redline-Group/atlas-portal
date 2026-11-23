@@ -382,7 +382,8 @@ PR: https://github.com/Redline-Group/atlas-portal/pull/194 (27 commits, base mai
 concepts.md had not been touched since the concepts-census baseline of 2026-11-02;
 four hourly atlas bumps auto-accepted drift since then. Diffed that baseline against
 today's, census by census, and read the affected documents from `public/docs.json`.
-All changes are in-place drift notes; no earlier text was rewritten.
+In this first pass all changes were in-place drift notes. (The Lifecycle 6 redefinition
+further down rewrote that unit's definition and kept the old one as History.)
 
 - **Lifecycle 6 (Data Repository triad) is gone upstream.** next-gen-atlas#369
   (`315676e`) removed all 279 "Initial Planning" / "Operational GovOps Review" /
@@ -400,7 +401,8 @@ All changes are in-place drift notes; no earlier text was rewritten.
   prohibition-language (55 → 54), cross-scope-duplication (152 → 159; the three
   hand-picked exemplars are still members). Their numbers render live.
 
-Open, not done here: the `title-templates` census still carries three buckets that
+Open after the first pass (both settled by the user later the same day, see the
+bullets below): the `title-templates` census still carries three buckets that
 read 0, and the Lifecycle 6 heading still names the triad. Whether to retire the
 concept or redefine it around the bare container is a call for the user. Halo Agents
 are noted under Registries 1 only; a concept entry of their own is not written.
@@ -423,4 +425,9 @@ are noted under Registries 1 only; a concept entry of their own is not written.
   `Data Repository` bucket, so the redefined unit stays censused. Baseline regenerated
   with `pnpm census:concepts --update`; the only change is that census (875 → 977
   members: three zero buckets out, 102 Data Repository members in).
-
+- **Review fixes**: Lifecycle 6 Relationships now gives the measured parent split (97
+  under an ICD, 5 elsewhere in Spark) and no longer says every used repository is
+  empty — 4 of the 13 partner payment-address documents state an address. Sky Core
+  Halos section has 9 descendants, not 8. The Registries note names both Agent Scope
+  lists. The "no Facilitator or GovOps" line under Actors 4 is labelled as a graph
+  observation.
