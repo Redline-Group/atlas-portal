@@ -70,6 +70,19 @@ describe("NFAT Facilities", () => {
     warn.mockRestore();
   });
 
+  it("reads a facility listed straight under the section, with no status", () => {
+    const flat = docs.filter((d) => !["active", "net"].includes(d.id)).map((d) => (d.id.startsWith("8c02") || d.doc_no.startsWith(`${F}.`) ? { ...d, doc_no: d.doc_no.replace(F, "A.1.14.6.3.1.3.9") } : d));
+    const [f] = nfatFacilities(flat[0], buildChildrenIndex(flat));
+    expect(f).toMatchObject({ id: FACILITY, status: null, network: null });
+    expect(Object.keys(f.contract)).toEqual(["NFAT Facility Contract Address"]);
+  });
+
+  it("takes approved facilities from the specification column, not a linked Halo Agent", () => {
+    const list = docs.at(-1)!;
+    const linked = { ...list, content: list.content.replace("| Test Halo |", "| [Test Halo](59d23e0e-dcf8-4fdb-937a-678023849cf6) |") };
+    expect([...approvedNfatFacilities([linked])]).toEqual([FACILITY]);
+  });
+
   it("reads nothing for a halo with no NFAT Facilities section", () => {
     const bare = docs.slice(0, 2);
     expect(nfatFacilities(bare[0], buildChildrenIndex(bare))).toEqual([]);

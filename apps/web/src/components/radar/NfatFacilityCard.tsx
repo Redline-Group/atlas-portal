@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { AtlasLink } from "../AtlasLink";
 import { Link } from "../Link";
+import { FacilitySubscribers, type FacilitySubscriber } from "./FacilitySubscribers";
 import { StatusPill } from "../reports/RewardsCells";
 import { instanceSignalParams } from "@/lib/radarRules";
-import { instanceAnchor } from "@/lib/radarAnchors";
 import { actorPageHref, atlasHref } from "@/lib/routes";
 import type { NfatFacility, NfatParams } from "@/lib/nfatFacility";
 import { HEADER_OFFSET } from "../../lib/layout";
@@ -12,12 +12,6 @@ import { ParamValueLine } from "./ParamValueLine";
 
 const KEY_COLUMN_PX = 220;
 const dim = { color: "var(--tan-3)" };
-
-export interface FacilitySubscriber {
-  instanceId: string;
-  instanceName: string;
-  prime: { slug: string; name: string } | null;
-}
 
 /** One group of a facility's stated values, as an instance card shows params. */
 function ParamGroup({ title, params, hint, children }: { title: string; params: NfatParams; hint: string; children?: ReactNode }) {
@@ -29,22 +23,6 @@ function ParamGroup({ title, params, hint, children }: { title: string; params: 
       {rows.map((p) => <ParamValueLine key={p.key} p={p} colWidth={KEY_COLUMN_PX} instanceHint={hint} />)}
       {children}
     </section>
-  );
-}
-
-function Subscribers({ subscribers }: { subscribers: FacilitySubscriber[] }) {
-  if (subscribers.length === 0) return <>No Prime Agent lists it as an instance yet.</>;
-  return (
-    <>
-      Subscribed to by{" "}
-      {subscribers.map((s, i) => (
-        <span key={s.instanceId}>
-          {i > 0 && ", "}
-          {s.prime ? <Link to={actorPageHref(s.prime.slug, "primitives", instanceAnchor(s.instanceId))} className="text-accent hover:underline">{s.prime.name}</Link> : s.instanceName}
-        </span>
-      ))}
-      .
-    </>
   );
 }
 
@@ -68,7 +46,7 @@ export function NfatFacilityCard({ facility: f, halo, subscribers, hasPau }: Nfa
         <span className="mono text-[10px]" style={dim} title="Whether the Allocation System Primitive's List Of Approved NFAT Facilities names it">{f.approved ? "on the approved list" : "not on the approved list"}</span>
       </header>
       <p className="text-[12px] mb-3" style={{ color: "var(--tan-2)" }}>
-        Run by {halo.name} through a Diamond PAU. <Subscribers subscribers={subscribers} />{" "}
+        Run by {halo.name} through a Diamond PAU. <FacilitySubscribers subscribers={subscribers} />{" "}
         {hasPau && <Link to={actorPageHref(halo.slug, "pau")} className="text-accent hover:underline">What its contracts say on chain →</Link>}
       </p>
       <NfatPlumbingFigure scope={f.id} />

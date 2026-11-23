@@ -63,10 +63,26 @@ function facilitiesUnder(doc: Doc, status: NfatFacilityStatus | null, network: s
   return (children.get(doc.doc_no) ?? []).flatMap((k) => (isFacility(k, children) ? [facility(k, status, network, children)] : facilitiesUnder(k, status, k.title, children)));
 }
 
+// The column that links each facility's own document; another column (the Halo Agent) may link something else.
+const SPEC_COLUMNS = [/^Specification$/i, /^NFAT Facility$/i];
+const LINKS_A_DOC = /\]\([0-9a-f-]{36}\)/i;
+const ROW_RE = /^\s*\|.*\|\s*$/;
+const SEPARATOR_RE = /^\s*\|(\s*:?-{3,}:?\s*\|)+\s*$/;
+const cells = (line: string) => line.trim().slice(1, -1).split("|").map((c) => c.trim());
+const links = (text: string) => [...text.matchAll(UUID_LINK_RE)].map((m) => m[2]);
+
+/** Each table row's facility links: from its facility column, or from every cell when the table names no such column. */
+function tableFacilityLinks(content: string): string[] {
+  const rows = content.split("\n").filter((l) => ROW_RE.test(l) && !SEPARATOR_RE.test(l)).map(cells);
+  const [header = [], ...body] = rows;
+  const col = SPEC_COLUMNS.map((re) => header.findIndex((h) => re.test(h))).find((i) => i >= 0 && body.some((r) => LINKS_A_DOC.test(r[i] ?? "")));
+  return body.flatMap((r) => (col === undefined ? r : [r[col] ?? ""]).flatMap(links));
+}
+
 /** The facility documents the Approved NFAT Facilities Active Data links, by UUID. */
 export function approvedNfatFacilities(allDocs: Doc[]): Set<string> {
   const lists = allDocs.filter((d) => d.type === "Active Data" && APPROVED_LIST_RE.test(d.title));
-  return new Set(lists.flatMap((d) => [...(d.content ?? "").matchAll(UUID_LINK_RE)].map((m) => m[2])));
+  return new Set(lists.flatMap((d) => tableFacilityLinks(d.content ?? "")));
 }
 
 /** The NFAT Facilities a halo lists, in document order, each marked when the approved list names it. */
@@ -74,7 +90,9 @@ export function nfatFacilities(halo: Doc, children: Children, approved: Set<stri
   const section = nfatSection(halo, children);
   if (!section) return [];
   const groups = children.get(section.doc_no) ?? [];
-  const found = groups.flatMap((g) => facilitiesUnder(g, (g.title.match(STATUS_RE)?.[1] as NfatFacilityStatus | undefined) ?? null, null, children));
+  const found = groups.flatMap((g) =>
+    isFacility(g, children) ? [facility(g, null, null, children)] : facilitiesUnder(g, (g.title.match(STATUS_RE)?.[1] as NfatFacilityStatus | undefined) ?? null, null, children),
+  );
   if (groups.some((g) => (children.get(g.doc_no) ?? []).length > 0) && found.length === 0)
     console.warn(`  [drift] tripwire: ${halo.title}'s NFAT Facilities section (${section.doc_no}) has documents but no facility was read (a facility holds "Parameters" or "Technical Architecture")`);
   return found.map((f) => ({ ...f, approved: approved.has(f.id) }));

@@ -13,10 +13,11 @@ export const NFAT_PLUMBING: Plumbing = {
   ownNote: "the NFAT Facility Contract",
   frame: { x: 310, y: 122, w: 530, h: 262 },
   summary:
-    "A Prime's ALM proxy subscribes funds into the NFAT Facility Contract's queue and can withdraw them until they are claimed. The Halo's controller issues an NFAT: the contract mints it to the Prime and sends the principal to the Halo's ALM proxy, which puts it to work in the underlying deal. The Halo repays principal and interest to the contract, and the Prime collects them against its NFAT. The Halo's admin names the contract's operators, recipient and freezers; a freezer can stop it.",
+    "A Prime's ALM proxy subscribes funds into the NFAT Facility Contract's queue and can withdraw them until they are claimed. The Halo's controller issues an NFAT: the contract mints it to the Prime and sends the principal to the Halo's ALM proxy, which puts it to work in the underlying deal. The Halo repays principal and interest to the contract, and the Prime collects them against its NFAT. The Halo's admin names the contract's operators, recipient and freezers; a facility freezer can stop it.",
   nodes: [
     { id: "admin", name: "Admin", nick: "owner", lines: ["Halo's governance contract,", "run by executive spells."], x: 290, y: 16, w: 160 },
-    { id: "freezer", name: "Freezer", nick: "emergency stop", lines: ["Stops the facility. Sets", "nothing, moves nothing."], x: 470, y: 16, w: 160 },
+    // Its own node id: the facility's freezers (cops) are not the PAU's freezer multisig, an AdministeredAgent revoker.
+    { id: "facilityFreezer", name: "Facility freezer", nick: "emergency stop", lines: ["Stops the facility. Sets", "nothing, moves nothing."], x: 470, y: 16, w: 160 },
     { id: "prime", name: "Prime's ALM proxy", nick: "subscriber", lines: ["Queues funds, holds the", "NFAT, collects repayments."], x: 20, y: 150, w: 160 },
     { id: "facility", name: "NFAT Facility Contract", nick: "queue and ledger", lines: ["Holds queued funds and", "repayments; mints NFATs."], x: 330, y: 150, w: 160, own: true },
     SHARED.almProxy({ x: 660, y: 150 }),
@@ -47,12 +48,12 @@ export const NFAT_PLUMBING: Plumbing = {
     { from: "controller", to: "almProxy", kind: "flow", grants: ["CONTROLLER on almProxy"], label: "executes through", rule: "onlyRole(CONTROLLER) on doCall", d: "M740 296 V230", lx: 750, ly: 266 },
     {
       from: "relayer", to: "controller", kind: "flow", label: "asks to issue or repay",
-      rule: "NFATHaloFacet.issue, repayPrincipal and repayInterest are onlyRole(ALLOCATOR_ROLE); each draws down its rate limit, and interest is capped by the maximum annual growth rate", d: "M980 333 H826", lx: 903, ly: 324, align: "middle",
+      rule: "the relayer calls through the AdministeredAgent, which holds ALLOCATOR_ROLE: NFATHaloFacet.issue, repayPrincipal and repayInterest are onlyRole(ALLOCATOR_ROLE); each draws down its rate limit, and interest is capped by the maximum annual growth rate", d: "M980 333 H826", lx: 903, ly: 324, align: "middle",
     },
     {
       from: "admin", to: "facility", kind: "rule", label: "names operators, recipient, freezers",
       rule: "auth (wards) on NFATFacility.rely / deny, kiss / diss, file, addFreezer / removeFreezer, start and the rescue functions", d: "M428 90 V144", lx: 420, ly: 112, align: "end",
     },
-    { from: "freezer", to: "facility", kind: "stop", label: "stops it", rule: "NFATFacility.stop is open to its freezers (cops); only an admin starts it again", d: "M480 90 V144", lx: 490, ly: 112 },
+    { from: "facilityFreezer", to: "facility", kind: "stop", label: "stops it", rule: "NFATFacility.stop is open to its freezers (cops); only an admin starts it again", d: "M480 90 V144", lx: 490, ly: 112 },
   ],
 };
