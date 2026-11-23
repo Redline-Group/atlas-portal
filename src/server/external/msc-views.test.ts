@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
-import { buildMscView, briefFromView } from "./msc-views.ts";
+import { buildMscView } from "./msc-views.ts";
+import { briefFromView } from "./msc-brief.ts";
 import { answerHasMscDisclaimer, MSC_REQUIRED_DISCLAIMER } from "./envelope.ts";
 import { clipQuestion } from "./subagent.ts";
 import type { SettlementsBundle } from "../../lib/settlements.ts";
