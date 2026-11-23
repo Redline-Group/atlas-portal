@@ -11,6 +11,7 @@ const MEANING: Record<string, string> = {
   rateLimits: "Rate limits: meters how much the controller may move through each key.",
   accessControls: "AccessControls: holds the roles of a diamond controller.",
   administeredAgent: "AdministeredAgent: a diamond controller's lists of actors, admins, grantors and revokers.",
+  nfatFacility: "NFAT Facility Contract: holds the funds Primes subscribe and the repayments they collect, and mints an NFAT for each issuance. This PAU's ALM proxy operates it.",
 };
 
 const FREEZABLE = "ALM proxy (freezable): an ALM proxy that also lets its FREEZER role remove a CONTROLLER holder. Whoever holds CONTROLLER on a proxy can have it execute any call.";

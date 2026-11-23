@@ -13,6 +13,7 @@ export const PAU_ROLE_LABEL: Record<string, string> = {
   rateLimits: "Rate limits",
   accessControls: "AccessControls",
   administeredAgent: "AdministeredAgent",
+  nfatFacility: "NFAT Facility",
 };
 
 /** An ALM proxy the registry marks `freezable` (ALMProxyFreezable); a deployment can hold it beside a plain one. */

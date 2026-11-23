@@ -4,6 +4,7 @@ import { ActorAside } from "./ActorAside";
 import { ActorChain } from "./ActorChain";
 import { ActorContact } from "./ActorContact";
 import { ActorContracts } from "./ActorContracts";
+import { ActorNfatFacilities } from "./ActorNfatFacilities";
 import { ActorHeader } from "./ActorHeader";
 import { ActorSettlementTeaser } from "./ActorSettlementTeaser";
 import { ActorConnections } from "./ActorConnections";
@@ -48,6 +49,7 @@ export function ActorDashboard({ profile }: Props) {
         </div>
 
         <ActorAside profile={profile} split={split} />
+        <ActorNfatFacilities entity={entity} />
         <ActorSummarySections profile={profile} />
       </div>
     </div>

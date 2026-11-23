@@ -35,7 +35,7 @@ import {
   extractEthAddresses,
   extractUrl,
 } from "./table-parser.mjs";
-import { APPROVED_LIST_RE } from "./graph-nfat-facilities.ts";
+import { warnUnextractedTables } from "./active-data-drift.ts";
 
 const CURRENT_DELEGATES_UUID = "5f584db8-f8d8-4118-988c-b2bc3f68ceb7";
 const DERECOGNIZED_UUID = "e7aec672-ed19-4329-aaf7-736950be2eb7";
@@ -337,30 +337,9 @@ export function extractActiveData(allDocs, docById, entityMap, edges, addressesA
   );
 
   // --- Drift detector: Active Data tables we are not extracting ---
-  // Fires when any Active Data doc outside the handled/known-ignored sets
-  // gains table rows — e.g. the 29 per-instance payment ledgers (all empty
-  // today) or the Registered Multisigs registry. Loud by design.
-  const HANDLED_TABLE_UUIDS = new Set([
-    CURRENT_DELEGATES_UUID, DERECOGNIZED_UUID, SRC_UUID, FORUM_ACCOUNTS_UUID, BREACH_REGISTRY_UUID,
-  ]);
-  let driftWarnings = 0;
-  for (const d of allDocs) {
-    if (d.type !== "Active Data") continue;
-    if (HANDLED_TABLE_UUIDS.has(d.id) || KNOWN_UNEXTRACTED_TABLES.has(d.id)) continue;
-    // Read by graph-nfat-facilities.ts, which marks each listed facility approved.
-    if (APPROVED_LIST_RE.test(d.title)) continue;
-    const rows = parseMarkdownTable(d.content ?? "").filter((row) =>
-      Object.values(row).some((v) => v && v.trim()),
-    );
-    if (!rows.length) continue;
-    driftWarnings++;
-    console.warn(
-      `  [drift] unextracted Active Data table: ${d.doc_no} "${d.title}" (${d.id}, ${rows.length} rows)`,
-    );
-  }
-  if (driftWarnings) {
-    console.warn(`  [drift] ${driftWarnings} Active Data table(s) contain rows but are not extracted`);
-  }
+  // Loud by design; see active-data-drift.ts.
+  const handled = [CURRENT_DELEGATES_UUID, DERECOGNIZED_UUID, SRC_UUID, FORUM_ACCOUNTS_UUID, BREACH_REGISTRY_UUID];
+  const driftWarnings = warnUnextractedTables(allDocs, new Set([...handled, ...KNOWN_UNEXTRACTED_TABLES]), parseMarkdownTable);
 
   return { enriched, created, derecognized, srcMembers, forumRows, forumReps, breaches, driftWarnings };
 }

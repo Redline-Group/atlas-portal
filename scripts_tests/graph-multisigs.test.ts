@@ -475,3 +475,22 @@ describe("extractMultisigs — plain composition shape (A.2.2.10.1.1.1.6.2.1.2 '
     vi.restoreAllMocks();
   });
 });
+
+describe("extractMultisigs — threshold named after the count", () => {
+  it("reads 'The required number of signers of the X is two (2) out of three (3)'", () => {
+    const rootDocNo = "A.1.14.6.3.1.3.1.1.1.2.2.5";
+    const subject = "Test NFAT Facility Relayer Multisig";
+    const kids = fiveChildDocs(rootDocNo, subject, {
+      threshold: `The required number of signers of the ${subject} is two (2) out of three (3).`,
+      signers: `The signers of the ${subject} are three (3) addresses controlled by Operational GovOps Soter Labs.`,
+    });
+    const allDocs = [mkDoc("nfat-root", rootDocNo, subject), ...Object.values(kids)];
+    const entityMap = new Map<string, any>();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    extractMultisigs(allDocs, new Map(allDocs.map((d) => [d.id, d])), new Map(allDocs.map((d) => [d.doc_no, d])), entityMap, []).run(makeAddEntity(entityMap));
+    const ent = [...entityMap.values()].find((e) => e.entity_type === "multisig");
+    expect(ent.name).toBe(subject);
+    expect(JSON.parse(ent.meta).threshold).toBe("2/3");
+    expect(warn).not.toHaveBeenCalledWith(expect.stringContaining("threshold did not parse"));
+  });
+});

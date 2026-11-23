@@ -1,6 +1,7 @@
 // The PAU snapshot shape GET /api/pau serves (written by src/server/pau/), and
 // the pure helpers the Radar PAU section reads it with. DOM-free, so the server
 // and the browser share one declaration.
+import type { NfatFacilityState } from "./nfatFacility.ts";
 import type { PauIgnored, PauKind, PauRole } from "./pauRegistry.ts";
 
 /** Where a value was last set: the block, its time and the transaction. */
@@ -172,6 +173,8 @@ export interface ContractState {
   unsetKeys?: string[];
   params?: PauParam[];
   integrations?: PauIntegration[];
+  /** On an NFAT Facility Contract: what it answers about itself (src/server/pau/facility.ts). */
+  facility?: NfatFacilityState;
   /** Atlas documents stating this contract's address, from the registry's provenance; attached when GET /api/pau serves it (pauAtlasDocs.ts). */
   atlasDocs?: string[];
   /** The registry's non-atlas evidence for listing this contract in its role (what the chain or a curator showed), attached with `atlasDocs`. */

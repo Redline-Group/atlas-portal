@@ -32,3 +32,18 @@ export interface NfatFacility {
 export interface HaloFacilitiesMeta {
   nfat_facilities?: NfatFacility[];
 }
+
+/** An NFAT Facility Contract's own state as the chain answers it; a read that failed is null, never false. */
+export interface NfatFacilityState {
+  /** The asset it takes subscriptions and repayments in (`gem()`). */
+  gem: string | null;
+  /** Where principal goes when an NFAT is issued (`recipient()`); the zero address until it is set. */
+  recipient: string | null;
+  /** Whether a freezer has stopped subscriptions, issuance, repayments and collection (`stopped()`). */
+  stopped: boolean | null;
+  /** Whether the deployment's ALM proxy may issue NFATs (`buds(almProxy)`); null without a listed proxy. */
+  operator: boolean | null;
+  /** The NFAT's own name and symbol. */
+  name: string | null;
+  symbol: string | null;
+}

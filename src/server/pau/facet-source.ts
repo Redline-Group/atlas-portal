@@ -21,7 +21,8 @@ export interface FacetShape {
   roles: string[];
 }
 
-const TYPE: Record<string, ArgType> = { address: "address", uint16: "uint", uint32: "uint", bytes32: "bytes32" };
+// abi.encode pads every unsigned integer to one word, so a uint256 encodes as a uint16 does.
+const TYPE: Record<string, ArgType> = { address: "address", uint16: "uint", uint32: "uint", uint256: "uint", bytes32: "bytes32" };
 const HELPER_RE = /function (make\w+Key)\s*\(\s*bytes32 key,([^)]*)\)\s*pure\s+returns\s*\(bytes32\)\s*\{\s*return keccak256\(abi\.encode\(key,([^)]*)\)\);\s*\}/g;
 const CONSTANT_RE = /bytes32 internal constant (_LIMIT_\w+)\s*=\s*keccak256\("(LIMIT_[A-Z0-9_]+)"\);/g;
 const GETTER_RE = /function (\w+RateLimitKey)\s*\(([^)]*)\)[^{;]*\{\s*return\s+([^;]+);\s*\}/g;

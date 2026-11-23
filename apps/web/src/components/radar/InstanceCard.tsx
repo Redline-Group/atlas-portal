@@ -5,6 +5,7 @@ import type { RadarInstance } from "../../lib/actorIndex";
 import { ParamLine } from "./ParamLine";
 import { ParamValueLine } from "./ParamValueLine";
 import { ParamAddressKeys, type PauPrime } from "./ParamAddressKeys";
+import { InstanceFacility } from "./InstanceFacility";
 import { listedAddress } from "../../lib/pau";
 import { atlasHref } from "@/lib/routes";
 import { instanceAnchor } from "@/lib/radarAnchors";
@@ -82,6 +83,7 @@ export function InstanceCard({ inst, prime, headingLevel = 4, marks }: InstanceC
           ))}
         </div>
       )}
+      <InstanceFacility params={inst.signalParams} />
     </div>
   );
 }

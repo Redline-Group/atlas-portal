@@ -7,6 +7,7 @@ import { PauContracts } from "./PauContracts";
 import { PauParams } from "./ActorPauParams";
 import { PauAuditLink } from "./PauAuditLink";
 import { PauPlumbing } from "./PauPlumbing";
+import { PauNfatFacility } from "./PauNfatFacility";
 import { PauWiring } from "./PauWiring";
 import { entityLinkCss } from "@/lib/pauPlumbingLinks";
 import { holderRows } from "../../lib/pau";
@@ -55,6 +56,7 @@ export function PauDeployment({ snap, keyIndex, namedIn, verdicts, anchor }: Pro
         </summary>
         <style>{entityLinkCss([...snap.contracts.map((c) => c.address), ...holderRows(snap).map((r) => r.account)])}</style>
         <PauContracts snap={snap} />
+        <PauNfatFacility snap={snap} anchor={anchor} />
         <PauPlumbing kind={snap.kind} anchor={anchor} />
         <PauFacets snap={snap} anchor={anchor} />
         <PauHolders snap={snap} anchor={anchor} />

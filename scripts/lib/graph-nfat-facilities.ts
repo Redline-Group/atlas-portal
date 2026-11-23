@@ -8,7 +8,6 @@
 // that none went unread.
 import { extractParamsFromRoot } from "./graph-instances.mjs";
 import { UUID_LINK_RE } from "./graph-patterns.mjs";
-import { parseMarkdownTable } from "./table-parser.mjs";
 import type { NfatFacility, NfatFacilityStatus, NfatParams } from "../../src/lib/nfatFacility.ts";
 
 interface Doc {
@@ -67,8 +66,7 @@ function facilitiesUnder(doc: Doc, status: NfatFacilityStatus | null, network: s
 /** The facility documents the Approved NFAT Facilities Active Data links, by UUID. */
 export function approvedNfatFacilities(allDocs: Doc[]): Set<string> {
   const lists = allDocs.filter((d) => d.type === "Active Data" && APPROVED_LIST_RE.test(d.title));
-  const cells = lists.flatMap((d) => parseMarkdownTable(d.content ?? "").flatMap((row: Record<string, string>) => Object.values(row)));
-  return new Set(cells.flatMap((c) => [...(c ?? "").matchAll(UUID_LINK_RE)].map((m) => m[2])));
+  return new Set(lists.flatMap((d) => [...(d.content ?? "").matchAll(UUID_LINK_RE)].map((m) => m[2])));
 }
 
 /** The NFAT Facilities a halo lists, in document order, each marked when the approved list names it. */

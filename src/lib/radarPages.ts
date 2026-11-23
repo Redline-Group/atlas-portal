@@ -37,3 +37,6 @@ export const actorPageDef = (key: ActorPageKey): ActorPageDef => BY_KEY.get(key)
 /** Only Prime Agents split into subpages; every other actor keeps one page. */
 export const hasActorPages = (e: { et: string; st: string | null | undefined }): boolean =>
   e.et === "agent" && e.st === "prime";
+
+/** A Halo Agent keeps its one page, plus a PAUs page once the Diamond PAU it runs an NFAT Facility through has been read. */
+export const runsFacilityPau = (e: { et: string; st: string | null | undefined }): boolean => e.et === "agent" && e.st === "halo";
