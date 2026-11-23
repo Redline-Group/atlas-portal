@@ -130,7 +130,7 @@ Each concept group carries four fields:
 
 - **Definition** — per-primitive per-agent status+directory root.
 
-- **Detection signature** — title template. A representative sample of the exact-title families cited across this catalog (Primitive Hub Document, Global Activation Status, Hub Data Repository, Parameters, Rate Limits, the Data Repository triad, Omni Documents, the ICD title) is censused together:
+- **Detection signature** — title template. A representative sample of the exact-title families cited across this catalog (Primitive Hub Document, Global Activation Status, Hub Data Repository, Parameters, Rate Limits, Data Repository, Omni Documents, the ICD title) is censused together. *(Changed 2026-11-23: the census carried the three Data Repository triad titles until the Atlas removed them; it now counts the "Data Repository" container instead. See Lifecycle 6.)*
 
 :::census title-templates
 
@@ -162,11 +162,19 @@ Each concept group carries four fields:
 
 - **Members** — 5 tracked invocation entities (4 distribution-reward, 1 integration-boost).
 
-**Lifecycle 6 · Data Repository triad**
+**Lifecycle 6 · Data Repository**
 
-- **Definition** — per-instance record-keeping: Initial Planning → Operational GovOps Review → Artifact Edit Proposal.
+*Redefined 2026-11-23 at atlas `85d7bde`. Until then this unit was "Data Repository triad"; the earlier entry is kept under History below.*
 
-- **Detection signature** — exact title triple (×83 each). **Discovery: 83 "Artifact Edit Proposal" docs are per-instance edit-history stubs living INSIDE artifacts** — a distributed change-log, distinct from the Root Edit pipeline (agents' Instruments group covers the distinction).
+- **Definition** — the per-instance container for an instance's records: the document titled "Data Repository" inside an Instance Configuration Document. Exemplar `f1490752-03fe-4e21-ae1f-68a1ec44dbcc`: *"The documents herein contain data relevant to the Single Instance of the Agent Creation Primitive."* The invocation specification requires one per instance — Instance Configuration Document Creation `f201d7e8-61cb-4bf7-b9fb-eb247e16f4ce`: *"The `Instance Configuration Document` contains a `Data Repository`."*
+
+- **Detection signature** — exact title "Data Repository", the `Data Repository` bucket of the `title-templates` census under Lifecycle 2 [evidence level 1 · censused]. Distinct from "Hub Data Repository" (one per Primitive Hub Document, its own bucket in the same census).
+
+- **Members / Spread** — 102 documents, all inside the Prime artifacts in A.6. [evidence level 1 · censused for the count; the split below is a one-off pass over `public/docs.json` on 2026-11-23] 64 have no child document. The other 38 hold payment records only; their child titles are "Distribution Reward Payments" ×27, "Third Party Partner Payment Addresses And Transaction Records" ×13, "Integration Boost Payments" ×10 and "Core Governance Reward Payments And Transaction Records" ×1.
+
+- **Relationships** — sits inside Lifecycle 4: 97 of the 102 are direct children of a document titled "… Instance Configuration Document"; the other 5 sit under documents of other titles, 3 in Spark's artifact (Allocation System Primitive, SparkLend, Spark Pre-launch Token Rewards) and 2 in Grove's (Andromeda, Lite Peg Stability Module). Contains the reward payment lists of Registries 1, which the registry-liveness census buckets as empty. The 13 "Third Party Partner Payment Addresses And Transaction Records" children are different: each has a "Third Party Partner Payment Addresses" document, 4 of which state an address (exemplar `da35cd2c-4113-4656-a5f5-5b804b5f894f`), and a "Payment Details Per Reward Period" document that describes a table's fields and holds no rows. *Our reading, not Atlas text:* the container is present on most instances and used on few, and where it is used the transaction records themselves are still empty. It is the instance-level face of the same unrealized record-keeping layer Registries 1 describes.
+
+- **History — the triad (removed upstream).** The unit was first catalogued as per-instance record-keeping in three steps, Initial Planning → Operational GovOps Review → Artifact Edit Proposal, detected by the exact title triple (×83 each at authoring, 93 each at the last baseline that held them). The discovery recorded then: the "Artifact Edit Proposal" docs were per-instance edit-history stubs living INSIDE artifacts, a distributed change-log distinct from the Root Edit pipeline. The 2026-11-02 Atlas Edit Proposal (sky-ecosystem/next-gen-atlas#369, commit `315676e`) removed all three families; no document carries any of the three titles now. All 279 were one-sentence stubs with no children: each read *"The materials associated with initial planning of the Invocation of this Instance are contained herein."* or its Operational GovOps Review / Artifact Edit Proposal counterpart, so no recorded material was lost. The same commit rewrote the invocation process that was meant to fill them: in the Distribution Reward and Integration Boost specifications the Prime Agent no longer creates an `Initial Planning Document`; the text at `85d7bde` reads *"The Prime Agent drafts its request to Invoke a Distribution Reward Instance"* (`4d5482ad-7944-4073-8fbe-b9dbcd1a27a3` /A.2.2.9.1.2.3.1.3). Operational GovOps no longer writes an `Operational GovOps Review Document`; it *"gives the Prime Agent its feedback on the request"* (`9c4653fa-6afe-4567-9e85-54c0a84b9311` /A.2.2.9.1.2.3.2.3). The sentence *"The following inputs must be submitted into the Primitive using the Powerhouse interface."* was deleted from that second document. (The stub sentence and the Powerhouse sentence are quoted from the parent of `315676e`; they are no longer in the Atlas.) *Our reading, not Atlas text:* planning and review were moved off the Atlas by design, so the per-instance change-log is not coming back in this form.
 
 **Lifecycle 7 · Omni Documents** [evidence level 2 · source-read]
 
@@ -557,7 +565,8 @@ breach definition, graduated response, terminal measure — different subject
   Advisor Review → Facilitator Review → Token Holder Vote → Artifact Update, with
   Routine/Non-Routine/Emergency protocol variants and edit restrictions.
 - **Artifact Edit Proposal (per-instance record, ×83)**: data-repo stub inside
-  every ICD (Lifecycle 6) — the distributed change-log.
+  every ICD (Lifecycle 6) — the distributed change-log. *(Atlas drift since
+  315676e: these stubs were all removed upstream; none remain. See Lifecycle 6.)*
 - **Atlas Edit Proposal (AEP, atlas-level)**: amendments to the core Atlas via the
   Atlas Edit Weekly/Monthly Cycle `14e99d92` /A.1.11.2 + `d2cbddd2` /A.1.12.2;
   mandatory template (A.1.12.2.3), Ratification Poll [evidence level 2 · source-read ✓ 2026-07-27] per
@@ -618,6 +627,17 @@ breach definition, graduated response, terminal measure — different subject
   parameter hub, 18+14 cites).
 All three are EXPIRY-implying — prime staleness-signal candidates.
 
+*(Atlas drift, 2026-11-23 pass, atlas `85d7bde`: the title family fell from 22
+documents to 6. The 2026-11-09 Atlas Edit Proposal — sky-ecosystem/next-gen-atlas#377,
+commit `65b0883` — removed the 16 copies that sat inside the Root Edit pipelines of
+the eight Prime artifacts, two per Prime. The six left are
+`19f5f5b9-be0d-4a91-a5aa-3888c1c9b7e8` /A.1.10.1.3.4 (audit standards),
+`4fce0fd5` /A.1.14.4.7 (Executor Agents), `56c255d4` /A.2.2.6.2.2.2.8.1.5 (Agent
+Termination), `d33ac81e` /A.3.2.2.4.5 (Senior Risk Capital), and one each in
+Spark's and Grove's artifacts, `6ecef2b2-42c7-4bea-80f0-1cb1cd4e735d` and
+`a65302b4-5222-48a9-b37f-282498acb4d6`. The three examples in the first bullet
+above date from the earlier pass and were not re-read against these six.)*
+
 :::census transitionary-measures
 
 **Instruments 11 · Incubation frameworks** [evidence level 3 · corroborated]
@@ -643,9 +663,12 @@ All three are EXPIRY-implying — prime staleness-signal candidates.
   the rulebook is ~12% of the corpus by doc count.
 - **Spell machinery** — StarGuard: per-agent spell-whitelisting/execution contract
   (22 docs, A.1.10.2.3.2.3 subtree + per-artifact "StarGuard Max Delay" ×6 across
-  A.1+A.6); Registered Spell Checklists registry (13 cites).
+  A.1+A.6 — ×10 at atlas `85d7bde`, 2026-11-23: one per Prime artifact, one in the
+  A.1 spell rules, and "Test Halo StarGuard Max Delay" under Sky Core Halos); Registered Spell Checklists registry (13 cites).
 - **Transitionary measures** — "Short-Term Transitionary Measures" title family
   inside artifacts + root-edit pipelines; implies expiry review (staleness signal).
+  *(Atlas drift since 65b0883: the root-edit-pipeline copies were removed upstream;
+  see the note under Instruments 10.)*
 
 ### Quantitative concepts
 
@@ -837,6 +860,27 @@ contract maturity trust.
 
 - **Relationships** — agents' economic-flows findings merge here.
 
+**Actors 4 · Halo Agents** [evidence level 2 · source-read] — read from source at atlas `85d7bde`, 2026-11-23.
+
+- **Definition** — the third Agent sub-type, beside Prime and Executor. Halo Agent `38cdad10-b80d-4b80-af94-79768fcc1818` /A.0.1.1.43: *"Halo Agents are Agents that wrap assets, such as real-world assets and business infrastructure, and provide a standardized interface through which Prime Agents can invest in those assets. Halo Agents do not access the Sky Primitives directly. Halo Agents will be further specified in a future iteration of the Atlas."* The Atlas describes two placements:
+  - **Halo inside a Prime.** Same document: *"The Agent Artifact of a Halo Agent is located inside the Agent Artifact of a Prime Agent."* No such artifact exists yet (gap: zero members).
+  - **Sky Core Halo.** Definition Of Sky Core Halos `097be889-3e2c-463a-ac49-8fc79059253c` /A.1.14.6.1: *"A Sky Core Halo is a Halo Agent that is controlled directly by the Core Council rather than by a Prime Agent. Sky Core Halos have no Agent Artifact."* Each is specified in List Of Sky Core Halos `dc48d6fa-6831-4c06-ab0e-e3bf42fc0553` /A.1.14.6.3.
+
+- **Detection signature** — two mechanical handles, both for Sky Core Halos only:
+  - *Structure:* a child of the document titled "List Of Sky Core Halos" that states its contracts in children titled `<Halo> SubProxy Account` / `<Halo> StarGuard Contract`, with `<Halo> StarGuard Max Delay` beneath the latter. `scripts/lib/graph-halos.ts` turns each into an `agent` entity of subtype `halo`.
+  - *Edges:* `operational_executor_agent_for` into a halo entity, and that entity's `has_address` edges (roles `subproxy`, `starguard`).
+  - A Halo inside a Prime's artifact has no signature yet; the word "Halo" in a title or body is the only lead. 17 documents carry it (11 in titles, 6 in body text only).
+
+- **Members / Spread** — one member: **Test Halo** `59d23e0e-dcf8-4fdb-937a-678023849cf6` /A.1.14.6.3.1 — *"Test Halo is used to test new Agent architecture and operations, and to prove the related on-chain architecture in production before wider use."* It states a SubProxy Account (`9e0b9059`), a StarGuard Contract (`c86c090c`) and a StarGuard `maxDelay` of *"seven (7) days"* (`ca45b70f`). The 17 mentioning documents sit in A.0 (2: the Agent and Halo Agent definitions), A.1 (12: the Sky Core Halos section `7a90e53d-3115-4bd0-a354-6c0aac682eeb` /A.1.14.6 and its 9 descendants, plus the two artifact rules below) and A.6 (3). The A.6 three name Halos without defining any: Grove's transitionary measure `a65302b4-5222-48a9-b37f-282498acb4d6` exempts the *"onboarding of Laniakea Halo class assets, once that framework is live"*; Obex's introduction `e395a323-3c53-4154-a7e6-d54c363f56f2` speaks of *"development and deployment of Prime and Halo Agents"*; Pattern's `b137d591-a3a2-482a-a18e-d4ff447964cf` says it *"will support new Halo projects"*.
+
+- **Relationships**
+  - *Lifecycle 1 (Primitive) — the exception.* Agent Artifact Primitives `a132233a-8ec0-44d5-b93a-3cff6ca49ad6` /A.1.14.2.4: *"All Agent Artifacts, except the Agent Artifacts of Halo Agents, contain a set of configured Primitive Instances"*. A Halo is an agent outside the primitive machine: no hubs, instances or invocations.
+  - *Agent Scope — the exception.* Agent Artifacts and the Agent Scope `178d80c7-832e-4b0c-b2f1-79b718f11e78` /A.1.14.1.4: *"As an exception, the documents of Sky Core Halos are located in"* the list document. A Sky Core Halo is the one kind of agent specified in the Governance Scope.
+  - *Actors 1 (role system).* Operational Executor Agent For Sky Core Halos `690b47e7-a688-47d2-ac3f-6fd17528efd5` /A.1.14.6.2.2: *"Sky Core Halos are operated by Operational Executor Agent Ozone."* *Observed in the graph, not Atlas text:* this is the only role edge Test Halo has; no Facilitator or GovOps edge points at it.
+  - *Spell machinery (StarGuard).* Spells For Sky Core Halos `69928d95-cfb3-4251-96a8-2e3737f7c61c` /A.1.14.6.2.1: *"Spell content for a Sky Core Halo follows the Prime Spell Process …, except that a Core Spell Team crafts the spell content."*
+  - *Registries 1.* The list document is the registry; see the drift note there.
+  - *Our reading, not Atlas text:* the concept is mostly promise. One test member, a definition that defers to *"a future iteration of the Atlas"*, and three Prime artifacts that already speak of Halos as planned business. It belongs with the spec'd-but-unrealized set in Part III until a Halo that wraps real assets appears.
+
 ### Duties & responsibilities
 
 *[evidence level 1 · censused] — duty_for/RP-edge counts are script-censused (see the accuracy correction on the relations.json point below).*
@@ -870,6 +914,8 @@ contract maturity trust.
 - **Detection signature** — title prefix "List Of" (46 docs) + listed_in edges (47) + `.0.6.X` Active Data suffix on the live variants. Sub-families: - Party registries: Recognized Aligned Delegates, Derecognized Alignment Conservers (11 listed_in), AD Breach Registry, Authorized Forum Accounts (15), Active Arrangers, Registered Multisigs, SRC Membership Registry. - Program registries: Current/Onboarding Integrators, Integrator Applications, Distribution Reward Payments (×17 lists!), Integration Boost Payments (×10), Allocation Instances, Sky Direct Exposures, Auxiliary Accounts. - Governance registries: Interpretations, Registered Spell Checklists, Document Types, Top/Mid-Tier Audit Firms.
 
 - **Relationships** — registries are where concepts MATERIALIZE as data — the payment lists are the terminal nodes of the Distribution Rewards concept chain.
+
+- **Atlas drift (2026-11-23 pass, atlas `85d7bde`)** — the "List Of" prefix now matches 60 documents, not the 46 in the signature above. The newest is an agent registry, a sub-family the list above does not have: **List Of Sky Core Halos** `dc48d6fa-6831-4c06-ab0e-e3bf42fc0553` /A.1.14.6.3, added by sky-ecosystem/next-gen-atlas#383 and bucketed "live" in the census below. [evidence level 2 · source-read] Its text: *"The documents herein list and specify each Sky Core Halo. Currently, the only Sky Core Halo is Test Halo."* The sibling definition `097be889-3e2c-463a-ac49-8fc79059253c` /A.1.14.6.1 says: *"A Sky Core Halo is a Halo Agent that is controlled directly by the Core Council rather than by a Prime Agent. Sky Core Halos have no Agent Artifact."* So this registry lists agents in the Governance Scope, outside the Agent Scope's two lists, "List Of Prime Agent Artifacts" and "List Of Executor Agent Artifacts", where every other agent is listed. Its one entry (`59d23e0e` Test Halo) is an `agent` entity of subtype `halo` in the graph, which belongs with Actors 1's entity types. The concept itself is Actors 4.
 
 **Registries 1-liveness** — no descendants, no data table, and no bulleted entries marks
 a registry as an EMPTY shell rather than a LIVE one; the split typically
@@ -950,7 +996,7 @@ cross-cutting machinery — pure prose.)
 
 spec (A.2.2 classes, Type Specifications) → activation (Global Activation Status
 ×140) → instance (ICDs ×196) → invocation (dirs ×144; 5 tracked) → records
-(payment lists, Data Repository triad ×83) → archive (Archived/Failed/Suspended
+(payment lists, inside Data Repositories ×102) → archive (Archived/Failed/Suspended
 dirs ×136; Archive Type spec'd but unused).
 
 ### II.4 Containment map (nesting, not tree)
@@ -1039,7 +1085,7 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
 - Allocation Systems → Economics 2
 - ALM & Rental → Economics 2
 - Annotations → Meta 5
-- Artifact Edit Proposals (per-instance) → Instruments 3/Lifecycle 6
+- Artifact Edit Proposals (per-instance; removed upstream, see Lifecycle 6) → Instruments 3/Lifecycle 6
 - Atlas Edit Proposals → Instruments 3
 - Budgets → Economics 6
 - Bridges/SkyLink → Economics 8
@@ -1062,6 +1108,7 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
 - Glossary → Meta 2
 - Governance votes → Instruments 4
 - Grants → Economics 7
+- Halo Agents → Actors 4
 - Hubs (primitive) → Lifecycle 2
 - ICDs/Instances → Lifecycle 4
 - Incubation → Instruments 11
@@ -1091,6 +1138,7 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
 - Root Edits → Instruments 3
 - RRC coverage → Quantities 5
 - Scenarios → Meta 7
+- Sky Core Halos → Actors 4/Registries 1
 - Smart Burn Engine → Economics 4
 - Spells/StarGuard → Instruments 5
 - Staking → Economics 3/Economics 4
@@ -1116,7 +1164,8 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
   mutation rights.
 - *Artifact Edit Proposal (per-instance record, ×83) vs Root Edit (governance
   instrument)*: same words, different concepts — the former is a data-repo stub, the
-  latter a voted pipeline.
+  latter a voted pipeline. *(Atlas drift since 315676e: the per-instance stubs were
+  removed upstream, so only the Root Edit sense is left in the Atlas. See Lifecycle 6.)*
 
 **Distinctions from the deep dives** (merged):
 - *Accord vs Agreement vs Instrument vs Protocol*: accord = named bilateral doc,
@@ -1152,6 +1201,8 @@ unresolved half: `A.4.5` is a bare doc_no, not a catalog anchor.
    unspecified), Purpose System funding (article exists, machinery thin).
 6. Executor Agents overall: "not yet operational" per definition — 10-doc
    artifacts vs primes' hundreds.
+7. Halo Agents (Actors 4): defined, with one test member (Test Halo) and no Halo
+   inside any Prime's artifact.
 
 **Open questions for the next pass**:
 - ~~The 854 duty_for edges live only in the DB graph~~ RESOLVED: they ship in

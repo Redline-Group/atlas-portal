@@ -376,3 +376,58 @@ PR: https://github.com/Redline-Group/atlas-portal/pull/194 (27 commits, base mai
   72 distinct docs, overlapping buckets by design) + `:::census` marker + tests +
   baseline; Dn1 stays a documented one-off because it reads relations.json and
   conceptsCensus.ts is docs-bundle-only.
+
+## 2026-11-23 — concepts.md reconciled with census drift (atlas `85d7bde`)
+
+concepts.md had not been touched since the concepts-census baseline of 2026-11-02;
+four hourly atlas bumps auto-accepted drift since then. Diffed that baseline against
+today's, census by census, and read the affected documents from `public/docs.json`.
+In this first pass all changes were in-place drift notes. (The Lifecycle 6 redefinition
+further down rewrote that unit's definition and kept the old one as History.)
+
+- **Lifecycle 6 (Data Repository triad) is gone upstream.** next-gen-atlas#369
+  (`315676e`) removed all 279 "Initial Planning" / "Operational GovOps Review" /
+  "Artifact Edit Proposal" documents (93 each → 0). 102 "Data Repository" containers
+  remain, 64 with no child, 38 holding payment lists only. Notes added at Lifecycle 2,
+  Lifecycle 6, the Root Edit / Artifact Edit Proposal entry, the II.7 topic row and the
+  Part III distinction.
+- **Instruments 10**: transitionary-measures 22 → 6; next-gen-atlas#377 (`65b0883`)
+  removed the 16 Root Edit pipeline copies in the Prime artifacts. Six survivors listed.
+- **Registries 1**: "List Of" prefix 46 → 60; new live registry List Of Sky Core Halos
+  (`dc48d6fa`, next-gen-atlas#383), quoted from source.
+- StarGuard Max Delay ×6 → ×10.
+- No prose change needed for: empty-scaffolding (two Osero directories moved to
+  populated), numbered-step-docs (48 → 57, Spark allocation procedures),
+  prohibition-language (55 → 54), cross-scope-duplication (152 → 159; the three
+  hand-picked exemplars are still members). Their numbers render live.
+
+Open after the first pass (both settled by the user later the same day, see the
+bullets below): the `title-templates` census still carries three buckets that
+read 0, and the Lifecycle 6 heading still names the triad. Whether to retire the
+concept or redefine it around the bare container is a call for the user. Halo Agents
+are noted under Registries 1 only; a concept entry of their own is not written.
+
+- **Actors 4 · Halo Agents added** (user decision: Halo Agents are a concept of
+  their own). Source-read entry: definition from `38cdad10` and `097be889`, one member
+  (Test Halo `59d23e0e`), the two "exception" relationships (no primitives, not in the
+  Agent Scope), the Ozone executor rule and the spell rule. Topic index rows added;
+  listed as item 7 of the spec'd-but-unrealized set. Not censused: with one member a
+  standing census would add nothing the graph-halos warning does not already give.
+- **Lifecycle 6 note extended** with what the removal consisted of: all 279 documents
+  were one-sentence stubs, and #369 also rewrote the Distribution Reward and
+  Integration Boost invocation process so the planning and review documents are no
+  longer Atlas documents. Retire-or-redefine is still open with the user.
+
+- **Lifecycle 6 redefined as "Data Repository"** (user decision). The unit is now the
+  per-instance container (exact title, 102 documents, all in the Prime artifacts; 64
+  childless, 38 holding payment lists). The triad entry is kept as a History bullet.
+  `title-templates` census: the three triad buckets, which read 0, are replaced by a
+  `Data Repository` bucket, so the redefined unit stays censused. Baseline regenerated
+  with `pnpm census:concepts --update`; the only change is that census (875 → 977
+  members: three zero buckets out, 102 Data Repository members in).
+- **Review fixes**: Lifecycle 6 Relationships now gives the measured parent split (97
+  under an ICD, 5 elsewhere: 3 in Spark, 2 in Grove) and no longer says every used repository is
+  empty — 4 of the 13 partner payment-address documents state an address. Sky Core
+  Halos section has 9 descendants, not 8. The Registries note names both Agent Scope
+  lists. The "no Facilitator or GovOps" line under Actors 4 is labelled as a graph
+  observation.

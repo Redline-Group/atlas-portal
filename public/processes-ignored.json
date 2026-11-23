@@ -1,5 +1,9 @@
 [
   {
+    "uuid": "0053204e-b511-4744-a996-1e5332e45d6e",
+    "reason": "requirement spec"
+  },
+  {
     "uuid": "00605e88-27a6-40f1-ae7e-5be7467a2da6",
     "reason": "category container (bundles Operational Security requirements, Compromised Key Response, and Non-Compliance consequences under one heading; not a single sequence)"
   },
@@ -25,6 +29,10 @@
   },
   {
     "uuid": "1a1f4bef-d19d-42ff-8ac4-746498df9fbc",
+    "reason": "requirement spec"
+  },
+  {
+    "uuid": "24c0ee2e-5a73-42d3-8ecb-f8d568a0a5cb",
     "reason": "requirement spec"
   },
   {
@@ -57,6 +65,10 @@
   },
   {
     "uuid": "3fa1e746-ea64-49f0-92e3-f914e8b92b16",
+    "reason": "requirement spec"
+  },
+  {
+    "uuid": "41640d2d-5665-4268-ba7b-0361ccd775ac",
     "reason": "requirement spec"
   },
   {
@@ -218,6 +230,10 @@
   {
     "uuid": "d537c3df-287c-45a5-aa69-2b4242b2259f",
     "reason": "role definition"
+  },
+  {
+    "uuid": "d772d321-0f36-46fb-b66a-97cd1f0d6c68",
+    "reason": "requirement spec"
   },
   {
     "uuid": "d81db018-bce7-44b9-a354-667f128a4db3",
