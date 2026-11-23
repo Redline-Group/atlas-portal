@@ -1,10 +1,6 @@
 import type { Rung } from "./subtreeState";
 
-// The verb describes what the UPCOMING click does, not the current state —
-// matches the hidden-sections tab's convention ("View N hidden sections").
-// The level is never 0 in a flat view (AtlasReader clamps its display), and
-// `dir` stops distinguishing anything there — both directions from rung 1
-// land on rung 2 (flatNextRung), so the "hide children" wording never fires.
+// The verb describes what the UPCOMING click does, not the current state.
 export function pendulumVerb({ level, dir }: Rung, flat: boolean): string {
   if (level === 2) return "collapse child bodies";
   if (flat) return "expand child bodies";
@@ -12,10 +8,7 @@ export function pendulumVerb({ level, dir }: Rung, flat: boolean): string {
   return dir === 1 ? "expand child bodies" : "hide children";
 }
 
-// Alt is the only way to reach the opposite swing, so the tooltip has to
-// say so — the affordance is otherwise invisible. With only two positions
-// (flat view), alt-click lands on the same target a plain click would —
-// there's no "other way" left to swing — so the verb is the same.
+// In a flat view there are only two positions, so alt-click lands where a plain click does.
 export function pendulumReverseVerb(cur: Rung, flat: boolean): string {
   if (flat) return pendulumVerb(cur, flat);
   if (cur.level === 0) return "show children with bodies";
@@ -23,8 +16,6 @@ export function pendulumReverseVerb(cur: Rung, flat: boolean): string {
   return cur.dir === 1 ? "hide children" : "expand child bodies";
 }
 
-/** The chevron's two labels: the accessible name (capitalised, names the doc)
- *  and the tooltip (both swings). */
 export function pendulumLabels(cur: Rung, flat: boolean, docNo: string): { name: string; tooltip: string } {
   const verb = pendulumVerb(cur, flat);
   return {

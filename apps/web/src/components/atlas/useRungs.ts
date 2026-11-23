@@ -4,9 +4,7 @@ import { DEFAULT_RUNG, type Rung, type RungLevel } from "./subtreeState";
 
 type RungMap = ReadonlyMap<string, Rung>;
 
-// Both updaters return the previous Map identity when nothing actually
-// changes — load-bearing: useAtlasScroll keys its re-scroll off that identity,
-// and the row list depends on `rung` too.
+// Both updaters keep the previous Map identity on no-op: useAtlasScroll keys its re-scroll off it.
 
 function withRungs(prev: RungMap, updates: Iterable<[string, Rung]>): RungMap {
   let next: Map<string, Rung> | null = null;
@@ -30,8 +28,6 @@ function raisedTo(prev: RungMap, ids: string[], minLevel: RungLevel): RungMap {
   return next ?? prev;
 }
 
-// Owns the reader's per-node rung map (see subtreeState.ts for the pendulum
-// model).
 export function useRungs(): {
   rung: RungMap;
   rungRef: RefObject<RungMap>;
@@ -39,20 +35,13 @@ export function useRungs(): {
   revealTo: (ids: string[], minLevel: RungLevel) => void;
 } {
   const [rung, setRung] = useState<RungMap>(() => new Map());
-  // Latest-value ref (the idiom useBodyExpansion documents) so callers that
-  // must read the current rung inside a click handler (before this render's
-  // state has committed) get the up-to-date map without depending on it.
   const rungRef = useRef<RungMap>(rung);
   rungRef.current = rung;
 
-  // Writes an arbitrary batch of rungs.
   const writeRungs = useCallback((updates: Iterable<[string, Rung]>) => {
     setRung((prev) => withRungs(prev, updates));
   }, []);
 
-  // Navigation reveal: raises rungs to at least minLevel, monotonically, and
-  // never lowers or touches an already-sufficient rung — so it can never
-  // collapse a branch the user had open elsewhere. Never writes body state.
   const revealTo = useCallback((ids: string[], minLevel: RungLevel) => {
     setRung((prev) => raisedTo(prev, ids, minLevel));
   }, []);

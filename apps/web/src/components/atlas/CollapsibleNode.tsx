@@ -18,31 +18,17 @@ export interface CollapsibleNodeProps {
   isSelected: boolean;
   isExpanded: boolean;
   hasChildren?: boolean;
-  /** Row is on its way out: still mounted so it can fade, but inert. It is
-   *  unmounted for real once the reader's exit timer clears. */
   isExiting?: boolean;
-  /** Primitives, never an object — passing an object here would break the
-   *  memo above on every render. dir never changes without level also
-   *  changing, so this adds zero extra re-renders in practice. */
+  /** Primitives, not a Rung object, so the memo holds. */
   rungLevel?: RungLevel;
   rungDir?: RungDir;
   gatedCount?: number;
   onExpandChildren?: (id: string) => void;
   idPrefix?: string;
-  /** Row is part of the selected node's descendant rail; "foot" closes it. */
   cradle?: "line" | "foot";
   cradleColor?: string;
-  /** Owning prime/executor agent name — shown as a pill under the doc number
-   *  whenever the row is expanded. Undefined for docs not under an agent. */
   agentName?: string | null;
-  /** A flat filtered view (selected-only OR changed-only) is active: hides the
-   *  hidden-descendants affordance, and swaps the pendulum's swing to the
-   *  flatNextRung/flatReverseRung variant (rung 0 is invisible in these views —
-   *  see AtlasReader's filterSet branch — so the ordinary 3-position swing
-   *  would let the chevron rest at/lean toward "hidden" for a click that does
-   *  nothing visible). Passed as a prop (not read from selection/preview
-   *  context) so switching views doesn't re-render every row; see
-   *  NodeSelectBox for the checkbox itself. */
+  /** A flat filtered view is active. A prop, not context, so switching views doesn't re-render every row. */
   inSelectedOnly?: boolean;
 }
 
@@ -53,7 +39,6 @@ export const CollapsibleNode = memo(function CollapsibleNode(props: CollapsibleN
   const { navigate, pendulum } = useAtlasActions();
   const isPreview = !!useDataSource().preview;
   const columns = useRowColumns(node, depth, hasChildren && !!pendulum);
-  // In preview: faint when removed, slightly dimmed when untouched (unless selected).
   const fade = usePreviewFade(node.id, 0.92, isSelected);
   const activation = useRowActivation({ nodeId: node.id, isSelected, isExpanded, hasContent });
   return (
@@ -74,9 +59,7 @@ export const CollapsibleNode = memo(function CollapsibleNode(props: CollapsibleN
         isPreview={isPreview}
       />
       {isSelected && isExpanded && <div className="atlas-node-meta"><NodeMeta node={node} /></div>}
-      {/* In selected-only mode the reader shows a flat list that ignores depth-6
-          gating, so revealing hidden descendants is a no-op — hide the tab
-          rather than offer a dead button. */}
+      {/* The flat view ignores depth gating, so the tab would be a dead button. */}
       {gatedCount > 0 && onExpandChildren && !inSelectedOnly && (
         <HiddenChildrenTab nodeId={node.id} docNo={node.doc_no} count={gatedCount} onReveal={onExpandChildren} />
       )}

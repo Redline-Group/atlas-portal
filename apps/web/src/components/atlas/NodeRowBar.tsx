@@ -7,13 +7,7 @@ import type { Rung } from "./subtreeState";
 
 const TITLE_CLASS = "text-lg font-bold";
 
-// Shift-click works anywhere on the row, but marking the whole row put the
-// hint up while crossing the chiclets, the pendulum chevron and the body text
-// as well — near-constantly. The title is where the gesture is worth offering.
-//
-// Inside the split pane a shift-click highlights the doc in the main reader
-// instead, so the hint says that — as does the CSS hint for these rows
-// (--split-hint on .junior-pane, index.css).
+// The shift-click hint sits on the title only; on the whole row it showed near-constantly.
 function NodeTitle({ depth, heading, inSplit }: { depth: number; heading: string; inSplit: boolean }) {
   const HeadingTag = `h${Math.min(depth, 6)}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   return (
@@ -29,18 +23,13 @@ function NodeTitle({ depth, heading, inSplit }: { depth: number; heading: string
 export interface NodeRowBarProps {
   entry: FlatEntry;
   columns: RowColumns;
-  /** Where this row's children sit on the pendulum. */
   rung: Rung;
-  /** A flat filtered view is active (see PendulumChevron). */
   flat: boolean;
-  /** The row sits in the split pane. */
   inSplit: boolean;
   isPreview: boolean;
 }
 
-// A reader row's title bar: doc number, pendulum chevron, title.
-// data-row-bar: the marker the row's click handler uses to tell title-bar
-// clicks from body clicks (see clickRow in useRowActivation.ts).
+// data-row-bar lets clickRow (useRowActivation.ts) tell title-bar clicks from body clicks.
 export function NodeRowBar({ entry, columns, rung, flat, inSplit, isPreview }: NodeRowBarProps) {
   const { node, depth } = entry;
   return (

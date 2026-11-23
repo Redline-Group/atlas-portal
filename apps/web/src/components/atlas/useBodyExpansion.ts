@@ -3,17 +3,13 @@ import { ATLAS_EMPTY_SET, type LoadedData } from "@/lib/atlasHelpers";
 import { removed, toggled } from "../../lib/setOps";
 
 export interface BodyExpansion {
-  /** Docs whose body opens on its own: every doc navigated to so far. */
   expandedSet: Set<string>;
-  /** Docs the user flipped away from that default. A body is open iff
-   *  `expandedSet.has(id) !== userToggles.has(id)`. */
+  /** A body is open iff `expandedSet.has(id) !== userToggles.has(id)`. */
   userToggles: Set<string>;
   toggle: (nodeId: string) => void;
-  /** Bulk body writer: forces every listed doc that has content open/closed. */
   setBodiesExpanded: (ids: string[], expand: boolean) => void;
 }
 
-// target: isExpanded (= auto XOR toggled) === expand
 function bodiesSetTo(
   prev: Set<string>,
   ids: string[],
@@ -41,9 +37,6 @@ function useAutoExpanded(id: string, data: LoadedData): Set<string> {
   }, [data, id]);
 }
 
-// Which doc bodies are open in the reader: the navigated-to docs open on their
-// own, and the user's toggles flip individual docs away from that. Navigating
-// to a doc clears its toggle, so arriving always shows the body.
 export function useBodyExpansion(id: string, data: LoadedData): BodyExpansion {
   const [userToggles, setUserToggles] = useState<Set<string>>(new Set());
   useEffect(() => {
@@ -54,17 +47,11 @@ export function useBodyExpansion(id: string, data: LoadedData): BodyExpansion {
   }, []);
 
   const expandedSet = useAutoExpanded(id, data);
-  // expandedSet gets a fresh identity on every navigation; read it through a ref
-  // so setBodiesExpanded stays referentially stable — it feeds the pendulum
-  // and thus the actions-context object — if it churned per navigation, every
-  // CollapsibleNode (a context consumer) would re-render on each doc click.
+  // Ref keeps setBodiesExpanded stable; churning it would re-render every row via the actions context.
   const expandedSetRef = useRef(expandedSet);
   expandedSetRef.current = expandedSet;
 
-  // One setUserToggles call for a whole level of children at once.
-  // expandedSetRef is read HOISTED OUTSIDE the updater (StrictMode
-  // double-invokes it; see main.tsx) — looping the per-node toggle over a
-  // Scope's ~1,540 ids would otherwise allocate 1,540 growing Sets.
+  // Ref read outside the updater, which StrictMode double-invokes.
   const setBodiesExpanded = useCallback((ids: string[], expand: boolean) => {
     const auto = expandedSetRef.current;
     setUserToggles((prev) => bodiesSetTo(prev, ids, expand, auto, data.atlas.docs));

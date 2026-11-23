@@ -2,12 +2,9 @@ import type { FlatEntry } from "@/lib/atlasHelpers";
 import { descendantRun, entryDepth, type RowSpan, type VisualTree } from "../../lib/visualTree";
 import { DEFAULT_RUNG, flatRung, type Rung } from "./subtreeState";
 
-/** One reader row, before it becomes a CollapsibleNode. */
 export interface ReaderRow {
   entry: FlatEntry;
-  /** Docs were filtered out between this row and the one before it. */
   gap: boolean;
-  /** Left rail under the selected node; "foot" closes it on the last row. */
   cradle?: "line" | "foot";
   rung: Rung;
   hasChildren: boolean;
@@ -17,9 +14,7 @@ export interface ReaderRow {
 
 export interface ReaderRowList {
   rows: ReaderRow[];
-  /** The selected node's color, when it has a cradle. */
   cradleColor?: string;
-  /** Row span of the selected node + its cradle; null when it has no row. */
   group: RowSpan | null;
 }
 
@@ -30,10 +25,6 @@ function cradleMark(run: RowSpan | null, pos: number, isFoot: boolean): ReaderRo
 
 type Kept = { entry: FlatEntry; i: number; gap: boolean };
 
-// A flat subset in document order. Between two kept docs that are NOT adjacent
-// in the full atlas order (something was filtered out between them), `gap`
-// asks for an ellipsis barrier so the gap reads as intentional rather than as
-// true neighbors.
 function keptEntries(flatNodes: FlatEntry[], filterSet: ReadonlySet<string>): Kept[] {
   const kept: Kept[] = [];
   let prev = -1;
@@ -48,32 +39,14 @@ function keptEntries(flatNodes: FlatEntry[], filterSet: ReadonlySet<string>): Ke
 export interface FlatRowsInput {
   flatNodes: FlatEntry[];
   filterSet: ReadonlySet<string>;
-  /** Docs with a descendant in the filter set (ancestorsOfMatches). */
   parentIds: ReadonlySet<string>;
   rung: ReadonlyMap<string, Rung>;
   selectedId: string | null;
-  /** False in the changed-only preview, which draws no cradle. */
   cradle: boolean;
 }
 
-// The flat filtered list (selected-only / changed-only) is built purely from
-// filterSet — rung state is a hierarchy-view concept that must NOT gate
-// VISIBILITY here, or a matching doc that happens to sit under a collapsed
-// ancestor would silently vanish from the subset (e.g. changed docs omitted so
-// a review looks complete when it isn't). gatedCount is fixed at 0 — a real
-// "N hidden" tab here would mutate rung state with no visible effect in this
-// view. The rung, unlike visibility, DOES read the real rung map: the pendulum
-// still writes it from this view, so the chevron's displayed angle/label must
-// track what a click actually does. flatRung clamps level 0 to its display
-// stand-in (1): 0 is invisible in this flat view, so showing its "hidden"
-// glyph/angle would read as a dead click.
-//
-// Cradle: the selected node's descendants that survive the filter get the rail
-// — even when non-contiguous (docs filtered out between them). The flat list's
-// adjacency says nothing here, so the selected node's descendant span is taken
-// in the FULL flatNodes (a contiguous deeper run in DFS order) and kept rows
-// whose original index falls inside it are marked; the last such row gets the
-// closing foot. The group spans the selected node + its cradle rows.
+// Visibility comes only from filterSet: gating on rung would silently drop matches under a collapsed ancestor.
+// The cradle span is taken in the full flatNodes, since kept rows need not be contiguous.
 export function flatRows(input: FlatRowsInput): ReaderRowList {
   const { flatNodes, filterSet, parentIds, rung, selectedId } = input;
   const kept = keptEntries(flatNodes, filterSet);
@@ -105,15 +78,7 @@ export interface TreeRowsInput {
   selectedId: string | null;
 }
 
-// The hierarchy view. Row visibility comes from one source — hiddenNodeIds,
-// computed from the rung map — plus the rows on their way out, which keep
-// rendering (marked, inert, fading) for EXIT_MS so a collapse dissolves instead
-// of blinking. They are gone from the DOM for real once the timer clears.
-//
-// Cradle: the selected node's visible descendants are the contiguous run of
-// deeper entries right after it (flatNodes is DFS document order). They get a
-// left rail in the selected node's color, closed under the last one by a
-// curved foot. With no visible descendants the group is just the selected node.
+// Exiting rows keep rendering for EXIT_MS so a collapse fades instead of blinking.
 export function treeRows(input: TreeRowsInput): ReaderRowList {
   const { flatNodes, tree, rung, hiddenNodeIds, exitingIds, selectedId } = input;
   const visible = flatNodes.filter((e) => !hiddenNodeIds.has(e.node.id) || exitingIds.has(e.node.id));

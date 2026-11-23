@@ -3,13 +3,10 @@ import { track } from "../../lib/analytics";
 export interface HiddenChildrenTabProps {
   nodeId: string;
   docNo: string;
-  /** How many descendants sit behind the depth gate. */
   count: number;
   onReveal: (id: string) => void;
 }
 
-// The "N hidden" tab under a row whose deeper descendants are gated. The click
-// stops at the tab so it does not also select or toggle the row.
 export function HiddenChildrenTab({ nodeId, docNo, count, onReveal }: HiddenChildrenTabProps) {
   return (
     <button

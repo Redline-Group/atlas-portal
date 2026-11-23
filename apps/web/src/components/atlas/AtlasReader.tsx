@@ -38,8 +38,6 @@ interface ReaderSplitPaneProps {
   onShowInMain: (id: string, via?: SplitOpenVia) => void;
 }
 
-// The comparison pane under the reader: a plain click in it re-roots it, a
-// shift-click (rows and doc links alike) selects in the reader.
 function ReaderSplitPane({ splitId, data, onSplitChange, onShowInMain }: ReaderSplitPaneProps) {
   return (
     <ErrorBoundary resetKey={splitId} fallback={panelError}>
@@ -54,23 +52,15 @@ function ReaderSplitPane({ splitId, data, onSplitChange, onShowInMain }: ReaderS
   );
 }
 
-// memo boundary: AtlasView re-renders on annotation-tab switches and other
-// panel state the reader doesn't care about. All props here are stable refs
-// (data, agentByDoc memoized; handlers are useCallbacks), so the reader skips
-// those re-renders entirely — the panels can never slow it. (Selection changes
-// still re-render it shallowly via its own selection-set subscription for the
-// "selected only" view, but the row list bails when that set is unchanged.)
+// memo: AtlasView re-renders on panel state the reader ignores; all props are stable refs.
 export const AtlasReader = memo(function AtlasReader(props: AtlasReaderProps) {
   const { id, selectedId, splitId, onSplitChange, data, agentByDoc } = props;
   const { navigate } = useAtlasActions();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  // Alt/Shift are mirrored onto <html> by useModifierKeyAttrs, mounted at the
-  // App shell — the chevrons read data-alt to preview the reversed swing.
   const filter = useAtlasFilter();
   const flat = !!filter.filterSet;
   const disclosure = useReaderDisclosure({ id, selectedId, data, flat, scrollContainerRef });
-  // Re-scroll to the selected doc whenever the view mode flips, so leaving
-  // "selected only" (or preview "changed only") keeps the current node in view.
+  // Re-scroll on view-mode flips so leaving a filtered view keeps the node in view.
   useAtlasScroll(id, data, disclosure.rung, filter.subset);
   const docList = useReaderRows({ flatNodes: data.flatNodes, selectedId, agentByDoc }, filter, disclosure);
   const showInMain = useShowInMain(navigate);

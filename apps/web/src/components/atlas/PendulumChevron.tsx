@@ -6,15 +6,12 @@ import { rungClass, rungHoverAngle, rungReverseHoverAngle, type Rung } from "./s
 export interface PendulumChevronProps {
   nodeId: string;
   docNo: string;
-  /** Where this row's children currently sit on the pendulum. */
   rung: Rung;
   /** A flat filtered view is active: the swing skips the invisible rung 0. */
   flat: boolean;
 }
 
-// The » chevron that swings one level of a row's children between hidden,
-// titles and titles+bodies. The hover lean toward the next rung is CSS, fed
-// by the two custom properties.
+// Swings a row's children between hidden, titles and titles+bodies; the hover lean is CSS.
 export function PendulumChevron({ nodeId, docNo, rung, flat }: PendulumChevronProps) {
   const { ref, swing } = useChevronSwing(nodeId, rung, flat);
   const labels = pendulumLabels(rung, flat, docNo);
