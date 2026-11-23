@@ -176,8 +176,7 @@ export function resolveAddressAsOf(
   const info = infoFor(address, addrMap);
   if (!info) return { readAt: null, priceAt: null };
   const key = address.toLowerCase();
-  const { chains } = readingChains(address, addrMap, balancesByAddress);
-  const rows = chains.map((chain) => balancesByAddress[`${key}|${chain}`]).filter((r): r is AddressBalances => !!r);
+  const rows = readingChains(address, addrMap, balancesByAddress).chains.flatMap((chain) => balancesByAddress[`${key}|${chain}`] ?? []);
   const quoted = heldAcross(key, info.chains, balancesByAddress).filter((h) => freshPrice(h.symbol, prices) != null);
   return {
     readAt: oldestTime(rows.map((r) => r.checkedAt)),
