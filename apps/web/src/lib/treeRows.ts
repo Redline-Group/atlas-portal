@@ -64,7 +64,7 @@ export function cradleRange(
   const sel = selectedIndex >= 0 ? visibleNodes[selectedIndex] : undefined;
   if (!sel) return null;
   // Selected-only view: unselected intermediates are dropped, so a deeper
-  // treeDepth no longer implies "descendant of the selection" — a different
+  // treeDepth does not imply "descendant of the selection" — a different
   // selected branch can sit deeper in the flattened list. Size the cradle by
   // TRUE descendants of the selected node instead (see selectedDescendantRunEnd).
   const end = selectionSet

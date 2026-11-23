@@ -39,7 +39,7 @@ import { matchNodes } from "../lib/history-identity.mjs";
 import { diffEditsMap, diffText } from "./history-diff.mjs";
 import { contentDupCounts, occKey } from "./history-occkey.mjs";
 import { fetchPrContext } from "./atlas-pr-context.mjs";
-import { runAutoCurate } from "./auto-curate-run.mjs";
+import { runAutoCurate } from "./auto-curate-run.ts";
 import { reportAutoCuration, writeAutoDecisions, writeProposals, loadLlmCache, writeLlmCache } from "./auto-curate-io.mjs";
 
 const ROOT = process.cwd();

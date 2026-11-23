@@ -22,7 +22,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { loadHtmlAt } from "../lib/atlas-html.mjs";
-import { runAutoCurate } from "./auto-curate-run.mjs";
+import { runAutoCurate } from "./auto-curate-run.ts";
 import { writeAutoDecisions, reportAutoCuration, writeProposals, loadLlmCache, writeLlmCache } from "./auto-curate-io.mjs";
 import { proposePredecessor, proposeClusterAssignment } from "../../src/server/history/history-curate.ts";
 import { config } from "../../src/server/config.ts";
