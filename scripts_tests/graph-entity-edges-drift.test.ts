@@ -5,8 +5,7 @@
 // graph-tripwires.test.ts for the gate/type half).
 
 import { describe, it, expect, vi, afterEach } from "vitest";
-// @ts-expect-error — .mjs without types; runtime-only import.
-import { extractEntities } from "../scripts/lib/graph-entities.mjs";
+import { extractEntities } from "../scripts/lib/graph-entities.ts";
 // @ts-expect-error — .mjs without types; runtime-only import.
 import { extractEntityEdges } from "../scripts/lib/graph-entity-edges.mjs";
 

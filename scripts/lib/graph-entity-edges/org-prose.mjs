@@ -1,5 +1,5 @@
 // 2w. Org-to-org prose relations. Two conservative sentence shapes, shared with
-// graph-entities.mjs Phase 1p (see graph-patterns.mjs):
+// graph-entities.ts Phase 1p (see graph-patterns.mjs):
 //   "Rubicon is the Prime Foundation associated with Obex."  → prime_foundation_of
 //   "Phoenix Labs is a development company that provides services to the
 //    Spark Foundation"                                       → provides_services_to

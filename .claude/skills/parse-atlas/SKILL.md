@@ -389,7 +389,7 @@ Currently known bindings (discovered by the walk, not hardcoded):
 
 New roles added under `A.1.7.1` are picked up automatically — no code changes needed. (The section currently sits at `A.1.8.1` after a renumber — the UUID anchor is what holds.)
 
-**Global "Designated …" sweep (1k1 in `graph-entities.mjs`):** binding docs are NOT confined to this section — the census found `Designated Synome Editor` (A.1.3.2.1.1, Synome scope): "The Synome Editor role is held by Archon Tech." Any doc titled `Designated …` whose content matches `/The (.+?) role is held by ([^.]+)\./` emits a `holds_role_for` edge with the role slug taken from the sentence itself. The title gate keeps prose hypotheticals out; a binding doc without the "Designated" title surfaces in the census `s:role-held-by` cluster instead of being guessed.
+**Global "Designated …" sweep (1k1 in `graph-entities.ts`):** binding docs are NOT confined to this section — the census found `Designated Synome Editor` (A.1.3.2.1.1, Synome scope): "The Synome Editor role is held by Archon Tech." Any doc titled `Designated …` whose content matches `/The (.+?) role is held by ([^.]+)\./` emits a `holds_role_for` edge with the role slug taken from the sentence itself. The title gate keeps prose hypotheticals out; a binding doc without the "Designated" title surfaces in the census `s:role-held-by` cluster instead of being guessed.
 
 Emit for each binding doc found:
 
@@ -487,7 +487,7 @@ const INSTANCE_SCOPED_PRIMITIVES = {
 };
 ```
 
-**Instance display name for "Single" ICDs.** Some ICDs are titled `"Single Instance Configuration Document"` — stripping "Instance Configuration Document" yields the useless name `"Single"`. For these, extract the display name from `primRoot.content` instead: match `/for (.+?)\. See/i` to get the full actor-scoped phrase (e.g. `"Spark's Instance of the Agent Token Primitive"`). Normalize `instance`/`instances` → `Instance` to paper over atlas casing inconsistencies. Implemented in `scripts/lib/graph-entities.mjs`.
+**Instance display name for "Single" ICDs.** Some ICDs are titled `"Single Instance Configuration Document"` — stripping "Instance Configuration Document" yields the useless name `"Single"`. For these, extract the display name from `primRoot.content` instead: match `/for (.+?)\. See/i` to get the full actor-scoped phrase (e.g. `"Spark's Instance of the Agent Token Primitive"`). Normalize `instance`/`instances` → `Instance` to paper over atlas casing inconsistencies. Implemented in `scripts/lib/graph-entities.ts`.
 
 **Kind + status derivation.** Each ICD resolves to either an Instance (`entity_type=instance`, status Active/Suspended/Completed) or an Invocation (`entity_type=invocation`, status InProgress). `{status}` lives on both the entity meta and the corresponding `instance_of`/`invocation_of` edge meta. Derive by **reading the tier doc's title**, not its position — Allocation System inserts a Multi-Instance Coordinator Document that shifts every tier down by one. Walk up the ancestor chain (`classifyIcd` in `graph-instances.mjs`) since tier docs sit at variable depth (flat `.2`/`.3` layouts vs nested `.1.5.1.2` Suspended):
 
@@ -585,7 +585,7 @@ Every in-scope Instance entity emits an entity→entity `invoked_by` edge to its
 
 ### Pattern 16: Active Data table entity extraction (Phase 2.7)
 
-Three Active Data nodes contain structured registry tables whose rows become named entities. Parsed by `scripts/lib/table-parser.mjs` and processed in Phase 2.7 of `build-graph.mjs` (runs after Phase 2.5, before Phase 3).
+Three Active Data nodes contain structured registry tables whose rows become named entities. Parsed by `scripts/lib/table-parser.ts` and processed in Phase 2.7 of `build-graph.mjs` (runs after Phase 2.5, before Phase 3).
 
 **Target nodes — keyed by UUID, never by doc_no:**
 
@@ -623,7 +623,7 @@ Three Active Data nodes contain structured registry tables whose rows become nam
 
 **`ecosystem_actor → delegate_org` upgrade rule:** if an entity already exists as `ecosystem_actor` (e.g. from the ERG list, Pattern 7) and its EA address appears in the Current Aligned Delegates table, its `entity_type` is upgraded to `delegate_org` in place. The delegates table is the authoritative governance record; ERG membership is incidental.
 
-**Table parser utilities (`scripts/lib/table-parser.mjs`):**
+**Table parser utilities (`scripts/lib/table-parser.ts`):**
 - `parseMarkdownTable(content)` — splits on `|`, skips separator rows (cells of only `-`, `:`, spaces), returns `Array<Record<columnHeader, cellText>>`
 - `extractEthAddresses(cell)` — returns all lowercase `0x[0-9a-f]{40}` addresses from a cell (handles Etherscan URL format and bare addresses)
 - `extractUrl(cell)` — returns the first `(https://…)` URL from a markdown link in the cell
@@ -675,7 +675,7 @@ Every multisig in the atlas is a parent doc with a regular set of child Cores, m
 - ~28 multisigs today: 4 SkyLink Freezers (A.1.10.4.1.\*), SparkLend Security Access, Demand Side Buffer (A.2.2.4.3), Core Council + Aligned Delegates Buffers (A.2.3.1.2.2.2.\*), 2 Operator Multisigs (A.3/A.4), Skybase USDS Demand Subsidies, per-agent Relayer/Freezer multisigs (A.6.1.1.{1,2,3,5,6}).
 - **The five-child convention is editorial, not spec-guaranteed** — robustness comes from the warnings, not from assuming stability.
 
-### Pattern 18: Transfer/grant events (`scripts/lib/graph-transfers.mjs`, Phase 2.8)
+### Pattern 18: Transfer/grant events (`scripts/lib/graph-transfers.ts`, Phase 2.8)
 
 Three shapes become `funds_transfer` edges (`entity(sender) → entity(recipient)`, meta `{kind, status, amounts, tx_hash?, period?, period_months?, begin_date?, recipient_address?}`):
 
@@ -698,7 +698,7 @@ Every `Integration Partner Name` param value on an integration-boost instance/in
   - `"X is the Prime Foundation associated with Y."` → `prime_foundation_of`
   - `"X is a|an|the [...] development company that provides services to [the] Y"` → `provides_services_to` (both "is a" and "is the" phrasings occur — e.g. Phoenix Labs "is a", Treadstone "is the")
   - In both shapes either name may be followed by a parenthetical aside, which is matched but not captured: `"Grove Labs (formerly Grove Development Company) is a development company …"` (A.6.1.1.2.2.1.1.3.1.1.5, next-gen-atlas PR 370) yields the entity **Grove Labs**. The former name is not kept as an alias.
-- **Pattern 20b — agent Foundation/Development Company docs** (`graph-entities.mjs` 1p, runs last in Phase 1, BEFORE org prose — a Phase 2 step — ever runs): every Agent artifact (`A.6.1.1.N.*`) usually carries its own `"Foundation"` doc (`"<Name> is the Prime Foundation associated with <Agent>."`) and `"Development Company"` doc (same sentence shapes as org prose, and the SAME shared regexes — `PRIME_FOUNDATION_RE`/`PROVIDES_SERVICES_RE`/`cleanOrgProseName` in `graph-patterns.mjs`, so the two consumers can't drift on what counts as a match). Several agents' foundation/dev-co are named **nowhere else** in the atlas (no accord party list, no ERG membership) — e.g. Grove Development Company, Ekliptyka (Skybase), Pattern Dev Co. — so scanning free prose for edges alone silently drops them (found 2026-09-28 atlas-health sweep). This step title-anchors on the two doc titles (not free content scanning) to register/correct the entity directly: creates it if missing, or corrects `entity_type` if an accord already misclassified it by the name-suffix heuristic (Pattern 12) — Obex's Rubicon is the case that needs correcting. The correction only applies when the existing entity is itself `development_company` or `ecosystem_actor` — anything else (an agent, a composite_party, …) whose slug collides with the doc's named subject is left alone and a `[drift]` warning fires, since retyping it would be silent graph corruption, not a fix. It never overwrites an existing entity's `defining_doc_id`/`meta` — the correction (`corrected_type_by`, `corrected_type_source_doc_no`) is recorded alongside the original provenance. A title-anchored doc whose sentence doesn't match either shared regex also warns (`did not parse`), the same as the Spell Team parser (1k2).
+- **Pattern 20b — agent Foundation/Development Company docs** (`graph-entities.ts` 1p, runs last in Phase 1, BEFORE org prose — a Phase 2 step — ever runs): every Agent artifact (`A.6.1.1.N.*`) usually carries its own `"Foundation"` doc (`"<Name> is the Prime Foundation associated with <Agent>."`) and `"Development Company"` doc (same sentence shapes as org prose, and the SAME shared regexes — `PRIME_FOUNDATION_RE`/`PROVIDES_SERVICES_RE`/`cleanOrgProseName` in `graph-patterns.mjs`, so the two consumers can't drift on what counts as a match). Several agents' foundation/dev-co are named **nowhere else** in the atlas (no accord party list, no ERG membership) — e.g. Grove Development Company, Ekliptyka (Skybase), Pattern Dev Co. — so scanning free prose for edges alone silently drops them (found 2026-09-28 atlas-health sweep). This step title-anchors on the two doc titles (not free content scanning) to register/correct the entity directly: creates it if missing, or corrects `entity_type` if an accord already misclassified it by the name-suffix heuristic (Pattern 12) — Obex's Rubicon is the case that needs correcting. The correction only applies when the existing entity is itself `development_company` or `ecosystem_actor` — anything else (an agent, a composite_party, …) whose slug collides with the doc's named subject is left alone and a `[drift]` warning fires, since retyping it would be silent graph corruption, not a fix. It never overwrites an existing entity's `defining_doc_id`/`meta` — the correction (`corrected_type_by`, `corrected_type_source_doc_no`) is recorded alongside the original provenance. A title-anchored doc whose sentence doesn't match either shared regex also warns (`did not parse`), the same as the Spell Team parser (1k2).
 
 ### Pattern 21: Bridge validator sets (`scripts/lib/graph-bridges.ts`, Phase 2.8)
 
@@ -988,7 +988,7 @@ funds_data_gap                     doc     → entity   Atlas describes a planne
 ```
 
 The last two are **absence edges** — added to this reference 2026-08-21, though
-`graph-transfers.mjs` has emitted them for some time. They exist so "who was
+`graph-transfers.ts` has emitted them for some time. They exist so "who was
 paid?" can be answered "the Atlas authorizes this but never records it" rather
 than returning nothing; `silence_reason` and `expected_record_fields` carry that
 answer.
@@ -1108,7 +1108,7 @@ For `et="instance"`, the parsed meta is:
 **v2.0 diff from v1.7:**
 
 - **Skill renamed** from `graph-atlas` to `parse-atlas`. Description updated to centre on parsing the atlas into graph form.
-- **Pattern 16 (new) — Active Data table entity extraction:** documents the three target Active Data UUIDs, column→field mappings for Current Aligned Delegates / Derecognized Delegates / SRC Membership Registry, the `entity → doc` variant of `instance_of`, the address-based identity lookup, the `ecosystem_actor → delegate_org` upgrade rule, and the `scripts/lib/table-parser.mjs` utilities.
+- **Pattern 16 (new) — Active Data table entity extraction:** documents the three target Active Data UUIDs, column→field mappings for Current Aligned Delegates / Derecognized Delegates / SRC Membership Registry, the `entity → doc` variant of `instance_of`, the address-based identity lookup, the `ecosystem_actor → delegate_org` upgrade rule, and the `scripts/lib/table-parser.ts` utilities.
 - **Entity Types table:** `delegate_org` row updated to reference Active Data UUIDs and note `is_active=0` for derecognized. `src_member` row added.
 - **Edge vocabulary — `has_address`:** documents `meta.role` values (`ea_address`, `delegation_contract`, `governance`) that disambiguate multiple addresses on one entity.
 - **Edge vocabulary — `listed_in` (new):** structural `entity → doc` edge for table membership (Pattern 16). Replaces the incorrect `instance_of` `entity → doc` variant. `instance_of` remains `doc → doc` only.
@@ -1121,7 +1121,7 @@ For `et="instance"`, the parsed meta is:
 - **Pattern 16 — Tables 4+5:** Current Authorized Forum Accounts (`b71564fd`; `meta.forum_handle`/`forum_role`, rep individuals, `authorized_rep_for`) and Aligned Delegate Breach Registry (`1ddd9cf6`; dated `listed_in` breach events).
 - **Pattern 16 — drift detector:** loud `[drift]` warning for any non-handled Active Data table with rows (tripwire for the 29 empty payment ledgers + Registered Multisigs `7d966e5e`).
 - **Pattern 17 (new) — Multisigs:** five-child structural convention, threshold/signer prose shapes, role-reference resolution with `meta.via_role`, `multisig` entity type, `signer_of` + `can_modify_signers_of` edges. `scripts/lib/graph-multisigs.mjs`, Phase 2.8.
-- **Pattern 18 (new) — Transfer/grant events:** A.2.13 grants, genesis distributions, accord grant authorizations → `funds_transfer` (graph.json-only). `scripts/lib/graph-transfers.mjs`, Phase 2.8.
+- **Pattern 18 (new) — Transfer/grant events:** A.2.13 grants, genesis distributions, accord grant authorizations → `funds_transfer` (graph.json-only). `scripts/lib/graph-transfers.ts`, Phase 2.8.
 - **Pattern 19 (new) — Integration partners:** `Integration Partner Name` params → `ecosystem_actor/integration_partner` entities + `integration_partner_of` edges.
 - **Pattern 20 (new) — Spell Team + org prose:** `holds_role_for` `meta.role="spell_team_member"` (Dewiz, Sidestream); `prime_foundation_of` + `provides_services_to` prose edges (emit only when both endpoints resolve).
 - **"Not in the atlas" section (new):** payout history, spell execution history, pioneer dates, individual signer addresses, org hierarchy.

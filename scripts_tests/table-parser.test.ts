@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-// @ts-expect-error — .mjs without types; runtime-only import for parser access
-import { extractEthAddresses, extractUrl, parseMarkdownTable } from "../scripts/lib/table-parser.mjs";
+import { extractEthAddresses, extractUrl, parseMarkdownTable } from "../scripts/lib/table-parser.ts";
 
 describe("extractEthAddresses", () => {
   it("extracts a plain 0x40-hex address", () => {

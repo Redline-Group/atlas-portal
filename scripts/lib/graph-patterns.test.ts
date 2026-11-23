@@ -144,7 +144,7 @@ describe("doc_no / title predicates", () => {
 // rather than failing loudly.
 describe("bulletField", () => {
   const cases: Array<[string, RegExp, RegExp]> = [
-    // graph-transfers.mjs — A.2.13 grant docs
+    // graph-transfers.ts — A.2.13 grant docs
     [
       "AMOUNT_LINE_RE",
       bulletField(String.raw`(.+?)\s+amount`, String.raw`([\d,.]+)`, "gim"),

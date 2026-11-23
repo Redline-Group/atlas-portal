@@ -2,9 +2,7 @@
 // GovOps-assignment doc → the executor agent that doc sits under.
 import { isGovOpsDoc } from "../graph-patterns.mjs";
 import { extractAssignment } from "../graph-content-extract.ts";
-
-// Regex source handed to extractAssignment; graph-entities.mjs reads the same assignment sentence.
-export const GOVOPS_FOR_PREFIX = "(?:(?:Operational|Core) )?GovOps for [^.]+";
+import { GOVOPS_FOR_PREFIX } from "./assignment-prefixes.ts";
 
 function run(ctx) {
   for (const d of ctx.allDocs.filter(isGovOpsDoc)) {

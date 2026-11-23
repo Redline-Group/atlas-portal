@@ -26,20 +26,18 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import {
-  slugify,
-  makeEntity,
-} from "../lib/graph-patterns.mjs";
+import { slugify } from "../lib/graph-patterns.mjs";
+import { entityAdder } from "../lib/graph-records.ts";
 import { checkGateTripwires, warnDriftCount } from "../lib/graph-tripwires.mjs";
 import { extractMultisigs } from "../lib/graph-multisigs.mjs";
-import { extractTransfers } from "../lib/graph-transfers.mjs";
+import { extractTransfers } from "../lib/graph-transfers.ts";
 import { extractBridges } from "../lib/graph-bridges.ts";
 import { extractOmni } from "../lib/graph-omni.mjs";
 import { extractTransitions } from "../lib/graph-transitions.mjs";
-import { extractEntities } from "../lib/graph-entities.mjs";
+import { extractEntities } from "../lib/graph-entities.ts";
 import { extractDocEdges } from "../lib/graph-doc-edges.mjs";
 import { extractEntityEdges } from "../lib/graph-entity-edges.mjs";
-import { extractActiveData } from "../lib/graph-active-data.mjs";
+import { extractActiveData } from "../lib/graph-active-data.ts";
 import { enrichAddresses } from "../lib/graph-address-enrich.mjs";
 import {
   ETH_ADDR_RE,
@@ -383,7 +381,7 @@ for (const [et, count] of [...edgeTypeCounts.entries()].sort((a, b) => b[1] - a[
 // prose-pattern phases above (Current Aligned Delegates, Derecognized
 // Delegates, SRC Membership Registry, Current Authorized Forum Accounts,
 // Aligned Delegate Breach Registry) plus a drift detector for every other
-// Active Data table in the atlas. See scripts/lib/graph-active-data.mjs and
+// Active Data table in the atlas. See scripts/lib/graph-active-data.ts and
 // .claude/skills/parse-atlas/SKILL.md Pattern 16.
 // ---------------------------------------------------------------------------
 extractActiveData(allDocs, docById, entityMap, edges, addressesAtlas, addressesRaw);
@@ -396,13 +394,7 @@ extractActiveData(allDocs, docById, entityMap, edges, addressesAtlas, addressesR
 // Phase 2 so bare role references ("Core GovOps") resolve via role edges.
 // ---------------------------------------------------------------------------
 {
-  function addPatternEntity(slug, name, entity_type, subtype, defining_doc_id, meta) {
-    const existing = entityMap.get(slug);
-    if (existing) return existing;
-    const ent = makeEntity(slug, name, entity_type, { subtype, defining_doc_id, meta });
-    entityMap.set(slug, ent);
-    return ent;
-  }
+  const addPatternEntity = entityAdder(entityMap);
 
   // --- Integration partners (from ICD params collected in Phase 2.5) ---
   // Each distinct "Integration Partner Name" value becomes an ecosystem_actor

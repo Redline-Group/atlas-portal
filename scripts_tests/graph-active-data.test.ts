@@ -1,13 +1,12 @@
 // Unit tests for Pattern 16 Active Data table extraction (Phase 2.7,
-// scripts/lib/graph-active-data.mjs). The module keys its five tables off
+// scripts/lib/graph-active-data.ts). The module keys its five tables off
 // hardcoded doc UUIDs, so the fixtures below reuse those exact UUIDs — that
 // identity IS the contract (doc_nos move, uuids don't). Table shapes mirror
 // the real atlas columns; values are synthetic so no assertion depends on
 // current atlas content.
 
 import { describe, it, expect, vi, afterEach } from "vitest";
-// @ts-expect-error — .mjs without types; runtime-only import.
-import { extractActiveData } from "../scripts/lib/graph-active-data.mjs";
+import { extractActiveData } from "../scripts/lib/graph-active-data.ts";
 
 const CURRENT_DELEGATES = "5f584db8-f8d8-4118-988c-b2bc3f68ceb7";
 const DERECOGNIZED = "e7aec672-ed19-4329-aaf7-736950be2eb7";
