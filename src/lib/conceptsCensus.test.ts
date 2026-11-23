@@ -166,12 +166,16 @@ describe("title-templates", () => {
       mk("A.9.23", "Parameters", "Core", "x"),
       mk("A.9.24", "Parameters For Something Else", "Core", "x"), // not an exact match
       mk("A.9.25", "Omni Documents", "Core", "x"),
+      mk("A.9.26", "Data Repository", "Core", "x"),
+      mk("A.9.27", "Hub Data Repository", "Core", "x"),
     ];
     const out = computeConceptsCensus(byId(nodes));
     const { counts } = out["title-templates"];
     expect(counts.Parameters).toBe(2);
     expect(counts["Omni Documents"]).toBe(1);
-    expect(counts.total).toBe(3);
+    expect(counts["Data Repository"]).toBe(1);
+    expect(counts["Hub Data Repository"]).toBe(1);
+    expect(counts.total).toBe(5);
   });
 });
 

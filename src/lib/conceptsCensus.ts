@@ -290,9 +290,7 @@ const TITLE_TEMPLATES: [string, string][] = [
   ["Single Instance Configuration Document", "Single Instance Configuration Document"],
   ["Parameters", "Parameters"],
   ["Rate Limits", "Rate Limits"],
-  ["Initial Planning", "Initial Planning"],
-  ["Operational GovOps Review", "Operational GovOps Review"],
-  ["Artifact Edit Proposal", "Artifact Edit Proposal"],
+  ["Data Repository", "Data Repository"],
   ["Omni Documents", "Omni Documents"],
 ];
 

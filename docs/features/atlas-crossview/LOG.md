@@ -416,3 +416,11 @@ are noted under Registries 1 only; a concept entry of their own is not written.
   Integration Boost invocation process so the planning and review documents are no
   longer Atlas documents. Retire-or-redefine is still open with the user.
 
+- **Lifecycle 6 redefined as "Data Repository"** (user decision). The unit is now the
+  per-instance container (exact title, 102 documents, all in the Prime artifacts; 64
+  childless, 38 holding payment lists). The triad entry is kept as a History bullet.
+  `title-templates` census: the three triad buckets, which read 0, are replaced by a
+  `Data Repository` bucket, so the redefined unit stays censused. Baseline regenerated
+  with `pnpm census:concepts --update`; the only change is that census (875 → 977
+  members: three zero buckets out, 102 Data Repository members in).
+
