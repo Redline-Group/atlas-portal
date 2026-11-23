@@ -31,3 +31,14 @@ export function addedAll<T>(set: ReadonlySet<T>, values: Iterable<T>): Set<T> {
   }
   return next ?? (set as Set<T>);
 }
+
+/** `set` with every value absent. */
+export function removedAll<T>(set: ReadonlySet<T>, values: Iterable<T>): Set<T> {
+  let next: Set<T> | null = null;
+  for (const v of values) {
+    if (!(next ?? set).has(v)) continue;
+    next ??= new Set(set);
+    next.delete(v);
+  }
+  return next ?? (set as Set<T>);
+}

@@ -53,8 +53,7 @@ export function rungAngle(level: RungLevel): number {
  *  it leans 45° toward wherever the next click will actually land. `flat`
  *  selects the flatNextRung swing (see below) for views where 0 is invisible. */
 export function rungHoverAngle(cur: Rung, flat = false): number {
-  const next = flat ? flatNextRung(cur) : nextRung(cur);
-  return (rungAngle(cur.level) + rungAngle(next.level)) / 2;
+  return (rungAngle(cur.level) + rungAngle(swingRung(cur, { flat }).level)) / 2;
 }
 
 /** Same idea for the alt-click swing: while Alt is held the chevron must lean
@@ -62,12 +61,11 @@ export function rungHoverAngle(cur: Rung, flat = false): number {
  *  lies. Always a different angle from rungHoverAngle, since reverseRung never
  *  agrees with nextRung. */
 export function rungReverseHoverAngle(cur: Rung, flat = false): number {
-  const next = flat ? flatReverseRung(cur) : reverseRung(cur);
-  return (rungAngle(cur.level) + rungAngle(next.level)) / 2;
+  return (rungAngle(cur.level) + rungAngle(swingRung(cur, { flat, reverse: true }).level)) / 2;
 }
 
-// The flat filtered views (selected-only / changed-only, AtlasReader's
-// filterSet branch) never hide a row for rung 0 — visibility there comes
+// The flat filtered views (selected-only / changed-only, readerRows.ts
+// flatRows) never hide a row for rung 0 — visibility there comes
 // purely from the filter set, never from rung (see AtlasReader.test.tsx
 // "filtered view ignores collapse state") — so a chevron that swings up to
 // "hidden" looks like a dead click: the row is still right there. These
@@ -94,4 +92,11 @@ export function flatReverseRung(cur: Rung): Rung {
   const next = reverseRung(c);
   if (next.level !== 0) return next;
   return c.level === 2 ? { level: 1, dir: 1 } : { level: 2, dir: 1 };
+}
+
+/** Where one » click lands: the plain or alt-reversed swing, in its
+ *  hierarchy or flat-view variant. */
+export function swingRung(cur: Rung, opts: { flat?: boolean; reverse?: boolean }): Rung {
+  if (opts.flat) return opts.reverse ? flatReverseRung(cur) : flatNextRung(cur);
+  return opts.reverse ? reverseRung(cur) : nextRung(cur);
 }
