@@ -33,6 +33,11 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
+## 2026-11-23
+
+- Fixed address hover cards in previews showing no signers for a known multisig the preview places on another chain.
+- Marked addresses a preview brings in as new in their hover card.
+
 ## 2026-11-19
 
 - Added each Prime Agent's StarGuard contract address to its Agent Creation parameters, and linked each Prime Agent to its SubProxy and StarGuard addresses.

@@ -146,17 +146,20 @@ export function resolveAddressHoldings(
  * the chains the atlas places it on (its Safe setup comes from the same row),
  * and the oldest quote among the prices that value what it holds. Pegged
  * holdings are valued at $1 with no quote, so they add no price time.
+ * `alsoRead` names chains outside the atlas's placement whose readings the
+ * card shows too (a Safe read elsewhere, addressSafe.ts).
  */
 export function resolveAddressAsOf(
   address: string,
   addrMap: Record<string, AddressInfo>,
   balancesByAddress: Record<string, AddressBalances>,
   prices: PriceMap = {},
+  alsoRead: readonly string[] = [],
 ): { readAt: string | null; priceAt: string | null } {
   const info = infoFor(address, addrMap);
   if (!info) return { readAt: null, priceAt: null };
   const key = address.toLowerCase();
-  const rows = info.chains.map((chain) => balancesByAddress[`${key}|${chain}`]).filter((r): r is AddressBalances => !!r);
+  const rows = [...info.chains, ...alsoRead].map((chain) => balancesByAddress[`${key}|${chain}`]).filter((r): r is AddressBalances => !!r);
   const quoted = heldAcross(key, info.chains, balancesByAddress).filter((h) => freshPrice(h.symbol, prices) != null);
   return {
     readAt: oldestTime(rows.map((r) => r.checkedAt)),

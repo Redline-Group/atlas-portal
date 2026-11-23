@@ -65,6 +65,10 @@ export interface PreviewDiff {
   /** The other side of a swap: a new doc that received content which previously
    *  lived under a different uuid. id → that previous uuid + its old identity. */
   formerUuid: Record<string, FormerUuid>;
+  /** On-chain addresses the preview brings in: named by a doc it adds or
+   *  changes and by none on the diff base (nor live main), keyed as the
+   *  address map keys them. Absent on bundles built before it was recorded. */
+  newAddresses?: Set<string>;
   /** The diff-base actually resolved for this bundle (a `?base=` override
    *  reconciled against what the bundle's meta.json actually offers).
    *  Optional for back-compat with mocks built before this field existed —

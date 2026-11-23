@@ -229,4 +229,13 @@ describe("resolveAddressAsOf", () => {
     expect(resolveAddressAsOf(EVM, info, balances("MKR"), {}).priceAt).toBeNull();
     expect(resolveAddressAsOf(EVM, info, {}, {})).toEqual({ readAt: null, priceAt: null });
   });
+
+  it("dates a reading from a chain outside the atlas's placement when the card shows one", () => {
+    const info = { [EVM]: makeAddressInfo({ chains: ["ethereum"] }) };
+    const reads: Record<string, AddressBalances> = {
+      [`${EVM}|arbitrum`]: { chain: "arbitrum", checkedAt: "2026-11-20T08:00:00Z", hasCode: null, balances: {} },
+    };
+    expect(resolveAddressAsOf(EVM, info, reads, {}).readAt).toBeNull();
+    expect(resolveAddressAsOf(EVM, info, reads, {}, ["arbitrum"]).readAt).toBe("2026-11-20T08:00:00Z");
+  });
 });
