@@ -1,16 +1,9 @@
-// positional HINTS (advisory) — for the still-residual cases the content passes + LLM
-// couldn't lock (typically matcher-null identical siblings, where there is NO content
-// signal to corroborate against), surface the positional pick as a suggested predecessor
-// the human confirms in the curation UI. Gated on SELF-corroboration (P1 ancestor AND P2
-// neighbour both independently favour the pick) to stand in for the missing content
-// signal. NEVER a lock — written to the advisory proposals file only, alongside any
-// frontier hints (never overwriting one already recorded for the same case).
+// Advisory positional hints for the residual, gated on ancestor AND neighbour agreeing; never a lock.
 
 import { positionalSelfCorroborates } from "./rules.ts";
 import { positionalPickFor } from "./signals.ts";
 import type { Case, RunContext } from "./types.ts";
 
-// Appends the hints to `ctx.proposals` and returns how many it added.
 export function addPositionalHints(ctx: RunContext, residual: Case[]): number {
   let posHints = 0;
   const hinted = new Set(ctx.proposals.map((p) => p.caseKey));

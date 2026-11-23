@@ -1,5 +1,3 @@
-// view=compare: every prime that published in one month, ranked by a metric.
-
 import type { SettlementReport } from "../../lib/settlements.ts";
 import { byMetricDesc, componentsOf, flowsOf, metricOf } from "./msc-flows.ts";
 import {

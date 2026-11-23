@@ -1,5 +1,3 @@
-// view=series: one prime's flows month by month.
-
 import { reportsForPrime } from "../../lib/settlements.ts";
 import { flowsOf } from "./msc-flows.ts";
 import { THREE_WAY_NOTE, workbookSource, wrap, type MscView, type MscViewContext } from "./msc-view-kit.ts";

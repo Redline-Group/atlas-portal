@@ -1,6 +1,4 @@
-// The accounting every MSC view shares, on the same bases Radar uses
-// (.claude/skills/settlement-reports/SKILL.md): three flows per cycle, cost of
-// funds nested under To Sky, and venue rows never totalled into a headline.
+// Shared MSC accounting: three flows per cycle, cost of funds nested under To Sky, venue rows never totalled into a headline.
 
 import { SETTLEMENT_NEAR_ZERO as NEAR_ZERO, type SettlementReport } from "../../lib/settlements.ts";
 import { summaryThreeWay } from "../../lib/settlementCharts.ts";
@@ -19,7 +17,7 @@ export function sumOf<T>(items: readonly T[], pick: (item: T) => number): number
   return items.reduce((n, item) => n + pick(item), 0);
 }
 
-/** One cycle's three flows. supply_kept is par − cof, never Σ profit_to_grove. */
+// supply_kept is par − cof, never Σ profit_to_grove.
 export function flowsOf(report: SettlementReport): MscFlows {
   const { sky, kept, demand } = summaryThreeWay(report);
   return { to_sky: sky, supply_kept: kept, demand_side: demand };
@@ -33,14 +31,8 @@ export function sumFlows(rows: readonly MscFlows[]): MscFlows {
   };
 }
 
-// cof + sde = skyRevenue, so both are reported UNDER to_sky rather than beside
-// it (Invariant 2). THREE_WAY_NOTE says in prose that cost of funds is a
-// component and not a fourth destination, but a flat `cof` sibling invites
-// exactly the addition that note forbids — and cof is ~all of to_sky, so
-// double-counting it nearly doubles Sky's take. Matching the shape to the
-// invariant beats trusting the reader to heed the footnote, and keeps month,
-// compare and aggregate consistent. Near-zero parts are omitted so a prime
-// with no Sky Direct Exposure doesn't carry a meaningless `sde: 0`.
+// cof + sde = skyRevenue, so both nest UNDER to_sky: cost of funds is not a fourth flow,
+// and a flat `cof` sibling invites adding it, nearly doubling Sky's take.
 export function componentsOf(cof: number, sde: number): Record<string, number> {
   const out: Record<string, number> = {};
   if (Math.abs(cof) >= NEAR_ZERO) out.cof = cof;
@@ -54,11 +46,7 @@ export function metricOf(args: MscViewArgs): MscMetric {
 
 type RankedRow = MscFlows & { to_sky_components: Record<string, number> };
 
-// Largest magnitude first. cof is nested under to_sky_components, so ranking
-// by it reaches into the component rather than a top-level key. Falling back
-// to to_sky while the payload echoes metric:"cof" answers a different question
-// than the one asked, and one that only LOOKS right because cof and to_sky
-// differ merely by SDE.
+// cof ranks by the nested component; falling back to to_sky would only look right (they differ by SDE).
 export function byMetricDesc(metric: MscMetric): (a: RankedRow, b: RankedRow) => number {
   const rank = (r: RankedRow) => (metric === "cof" ? (r.to_sky_components.cof ?? 0) : r[metric]);
   return (a, b) => Math.abs(rank(b)) - Math.abs(rank(a));
@@ -68,7 +56,6 @@ export function venueRevenue(report: SettlementReport): number {
   return sumOf(report.venues, (v) => v.revenueToPrime);
 }
 
-/** The trap line for venue rows that do not foot to headline prime agent revenue; empty when they do. */
 export function venueGapTrap(venueSum: number, primeAgentRevenue: number, advice: string): string[] {
   const gap = Math.abs(venueSum - primeAgentRevenue);
   if (!(gap >= NEAR_ZERO)) return [];

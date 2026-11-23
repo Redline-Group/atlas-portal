@@ -1,6 +1,3 @@
-// The aggregate view's venue ranking: one row per prime+venue across the
-// selected months.
-
 import type { SettlementReport, SettlementVenue } from "../../lib/settlements.ts";
 
 const TOP_VENUES = 20;
@@ -34,10 +31,7 @@ function addMonth(cur: VenueTotal, month: string, v: SettlementVenue): void {
   }
 }
 
-// Venue rows keyed by prime+id: two primes can reuse an id, and the same
-// venue across months is one venue whose FLOWS add up. value_eom is a
-// STOCK (end-of-month balance) — summing it across months would invent
-// money, so it takes the latest month's value instead.
+// Keyed by prime+id since two primes can reuse an id; flows add across months, value_eom does not.
 function venueTotals(reports: readonly SettlementReport[]): VenueTotal[] {
   const byKey = new Map<string, VenueTotal>();
   for (const r of reports) {

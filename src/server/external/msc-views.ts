@@ -1,8 +1,4 @@
-// Curated MSC views for chat/MCP. Same accounting Radar uses — never a raw
-// workbook dump, never Comparison-block Σ as a headline.
-//
-// Each view is one self-describing entry in its own msc-view-<name>.ts; adding
-// a view is a new file plus one line in VIEWS.
+// Curated MSC views for chat/MCP: never a raw workbook dump, never Comparison-block Σ as a headline.
 
 import type { SettlementsBundle } from "../../lib/settlements.ts";
 import type { ForumMonthTopic } from "../../lib/forumMonths.ts";
@@ -17,8 +13,7 @@ import { venuesView } from "./msc-view-venues.ts";
 export { MSC_METRICS, type MscMetric } from "./msc-flows.ts";
 export type { MscViewArgs } from "./msc-view-kit.ts";
 
-// The order is the order callers see in the tool schema and in the
-// unknown-view error.
+// Order is what callers see in the tool schema and the unknown-view error.
 const VIEWS = [monthView, seriesView, compareView, venuesView, aggregateView, termsView] as const;
 
 export type MscViewName = (typeof VIEWS)[number]["name"];

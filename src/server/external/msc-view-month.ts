@@ -1,6 +1,3 @@
-// view=month: one prime's cycle as the three flows, with To Sky and
-// demand-side broken into their parts.
-
 import { SETTLEMENT_NEAR_ZERO as NEAR_ZERO, isDemandSideCycle, type SettlementReport } from "../../lib/settlements.ts";
 import { demandPart, DEMAND_SERIES } from "../../lib/settlementCharts.ts";
 import { workbookUrl } from "./envelope.ts";

@@ -1,19 +1,14 @@
-// Mutual-exclusion safety net. Only the cluster pass globally enforces "one older occurrence is the
-// predecessor of AT MOST ONE newer doc"; the per-case passes (forward/containment/llm/frontier) each
-// lock in isolation and CAN independently claim an occurrence another already took. Resolve any residual
-// double-book deterministically: keep the strongest claimant (tier priority, then agreed-with-matcher),
-// demote the rest to residual so a human/frontier decides — never a silent last-writer-wins in apply.
+// Per-case passes lock in isolation and can double-book an older occurrence; keep the strongest
+// claimant and demote the rest to residual rather than let apply go last-writer-wins.
 
 import type { Decision, Log } from "./types.ts";
 
 const TIER_RANK: Record<string, number> = { bijection: 0, cluster: 1, "forward-reverse": 2, containment: 3, positional: 4, "llm-90": 5, frontier: 6, split: 9 };
 
-// `${olderSha}|${chosenKey}` for a decision that claims an older occurrence; null for a created-here.
 const occurrenceOf = (d: Decision) => (!d.chosenKey || d.chosenKey === "none" ? null : `${d.olderSha}|${d.chosenKey}`);
 
-// Every claimant of a double-booked occurrence except its strongest.
 function weakerClaimants(decisions: Decision[]): Set<Decision> {
-  const occClaims = new Map<string, Decision[]>(); // `${olderSha}|${chosenKey}` -> claimant decisions
+  const occClaims = new Map<string, Decision[]>();
   for (const d of decisions) {
     const k = occurrenceOf(d);
     if (!k) continue;
@@ -23,12 +18,12 @@ function weakerClaimants(decisions: Decision[]): Set<Decision> {
   for (const claimants of occClaims.values()) {
     if (claimants.length < 2) continue;
     claimants.sort((x, y) => (TIER_RANK[x.auto] ?? 8) - (TIER_RANK[y.auto] ?? 8) || Number(y.agreedWithAuto) - Number(x.agreedWithAuto));
-    for (const d of claimants.slice(1)) demoted.add(d); // keep strongest, drop the rest
+    for (const d of claimants.slice(1)) demoted.add(d);
   }
   return demoted;
 }
 
-// hard invariant — must hold after resolution, else apply would silently drop histories.
+// Must hold after resolution, else apply would silently drop histories.
 function assertExclusive(decisions: Decision[]): void {
   const seen = new Set<string>();
   for (const d of decisions) {

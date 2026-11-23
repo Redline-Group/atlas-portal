@@ -1,14 +1,6 @@
-// view=terms: what the workbook vocabulary means, and which of it is Atlas
-// vocabulary.
-
 import { wrap, type MscView } from "./msc-view-kit.ts";
 
-// Which of these are Atlas vocabulary and which are workbook vocabulary is
-// load-bearing, and it runs BOTH ways. Most of these words are Soter/OEA
-// coinages the Atlas never defines — verified absent from
-// vendor/next-gen-atlas/content/. But "Sky Direct Exposure" IS an Atlas-defined
-// term (A.2.2.10.1.1.1.1), so describing it as workbook-only is the same class
-// of error in reverse.
+// Atlas-vs-workbook vocabulary runs both ways: most terms are Soter coinages, but Sky Direct Exposure is Atlas-defined.
 const TERMS = [
   {
     term: "Cost of funds",

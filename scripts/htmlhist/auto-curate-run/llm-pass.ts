@@ -1,7 +1,4 @@
-// pass 2 — LLM second opinion on the eligible cases; lock the ones it independently
-// agrees with. Skipped (left for a human) when --no-llm or no key is configured. Multi-cluster
-// members are excluded — pass 1.7 owns them; if two families couldn't agree there, the weaker
-// per-doc signal shouldn't lock them either (they stay residual for the frontier / a human).
+// pass 2 — per-doc LLM second opinion; locks only where it agrees with the matcher.
 
 import { applyCached, askAll, capAsks, type AskPass, type AskStats } from "./ask.ts";
 import { record } from "./context.ts";
@@ -10,14 +7,13 @@ import type { Case, Propose, RunContext } from "./types.ts";
 
 export interface LlmStats extends AskStats { eligible: number; confirmed: number; disagreed: number; threshold: number }
 
-// applying a cheap result: remember the pick for pass 3's T3, and lock on agreement.
+// The pick is remembered for pass 3's trigger even when it does not lock.
 function applyCheap(ctx: RunContext, llm: LlmStats, kase: Case, chosenKey: string, why: string): void {
   ctx.cheapPicks.set(kase.key, chosenKey);
   if (kase.autoKey && llmConfirms(kase, chosenKey)) { record(ctx, kase, kase.autoKey, "llm-90", why); llm.confirmed++; }
   else llm.disagreed++;
 }
 
-// reuse cached cheap results first; ask only the uncached, up to `limit`.
 async function askCheap(ctx: RunContext, propose: Propose, queue: Case[], llm: LlmStats): Promise<void> {
   const pass: AskPass<{ kase: Case }> = {
     name: "cheap", label: "llm", model: ctx.cheapModel, concurrency: ctx.concurrency, stats: llm, propose,

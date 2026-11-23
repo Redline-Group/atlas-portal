@@ -1,6 +1,3 @@
-// view=venues: one cycle's venue book, largest profit first, with the long
-// tail folded into a single row.
-
 import { revenueGap, type SettlementReport, type SettlementVenue } from "../../lib/settlements.ts";
 import { collapseAum } from "../../lib/settlementCharts.ts";
 import { workbookUrl } from "./envelope.ts";

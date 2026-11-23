@@ -1,6 +1,3 @@
-// Shapes shared by the auto-curation passes: the curation queue as the passes read it, the
-// injected proposers, the resume cache, and the context one run threads through its passes.
-
 export interface Candidate { key: string; score?: number; diff?: string }
 
 export interface Case {
@@ -35,7 +32,6 @@ export interface CurationData {
   commits?: QueueCommit[];
 }
 
-// A loaded HTML commit; `nodes` carry contentHash (forwardLinks reads them).
 export interface HtmlCommit { sha: string; nodes: unknown[] }
 
 export interface Decision {
@@ -57,9 +53,7 @@ export interface AskEntry { chosenKey: string; why: string; model: string | null
 export interface ClusterEntry { model: string; assignments: ClusterAssignment[] }
 export type LlmCache = Map<string, AskEntry | ClusterEntry>;
 
-// What the proposers are given and return. These restate the types beside proposePredecessor and
-// proposeClusterAssignment (src/server/history/history-curate.ts) structurally: importing them
-// would put that module's server imports into every program that typechecks a pass.
+// Restated structurally from history-curate.ts: importing them would drag server imports into every pass.
 export interface NodeContext { docNo?: string | null; prev: string[]; next: string[]; path?: string[]; scope?: string; parent?: string }
 export interface ProposeSubject { title: string; content: string; context?: NodeContext | null }
 export interface ClusterSubject extends ProposeSubject { key: string; order?: number }
@@ -103,8 +97,7 @@ export interface AutoCurateOptions extends Partial<Tuning>, Proposers {
   log?: Log;
 }
 
-// One run's inputs, derived indexes and the state its passes share. `decisions`, `proposals`,
-// `cache` and `cheapPicks` are appended to by the passes; everything else is read-only.
+// Passes append to `decisions`, `proposals`, `cache` and `cheapPicks`; everything else is read-only.
 export interface RunContext extends Tuning, Proposers {
   data: CurationData;
   commits: HtmlCommit[];

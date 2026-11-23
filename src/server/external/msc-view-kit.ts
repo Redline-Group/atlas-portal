@@ -1,6 +1,3 @@
-// What every MSC view is built from: the view contract, the provenance
-// envelope and its source rows, and the caveats that travel with money.
-
 import type { SettlementReport, SettlementsBundle } from "../../lib/settlements.ts";
 import type { ForumMonthTopic } from "../../lib/forumMonths.ts";
 import { forumTopicUrlForMonth } from "../../lib/forumMonths.ts";
@@ -21,13 +18,11 @@ export interface MscViewContext {
   bundle: SettlementsBundle;
   topics: readonly ForumMonthTopic[];
   args: MscViewArgs;
-  /** The name the view is registered under; echoed in every payload. */
   view: string;
 }
 
 export type MscViewBuild = (ctx: MscViewContext) => Record<string, unknown>;
 
-/** One entry of the view registry in msc-views.ts. */
 export interface MscView {
   name: string;
   build: MscViewBuild;
@@ -36,13 +31,7 @@ export interface MscView {
 export const THREE_WAY_NOTE =
   "The three genuine flows are To Sky, supply kept (prime agent revenue − cost of funds), and demand-side. Cost of funds is a component of To Sky, not a fourth destination.";
 
-// Carried by every money-bearing view. The Atlas defines "Net Revenue" as a
-// specific, cash-basis, post-expense figure (A.2.3.1.2.1.1 / A.2.3.1.2.1),
-// and nothing in these workbooks is it — To Sky is part of ONE Income
-// component before any Expenses are subtracted. The risk is highest on the
-// cross-prime roll-up, where a single ecosystem-wide number reads exactly like
-// an answer to "what did Sky earn", so the caveat travels with the data rather
-// than living only in the terms view a caller may never request.
+// Travels with every money-bearing view, not just terms: a roll-up reads exactly like "what did Sky earn".
 export const NOT_NET_REVENUE =
   "to_sky is the interest a Prime owes Sky plus Sky Direct Exposure, as calculated by Soter. It is NOT the Sky Protocol's Net Revenue: the Atlas defines that as Income minus Expenses recognised on a cash basis at the Sky Surplus Buffer (A.2.3.1.2.1.1, A.2.3.1.2.1). These amounts sit inside one Income component (Stability Fees From Base Rate, A.2.3.1.2.1.2.1); Expenses such as the Sky Savings Rate paid to sUSDS holders (A.2.3.1.2.1.3.1) are not deducted here, and the allocation waterfall (A.2.3.1.2) has not been applied. Never present these figures, or a sum of them, as Sky's net revenue.";
 
@@ -76,7 +65,6 @@ function latestMonth(reports: readonly SettlementReport[]): string | null {
   return [...reports].sort((a, b) => a.month.localeCompare(b.month)).at(-1)!.month;
 }
 
-/** The month a caller asked for, or the newest month in `reports` for none / "latest". */
 export function monthOrLatest(month: string | undefined, reports: readonly SettlementReport[]): string | null {
   return month && month !== "latest" ? month : latestMonth(reports);
 }

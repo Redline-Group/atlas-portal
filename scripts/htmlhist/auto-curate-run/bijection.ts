@@ -1,11 +1,4 @@
-// pass 0 — bijection: N byte-identical md docs that share ONE html predecessor duplicate-group
-// (the same element used in N scopes, e.g. "Ambiguity" in Governance + Support; or a boilerplate
-// doc repeated per process). #117 was a reformat, not a content addition, so each md doc almost
-// certainly HAD an html predecessor — but identical content collapses them to one identity and
-// drops the rest's history. The html rows in the group are identical and share one history, so any
-// 1:1 assignment reconstructs identically; what matters is that they map one-to-one. Assign md docs
-// (by document order) to the M identical html occurrences (by order) when N ≤ M. N > M would need
-// #117 to have ADDED docs — unlikely — so those defer to review.
+// pass 0 — bijection: N identical md docs sharing one html duplicate-group map 1:1 by document order (N > M defers to review).
 
 import { record } from "./context.ts";
 import { bySubjectOrder } from "./signals.ts";
@@ -17,7 +10,6 @@ export interface BijectionResult { done: Set<string>; resolved: number; split: n
 const EXACT = 0.999;
 const addrOf = (key: string) => key.split("#")[0];
 
-// md content -> its seed cases
 function seedGroupsByContent(ctx: RunContext): Map<string, Case[]> {
   const mdGroups = new Map<string, Case[]>();
   for (const kase of ctx.cases) {
@@ -29,23 +21,15 @@ function seedGroupsByContent(ctx: RunContext): Map<string, Case[]> {
   return mdGroups;
 }
 
-// Resolve each qualifying group's best-match html content (addr) UP FRONT, then detect CONTENTION:
-// an addr that is the top match for >1 distinct md-content group means DIFFERENT documents compete
-// for the same occurrences — a joint-assignment problem the per-group order heuristic gets WRONG
-// (each group independently grabs occ #0, double-booking it: measured 31 collisions). Determinism
-// is trustworthy ONLY for the FORCED case: an EXACT content match (score ≈ 1.0) on an UNCONTENDED
-// addr, where the N identical md docs map 1:1 to the M identical html occurrences with no rival
-// claimant. CONTENDED or FUZZY groups are left UNRESOLVED so the richer passes decide — the cluster
-// pass does mutual-exclusion joint assignment over exactly these shared-candidate siblings (they
-// connect into one cluster), then LLM/frontier. Determinism claims the obvious; the AI decides the
-// ambiguous. N>M within a forced group still SPLITS the extras (created-at-#117): only M existed.
+// Only an EXACT match on an UNCONTENDED addr is forced; an addr top-matched by >1 md-content group
+// would be double-booked by the per-group order heuristic, so contended/fuzzy groups go to richer passes.
 function qualifyGroups(mdGroups: Map<string, Case[]>) {
   const qualifying: Group[] = [];
-  const addrGroups = new Map<string, number>(); // addr -> # of distinct md-content groups that top-match it
+  const addrGroups = new Map<string, number>();
   for (const [, groupCases] of mdGroups) {
-    if (groupCases.length < 2) continue; // a single md doc → an ordinary case
+    if (groupCases.length < 2) continue;
     const top = (groupCases[0].candidates || [])[0];
-    if (!top || (top.score ?? 0) < 0.5) continue; // no confident content match → leave for review
+    if (!top || (top.score ?? 0) < 0.5) continue;
     const addr = addrOf(top.key);
     qualifying.push({ groupCases, addr, exact: (top.score ?? 0) >= EXACT });
     addrGroups.set(addr, (addrGroups.get(addr) || 0) + 1);
@@ -53,7 +37,6 @@ function qualifyGroups(mdGroups: Map<string, Case[]>) {
   return { qualifying, addrGroups };
 }
 
-// Thread a forced group 1:1 by document order; docs beyond the M occurrences are split copies.
 function assignGroup(ctx: RunContext, { groupCases, addr }: Group, out: BijectionResult): void {
   const occKeys = [...new Set(groupCases.flatMap((k) => (k.candidates || []).filter((c) => addrOf(c.key) === addr).map((c) => c.key)))].sort();
   groupCases.slice().sort(bySubjectOrder).forEach((kase, i) => {
@@ -67,7 +50,7 @@ export function runBijectionPass(ctx: RunContext): BijectionResult {
   const out: BijectionResult = { done: new Set(), resolved: 0, split: 0, deferred: 0 };
   const { qualifying, addrGroups } = qualifyGroups(seedGroupsByContent(ctx));
   for (const group of qualifying) {
-    if (!group.exact || (addrGroups.get(group.addr) || 0) > 1) { out.deferred += group.groupCases.length; continue; } // ambiguous → richer passes
+    if (!group.exact || (addrGroups.get(group.addr) || 0) > 1) { out.deferred += group.groupCases.length; continue; }
     assignGroup(ctx, group, out);
   }
   if (out.resolved || out.split || out.deferred)

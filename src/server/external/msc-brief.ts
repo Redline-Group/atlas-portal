@@ -1,5 +1,4 @@
-// The deterministic brief the main model reads when the sub-agent is
-// unavailable — numbers only, no narrative.
+// The deterministic, numbers-only brief the main model reads when the sub-agent is unavailable.
 
 interface Figure {
   name: string;
@@ -9,23 +8,17 @@ interface Figure {
 type View = Record<string, unknown>;
 type Row = Record<string, number | string>;
 
-// Bounds the deterministic brief. The largest view is aggregate over the
-// 24-month ceiling: 3 ecosystem flows + 24 months + one row per prime. This is
-// the FALLBACK the main model reads when the sub-model contributes nothing, so
-// it must not truncate the very table that answers the question (the
-// sub-model's own output is capped separately in subagent.ts).
+// Fits the largest view (aggregate: 3 ecosystem flows + 24 months + one row per prime) without truncating it.
 const BRIEF_FIGURES_CAP = 40;
 
 const usd = (name: string, value: number): Figure => ({ name, value, unit: "USD" });
 
-/** The three flows of a `three_way` or `ecosystem` block, under the given names. */
 function flowFigures(block: unknown, toSky: string, supplyKept: string, demandSide: string): Figure[] {
   const flows = block as Record<string, number> | undefined;
   if (!flows || typeof flows.to_sky !== "number") return [];
   return [usd(toSky, flows.to_sky), usd(supplyKept, flows.supply_kept), usd(demandSide, flows.demand_side)];
 }
 
-/** One To Sky figure per row that carries a number. */
 function toSkyFigures(rows: Row[] | undefined, name: (row: Row) => string): Figure[] {
   const out: Figure[] = [];
   for (const r of rows ?? []) {
@@ -57,10 +50,7 @@ function compareFigures(view: View): Figure[] {
   return toSkyFigures(rows?.slice(0, 8), (r) => `${r.prime} To Sky`);
 }
 
-// aggregate carries its money under ecosystem / by_month / by_prime rather
-// than three_way / points / rows, so it needs its own section: without one the
-// fallback brief for the one cross-prime view is EMPTY — the main model sees
-// source links and nothing else, and reports that the tool returned no figures.
+// aggregate keeps its money under different keys; without this section its brief would be empty.
 function aggregateFigures(view: View): Figure[] {
   if (view.view !== "aggregate") return [];
   const months = Array.isArray(view.months) ? (view.months as string[]) : [];
@@ -72,8 +62,6 @@ function aggregateFigures(view: View): Figure[] {
   ];
 }
 
-// Figures appear in this order; a view shape with money under new keys adds a
-// section here.
 const SECTIONS = [threeWayFigures, componentFigures, seriesFigures, compareFigures, aggregateFigures];
 
 export function briefFromView(view: View): Record<string, unknown> {

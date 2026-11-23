@@ -1,6 +1,4 @@
-// The one place the signatures of the untyped .mjs rule modules the passes call are stated.
-// Each import resolves with inferred types where the project checks .mjs and as untyped where
-// it does not, so every export carries an explicit signature and the passes import from here.
+// Explicit signatures for the untyped .mjs rule modules the passes call.
 
 // @ts-ignore — untyped .mjs
 import * as rules from "../auto-curate.mjs";

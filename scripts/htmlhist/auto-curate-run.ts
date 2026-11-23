@@ -1,13 +1,4 @@
-// Orchestrator for the two HTML-era auto-resolution passes (plan §10.4). Separated
-// from the pure rules (auto-curate.mjs) and from IO/CLI (the aux scripts) so it can be
-// reused by BOTH entry points — the standalone `auto-curate-html-history.mjs` and the
-// combined `build-history-curation.mjs --auto` — and unit-tested with a stub proposer.
-//
-// It performs NO file/git IO and imports no LLM client: the caller injects `propose`
-// (the LLM proposer) and `log`, and passes the already-loaded `commits` so the slow
-// turndown isn't repeated when the curation queue build already has them in memory.
-//
-// Each pass is one module under auto-curate-run/; they share a RunContext (types.ts).
+// Orchestrator for the HTML-era auto-resolution passes; no file/git IO, the caller injects `propose` and `log`.
 
 import { runBijectionPass, type BijectionResult } from "./auto-curate-run/bijection.ts";
 import { runClusterPass } from "./auto-curate-run/cluster-pass.ts";
@@ -42,15 +33,6 @@ function summarize({ totalCases, resolved, residual, conflictsDemoted, positiona
   };
 }
 
-// Run pass 0 (bijection), pass 1 (forward∩reverse, deterministic), pass 1.5 (reverse∩containment),
-// pass 1.6 (positional∩signal), pass 1.7 (cluster, opt-in), pass 2 (LLM∩matcher, ≥threshold,
-// opt-in), then pass 3 (frontier-model escalation on the uncertain residual, opt-in) over a
-// curation queue. Returns { decisions, proposals, summary, residual, cache }.
-//   data     — the curation artifact ({ meta, nodes, cases })
-//   commits  — loaded HTML commits oldest→newest, nodes carrying contentHash
-//   propose  — async (subject, candidates, opts?) => { chosenKey, why } (the LLM proposer;
-//              opts.model lets pass 3 route to the frontier model)
-//   haveKey  — whether an LLM key is configured (gates passes 2 & 3)
 export async function runAutoCurate(options: AutoCurateOptions) {
   const ctx = createContext(options);
   const bijection = runBijectionPass(ctx);

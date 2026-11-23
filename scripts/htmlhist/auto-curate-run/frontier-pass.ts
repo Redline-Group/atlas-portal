@@ -1,7 +1,4 @@
-// pass 3 — frontier-model escalation on the UNCERTAIN residual (opt-in via `frontier`).
-// Route only trigger-matching cases (hardest-first, capped) to a stronger model; LOCK on
-// agreement with an independent signal (matcher/forward/containment), else record a HINT
-// the curation UI surfaces to the human. Never locks on the cheap LLM alone (not independent).
+// pass 3 — frontier escalation: lock only on agreement with an independent signal (never the cheap LLM), else hint.
 
 import { applyCached, askAll, capAsks, type AskPass, type AskStats } from "./ask.ts";
 import { record } from "./context.ts";
@@ -12,7 +9,6 @@ import type { Case, HtmlCommit, Propose, RunContext } from "./types.ts";
 export interface FrontierStats extends AskStats { eligible: number; locked: number; hints: number; model: string | null }
 interface Escalation { kase: Case; fwdKey: string | null; containKey: string | null }
 
-// The still-unresolved cases an uncertainty trigger fires for, with the signals a lock needs.
 function frontierEligible(ctx: RunContext): Escalation[] {
   const done = new Set(ctx.decisions.map((d) => d.caseKey));
   const eligible: Escalation[] = [];
@@ -26,15 +22,13 @@ function frontierEligible(ctx: RunContext): Escalation[] {
   return eligible;
 }
 
-// applying a frontier result: lock on an independent corroborator, else record a hint.
 function applyFrontier(ctx: RunContext, front: FrontierStats, { kase, fwdKey, containKey }: Escalation, chosenKey: string, why: string): void {
   const corroborator = frontierCorroborator(chosenKey, { autoKey: kase.autoKey, fwdKey, containKey });
   if (corroborator) { record(ctx, kase, chosenKey, "frontier", why, { corroborator }); front.locked++; }
   else { ctx.proposals.push({ caseKey: kase.key, chosenKey, why }); front.hints++; }
 }
 
-// hardest-first: the #117 seed seam, then newest commit first (matches the queue order),
-// so a --frontier-limit spends on the trickiest UNCACHED cases first.
+// Hardest-first so a --frontier-limit spends on the trickiest uncached cases.
 function sortHardestFirst(uncached: Escalation[], commits: HtmlCommit[]): void {
   const rank = new Map(commits.map((c, i) => [c.sha, i]));
   uncached.sort((a, b) =>
@@ -42,7 +36,6 @@ function sortHardestFirst(uncached: Escalation[], commits: HtmlCommit[]): void {
     (rank.get(b.kase.newerSha) ?? -1) - (rank.get(a.kase.newerSha) ?? -1));
 }
 
-// reuse cached frontier results first (no re-spend); ask only the uncached.
 async function askFrontier(ctx: RunContext, propose: Propose, front: FrontierStats): Promise<void> {
   const eligible = frontierEligible(ctx);
   front.eligible = eligible.length;
