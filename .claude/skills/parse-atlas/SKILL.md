@@ -13,7 +13,7 @@ description: >
 license: MIT
 metadata:
   author: anscharo
-  version: "2.2"
+  version: "2.3"
 ---
 
 # parse-atlas
@@ -171,7 +171,7 @@ Every entity type below either has a defining Atlas doc number pattern, or is bo
 | `instance`            | `<primitive-slug>`     | Primitive Instance Configuration Document under the **Active/Suspended/Completed Instances** tier. Operational deployment per atlas A.2.2.1.3. Entity id = ICD doc UUID. Emitted for every in-scope primitive (see Pattern 14 for the allowlist). `st` is the primitive slug (`distribution-reward`, `integration-boost`, `allocation-system`, etc.). Status (Active/Suspended/Completed) lives in `meta.status`. |
 | `invocation`          | `<primitive-slug>`     | ICD under the **In Progress Invocations** tier. The in-progress act of enabling a primitive per atlas A.2.2.1.4 — distinct from an Instance. Same param shape and same entity id derivation as `instance`; the only difference is lifecycle stage. `meta.status = "InProgress"`. |
 
-**Halo Agents**: only **Sky Core Halos** have a structural pattern. They have no Agent Artifact; each is a child of the Governance Scope document titled `List Of Sky Core Halos` that states its contracts in children titled `<Halo> SubProxy Account` / `<Halo> StarGuard Contract` / `<Halo> StarGuard Max Delay`. `scripts/lib/graph-halos.ts` makes each an `agent` / `halo` entity with those params (a list child stating neither a SubProxy Account nor a StarGuard Contract is not a halo and warns); the rule document `Operational Executor Agent For Sky Core Halos` gives the `operational_executor_agent_for` edge, for Sky Core Halos only. A Halo Agent inside a Prime's Agent Artifact has no pattern yet — do not classify.
+**Halo Agents**: only **Sky Core Halos** have a structural pattern. They have no Agent Artifact; each is a child of the Governance Scope document titled `List Of Sky Core Halos` that states its contracts in children titled `<Halo> SubProxy Account` / `<Halo> StarGuard Contract` / `<Halo> StarGuard Max Delay`. `scripts/lib/graph-halos.ts` makes each an `agent` / `halo` entity with those params (a list child stating neither a SubProxy Account nor a StarGuard Contract is not a halo and warns); the rule document `Operational Executor Agent For Sky Core Halos` gives the `operational_executor_agent_for` edge, for Sky Core Halos only. The NFAT Facilities a halo runs are read apart (Pattern 24), into the halo's `nfat_facilities`. A Halo Agent inside a Prime's Agent Artifact has no pattern yet — do not classify.
 
 **Key principle:** Key on doc_no position first, then title shape. Never on names alone — agent names change.
 
@@ -762,6 +762,33 @@ The atlas records a small set of operational-control handoffs — a system/proce
 - **Org hierarchy** — no reporting lines between Sky Core / facilitators / govops anywhere; Atlas Axis / Redline / Soter Labs are parallel role-holders. The only supervisory phrasing is "Executor Agents supervise other Agents" (A.1.14.4.6).
 
 ---
+
+### Pattern 24: NFAT Facilities (`scripts/lib/graph-nfat-facilities.ts`, Phase 1 with the halos)
+
+An NFAT Facility is a deal a Halo Agent runs for subscribing Prime Agents (Allocation System Primitive, `A.2.2.10.1.1.1.4 - NFAT Facilities`, `c13b04c4`; the two-part requirement is `A.2.2.10.1.1.1.4.1 - Facility Requirements`, `cb0160b9`). A Sky Core Halo lists its facilities under a child titled `NFAT Facilities`:
+
+```
+{halo}.N                    NFAT Facilities
+{halo}.N.M                  Active NFAT Facilities | Completed NFAT Facilities   → status
+{halo}.N.M.K                Ethereum Mainnet                                     → network (a grouping level; may be absent)
+{halo}.N.M.K.J              {Facility name}                                      → the facility (entity-less; id = this doc's UUID)
+  …1  Parameters                         deal terms (asset, size, yield, term, eligible Primes, redemption, risk)
+  …2  Technical Architecture
+  …2.1  NFAT Facility Contract           address, NFAT name and symbol
+  …2.2  NFAT Facility Diamond PAU        contract addresses, facets, rate limits, growth rate, and its multisigs
+```
+
+- **A facility is the document holding `Parameters` or `Technical Architecture`**, never a title match on its name; any level above it under a status section is a grouping whose title is the network.
+- The halo entity's meta gains `nfat_facilities: [{ id, name, doc_no, status, network, approved, terms, contract, pau, multisigs }]` (type `src/lib/nfatFacility.ts`). `terms` / `contract` / `pau` are param maps from the ordinary param walk; `multisigs` lists the PAU's `…Multisig` children by UUID (each is a Pattern 17 multisig entity) and keeps their rule documents out of `pau`. The facilities are left out of the halo's own `params`.
+- **Approved list:** the Active Data `List Of Approved NFAT Facilities` (`0b4f2a6e`, under `A.2.2.10.1.1.1.4.7`) links each facility's document; a linked facility is `approved: true`, and one the list names that no halo lists warns `[drift]`. This is why that table is not in the unextracted-table drift.
+- **The Prime's side is an ordinary Allocation System instance** (`Target Protocol`: the facility's name) that states the facility's address and NFAT identifiers only by link ("specified in [… - NFAT Facility Contract Address](uuid)"). No edge joins them: `src/lib/nfatFacilities.ts` joins an instance to a facility by the linked document's UUID.
+- **Rate limits per phase** are a table (`| Phase | maxAmount | slope |`) inside one param value; the param keeps the table as written and Radar sets it as a table (`src/lib/paramGrid.ts`). No per-phase params are emitted.
+- Tripwires: a section with documents but no facility read, and a facility with no NFAT Facility Contract or no Diamond PAU.
+
+Two shapes this subtree introduced, fixed in shared code:
+
+- **Mixed bullet lists** (`graph-param-format.ts`): a list that ticks only some keys (`- ALM Proxy: \`0x…\`` beside `- \`RateLimits\`: \`0x…\``) is read whole once any key is ticked; a list with no ticked key is still prose. This also surfaced `Max slippage` beside `maxAmount` / `slope` on Curve instances.
+- **Multisig threshold named after the count** (Pattern 17): "The required number of signers of the X is two (2) out of three (3)."
 
 ## Editorial Decisions
 

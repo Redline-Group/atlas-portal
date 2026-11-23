@@ -126,6 +126,20 @@ function outcomeError(errors: Error[]): Error {
   return failed ?? new SourceMiss(errors.map((e) => e.message).join("; "));
 }
 
+/**
+ * The verified source as one string. Blockscout answers a multi-file contract
+ * as its main file plus `AdditionalSources`, where Etherscan answers one
+ * standard-JSON input; the files are folded into that shape (`sources` by
+ * path), so a reader finds every file whichever explorer answered.
+ */
+function sourceOf(r: Record<string, unknown>): string {
+  const main = typeof r.SourceCode === "string" ? r.SourceCode : "";
+  const more = Array.isArray(r.AdditionalSources) ? (r.AdditionalSources as { Filename?: string; SourceCode?: string }[]) : [];
+  if (!main || !more.length || typeof r.FileName !== "string") return main;
+  const files = [{ Filename: r.FileName, SourceCode: main }, ...more];
+  return JSON.stringify({ sources: Object.fromEntries(files.map((f) => [f.Filename ?? "", { content: f.SourceCode ?? "" }])) });
+}
+
 export function makeEntry(chainid: number, addr: string, r: Record<string, unknown>): SourceEntry {
   return {
     fetchedAt: new Date().toISOString(),
@@ -138,6 +152,6 @@ export function makeEntry(chainid: number, addr: string, r: Record<string, unkno
       typeof r.Implementation === "string" && r.Implementation.startsWith("0x")
         ? r.Implementation.toLowerCase()
         : "",
-    sourceCode: typeof r.SourceCode === "string" ? r.SourceCode : "",
+    sourceCode: sourceOf(r),
   };
 }

@@ -57,4 +57,12 @@ describe("actor subpages", () => {
     expect(screen.getByRole("link", { name: "Allocation System Primitive" })).toHaveAttribute("href", expect.stringContaining("9db14ab7-bb4b-4751-8084-843bd4359f2a"));
     expect(screen.queryByText(/Defined in the Atlas/)).toBeNull();
   });
+
+  it("introduces a Halo Agent's PAUs as the Diamond PAU of each NFAT Facility it runs", () => {
+    render(<ActorPauPage profile={profile({ entity: { id: "h1", slug: "test-halo", name: "Test Halo", et: "agent", st: "halo", did: null } as never })} />);
+    expect(screen.getByRole("heading", { level: 1, name: "Liquidity Layer Architecture" })).toBeInTheDocument();
+    expect(screen.getByTestId("pau")).toHaveAttribute("data-prime", "h1");
+    expect(screen.getByText(/Test Halo runs each of its NFAT Facilities through a Diamond PAU/)).toBeInTheDocument();
+    expect(screen.queryByText(/Liquidity Layer Architecture is part of/)).toBeNull();
+  });
 });

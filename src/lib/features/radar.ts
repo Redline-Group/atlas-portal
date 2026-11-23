@@ -23,6 +23,16 @@ export const radar: FeatureGroup = {
         note: "Settlements is listed only for Primes with a Monthly Settlement Cycle workbook, and Liquidity Layer Arch. (PAUs) only once the atlas worker has read that Prime's controller contracts. A `Halo Agents` group in the list, and a `Contracts` section on a Halo Agent's page stating its SubProxy Account, StarGuard Contract and StarGuard Max Delay, appear only once the Atlas lists a Halo Agent.",
       },
       {
+        name: "NFAT Facilities",
+        what: "A Halo Agent's page lists each NFAT Facility it runs as a card: its status and network, whether the Atlas's approved list names it, which Prime Agents subscribe to it, a diagram of how its money moves (a Prime subscribes funds, the Halo issues an NFAT and takes the principal, repays principal and interest, and the Prime collects), and what the Atlas states for its deal terms, its NFAT Facility Contract and the Diamond PAU the Halo runs it through. A rate limit stated per phase is set as a table. On a Prime Agent's Primitives page, the instance that subscribes to a facility names it under its parameters, with the contract address and NFAT the instance states only by reference.",
+        how: [
+          "Open a Halo Agent on Radar and scroll to `NFAT Facilities`. Hover an arrow of the diagram for the contract rule behind it.",
+          "`What its contracts say on chain →` on a card, or `Liquidity Layer Arch. (PAUs)` under the Halo's name in the actor list, opens the facility's Diamond PAU as read from the chain. Under `How the NFAT Facility works` it says which asset the facility takes, where issued principal goes, whether the PAU's ALM proxy may issue NFATs, and whether the facility is stopped.",
+          "On a Prime Agent's Primitives page, the `NFAT Facility` line at the foot of a subscribing instance's card links to the facility's card.",
+        ],
+        note: "The section appears only for a Halo Agent the Atlas lists NFAT Facilities under. `Liquidity Layer Arch. (PAUs)` is listed for a Halo Agent only once the atlas worker has read its facility's contracts.",
+      },
+      {
         name: "Primitive dashboards & activation matrix",
         what: "See primitives and which actors have activated them.",
         how: ["From Radar, open a primitive to view its dashboard and activation matrix."],

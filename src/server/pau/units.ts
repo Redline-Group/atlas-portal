@@ -15,7 +15,7 @@ import type { PauKind } from "../../lib/pauRegistry.ts";
 import { argAt, facetKeyRule } from "./facet-keys.ts";
 import { allLimits, mapLimits, type ChainCall, type ChainReader } from "./snapshot.ts";
 
-type Via = "asset" | "token" | "self" | "underlying";
+type Via = "asset" | "token" | "self" | "underlying" | "gem";
 /** `wraps`: the token is an aToken, so its UNDERLYING_ASSET_ADDRESS() is read too and kept on the unit. */
 type Rule = { fixed: number; symbol: string | null } | { via: Via; role?: string; wraps?: true };
 
@@ -48,9 +48,9 @@ const viaKey = (d: DerivedKey | undefined, kind: PauKind): string | null => {
   return r && "via" in r && a ? `${r.via}:${a}` : null;
 };
 
-const READ: Record<Exclude<Via, "self">, ChainCall["functionName"]> = { asset: "asset", token: "token", underlying: "UNDERLYING_ASSET_ADDRESS" };
+const READ: Record<Exclude<Via, "self">, ChainCall["functionName"]> = { asset: "asset", token: "token", underlying: "UNDERLYING_ASSET_ADDRESS", gem: "gem" };
 
-/** The token behind each `via:address`: the vault's asset(), the adapter's token() (else itself), the aToken's underlying, or the address itself. */
+/** The token behind each `via:address`: the vault's asset(), the adapter's token() (else itself), the aToken's underlying, an NFAT Facility's gem(), or the address itself. */
 async function tokensOf(read: ChainReader, chain: string, wanted: string[]): Promise<Map<string, string | null>> {
   const lookups = wanted.filter((w) => !w.startsWith("self:"));
   const res = await read(chain, lookups.map((w) => ({ address: w.split(":")[1], functionName: READ[w.split(":")[0] as Exclude<Via, "self">], args: [] })));

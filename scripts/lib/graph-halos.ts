@@ -3,8 +3,11 @@
 // Halos" document, and states its contracts in children titled "<Halo> <Param>"
 // ("Test Halo StarGuard Contract"), so the halo's name is stripped before the
 // instance param walk reads them under the keys an Agent Creation instance uses.
+// The NFAT Facilities a halo runs are read apart (graph-nfat-facilities.ts), so
+// its own params stay its SubProxy, StarGuard and max delay.
 import { slugify } from "./graph-patterns.mjs";
 import { extractParamsFromRoot } from "./graph-instances.mjs";
+import { approvedNfatFacilities, nfatFacilities, nfatSection, withoutDocs } from "./graph-nfat-facilities.ts";
 
 const LIST_TITLE_RE = /^List Of Sky Core Halos$/i;
 const HALO_SECTION_RE = /\bSky Core Halos?\b/i;
@@ -29,7 +32,8 @@ function unprefixed(halo: Doc, childrenByDocNo: Children): Children {
 
 /** Params a Sky Core Halo states: SubProxy Account, StarGuard Contract, StarGuard Max Delay. */
 export function skyCoreHaloParams(halo: Doc, childrenByDocNo: Children): Params {
-  return extractParamsFromRoot(halo, unprefixed(halo, childrenByDocNo)) as Params;
+  const section = nfatSection(halo, childrenByDocNo);
+  return extractParamsFromRoot(halo, unprefixed(halo, withoutDocs(childrenByDocNo, section ? [section] : []))) as Params;
 }
 
 const CONTRACT_KEY_RE = /^(SubProxy Account|StarGuard Contract)\b/;
@@ -48,8 +52,12 @@ export function skyCoreHalos(allDocs: Doc[], childrenByDocNo: Children): { doc: 
 /** Adds one agent/halo entity per Sky Core Halo, keyed by its document's UUID. Returns how many. */
 export function addSkyCoreHalos(allDocs: Doc[], childrenByDocNo: Children, addEntity: AddEntity): number {
   const halos = skyCoreHalos(allDocs, childrenByDocNo);
+  const approved = approvedNfatFacilities(allDocs);
+  const read = new Set<string>();
   for (const { doc, params } of halos) {
-    const meta = { source: SKY_CORE_HALO_SOURCE, source_doc_no: doc.doc_no, params };
+    const facilities = nfatFacilities(doc, childrenByDocNo, approved);
+    for (const f of facilities) read.add(f.id);
+    const meta = { source: SKY_CORE_HALO_SOURCE, source_doc_no: doc.doc_no, params, ...(facilities.length ? { nfat_facilities: facilities } : {}) };
     const mine = (e: ReturnType<AddEntity>) => e.defining_doc_id === doc.id && e.subtype === "halo";
     let entity = addEntity(slugify(doc.title), doc.title, "agent", "halo", doc.id, meta);
     // addEntity hands back the entity already holding the slug; a halo sharing another entity's name takes its own.
@@ -63,6 +71,7 @@ export function addSkyCoreHalos(allDocs: Doc[], childrenByDocNo: Children, addEn
     }
     entity.id = doc.id;
   }
+  for (const id of approved) if (!read.has(id)) console.warn(`  [drift] the Approved NFAT Facilities list names a facility (${id}) no Sky Core Halo lists; it has no card`);
   if (!allDocs.some((d) => LIST_TITLE_RE.test(d.title)) && allDocs.some((d) => HALO_SECTION_RE.test(d.title)))
     console.warn("  [drift] tripwire: the atlas has Sky Core Halo documents but no list of them — halo entities and their contract edges will be empty (list title in scripts/lib/graph-halos.ts likely renamed)");
   return halos.length;

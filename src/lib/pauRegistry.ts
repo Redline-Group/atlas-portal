@@ -1,7 +1,8 @@
 // The curated PAU registry (src/data/pau-registry.json): which on-chain
 // contracts make up each Prime agent's PAU, per chain and controller
-// generation. It is the single source for which contracts count as a prime's
-// PAU: anything that reads PAU state takes its contract list from here, never
+// generation, and each Diamond PAU a Halo agent runs an NFAT Facility through
+// (keyed by the halo's entity, with the NFAT Facility Contract as a member).
+// It is the single source for which contracts count as a prime's PAU: anything that reads PAU state takes its contract list from here, never
 // from the atlas directly. `pnpm pau:candidates` proposes additions and
 // conflicts from the atlas and from on-chain wiring, and the pau-triage skill
 // decides them.
@@ -25,6 +26,8 @@ export const PAU_ROLES = [
   "configurator",
   "freezer",
   "relayer",
+  // The NFAT Facility Contract a Halo's Diamond PAU operates: it holds subscribed funds and repayments and mints the NFATs.
+  "nfatFacility",
   "starGuard",
   "executor",
   // LayerZero governance: the Ethereum sender a spell's SubProxy calls, and the Solana program that runs each message it delivers.
@@ -58,7 +61,7 @@ export interface PauMember {
 }
 
 export interface PauDeployment {
-  /** Graph entity UUID of the Prime agent. */
+  /** Graph entity UUID of the agent that runs the PAU: a Prime, or the Halo operating an NFAT Facility. */
   prime: string;
   /** Human-readable only; never used as a key. */
   primeName: string;

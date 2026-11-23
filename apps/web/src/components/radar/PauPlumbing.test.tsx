@@ -5,7 +5,8 @@ import "@testing-library/jest-dom/vitest";
 import { afterEach, describe, expect, it } from "vitest";
 import { CHANGE_PLUMBING, changePlumbings } from "@/lib/pauChangePaths";
 import { SVM_CHANGE_PLUMBING } from "@/lib/pauChangePathsSvm";
-import { PLUMBING, PLUMBING_NODE_H } from "@/lib/pauPlumbing";
+import { NFAT_PLUMBING, PLUMBING, PLUMBING_NODE_H } from "@/lib/pauPlumbing";
+import { PauNfatFacility } from "./PauNfatFacility";
 import { PauChangePaths } from "./PauChangePaths";
 import { PauPlumbing } from "./PauPlumbing";
 
@@ -34,6 +35,19 @@ describe("PauPlumbing", () => {
     expect(own(svm.container)).toEqual(["reserve", "permission", "integration"]);
     expect(svm.container.querySelector('[data-edge="freezer-program"] title')).toHaveTextContent("can_freeze_controller");
     expect(svm.container.querySelector('[data-node="almProxy"]')).toBeNull();
+  });
+  it("draws the NFAT Facility's money cycle and its facts only on a deployment that runs one", () => {
+    const contract = (role: string, extra: object = {}) => ({ role, address: `0x${role}`, events: 0, historyComplete: true, ...extra });
+    const facility = { gem: "0xdc03", gemSymbol: "USDS", recipient: "0x0000000000000000000000000000000000000000", stopped: false, operator: false, name: "Pilot Test Allocation", symbol: "$PTA" };
+    const snap = { deployment: "d", prime: "h", primeName: "Test Halo", chain: "ethereum", kind: "diamond", fetchedAt: "2026-11-23T00:00:00Z", contracts: [contract("almProxy"), contract("nfatFacility", { facility })] };
+    const { container } = render(<PauNfatFacility snap={snap as never} anchor={anchor} />);
+    for (const n of NFAT_PLUMBING.nodes) expect(container.querySelector(`[data-node="${n.id}"]`)).toHaveTextContent(n.name);
+    expect(container.querySelectorAll("[data-edge]")).toHaveLength(NFAT_PLUMBING.edges.length);
+    expect(own(container)).toEqual(["facility"]);
+    expect(screen.getByRole("heading", { name: "How the NFAT Facility works" })).toHaveAttribute("id", "ethereum-nfat-facility");
+    expect(container.querySelector('[data-fact="principal goes to"]')).toHaveTextContent("not set yet");
+    cleanup();
+    expect(render(<PauNfatFacility snap={{ ...snap, contracts: [contract("almProxy")] } as never} anchor={anchor} />).container).toBeEmptyDOMElement();
   });
   it("names each drawing's arrowheads by its deployment, so two on a page do not share ids", () => {
     const { container } = render(<><PauPlumbing kind="monolithic" anchor={anchor} /><PauPlumbing kind="monolithic" anchor={{ id: "base", aliases: [] }} /></>);

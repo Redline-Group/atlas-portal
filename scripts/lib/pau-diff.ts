@@ -41,6 +41,7 @@ export const EXPECTED_NAME: Record<PauRole, RegExp> = {
   configurator: /^Configurator$/,
   freezer: /Safe/,
   relayer: /Safe/,
+  nfatFacility: /^NFATFacility$/,
   starGuard: /^StarGuard$/,
   executor: /^Executor$/,
   lzGovSender: /^GovernanceOAppSender$/,

@@ -20,6 +20,7 @@ The PAU registry is the single source for which contracts count as a prime's PAU
 
 ## Model
 
+- A **Halo Agent** that runs an NFAT Facility gets a deployment too: `prime` is the halo's entity UUID, the kind is always `diamond` (the atlas requires each facility to be operated by a single Diamond PAU), and the **NFAT Facility Contract** is a member with role `nfatFacility` beside the PAU's own contracts. Discovery reads them under the halo's `NFAT Facilities` section; a document that lists several contracts as `- ALM Proxy: \`0x…\`` lines yields one observation per line. One halo can hold only one deployment per chain: a second facility on the same chain needs the deployment identity widened first (`deploymentId` in `src/lib/pauRegistry.ts`).
 - One **deployment** per (prime entity UUID, chain, `monolithic | diamond`). Spark on Arbitrum has two, because its diamond shares the ALM proxy with a ForeignController that stays in service.
 - **Members** carry a role (`controller`, `almProxy`, `rateLimits`, `accessControls`, `administeredAgent`, `beacon`, `facet`, `beamState`, `configurator`, `freezer`, `relayer`, `starGuard`, `executor`, `lzGovSender`, `lzGovernance`, and the svm roles below) and provenance: `atlas` (with the doc UUID), `onchain` (what the contract itself says), `llm`, or `manual`, each with a `note`.
 - An `almProxy` member that is an ALMProxyFreezable (its FREEZER can remove a CONTROLLER holder; verified source name in `.cache/etherscan`) carries `"label": "freezable"`, so the page tells it from the plain proxy a deployment holds beside it. `src/lib/pauFreezableLabel.test.ts` checks the labels against the cached sources.
@@ -60,6 +61,12 @@ For each item, prefer the chain over the atlas for *what is deployed*, and keep 
 - **Non-EVM** (Keel's Solana ALM program): kind `svm`, chain `solana`, addresses base58 as written. List every account: the program (`program`), the controller's state account (`rateLimits`, label `Controller`), and each Reserve (`reserve`), Integration (`integration`) and Permission (`permission`, labelled with the role the atlas gives it). Discovery skips non-0x addresses, so a new account is added by hand; the snapshot reads only what is listed, plus the Integration accounts and mints the atlas states (`src/server/pau/svm-probe.ts`).
 
 Then re-run `pnpm pau:candidates --rpc` until "missing" is zero and every remaining failed check is one you can explain in the PR body. Run `pnpm vitest run scripts_tests/pau-registry.test.ts`: it validates the file and checks every member's verified contract name (committed `.cache/etherscan/`) against its role.
+
+## NFAT Facilities
+
+- A facility is listed before it is switched on. Expect `live controller`, `relayer` and `freezer` to fail until the executive that grants CONTROLLER and registers the AdministeredAgent's actors and revokers has run; keep the atlas claims and say so in the note.
+- Check the facility itself by hand: `gem()` is the asset the subscribing Prime's instance states, `name()` / `symbol()` are the NFAT Identifiers, `wards(<halo SubProxy>)` is 1, and once live `recipient()` is the deployment's ALM proxy and `buds(<ALM proxy>)` is 1. The PAUs page shows the last three under "How the NFAT Facility works".
+- Test Halo's Test NFAT Facility (Ethereum) was added from the atlas's edit proposal while unwired: `recipient()` was the zero address and RateLimits had granted no CONTROLLER.
 
 ## Seed decisions (atlas `33fd263`)
 

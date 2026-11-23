@@ -7,8 +7,8 @@
 // reach.
 import type { DerivedKey } from "../../lib/pau.ts";
 
-/** A fixed unit, or the token at an argument: the address itself ("self") or the aToken's UNDERLYING_ASSET_ADDRESS() ("underlying"). */
-export type FacetUnit = { fixed: number; symbol: string | null } | { role: string; via: "self" | "underlying" };
+/** A fixed unit, or the token at an argument: the address itself ("self"), the aToken's UNDERLYING_ASSET_ADDRESS() ("underlying") or the NFAT Facility's gem() ("gem"). */
+export type FacetUnit = { fixed: number; symbol: string | null } | { role: string; via: "self" | "underlying" | "gem" };
 
 interface FacetKeyRule {
   facet: string;
@@ -37,6 +37,16 @@ export const FACET_KEYS: FacetKeyRule[] = [
   { facet: "AaveFacet", getter: /^getDepositRateLimitKey$/, via: "aToken", unit: { role: "underlyingAsset", via: "self" } },
   // AaveFacet.withdraw decreases by amountWithdrawn, the underlying balance gained.
   { facet: "AaveFacet", getter: /^getWithdrawRateLimitKey$/, via: "aToken", unit: { role: "aToken", via: "underlying" } },
+  // NFATPrimeFacet.subscribe(facility, amount, …) decreases by the gem that leaves the proxy.
+  { facet: "NFATPrimeFacet", getter: /^getSubscribeRateLimitKey$/, via: "facility", unit: { role: "gem", via: "self" } },
+  // NFATPrimeFacet.withdraw / collect key on the facility alone and decrease by the gem received, read from the facility's gem().
+  { facet: "NFATPrimeFacet", getter: /^get(Withdraw|Collect)RateLimitKey$/, via: "facility", unit: { role: "facility", via: "gem" } },
+  // NFATHaloFacet.issue(facility, to, …) keys on the facility and the account the NFAT goes to, and decreases by the gem received.
+  { facet: "NFATHaloFacet", getter: /^getIssueRateLimitKey$/, via: "facility", unit: { role: "facility", via: "gem" } },
+  // SwapAssetFacet gets no rule: its keys take three or four addresses (the assets and the counterparty's proxy and controller),
+  // which the namer hashes only from hook values, and nothing yet names a counterparty. Its limits stay unnamed on purpose.
+  // NFATHaloFacet.repayPrincipal / repayInterest decrease by the gem that leaves the proxy.
+  { facet: "NFATHaloFacet", getter: /^getRepay(Principal|Interest)RateLimitKey$/, via: "facility", unit: { role: "gem", via: "self" } },
 ];
 
 /** The registry entry for a derivation's facet getter. */

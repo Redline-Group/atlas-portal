@@ -15,6 +15,7 @@ import { draftRegistry } from "../scripts/lib/pau-draft.ts";
 import type { AtlasNode } from "../src/types.ts";
 
 const PRIME = "11111111-1111-4111-8111-111111111111";
+const HALO = "33333333-3333-4333-8333-333333333333";
 const a = (n: number) => `0x${n.toString(16).padStart(40, "0")}`;
 
 let order = 0;
@@ -50,11 +51,21 @@ const DOCS: AtlasNode[] = [
   doc(uuid(35), "A.6.1.2.1.2.1", "Address", [a(41)]),
   doc(uuid(40), "A.6.1.3", "Active Instances"),
   doc(uuid(41), "A.6.1.3.1", "Token Address", [a(50)]),
+  doc(HALO, "A.1.9.1", "Test Halo"),
+  doc(uuid(60), "A.1.9.1.1", "Test Halo SubProxy Account", [a(60)]),
+  doc(uuid(61), "A.1.9.1.3", "NFAT Facilities"),
+  doc(uuid(62), "A.1.9.1.3.1", "Active NFAT Facilities"),
+  doc(uuid(63), "A.1.9.1.3.1.1", "Base"),
+  doc(uuid(64), "A.1.9.1.3.1.1.1", "Test NFAT Facility"),
+  doc(uuid(65), "A.1.9.1.3.1.1.1.1", "NFAT Facility Contract Address", [a(61)]),
+  { ...doc(uuid(66), "A.1.9.1.3.1.1.1.2", "Contract Addresses", [a(62), a(63)]), content: `The addresses are:\n\n- ALM Proxy: \`${a(62)}\`\n- \`RateLimits\`: \`${a(63)}\`\n- Deployer: \`${a(64)}\`` },
+  doc(uuid(67), "A.1.9.1.3.1.1.1.3", "Test NFAT Facility Freezer Multisig"),
+  doc(uuid(68), "A.1.9.1.3.1.1.1.3.1", "Address", [a(65)]),
 ];
 const docs = Object.fromEntries(DOCS.map((d) => [d.id, d]));
 // The explorer-style attribution is deliberately wrong for a(10).
 const atlasChain = (addr: string) => ({ [a(10)]: "optimism" })[addr] ?? "ethereum";
-const obs = discoverPau({ docs, primes: new Map([[PRIME, "Foo"]]), atlasChain });
+const obs = discoverPau({ docs, primes: new Map([[PRIME, "Foo"]]), halos: new Map([[HALO, "Test Halo"]]), atlasChain });
 const find = (addr: string) => obs.filter((o) => o.address === addr);
 
 describe("roleOf", () => {
@@ -90,6 +101,16 @@ describe("discoverPau", () => {
   it("ignores addresses outside the PAU sections", () => {
     expect(find(a(50))).toEqual([]);
   });
+  it("reads a halo's NFAT Facility as a diamond deployment of the halo, on the section's chain", () => {
+    expect(find(a(61))).toMatchObject([{ prime: HALO, chain: "base", chainFrom: "title", kind: "diamond", role: "nfatFacility" }]);
+    expect(find(a(65))).toMatchObject([{ prime: HALO, chain: "base", kind: "diamond", role: "freezer" }]);
+    expect(find(a(60))).toEqual([]);
+  });
+  it("reads one contract per labelled line of a list, and skips a label that names no role", () => {
+    expect(find(a(62))).toMatchObject([{ role: "almProxy", doc: uuid(66), title: "Contract Addresses / ALM Proxy" }]);
+    expect(find(a(63))).toMatchObject([{ role: "rateLimits", kind: "diamond" }]);
+    expect(find(a(64))).toEqual([]);
+  });
 });
 
 const EMPTY = { shared: [], deployments: [], ignored: [] };
@@ -99,7 +120,7 @@ describe("expandPrimeWide + draftRegistry", () => {
   const dep = (chain: string, kind: string) => draft.deployments.find((d) => d.chain === chain && d.kind === kind)!;
   const holders = (chain: string, kind: string, role: string) => dep(chain, kind).members.filter((m) => m.role === role).map((m) => m.address);
   it("groups observations into one deployment per chain and generation", () => {
-    expect(draft.deployments.map((d) => `${d.chain}:${d.kind}`).sort()).toEqual(["base:monolithic", "ethereum:diamond", "ethereum:monolithic"]);
+    expect(draft.deployments.filter((d) => d.prime === PRIME).map((d) => `${d.chain}:${d.kind}`).sort()).toEqual(["base:monolithic", "ethereum:diamond", "ethereum:monolithic"]);
   });
   it("gives a prime-wide multisig to every deployment whose own section names no holder of that role", () => {
     expect(holders("base", "monolithic", "relayer")).toEqual([a(12)]);

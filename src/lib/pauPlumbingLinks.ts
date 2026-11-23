@@ -21,6 +21,7 @@ export const ROLE_NODE: Partial<Record<ContractState["role"], string>> = {
   facet: "facets",
   beacon: "facets",
   relayer: "relayer",
+  nfatFacility: "facility",
   freezer: "freezer",
   program: "program",
   reserve: "reserve",

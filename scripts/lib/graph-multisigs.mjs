@@ -36,6 +36,12 @@ const THRESHOLD_RE = /The (.+?) (?:currently )?has a (?:default )?(\d+)\/(\d+) s
 // group positions (name, numerator, denominator) so downstream code doesn't branch.
 const THRESHOLD_ALT_RE =
   /The (.+?)'s required number of signers is \S+ \((\d+)\) out of \S+ \((\d+)\)/;
+// "The required number of signers of the Test NFAT Facility Relayer Multisig is two (2) out of three (3)."
+// The same fact with the multisig named after the count; same capture positions.
+const THRESHOLD_OF_RE =
+  /The required number of signers of the (.+?) is \S+ \((\d+)\) out of \S+ \((\d+)\)/;
+/** The threshold sentence's (name, M, N) in whichever phrasing states it; null when none does. */
+const matchThreshold = (content) => content.match(THRESHOLD_RE) ?? content.match(THRESHOLD_ALT_RE) ?? content.match(THRESHOLD_OF_RE);
 const ADDRESS_RE = /`([A-Za-z0-9]{32,64})`/;
 export const ADDRESS_CHAIN_RE = /\baddress of .+? on (?:the )?([A-Z][\w ]*?) is/;
 // "three (3) addresses controlled by Operational GovOps Soter Labs"
@@ -183,9 +189,7 @@ export function extractMultisigs(allDocs, docById, docByDocNo, entityMap, edges)
 
         // Display name = subject of the threshold sentence (uniform across
         // variants); fall back to the root title.
-        const thresholdMatch =
-          (slot.threshold.content ?? "").match(THRESHOLD_RE) ??
-          (slot.threshold.content ?? "").match(THRESHOLD_ALT_RE);
+        const thresholdMatch = matchThreshold(slot.threshold.content ?? "");
         if (!thresholdMatch) warn(`threshold did not parse: ${slot.threshold.doc_no}`);
         const name = thresholdMatch?.[1]?.trim() ?? root.title;
         const threshold = thresholdMatch ? `${thresholdMatch[2]}/${thresholdMatch[3]}` : null;

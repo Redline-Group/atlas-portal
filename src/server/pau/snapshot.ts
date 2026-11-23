@@ -8,6 +8,7 @@ import { deploymentId, type PauDeployment, type PauMember, type PauRole } from "
 import type { AgentMember, BeamDefault, ContractState, DerivedKey, LiveRateLimit, PauSnapshot, RateLimitKey, RoleHolder } from "../../lib/pau.ts";
 import { liveAgent } from "./agent-live.ts";
 import { beamLimits, type BeamSource } from "./beam.ts";
+import { facilityContract } from "./facility.ts";
 import { probeKeys } from "./probe.ts";
 import { replayAgent, replayIntegrations, replayParams, replayRateLimitKeys, replayRoles, roleName, type PauEventRow } from "./replay.ts";
 
@@ -35,6 +36,9 @@ export const PAU_STATE_ABI = parseAbi([
   "function isAllocator(address) view returns (bool)", "function isSentinel(address) view returns (bool)",
   // A DssSpell's own state (vote-archive.ts)
   "function done() view returns (bool)", "function expiration() view returns (uint256)",
+  // An NFAT Facility Contract's own state (facility.ts)
+  "function gem() view returns (address)", "function recipient() view returns (address)", "function stopped() view returns (bool)",
+  "function buds(address) view returns (uint256)", "function name() view returns (string)",
   // AdministeredAgent membership (agent-live.ts)
   "function actorCount() view returns (uint256)", "function getActor(uint256) view returns (address)", "function getIsActor(address) view returns (bool)",
   "function adminCount() view returns (uint256)", "function getAdmin(uint256) view returns (address)", "function getIsAdmin(address) view returns (bool)",
@@ -129,6 +133,7 @@ export async function buildSnapshot(
   for (const m of d.members.filter((x) => READ_ROLES.has(x.role))) {
     contracts.push(await contractState(read, d.chain, m, await historyOf(d.chain, m.address), extras));
   }
+  for (const m of d.members.filter((x) => x.role === "nfatFacility")) contracts.push(await facilityContract(read, d, m));
   return { deployment: deploymentId(d), prime: d.prime, primeName: d.primeName, chain: d.chain, kind: d.kind, contracts };
 }
 

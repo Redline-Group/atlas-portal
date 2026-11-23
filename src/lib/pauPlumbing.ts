@@ -5,6 +5,7 @@
 import type { PauKind } from "./pauRegistry.ts";
 import { DIAMOND_PLUMBING } from "./pauPlumbingDiamond.ts";
 import { MONOLITHIC_PLUMBING } from "./pauPlumbingMonolithic.ts";
+import { NFAT_PLUMBING } from "./pauPlumbingNfat.ts";
 import { SVM_PLUMBING } from "./pauPlumbingSvm.ts";
 import type { Plumbing, PlumbingKind } from "./pauPlumbingParts.ts";
 
@@ -12,6 +13,9 @@ export * from "./pauPlumbingParts.ts";
 
 /** The plumbing of each controller generation; a deployment shows its own. */
 export const PLUMBING: Record<PauKind, Plumbing> = { monolithic: MONOLITHIC_PLUMBING, diamond: DIAMOND_PLUMBING, svm: SVM_PLUMBING };
+
+/** The extra picture a deployment that runs an NFAT Facility shows: the facility's money cycle. */
+export { NFAT_PLUMBING };
 
 export const PLUMBING_KEY: Record<PlumbingKind, string> = {
   flow: "a move on its way to the funds",

@@ -1,5 +1,9 @@
 // Warns when an Active Data table holds rows but nothing extracts it.
 import { tableRows, type ActiveDataCtx } from "./context.ts";
+import { APPROVED_LIST_RE } from "../graph-nfat-facilities.ts";
+
+// Tables another pass reads by title: graph-nfat-facilities.ts marks each listed facility approved.
+const READ_BY_TITLE = [APPROVED_LIST_RE];
 
 // Rows name assets, positions or config exceptions, not actors; see parse-atlas SKILL.md Pattern 16 addendum.
 const KNOWN_UNEXTRACTED_TABLES = new Set([
@@ -13,7 +17,7 @@ const KNOWN_UNEXTRACTED_TABLES = new Set([
 export function warnUnextractedTables(ctx: ActiveDataCtx, handledUuids: Set<string>): void {
   for (const d of ctx.allDocs) {
     if (d.type !== "Active Data") continue;
-    if (handledUuids.has(d.id) || KNOWN_UNEXTRACTED_TABLES.has(d.id)) continue;
+    if (handledUuids.has(d.id) || KNOWN_UNEXTRACTED_TABLES.has(d.id) || READ_BY_TITLE.some((re) => re.test(d.title))) continue;
     const rows = tableRows(d).filter((row) => Object.values(row).some((v) => v && v.trim()));
     if (!rows.length) continue;
     ctx.stats.driftWarnings++;

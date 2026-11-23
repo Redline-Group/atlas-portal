@@ -35,6 +35,7 @@
 
 ## 2026-11-23
 
+- Added NFAT Facilities to Radar: a Halo Agent's page shows each facility with a diagram of how its money moves, and its Liquidity Layer page what the facility's contracts say on chain.
 - Added Halo Agents to the Atlas CrossView concept catalog and updated it for documents the Atlas removed this month.
 - Improved address handling in previews: hover cards show multisig signers and mark new addresses.
 

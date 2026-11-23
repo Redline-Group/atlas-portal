@@ -262,7 +262,7 @@ describe("ActorPau", () => {
   it("says so for a prime with no snapshot", async () => {
     served = { deployments: [] };
     render(<ActorPau prime={prime} instances={instances} />);
-    expect(await screen.findByText("no PAU contracts have been read for this Prime yet")).toBeInTheDocument();
+    expect(await screen.findByText("no PAU contracts have been read for this agent yet")).toBeInTheDocument();
     expect(document.querySelector("details.pau-deployment")).toBeNull();
   });
 });

@@ -39,7 +39,7 @@ function renderMarkdownLinks(value: string): React.ReactNode {
 const isInteractive = (value: string) =>
   EVM_RE.test(value) || SOL_RE.test(value) || RATE_LIMIT_HASH_RE.test(value.trim()) || value.includes("](");
 
-function renderValue(value: string, chainHint?: Array<string | undefined>): React.ReactNode {
+export function renderValue(value: string, chainHint?: Array<string | undefined>): React.ReactNode {
   if (EVM_RE.test(value) || SOL_RE.test(value)) {
     // The shared address map is the build pipeline's resolved chain and
     // outranks every hint (explorerUrl reads it first) —
