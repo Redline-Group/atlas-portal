@@ -426,7 +426,7 @@ are noted under Registries 1 only; a concept entry of their own is not written.
   with `pnpm census:concepts --update`; the only change is that census (875 → 977
   members: three zero buckets out, 102 Data Repository members in).
 - **Review fixes**: Lifecycle 6 Relationships now gives the measured parent split (97
-  under an ICD, 5 elsewhere in Spark) and no longer says every used repository is
+  under an ICD, 5 elsewhere: 3 in Spark, 2 in Grove) and no longer says every used repository is
   empty — 4 of the 13 partner payment-address documents state an address. Sky Core
   Halos section has 9 descendants, not 8. The Registries note names both Agent Scope
   lists. The "no Facilitator or GovOps" line under Actors 4 is labelled as a graph
