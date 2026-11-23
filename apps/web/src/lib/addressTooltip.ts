@@ -142,24 +142,42 @@ export function resolveAddressHoldings(
 }
 
 /**
+ * The chains whose readings stand for an address: the chains the atlas places
+ * it on; or, when none of those was read at all, every chain the balances hold
+ * a reading of the same address on, flagged `elsewhere`. The sweep reads the
+ * chains the live atlas names, so a preview that moves a known address has no
+ * reading where it now places it. A chain that was read is an answer, even
+ * one that holds no Safe. Holdings stay on the atlas's own chains.
+ */
+export function readingChains(
+  address: string,
+  addrMap: Record<string, AddressInfo>,
+  balancesByAddress: Record<string, AddressBalances>,
+): { chains: string[]; elsewhere: boolean } {
+  const info = infoFor(address, addrMap);
+  const prefix = `${address.toLowerCase()}|`;
+  if (!info || info.chains.some((chain) => balancesByAddress[prefix + chain])) return { chains: info?.chains ?? [], elsewhere: false };
+  const read = Object.keys(balancesByAddress).filter((k) => k.startsWith(prefix)).map((k) => k.slice(prefix.length));
+  return { chains: read.sort(), elsewhere: read.length > 0 };
+}
+
+/**
  * When an address's chain values were read: the oldest balances reading across
- * the chains the atlas places it on (its Safe setup comes from the same row),
- * and the oldest quote among the prices that value what it holds. Pegged
- * holdings are valued at $1 with no quote, so they add no price time.
- * `alsoRead` names chains outside the atlas's placement whose readings the
- * card shows too (a Safe read elsewhere, addressSafe.ts).
+ * its reading chains (its Safe setup comes from the same row), and the oldest
+ * quote among the prices that value what it holds. Pegged holdings are valued
+ * at $1 with no quote, so they add no price time.
  */
 export function resolveAddressAsOf(
   address: string,
   addrMap: Record<string, AddressInfo>,
   balancesByAddress: Record<string, AddressBalances>,
   prices: PriceMap = {},
-  alsoRead: readonly string[] = [],
 ): { readAt: string | null; priceAt: string | null } {
   const info = infoFor(address, addrMap);
   if (!info) return { readAt: null, priceAt: null };
   const key = address.toLowerCase();
-  const rows = [...info.chains, ...alsoRead].map((chain) => balancesByAddress[`${key}|${chain}`]).filter((r): r is AddressBalances => !!r);
+  const { chains } = readingChains(address, addrMap, balancesByAddress);
+  const rows = chains.map((chain) => balancesByAddress[`${key}|${chain}`]).filter((r): r is AddressBalances => !!r);
   const quoted = heldAcross(key, info.chains, balancesByAddress).filter((h) => freshPrice(h.symbol, prices) != null);
   return {
     readAt: oldestTime(rows.map((r) => r.checkedAt)),

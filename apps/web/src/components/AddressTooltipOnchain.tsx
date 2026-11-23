@@ -34,8 +34,7 @@ export function AddressTooltipOnchain({
   }, [ready, map, onSettled]);
   const { held, value } = resolveAddressHoldings(address, map, addresses, prices);
   const safes = resolveSafes(address, map, addresses, multisigs);
-  const readElsewhere = safes.flatMap((s) => (s.elsewhere ? s.chains : []));
-  const { readAt, priceAt } = resolveAddressAsOf(address, map, addresses, prices, readElsewhere);
+  const { readAt, priceAt } = resolveAddressAsOf(address, map, addresses, prices);
   return (
     <>
       {safes.map((safe) => (

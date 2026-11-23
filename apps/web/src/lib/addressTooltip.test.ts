@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { AddressBalances } from "@/lib/balances";
-import { resolveAddressLabel, resolveAddressHoldings, addressHeadlineBalance, resolveAddressAsOf } from "./addressTooltip";
+import { resolveAddressLabel, resolveAddressHoldings, addressHeadlineBalance, resolveAddressAsOf, readingChains } from "./addressTooltip";
 import { makeAddressInfo } from "../test/fixtures";
 
 const EVM = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84";
@@ -230,12 +230,29 @@ describe("resolveAddressAsOf", () => {
     expect(resolveAddressAsOf(EVM, info, {}, {})).toEqual({ readAt: null, priceAt: null });
   });
 
-  it("dates a reading from a chain outside the atlas's placement when the card shows one", () => {
+  it("dates the readings on other chains when none of the atlas's chains was read", () => {
     const info = { [EVM]: makeAddressInfo({ chains: ["ethereum"] }) };
     const reads: Record<string, AddressBalances> = {
       [`${EVM}|arbitrum`]: { chain: "arbitrum", checkedAt: "2026-11-20T08:00:00Z", hasCode: null, balances: {} },
     };
-    expect(resolveAddressAsOf(EVM, info, reads, {}).readAt).toBeNull();
-    expect(resolveAddressAsOf(EVM, info, reads, {}, ["arbitrum"]).readAt).toBe("2026-11-20T08:00:00Z");
+    expect(resolveAddressAsOf(EVM, info, reads, {}).readAt).toBe("2026-11-20T08:00:00Z");
+  });
+});
+
+describe("readingChains", () => {
+  const row = (chain: string): AddressBalances => ({ chain, checkedAt: null, hasCode: null, balances: {} });
+  const info = { [EVM]: makeAddressInfo({ chains: ["ethereum"] }) };
+
+  it("keeps the atlas's chains once any of them was read", () => {
+    expect(readingChains(EVM, info, { [`${EVM}|ethereum`]: row("ethereum"), [`${EVM}|base`]: row("base") })).toEqual({ chains: ["ethereum"], elsewhere: false });
+  });
+
+  it("falls back to every chain the address was read on, in name order", () => {
+    expect(readingChains(EVM, info, { [`${EVM}|base`]: row("base"), [`${EVM}|arbitrum`]: row("arbitrum") })).toEqual({ chains: ["arbitrum", "base"], elsewhere: true });
+  });
+
+  it("reads nothing for an address the map does not hold, or one never read", () => {
+    expect(readingChains(EVM, {}, { [`${EVM}|base`]: row("base") })).toEqual({ chains: [], elsewhere: false });
+    expect(readingChains(EVM, info, {})).toEqual({ chains: [], elsewhere: false });
   });
 });

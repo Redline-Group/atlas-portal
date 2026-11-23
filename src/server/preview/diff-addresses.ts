@@ -9,27 +9,33 @@
 import { ETH_ADDR_RE, SOL_ADDR_RE, normalizeAddress } from "../../../scripts/lib/address-chains.mjs";
 import type { Snapshot } from "./snapshot.ts";
 
-function collect(content: string | undefined, into: Set<string>): void {
-  if (!content) return;
+const isEvm = (addr: string): boolean => addr.startsWith("0x");
+
+function addressesIn(content: string | undefined, patterns: readonly RegExp[]): string[] {
+  if (!content) return [];
   // matchAll copies the regex, so the shared /g patterns keep no lastIndex.
-  for (const re of [ETH_ADDR_RE, SOL_ADDR_RE]) for (const m of content.matchAll(re)) into.add(normalizeAddress(m[0]));
+  return patterns.flatMap((re) => Array.from(content.matchAll(re), (m) => normalizeAddress(m[0])));
 }
 
-/** Every address any document of the snapshot names. */
-function namedBy(side: Snapshot): Set<string> {
-  const out = new Set<string>();
-  for (const doc of side.values()) collect(doc.content, out);
-  return out;
+// Only the patterns that can match a remaining candidate: an EVM address holds
+// a 0, which base58 lacks, so neither pattern can match the other kind. The
+// base58 scan is most of the cost of reading a whole snapshot.
+function patternsFor(found: ReadonlySet<string>): RegExp[] {
+  const all = [...found];
+  return [...(all.some(isEvm) ? [ETH_ADDR_RE] : []), ...(all.some((a) => !isEvm(a)) ? [SOL_ADDR_RE] : [])];
 }
 
-/** The addresses `ids` (the head documents the diff lists as added or changed)
- *  name that neither `base` nor `live` does, sorted. */
+/** `ids` are the head documents the diff lists as added or changed; sorted. */
 export function introducedAddresses(ids: readonly string[], base: Snapshot, head: Snapshot, live?: Snapshot): string[] {
-  const found = new Set<string>();
-  for (const id of ids) collect(head.get(id)?.content, found);
-  for (const side of live ? [base, live] : [base]) {
+  const both = [ETH_ADDR_RE, SOL_ADDR_RE];
+  const found = new Set(ids.flatMap((id) => addressesIn(head.get(id)?.content, both)));
+  // A changed document that keeps its address rules it out without a full scan.
+  for (const id of ids) for (const addr of addressesIn(base.get(id)?.content, both)) found.delete(addr);
+  // Base and live are often the same snapshot, which needs reading once.
+  for (const side of new Set(live ? [base, live] : [base])) {
     if (found.size === 0) break;
-    for (const addr of namedBy(side)) found.delete(addr);
+    const patterns = patternsFor(found);
+    for (const doc of side.values()) for (const addr of addressesIn(doc.content, patterns)) found.delete(addr);
   }
   return [...found].sort();
 }
