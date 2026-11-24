@@ -11,7 +11,8 @@
 import chainRegistry from "../../data/chain-registry.json";
 import type { DerivedKey, PauParam, PauSnapshot, RetiredAddress } from "../../lib/pau.ts";
 import { DIAMOND_INPUTS, settledKeys, withSettled } from "./key-memo.ts";
-import { candidateAddresses, type KeyShape } from "./key-derive.ts";
+import { candidateAddresses } from "./key-candidates.ts";
+import type { KeyShape } from "./key-derive.ts";
 import { snapshotAddresses, type KeyContext, type PrimeAtlas } from "./key-context.ts";
 import { withPrimeMarks } from "./key-marks.ts";
 import { deriveTiered, nearTier, primeTier } from "./key-tiers.ts";

@@ -8,7 +8,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { encodeAbiParameters, keccak256, toHex } from "viem";
-import { candidateAddresses, deriveKeys, limitConstants, monolithicShapes, type Candidates } from "./key-derive.ts";
+import { candidateAddresses, limitConstants } from "./key-candidates.ts";
+import { deriveKeys, monolithicShapes, type Candidates } from "./key-derive.ts";
 import { withDerivedKeys } from "./snapshot.ts";
 import type { PauSnapshot } from "../../lib/pau.ts";
 

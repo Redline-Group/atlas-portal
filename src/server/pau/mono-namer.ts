@@ -5,7 +5,8 @@
 // snapshot settled is reused under the same inputs (key-memo.ts).
 import type { DerivedKey, PauSnapshot } from "../../lib/pau.ts";
 import type { KeyContext } from "./key-context.ts";
-import { deriveKeys, isPairShape, limitConstants, monolithicShapes, type Candidates, type KeyShape } from "./key-derive.ts";
+import { limitConstants } from "./key-candidates.ts";
+import { deriveKeys, isPairShape, monolithicShapes, type Candidates, type KeyShape } from "./key-derive.ts";
 import { namingInputs, settledKeys, withSettled } from "./key-memo.ts";
 import { deriveTiered, nearTier, outwardTier, primeTier } from "./key-tiers.ts";
 import type { SourceMaterial } from "./source-material.ts";

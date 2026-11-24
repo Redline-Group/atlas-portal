@@ -12,7 +12,7 @@
 // (source-pairs.ts), the only pairs a two-address key is hashed with besides
 // the atlas's own (key-context.ts).
 import { EVM_ADDRESS_BODY_SRC } from "../../lib/patterns.ts";
-import { cachedEntries } from "./key-derive.ts";
+import { cachedEntries } from "./key-candidates.ts";
 import { argumentPairs } from "./source-pairs.ts";
 
 export interface SourceMaterial {
