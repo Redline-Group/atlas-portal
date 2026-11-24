@@ -249,6 +249,21 @@ describe("findCousinDocs — multi-instance primitives", () => {
     expect(findCousinDocs(sLoc.id, atlas, graph).map((c) => c.node.id)).toEqual([sLoc2.id, gLoc.id]);
   });
 
+  it("treats a directory entry titled without 'Location' as an entry", () => {
+    const { atlas, graph } = venueFixture();
+    const add = (id: string, doc_no: string, title: string, content = "") => {
+      const n = makeNode({ id, doc_no, title, content });
+      atlas.docs[id] = n;
+      atlas.docNoToId.set(doc_no, id);
+      return n;
+    };
+    add("s-dir", "A.6.1.1.1.2.6.1.1.2", "Active Instances Directory");
+    add("g-dir", "A.6.1.1.2.2.6.1.1.2", "Active Instances Directory");
+    const sEntry = add("s-e1", "A.6.1.1.1.2.6.1.1.2.1", "Morpho USDC Instance Configuration Document", "Located at [ICD](s-v1).");
+    const gEntry = add("g-e1", "A.6.1.1.2.2.6.1.1.2.1", "Steakhouse USDC Morpho Instance Configuration Document Location", "Located at [ICD](g-v1).");
+    expect(findCousinDocs(sEntry.id, atlas, graph).map((c) => c.node.id)).toEqual([gEntry.id]);
+  });
+
   it(`caps the list at ${MAX_COUSINS}`, () => {
     const { atlas, graph, sVault } = venueFixture();
     for (let i = 10; i < 40; i++) {

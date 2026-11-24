@@ -120,7 +120,7 @@ export function findCousinDocs(
 ): CousinDoc[] {
   const target = atlas.docs[targetId];
   if (!target) return [];
-  if (isIcdLocation(target)) return locationCousins(atlas.docs, target, (id) => findCousinDocs(id, atlas, graph, Infinity));
+  if (isIcdLocation(atlas, target)) return locationCousins(atlas, target, (id) => findCousinDocs(id, atlas, graph, Infinity));
   const hit = coveringEntity(targetId, atlas, graph);
   if (!hit?.ent.st) return uncoveredCousins(target, atlas, graph);
 

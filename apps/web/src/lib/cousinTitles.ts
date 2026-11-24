@@ -1,6 +1,7 @@
 import type { AtlasNode } from "@/types";
 import type { AtlasBundle } from "@/lib/docsTypes";
 import { pushTo } from "@/lib/collections";
+import { contradicts, pathMarks, sharedRun } from "./cousinPaths";
 
 type Atlas = Pick<AtlasBundle, "docs" | "docNoToId">;
 type Docs = Record<string, AtlasNode>;
@@ -88,10 +89,20 @@ export function insideIcdBelow(atlas: Atlas, doc: AtlasNode, root: AtlasNode): b
   return false;
 }
 
-// The doc under `root` that plays the target's part. ICDs of one primitive are
-// not laid out identically, so the target's doc_no suffix is only a first guess:
-// the match is by title key, with the parent's title breaking a tie, and no doc
-// is better than a doc with a different title. `accept` narrows the candidates.
+// Titles of the headings between `doc` and `root`, nearest first; a child of
+// `root` has none, so two children of their roots always agree.
+function headings(atlas: Atlas, doc: AtlasNode, rootDocNo: string): string[] {
+  const out: string[] = [];
+  for (let no = parentDocNo(doc.doc_no); no.length > rootDocNo.length; no = parentDocNo(no)) out.push(titleAt(atlas, no) ?? "");
+  return out;
+}
+
+// The doc under `root` that plays the target's part: the same title key under a
+// parent with the same title key (headings that only name a chain set aside), on
+// a path that names no other chain or status (cousinPaths.ts).
+// ICDs of one primitive are not laid out identically, so the doc_no suffix is only
+// a tie-break, after the longest run of matching headings; no doc is better than
+// one in another heading's place. `accept` narrows the candidates.
 export function equivalentDoc(
   atlas: Atlas,
   target: AtlasNode,
@@ -101,13 +112,16 @@ export function equivalentDoc(
 ): AtlasNode | undefined {
   if (!relSuffix) return root;
   const key = titleKeyer(atlas.docs);
-  const title = key(target.title);
-  const alignedId = atlas.docNoToId.get(`${root.doc_no}${relSuffix}`);
-  const aligned = alignedId ? atlas.docs[alignedId] : undefined;
-  if (aligned && key(aligned.title) === title && accept(aligned)) return aligned;
-  const same = (titleIndex(atlas.docs).get(title) ?? []).filter((d) => d.doc_no.startsWith(`${root.doc_no}.`) && accept(d));
-  if (same.length <= 1) return same[0];
-  const parentTitle = key(titleAt(atlas, parentDocNo(target.doc_no)));
-  const byParent = same.filter((d) => key(titleAt(atlas, parentDocNo(d.doc_no))) === parentTitle);
-  return byParent.length === 1 ? byParent[0] : undefined;
+  const want = pathMarks(headings(atlas, target, target.doc_no.slice(0, -relSuffix.length)), key);
+  const runOf = new Map<AtlasNode, number>();
+  for (const d of titleIndex(atlas.docs).get(key(target.title)) ?? []) {
+    if (!d.doc_no.startsWith(`${root.doc_no}.`) || !accept(d)) continue;
+    const got = pathMarks(headings(atlas, d, root.doc_no), key);
+    if ((got.steps[0] ?? "") !== (want.steps[0] ?? "") || contradicts(want, got)) continue;
+    runOf.set(d, sharedRun(got.steps, want.steps));
+  }
+  const best = Math.max(-1, ...runOf.values());
+  const top = [...runOf].filter(([, r]) => r === best).map(([d]) => d);
+  if (top.length <= 1) return top[0];
+  return top.find((d) => d.doc_no === `${root.doc_no}${relSuffix}`);
 }
