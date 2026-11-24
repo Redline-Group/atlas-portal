@@ -5,6 +5,7 @@
 // vectors are keys Grove's and Osero's diamond RateLimits hold, each confirmed
 // by calling the facet's own pure getter on Ethereum.
 import { afterAll, describe, expect, it } from "bun:test";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -31,7 +32,7 @@ const BASIN = "0xf08943f817e1f902debc884c7b19ea5764594ac9";
 const UNI_POOL = "0xbafead7c60ea473758ed6c6021505e8bbd7e8e5d";
 const SPARKLEND_POOL = "0xc13e21b648a5ee794902342038ff3adab66be987";
 const SP_USDS = "0xc02ab1a5eaa8d1b114ef786d9bde108cd4364359";
-const FACET = { usds: "0x1221cc4b85ab260660ad21c2829e0eb516dffbc7", psm: "0xe4a5dac768a310cc2316f258901b32e499653064", basin: "0xc84825bcd13aeddc372400239499380376a44a39", uni: "0x445d9dc752f269be48250f1a180cac4c61ce4bab", aave: "0x8ce890a96a193ff2dd4b2ea3c682326f655f6b62" };
+const FACET = { usds: "0x1221cc4b85ab260660ad21c2829e0eb516dffbc7", psm: "0xe4a5dac768a310cc2316f258901b32e499653064", basin: "0xc84825bcd13aeddc372400239499380376a44a39", uni: "0x445d9dc752f269be48250f1a180cac4c61ce4bab", aave: "0x8ce890a96a193ff2dd4b2ea3c682326f655f6b62", transfer: "0x4da7608c331b8f135df5b985018933780ecd089d" };
 
 const KEY = {
   usdsBurn: "0x844d35ae585cfdeed0a77b7724286a1d4b5718bf8663d85e55396062b1cbe38c",
@@ -169,6 +170,17 @@ describe("keyNamer", () => {
     const namer = keyNamer([], {}, { dir: tmpDir("no-cache-"), material, context: async () => new Map([["p", { addresses: [], instances: [[USDC]] }]]) });
     expect(named(await namer({ ...diamond([], [key]), kind: "monolithic" }, read))[key]).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [USDC, USDC], via: USDC });
   });
+  it("searches a miss stored under a stamp written before SEARCH_VERSION once more, so a self-pair the old search never tried is named", async () => {
+    const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "address" }], [keccak256(toHex("LIMIT_ASSET_TRANSFER")), USDC, USDC]));
+    const material = { names: ["LIMIT_ASSET_TRANSFER"], addresses: [], words: [], spells: [] };
+    const namer = () => keyNamer([], {}, { dir: tmpDir("no-cache-"), material, context: async () => new Map([["p", { addresses: [], instances: [[USDC]] }]]) });
+    // The stamp the search before self-pairs wrote for the same inputs: constants, addresses, words, context, spell pairs.
+    const before = `1:${createHash("sha256").update(JSON.stringify([["LIMIT_ASSET_TRANSFER"], [], [], [USDC], []])).digest("hex").slice(0, 16)}`;
+    const snap = { ...diamond([], [key]), kind: "monolithic" as const };
+    const now = (await namer()(snap, read)).keysNamedWith!;
+    expect(named(await namer()(snap, read, { ...snap, keysNamedWith: now }))[key]).toBeNull();
+    expect(named(await namer()(snap, read, { ...snap, keysNamedWith: before }))[key]).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [USDC, USDC], via: USDC });
+  });
   it("names a monolithic key with one argument from its prime and the other from any candidate, and marks the outside one", async () => {
     const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "address" }], [keccak256(toHex("LIMIT_ASSET_TRANSFER")), AUSD, BASIN]));
     const material = { names: ["LIMIT_ASSET_TRANSFER"], addresses: [AUSD], words: [], spells: [] };
@@ -179,6 +191,13 @@ describe("keyNamer", () => {
     const snap = diamond([FACET.basin], [KEY.basinDeposit]);
     const namer = keyNamer([], { members: [{ address: USDS }] }, { dir: CACHE, context: async () => new Map([["p", { addresses: [BASIN], instances: [] }]]) });
     expect(named(await namer(snap, read))[KEY.basinDeposit]).toBeNull();
+  });
+  it("stops a diamond's asset transfer at its prime's artifact too, where a monolithic one crosses every candidate", async () => {
+    const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "address" }], [keccak256(toHex("LIMIT_ASSET_TRANSFER")), AUSD, BASIN]));
+    const snap = diamond([FACET.transfer], [key]);
+    const namer = (addresses: string[]) => keyNamer([], { members: [{ address: AUSD }] }, { dir: CACHE, context: async () => new Map([["p", { addresses, instances: [] }]]) });
+    expect(named(await namer([AUSD, BASIN])(snap, read))[key]).toMatchObject({ constant: "LIMIT_ASSET_TRANSFER", args: [AUSD, BASIN], facet: "TransferAssetFacet" });
+    expect(named(await namer([BASIN])(snap, read))[key]).toBeNull();
   });
   it("marks a name reused from an earlier snapshot by where its arguments sit now, and claims nothing without the prime's atlas", async () => {
     const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }], [keccak256(toHex("LIMIT_4626_DEPOSIT")), UNI_POOL]));

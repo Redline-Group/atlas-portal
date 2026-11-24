@@ -1,7 +1,8 @@
 // A deployment's context: each prime's artifact and instances read by doc
 // number from their UUIDs (parentId stops at heading depth 6), a Halo found by
 // its entity's defining doc, an instance outside its prime's artifact still its
-// prime's, and the addresses a snapshot holds outside its rate limits.
+// prime's, no atlas for a prime that was not read, and the addresses a snapshot
+// holds outside its rate limits.
 import { afterAll, describe, expect, it } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
@@ -38,8 +39,12 @@ describe("atlasContexts", () => {
     expect(got.get("prime")!.instances.map((i) => i.sort())).toEqual([[B.toLowerCase()], [D]]);
     expect(got.get("halo")).toEqual({ addresses: [E], instances: [] });
   });
-  it("gives a prime with no readable atlas nothing", () => {
-    expect(atlasContexts(path.join(dir, "none.json"), [path.join(dir, "none-docs.json")], ["prime"]).get("prime")).toEqual({ addresses: [], instances: [] });
+  it("throws when the graph or a docs file is missing, so no prime gets an atlas that was not read", () => {
+    expect(() => atlasContexts(path.join(dir, "none.json"), [shallow, deep], ["prime"])).toThrow("none.json not found");
+    expect(() => atlasContexts(graph, [shallow, path.join(dir, "none-docs.json")], ["prime"])).toThrow("none-docs.json not found");
+  });
+  it("leaves out a prime whose artifact is not in the docs", () => {
+    expect([...atlasContexts(graph, [shallow, deep], ["prime", "gone"]).keys()]).toEqual(["prime"]);
   });
 });
 
