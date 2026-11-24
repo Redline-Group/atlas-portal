@@ -6,15 +6,17 @@
 // this every rebuild searches again for the keys nothing names.
 import { createHash } from "node:crypto";
 import type { DerivedKey, PauSnapshot } from "../../lib/pau.ts";
-import { allLimits } from "./snapshot.ts";
+import type { KeyContext } from "./key-context.ts";
+import { allLimits, withDerivedKeys } from "./snapshot.ts";
 
 /** Raise when a change to the derivation code would name a key differently, so earlier names and misses are dropped. */
 export const NAMER_VERSION = 1;
 
 /** The stamp of a monolithic namer's inputs, stored as the snapshot's `keysNamedWith`. */
-export function namingInputs(constants: string[], addresses: string[], words: string[] = [], pairs: string[][] = []): string {
+export function namingInputs(constants: string[], addresses: string[], words: string[] = [], context: KeyContext = { together: [], stated: [] }): string {
   const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))].sort();
-  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words), lower(pairs.map((p) => p.join(",")))];
+  // The context, not the pairs built from it: the pairs follow from it, and it is linear in size where they are not.
+  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words), lower(context.together), lower(context.stated)];
   return `${NAMER_VERSION}:${createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 16)}`;
 }
 
@@ -38,11 +40,11 @@ export function settledKeys(prev: PauSnapshot | undefined, inputs: string, keep:
 
 type Settled = (key: string) => DerivedKey | null | undefined;
 
-/** A snapshot's keys an earlier one did not settle. */
-export const unsettled = (snap: PauSnapshot, settled?: Settled) => allLimits(snap).map((r) => r.key).filter((k) => settled?.(k) === undefined);
-
-/** What an earlier snapshot settled, else `derive`. */
-export const settledFirst = (settled: Settled | undefined, derive: (key: string) => DerivedKey | null) => (key: string) => {
-  const s = settled?.(key);
-  return s === undefined ? derive(key) : s;
-};
+/** `snap` with what an earlier snapshot settled, and the rest named by `deriveFor`, which is handed only the keys still to name. */
+export function withSettled(snap: PauSnapshot, settled: Settled | undefined, deriveFor: (todo: string[]) => (key: string) => DerivedKey | null): PauSnapshot {
+  const derive = deriveFor(allLimits(snap).map((r) => r.key).filter((k) => settled?.(k) === undefined));
+  return withDerivedKeys(snap, (key) => {
+    const s = settled?.(key);
+    return s === undefined ? derive(key) : s;
+  });
+}

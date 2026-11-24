@@ -4,26 +4,26 @@
 // deployment holds or read both (its contracts, their holders and parameters,
 // an NFAT Facility's gem), or when a spell passes both in one argument list
 // (source-pairs.ts, carried as source material).
-import fs from "node:fs";
 import type { PauSnapshot } from "../../lib/pau.ts";
+import { EVM_ADDRESS_BODY_SRC } from "../../lib/patterns.ts";
+import { roleAccounts } from "../../lib/vaultRoles.ts";
+import { primeParams } from "./probe.ts";
 
-const ADDRESS_RE = /0x[0-9a-fA-F]{40}(?![0-9a-fA-F])/g;
-const PAIR_RE = /^0x[0-9a-f]{40},0x[0-9a-f]{40}$/;
-const addressesIn = (v: unknown) => [...new Set((JSON.stringify(v).match(ADDRESS_RE) ?? []).map((a) => a.toLowerCase()))];
+const PAIR_RE = new RegExp(`^${EVM_ADDRESS_BODY_SRC},${EVM_ADDRESS_BODY_SRC}$`);
+const addressesIn = (v: unknown) => roleAccounts(JSON.stringify(v));
 
-type Entity = { id: string; entity_type: string; meta?: string | object | null };
+/** What a deployment's two-address keys may pair: addresses that belong together, and the pairs spells state as `a,b`. */
+export interface KeyContext {
+  together: string[];
+  stated: string[];
+}
 
 /** The addresses the atlas states in each prime's own parameters and its instances', by prime entity. */
 export function atlasAddressesByPrime(file = "public/graph.json"): Map<string, string[]> {
   const out = new Map<string, Set<string>>();
-  if (!fs.existsSync(file)) return new Map();
-  const graph = JSON.parse(fs.readFileSync(file, "utf8")) as { entities?: Entity[] };
-  for (const e of graph.entities ?? []) {
-    const meta = (typeof e.meta === "string" ? JSON.parse(e.meta) : (e.meta ?? {})) as { agent_doc_id?: string; params?: unknown };
-    const prime = e.entity_type === "agent" ? e.id : meta.agent_doc_id;
-    if (!prime || !meta.params) continue;
+  for (const [prime, params] of primeParams(file)) {
     const set = out.get(prime) ?? new Set<string>();
-    for (const a of addressesIn(meta.params)) set.add(a);
+    for (const a of addressesIn(params)) set.add(a);
     out.set(prime, set);
   }
   return new Map([...out].map(([p, s]) => [p, [...s]]));
@@ -34,9 +34,9 @@ export function snapshotAddresses(snap: PauSnapshot): string[] {
   return addressesIn(snap.contracts.map((c) => ({ ...c, rateLimits: undefined, beam: undefined })));
 }
 
-/** Every ordered pair of distinct addresses in `together`, then each well-formed `a,b` of `stated` (stored material, so a bad row is dropped, not hashed). */
-export function contextPairs(together: Iterable<string>, stated: string[] = []): string[][] {
-  const xs = [...new Set([...together].map((a) => a.toLowerCase()))];
+/** Every ordered pair of distinct `together` addresses, then each well-formed `a,b` of `stated` (stored material, so a bad row is dropped, not hashed). */
+export function contextPairs({ together, stated }: KeyContext): string[][] {
+  const xs = [...new Set(together.map((a) => a.toLowerCase()))];
   const own = xs.flatMap((a) => xs.filter((b) => b !== a).map((b) => [a, b]));
   const kept = stated.map((p) => p.toLowerCase()).filter((p) => PAIR_RE.test(p));
   return [...own, ...kept.map((p) => p.split(",")).filter(([a, b]) => a !== b)];

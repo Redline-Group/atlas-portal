@@ -41,9 +41,9 @@ describe("snapshotAddresses", () => {
 
 describe("contextPairs", () => {
   it("pairs every two distinct addresses both ways, then adds the stated pairs", () => {
-    expect(contextPairs([A, B, A], [`${C},${A}`])).toEqual([[A, B.toLowerCase()], [B.toLowerCase(), A], [C, A]]);
+    expect(contextPairs({ together: [A, B, A], stated: [`${C},${A}`] })).toEqual([[A, B.toLowerCase()], [B.toLowerCase(), A], [C, A]]);
   });
   it("drops a stated pair that is not two distinct well-formed addresses, so a bad stored row is never hashed", () => {
-    expect(contextPairs([], [`${A},${C}`, A, `${A},${A}`, `${A},0x12`, `${C},${B}`])).toEqual([[A, C], [C, B.toLowerCase()]]);
+    expect(contextPairs({ together: [], stated: [`${A},${C}`, A, `${A},${A}`, `${A},0x12`, `${C},${B}`] })).toEqual([[A, C], [C, B.toLowerCase()]]);
   });
 });

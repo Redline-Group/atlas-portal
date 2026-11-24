@@ -70,7 +70,7 @@ const aTokenRead = async (_chain: string, calls: ChainCall[]) => {
 describe("withDiamondKeys", () => {
   it("names Grove's keys from its USDS, PSM, Basin and Uniswap V3 facets, each with its roles and identifying argument", async () => {
     const snap = diamond([FACET.usds, FACET.psm, FACET.basin, FACET.uni], Object.values(KEY).slice(0, 7));
-    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, USDC, AUSD, BASIN, UNI_POOL], pairs: contextPairs([USDS, USDC, AUSD, BASIN, UNI_POOL]), shapesOf }));
+    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, USDC, AUSD, BASIN, UNI_POOL], pairs: contextPairs({ together: [USDS, USDC, AUSD, BASIN, UNI_POOL], stated: [] }), shapesOf }));
     expect(out[KEY.usdsBurn]).toEqual({ constant: "LIMIT_USDS_BURN", args: [], roles: [], facet: "USDSFacet", getter: "burnRateLimitKey" });
     expect(out[KEY.usdcToUsds]).toMatchObject({ constant: "LIMIT_USDC_TO_USDS", facet: "PSMFacet" });
     expect(out[KEY.basinDeposit]).toEqual({ constant: "LIMIT_BASIN_DEPOSIT", args: [USDS, BASIN], roles: ["asset", "basin"], facet: "BasinFacet", getter: "getDepositRateLimitKey", via: BASIN });
@@ -81,7 +81,7 @@ describe("withDiamondKeys", () => {
   });
   it("names a two-address key only from a pair that belongs together, and a one-address key from any candidate", async () => {
     const snap = diamond([FACET.basin, FACET.uni], [KEY.basinDeposit, KEY.uniAggregateDeposit]);
-    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, BASIN, UNI_POOL], pairs: contextPairs([USDC, UNI_POOL]), shapesOf }));
+    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, BASIN, UNI_POOL], pairs: contextPairs({ together: [USDC, UNI_POOL], stated: [] }), shapesOf }));
     expect([out[KEY.basinDeposit], out[KEY.uniAggregateDeposit]?.args]).toEqual([null, [UNI_POOL]]);
   });
   it("names Osero's Aave keys from the pool and underlying its aToken reports, as AaveFacet reads them", async () => {

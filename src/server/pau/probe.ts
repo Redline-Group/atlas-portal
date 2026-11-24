@@ -32,21 +32,29 @@ export async function probeKeys(read: ChainReader, chain: string, address: strin
   return { unset, missed };
 }
 
-type Params = Record<string, [string, ...unknown[]]>;
+export type Params = Record<string, [string, ...unknown[]]>;
 
-/** Every RateLimitID hash the atlas states, by the prime entity it belongs to (an instance's agent, or the prime itself). */
+/** Each graph entity's parameters with the prime entity they belong to (an instance's agent, or the prime itself); none without a graph. */
+export function primeParams(file: string): [prime: string, params: Params][] {
+  if (!fs.existsSync(file)) return [];
+  const graph = JSON.parse(fs.readFileSync(file, "utf8")) as { entities?: { id: string; entity_type: string; meta?: string | object | null }[] };
+  return (graph.entities ?? []).flatMap((e) => {
+    const meta = (typeof e.meta === "string" ? JSON.parse(e.meta) : (e.meta ?? {})) as { agent_doc_id?: string; params?: Params };
+    const prime = e.entity_type === "agent" ? e.id : meta.agent_doc_id;
+    return prime && meta.params ? [[prime, meta.params] as [string, Params]] : [];
+  });
+}
+
+/** Every RateLimitID hash the atlas states, by the prime entity it belongs to. */
 export function atlasKeysByPrime(file = "public/graph.json"): Map<string, string[]> {
   const out = new Map<string, string[]>();
   if (!fs.existsSync(file)) {
     console.warn(`pau: ${file} missing; no atlas key is read live, so none can read as "not set"`);
     return out;
   }
-  const graph = JSON.parse(fs.readFileSync(file, "utf8")) as { entities?: { id: string; entity_type: string; meta?: string | object | null }[] };
-  for (const e of graph.entities ?? []) {
-    const meta = (typeof e.meta === "string" ? JSON.parse(e.meta) : (e.meta ?? {})) as { agent_doc_id?: string; params?: Params };
-    const prime = e.entity_type === "agent" ? e.id : meta.agent_doc_id;
-    const keys = Object.entries(meta.params ?? {}).flatMap(([name, [value]]) => (RATE_LIMIT_ID_RE.test(name) && HASH_RE.test(String(value).trim()) ? [String(value).trim().toLowerCase()] : []));
-    if (prime && keys.length) out.set(prime, [...(out.get(prime) ?? []), ...keys]);
+  for (const [prime, params] of primeParams(file)) {
+    const keys = Object.entries(params).flatMap(([name, [value]]) => (RATE_LIMIT_ID_RE.test(name) && HASH_RE.test(String(value).trim()) ? [String(value).trim().toLowerCase()] : []));
+    if (keys.length) out.set(prime, [...(out.get(prime) ?? []), ...keys]);
   }
   return out;
 }

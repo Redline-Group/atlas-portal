@@ -49,7 +49,30 @@ export interface Candidates {
   pairs?: string[][];
 }
 
-function* product(slots: string[][], prefix: string[] = []): Generator<string[]> {
+/** An argument as named and as abi-encoded, so each candidate is encoded once, not once per hash. */
+type Arg = readonly [value: string, encoded: string];
+const arg = (t: ArgType, v: string): Arg => [v, word(t, v)];
+const ID_ARGS = IDS.map((i) => arg("uint", i));
+
+interface Encoded {
+  addresses: Arg[];
+  words: Arg[];
+  pairs: Arg[][];
+}
+
+const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))];
+
+function encode(c: Candidates): Encoded {
+  return {
+    addresses: lower(c.addresses).map((a) => arg("address", a)),
+    words: lower(c.words).map((w) => arg("bytes32", w)),
+    pairs: (c.pairs ?? []).filter((p) => p.length === 2).map((p) => p.map((a) => arg("address", a.toLowerCase()))),
+  };
+}
+
+const slots = (s: KeyShape, c: Encoded) => s.types.map((t) => (t === "address" ? c.addresses : ID_ARGS));
+
+function* product(slots: Arg[][], prefix: Arg[] = []): Generator<Arg[]> {
   if (!slots.length) {
     yield prefix;
     return;
@@ -57,20 +80,18 @@ function* product(slots: string[][], prefix: string[] = []): Generator<string[]>
   for (const v of slots[0]) yield* product(slots.slice(1), [...prefix, v]);
 }
 
-function* argLists(s: KeyShape, c: Required<Candidates>): Generator<string[]> {
-  yield* s.tuples ?? [];
-  if (enumerable(s.types)) yield* product(s.types.map((t) => (t === "address" ? c.addresses : IDS)));
+function* argLists(s: KeyShape, c: Encoded): Generator<Arg[]> {
+  for (const t of s.tuples ?? []) yield t.map((v, i) => arg(s.types[i], v));
+  if (enumerable(s.types)) yield* product(slots(s, c));
   if (pairShape(s.types)) yield* c.pairs;
   if (oneWord(s.types)) for (const w of c.words) yield [w];
 }
 
-const cost = (s: KeyShape, c: Required<Candidates>) =>
+const cost = (s: KeyShape, c: Encoded) =>
   (s.tuples?.length ?? 0) +
-  (enumerable(s.types) ? s.types.reduce((p, t) => p * (t === "address" ? c.addresses.length : IDS.length), 1) : 0) +
+  (enumerable(s.types) ? slots(s, c).reduce((n, xs) => n * xs.length, 1) : 0) +
   (pairShape(s.types) ? c.pairs.length : 0) +
   (oneWord(s.types) ? c.words.length : 0);
-
-const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))];
 
 /**
  * The derivation of each wanted key that `shapes` reproduce, hashing the
@@ -78,16 +99,17 @@ const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))];
  * kept, so memory follows the keys asked about, not the candidates tried.
  */
 export function deriveKeys(shapes: KeyShape[], candidates: Candidates, keys: Iterable<string>): Map<string, DerivedKey> {
-  const pairs = (candidates.pairs ?? []).map((p) => p.map((a) => a.toLowerCase())).filter((p) => p.length === 2);
-  const c = { addresses: lower(candidates.addresses), words: lower(candidates.words), pairs };
   const wanted = new Set(lower([...keys]));
   const found = new Map<string, DerivedKey>();
+  if (!wanted.size) return found;
+  const c = encode(candidates);
   for (const s of [...shapes].sort((a, b) => cost(a, c) - cost(b, c))) {
-    if (found.size === wanted.size) break;
     const base = keccak256(toHex(s.constant));
     for (const args of argLists(s, c)) {
-      const key = s.types.length ? keccak256(`${base}${s.types.map((t, i) => word(t, args[i])).join("")}` as Hex) : base;
-      if (wanted.has(key) && !found.has(key)) found.set(key, s.name(args));
+      const key = args.length ? keccak256(`${base}${args.length === 1 ? args[0][1] : args.map((a) => a[1]).join("")}` as Hex) : base;
+      if (!wanted.has(key) || found.has(key)) continue;
+      found.set(key, s.name(args.map((a) => a[0])));
+      if (found.size === wanted.size) return found;
     }
   }
   return found;

@@ -98,15 +98,10 @@ async function rebuildInputs(db, warn, reg) {
   const retired = await retiredReader(warn);
   const inputs = atlasInputsOnce(db, warn);
   const context = fromGraph(inputs, warn, atlasAddressesByPrime, "addresses not read, two-address keys get only spell pairs");
-  // The refresh announces its keys before the first rebuild opens the inputs, so the namer is told them when it is made.
+  // The refresh announces its keys before the namer exists, so they are kept here and the namer reads them.
   const known = [];
-  const makeNamer = (p) => {
-    const n = keyNamer([p["addresses.atlas.json"], "public/addresses.json"], reg, { retired, material, context });
-    n.prepare?.(known);
-    return n;
-  };
   let namer;
-  const nameKeys = async (...a) => (await (namer ??= inputs().then(makeNamer)))(...a);
+  const nameKeys = async (...a) => (await (namer ??= inputs().then((p) => keyNamer([p["addresses.atlas.json"], "public/addresses.json"], reg, { retired, material, context, known }))))(...a);
   nameKeys.prepare = (keys) => void known.push(...keys);
   const atlasKeys = fromGraph(inputs, warn, atlasKeysByPrime, "RateLimitIDs not read, no key is probed");
   const atlasRoles = fromGraph(inputs, warn, atlasRoleClaims, "vault roles not read, no vault is asked about them");

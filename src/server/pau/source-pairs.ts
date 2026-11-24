@@ -3,9 +3,12 @@
 // one constant has that name). A spell computes each rate-limit key in such a
 // call (`makeAssetDestinationKey(LIMIT_ASSET_TRANSFER, Ethereum.USDC, DESTINATION)`),
 // so these are the pairs its two-address keys can take (key-context.ts).
-const CONST_RE = /\b(\w+)\s*=\s*(0x[0-9a-fA-F]{40})(?![0-9a-fA-F])/g;
+import { EVM_ADDRESS_BODY_SRC, EVM_ADDRESS_SRC } from "../../lib/patterns.ts";
+import { roleAccounts } from "../../lib/vaultRoles.ts";
+
+const CONST_RE = new RegExp(String.raw`\b(\w+)\s*=\s*(${EVM_ADDRESS_BODY_SRC})(?![0-9a-fA-F])`, "g");
 const OWNER_RE = /\b(?:library|contract|interface)\s+(\w+)/g;
-const TOKEN_RE = /0x[0-9a-fA-F]{40}(?![0-9a-fA-F])|\b(?:(\w+)\.)?(\w+)\b/g;
+const TOKEN_RE = new RegExp(String.raw`${EVM_ADDRESS_SRC}|\b(?:(\w+)\.)?(\w+)\b`, "g");
 // A line comment ends at a newline, escaped (`\n`) in a multi-file source held as JSON; a `//` after `:` is a URL in a string.
 const COMMENT_RE = /\/\*[\s\S]*?\*\/|(?<!:)\/\/.*?(?=\\n|\n|$)/g;
 // A longer group is a body or a registry, not one call's arguments.
@@ -58,6 +61,8 @@ function addressesOf(list: string, syms: Symbols): string[] {
 
 /** Every ordered pair of distinct addresses one argument list of `source` names, as `a,b`. */
 export function argumentPairs(source: string): string[] {
+  // Every constant resolves to a literal in the same text, so fewer than two distinct ones means no pair; most cached sources stop here.
+  if (roleAccounts(source).length < 2) return [];
   const text = source.replace(COMMENT_RE, " ").replace(/\\[nrt]/g, " ");
   const syms = symbolsOf(text);
   const pairs = new Set<string>();

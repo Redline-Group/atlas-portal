@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRailwayContext, project } from "railway/iac";
 
-import program, { WEB_SERVICE, partial, workerServiceName } from "../.railway/railway.ts";
+import program, { WEB_SERVICE, WORKER_ENTRY, partial, workerServiceName } from "../.railway/railway.ts";
 import { railwayWebWatchPatterns, railwayWorkerWatchPatterns } from "../scripts/lib/deploy-skip.ts";
 
 const ROOT = path.resolve(__dirname, "..");
@@ -64,8 +64,8 @@ describe(".railway/railway.ts", () => {
       expect(svc.build?.builder).toBe("DOCKERFILE");
       expect(fs.existsSync(path.join(ROOT, String(svc.build?.dockerfilePath)))).toBe(true);
     }
-    const workerEntry = String(worker.deploy?.startCommand).split(" ").at(-1)!;
-    expect(fs.existsSync(path.join(ROOT, workerEntry))).toBe(true);
+    expect(String(worker.deploy?.startCommand).split(" ").at(-1)).toBe(WORKER_ENTRY);
+    expect(fs.existsSync(path.join(ROOT, WORKER_ENTRY))).toBe(true);
   });
 
   // The worker's in-process 15m cap cannot fire while a synchronous loop holds the
@@ -75,8 +75,12 @@ describe(".railway/railway.ts", () => {
     const { worker } = await evaluate("production");
     const [cmd, , , limit, runtime] = String(worker.deploy?.startCommand).split(" ");
     expect([cmd, runtime]).toEqual(["timeout", "bun"]);
-    expect(Number(limit.replace(/m$/, ""))).toBeGreaterThan(16);
-    expect(fs.readFileSync(path.join(ROOT, "scripts/required/atlas-worker.mjs"), "utf8")).toContain("const HARD_CAP_MS = 15 * 60 * 1000;");
+    // Read the way scripts_tests/build-steps.test.ts reads them, so a change to either constant moves this check too.
+    const source = fs.readFileSync(path.join(ROOT, WORKER_ENTRY), "utf8");
+    const hardCapS = Number(/const HARD_CAP_MS = (\d+) \* 60 \* 1000/.exec(source)?.[1]) * 60;
+    const tailFloorS = Number(/Math\.max\((\d+) \* 1000, TAIL_CAP_MS/.exec(source)?.[1]);
+    expect([hardCapS > 0, tailFloorS > 0]).toEqual([true, true]);
+    expect(Number(limit.replace(/m$/, "")) * 60).toBeGreaterThan(hardCapS + tailFloorS);
   });
 
   it("takes its watch patterns from scripts/lib/deploy-skip.ts", async () => {
