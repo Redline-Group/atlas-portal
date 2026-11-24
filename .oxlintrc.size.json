@@ -54,7 +54,7 @@
     { "files": ["scripts/lib/mistakes-corpus.mjs"], "rules": { "max-lines-per-function": ["error", { "max": 78, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/lib/patch-notes-validate.mjs"], "rules": { "max-lines-per-function": ["error", { "max": 75, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/lib/settlement-xlsx.mjs"], "rules": { "max-lines": ["error", { "max": 341, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 92, "skipBlankLines": true, "skipComments": true }] } },
-    { "files": ["scripts/required/build-graph.mjs"], "rules": { "max-lines": ["error", { "max": 443, "skipBlankLines": true, "skipComments": true }] } },
+    { "files": ["scripts/required/build-graph.mjs"], "rules": { "max-lines": ["error", { "max": 391, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["scripts/required/fetch-chain-state.mjs"], "rules": { "max-lines-per-function": ["error", { "max": 75, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/lib/activeDataIndex.ts"], "rules": { "max-lines": ["error", { "max": 344, "skipBlankLines": true, "skipComments": true }], "max-lines-per-function": ["error", { "max": 159, "skipBlankLines": true, "skipComments": true }] } },
     { "files": ["src/lib/conceptsCensus.ts"], "rules": { "max-lines": ["error", { "max": 280, "skipBlankLines": true, "skipComments": true }] } },

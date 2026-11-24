@@ -13474,7 +13474,7 @@ exports[`edge type counts > all edge types and their counts 1`] = `
   "emergency_response": 16,
   "erg_member_for": 9,
   "governance_channel": 10,
-  "has_address": 343,
+  "has_address": 368,
   "has_status": 136,
   "holds_role_for": 5,
   "implements": 188,
