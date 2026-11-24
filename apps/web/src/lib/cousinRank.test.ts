@@ -24,6 +24,18 @@ describe("rankCousins", () => {
     expect(ranked.map((r) => r.node.id)).toEqual(["agent-own", "same", "agent", "other-own", "other", "other-done"]);
   });
 
+  it("orders different names by how much of the title they share, ahead of status", () => {
+    const icd = makeNode({ id: "icd", doc_no: "A.6.1.1.2.2.6.1.3.1.5.1", title: "Ethereum Mainnet - Aave Core v3 USDC Instance Configuration Document" });
+    const core = doc("core", "A.6.1.1.1.2.6.1.4.1.2.3", "Ethereum Mainnet - Aave Core USDC Instance Configuration Document");
+    const usde = doc("usde", "A.6.1.1.1.2.6.1.4.1.2.1", "Ethereum Mainnet - Aave USDe Instance Configuration Document");
+    const arb = doc("arb", "A.6.1.1.1.2.6.1.4.3.2.1", "Arbitrum - Aave USDC Instance Configuration Document");
+    const ranked = rankCousins(docs(icd, core, usde, arb), icd, [
+      { node: usde, own: false, completed: false }, { node: arb, own: false, completed: false }, { node: core, own: false, completed: true },
+    ]);
+    // Word overlap with the target: core 8/10, usde 6/10 (shares the chain), arb 5/10.
+    expect(ranked.map((r) => r.node.id)).toEqual(["core", "usde", "arb"]);
+  });
+
   it(`keeps the best ${MAX_COUSINS}`, () => {
     const many = Array.from({ length: 30 }, (_, i) => doc(`d${i}`, `A.6.1.1.2.${i + 10}`, i === 29 ? target.title : `Other ${i}`));
     const ranked = rankCousins(docs(...many), target, many.map((node) => ({ node, own: false, completed: false })));

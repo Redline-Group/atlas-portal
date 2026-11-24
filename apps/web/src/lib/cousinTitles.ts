@@ -25,23 +25,34 @@ export function primeRoots(docs: Docs): Map<string, AtlasNode> {
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+// Any Prime Agent's name as a whole word, longest name first so a name never
+// loses to a shorter one it contains.
+const agentReCache = new WeakMap<Docs, RegExp | null>();
+function agentRe(docs: Docs): RegExp | null {
+  if (agentReCache.has(docs)) return agentReCache.get(docs)!;
+  const names = [...primeRoots(docs).values()].map((d) => d.title.trim()).filter(Boolean);
+  const alt = names.sort((a, b) => b.length - a.length).map(escapeRe).join("|");
+  const re = alt ? new RegExp(`\\b(?:${alt})\\b`, "gi") : null;
+  agentReCache.set(docs, re);
+  return re;
+}
+
+const maskAgents = (docs: Docs, title: string | undefined): string => {
+  const t = (title ?? "").toLowerCase();
+  const re = agentRe(docs);
+  return re ? t.replace(re, ` ${AGENT} `) : t;
+};
+
 // How titles compare for cousins: case, spacing and punctuation ignored, and any
 // Prime Agent's name stands for "the agent", so "Spark Liquidity Layer Addresses"
 // meets "Grove Liquidity Layer Addresses" and "Rate Limit ID" meets "RateLimitID".
-const keyerCache = new WeakMap<Docs, (title: string | undefined) => string>();
 export function titleKeyer(docs: Docs): (title: string | undefined) => string {
-  let keyer = keyerCache.get(docs);
-  if (keyer) return keyer;
-  const names = [...primeRoots(docs).values()].map((d) => d.title.trim()).filter(Boolean);
-  // Longest first, so a name never loses to a shorter name it contains.
-  const alt = names.sort((a, b) => b.length - a.length).map(escapeRe).join("|");
-  const agentRe = alt ? new RegExp(`\\b(?:${alt})\\b`, "gi") : null;
-  keyer = (title) => {
-    const t = (title ?? "").toLowerCase();
-    return (agentRe ? t.replace(agentRe, AGENT) : t).replace(/[^a-z0-9#]/g, "");
-  };
-  keyerCache.set(docs, keyer);
-  return keyer;
+  return (title) => maskAgents(docs, title).replace(/[^a-z0-9#]/g, "");
+}
+
+/** A title's words, lowercased, with any Prime Agent's name as one shared word. */
+export function titleWords(docs: Docs, title: string | undefined): Set<string> {
+  return new Set(maskAgents(docs, title).split(/[^a-z0-9#]+/).filter(Boolean));
 }
 
 // Title key → docs, built once per atlas load; the annotations memo re-runs
