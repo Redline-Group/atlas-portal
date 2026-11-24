@@ -2,8 +2,8 @@
 // derivation is a hash preimage, so one found before still holds and is reused
 // instead of hashed for again. A key no candidate named is searched again only
 // when the namer's inputs changed (its constants, its candidate addresses and
-// pairs, or NAMER_VERSION), since the same inputs fail the same way: without
-// this every rebuild searches again for the keys nothing names.
+// context, SEARCH_VERSION or NAMER_VERSION), since the same inputs fail the
+// same way: without this every rebuild searches again for the keys nothing names.
 import { createHash } from "node:crypto";
 import type { DerivedKey, PauSnapshot } from "../../lib/pau.ts";
 import type { KeyContext } from "./key-context.ts";
@@ -12,12 +12,15 @@ import { allLimits, withDerivedKeys } from "./snapshot.ts";
 /** Raise when a change to the derivation code would name a key differently, so earlier names and misses are dropped. */
 export const NAMER_VERSION = 1;
 
+/** Raise when the search tries more arguments for the same inputs (a tier, self-pairs), so each stored miss is searched once more and stored names stay. */
+export const SEARCH_VERSION = 1;
+
 /** The stamp of a monolithic namer's inputs, stored as the snapshot's `keysNamedWith`. */
 export function namingInputs(constants: string[], addresses: string[], words: string[] = [], context: KeyContext = { instances: [], prime: [], own: [], stated: [] }): string {
   const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))].sort();
   // The context, not the pairs built from it: every tier's pairs follow from these sets (key-tiers.ts), which are linear in size where the pairs are not.
   const near = [...context.prime, ...context.own, ...context.instances.flat()];
-  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words), lower(near), lower(context.stated)];
+  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words), lower(near), lower(context.stated), SEARCH_VERSION];
   return `${NAMER_VERSION}:${createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 16)}`;
 }
 

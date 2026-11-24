@@ -30,18 +30,31 @@ export interface KeyContext {
 
 // docs-shallow.json and docs-deep.json hold their nodes as an array; docs.json keys them by UUID.
 function readNodes(files: string[]): Record<string, AtlasNode> {
-  const nodes = files.filter((f) => fs.existsSync(f)).flatMap((f) => Object.values((JSON.parse(fs.readFileSync(f, "utf8")) as { nodes?: AtlasNode[] | Record<string, AtlasNode> }).nodes ?? {}));
+  const nodes = files.flatMap((f) => Object.values((JSON.parse(fs.readFileSync(f, "utf8")) as { nodes?: AtlasNode[] | Record<string, AtlasNode> }).nodes ?? {}));
   return Object.fromEntries(nodes.map((n) => [n.id, n]));
 }
 
-/** Each prime's atlas, for the primes given (a Halo's entity counts as one), from the graph and the doc files that together hold every node. */
+/** Each prime whose artifact is in the docs, keyed by the artifact's root: the prime's own doc, or a Halo entity's defining doc. */
+function primeRoots(docs: Record<string, AtlasNode>, entities: ReturnType<typeof graphEntities>, primes: string[]): Map<string, string> {
+  const rootOf = (p: string) => (docs[p] ? p : entities.find((e) => e.id === p)?.doc);
+  return new Map(primes.flatMap((p) => { const r = rootOf(p); return r && docs[r] ? [[r, p] as const] : []; }));
+}
+
+/**
+ * Each prime's atlas, for the primes given (a Halo's entity counts as one), from
+ * the graph and the doc files that together hold every node. A missing file
+ * throws and a prime whose artifact is not in the docs is left out: an atlas
+ * returned for a prime is one that was read, because key-marks.ts marks every
+ * argument it does not state.
+ */
 export function atlasContexts(graphFile: string, docFiles: string[], primes: string[]): Map<string, PrimeAtlas> {
+  for (const f of [graphFile, ...docFiles]) if (!fs.existsSync(f)) throw new Error(`${f} not found`);
   const docs = readNodes(docFiles);
   const docNoToId = new Map(Object.values(docs).map((d) => [d.doc_no, d.id]));
   const entities = graphEntities(graphFile);
-  const roots = new Map(primes.map((p) => [docs[p] ? p : (entities.find((e) => e.id === p)?.doc ?? p), p]));
+  const roots = primeRoots(docs, entities, primes);
   const instanceOf = new Map(entities.flatMap((e) => (e.type === "instance" && e.doc && e.prime ? [[e.doc, e.prime] as const] : [])));
-  const atlas = new Map(primes.map((p) => [p, { addresses: new Set<string>(), instances: new Map<string, Set<string>>() }]));
+  const atlas = new Map([...roots.values()].map((p) => [p, { addresses: new Set<string>(), instances: new Map<string, Set<string>>() }]));
   for (const doc of Object.values(docs)) {
     const found = addressesIn(`${doc.title}\n${doc.content}`);
     if (!found.length) continue;
