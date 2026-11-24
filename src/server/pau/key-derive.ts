@@ -2,8 +2,8 @@
 // derives each key from one of its LIMIT_* constants (keccak256 of the name),
 // alone or abi-encoded with what it limits: an asset or pool address, a CCTP
 // domain or LayerZero endpoint id, or an (asset, destination) pair. Hashing
-// every constant against every candidate recovers the name and its arguments.
-// The hashing engine (shapeDeriver) also hashes the diamond facets' shapes
+// each constant with its candidate arguments recovers the name and arguments.
+// The hashing engine (deriveKeys) also hashes the diamond facets' shapes
 // (diamond-derive.ts); the monolithic shapes are declared here.
 import fs from "node:fs";
 import path from "node:path";
@@ -16,9 +16,10 @@ export type ArgType = "address" | "uint" | "bytes32";
 /**
  * One way a key is encoded: keccak256(abi.encode(keccak256(constant), ...args)).
  * `tuples` are argument lists to hash as given (values read from the chain);
- * besides them, a shape of at most two address or integer arguments is
- * enumerated over the candidate addresses and IDS, and a shape of one bytes32
- * over the candidate words (a Uniswap v4 pool id).
+ * besides them, a shape with at most one address (and at most two arguments)
+ * is enumerated over the candidate addresses and IDS, a shape of two addresses
+ * only over the candidate pairs, and a shape of one bytes32 over the candidate
+ * words (a Uniswap v4 pool id).
  */
 export interface KeyShape {
   constant: string;
@@ -33,45 +34,62 @@ const IDS = [...Array.from({ length: 32 }, (_, i) => i), ...Array.from({ length:
 // Every abi.encode argument is one 32-byte word, so a uint16 and a uint32 encode alike.
 const word = (t: ArgType, v: string) => (t === "uint" ? BigInt(v).toString(16) : v.slice(2).toLowerCase()).padStart(64, "0");
 
-const enumerable = (types: ArgType[]) => types.length <= 2 && !types.includes("bytes32");
+const addressCount = (types: ArgType[]) => types.filter((t) => t === "address").length;
+// Every address against every other is a million hashes per shape in one loop the
+// worker's hard-cap timer cannot interrupt, so two addresses come only from pairs that belong together.
+const enumerable = (types: ArgType[]) => types.length <= 2 && !types.includes("bytes32") && addressCount(types) <= 1;
+const pairShape = (types: ArgType[]) => types.length === 2 && addressCount(types) === 2;
 const oneWord = (types: ArgType[]) => types.length === 1 && types[0] === "bytes32";
 
-/** The candidates the deriver enumerates arguments from. */
-interface Candidates {
+/** The candidates the deriver draws arguments from. */
+export interface Candidates {
   addresses: string[];
   words: string[];
+  /** Ordered address pairs that belong together (key-context.ts). */
+  pairs?: string[][];
 }
 
-function argLists(s: KeyShape, c: Candidates): string[][] {
-  const listed = enumerable(s.types) ? s.types.reduce<string[][]>((acc, t) => acc.flatMap((xs) => (t === "address" ? c.addresses : IDS).map((v) => [...xs, v])), [[]]) : [];
-  return [...(s.tuples ?? []), ...listed, ...(oneWord(s.types) ? c.words.map((w) => [w]) : [])];
+function* product(slots: string[][], prefix: string[] = []): Generator<string[]> {
+  if (!slots.length) {
+    yield prefix;
+    return;
+  }
+  for (const v of slots[0]) yield* product(slots.slice(1), [...prefix, v]);
 }
 
-const cost = (s: KeyShape, c: Candidates) =>
-  (s.tuples?.length ?? 0) + (enumerable(s.types) ? s.types.reduce((p, t) => p * (t === "address" ? c.addresses.length : IDS.length), 1) : 0) + (oneWord(s.types) ? c.words.length : 0);
+function* argLists(s: KeyShape, c: Required<Candidates>): Generator<string[]> {
+  yield* s.tuples ?? [];
+  if (enumerable(s.types)) yield* product(s.types.map((t) => (t === "address" ? c.addresses : IDS)));
+  if (pairShape(s.types)) yield* c.pairs;
+  if (oneWord(s.types)) for (const w of c.words) yield [w];
+}
+
+const cost = (s: KeyShape, c: Required<Candidates>) =>
+  (s.tuples?.length ?? 0) +
+  (enumerable(s.types) ? s.types.reduce((p, t) => p * (t === "address" ? c.addresses.length : IDS.length), 1) : 0) +
+  (pairShape(s.types) ? c.pairs.length : 0) +
+  (oneWord(s.types) ? c.words.length : 0);
+
+const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))];
 
 /**
- * A lookup from key to the derivation that reproduces it, or null. Shapes are
- * hashed lazily, cheapest first, so a deployment whose keys are all found
- * early never pays for the address pairs.
+ * The derivation of each wanted key that `shapes` reproduce, hashing the
+ * cheapest shapes first and stopping once every key is found. Only matches are
+ * kept, so memory follows the keys asked about, not the candidates tried.
  */
-export function shapeDeriver(shapes: KeyShape[], addresses: string[], words: string[] = []): (key: string) => DerivedKey | null {
+export function deriveKeys(shapes: KeyShape[], candidates: Candidates, keys: Iterable<string>): Map<string, DerivedKey> {
+  const c = { addresses: lower(candidates.addresses), words: lower(candidates.words), pairs: (candidates.pairs ?? []).map(lower) };
+  const wanted = new Set(lower([...keys]));
   const found = new Map<string, DerivedKey>();
-  const c = { addresses: [...new Set(addresses.map((a) => a.toLowerCase()))], words: [...new Set(words.map((w) => w.toLowerCase()))] };
-  const queue = [...shapes].sort((a, b) => cost(a, c) - cost(b, c));
-  const fill = (s: KeyShape) => {
+  for (const s of [...shapes].sort((a, b) => cost(a, c) - cost(b, c))) {
+    if (found.size === wanted.size) break;
     const base = keccak256(toHex(s.constant));
     for (const args of argLists(s, c)) {
       const key = s.types.length ? keccak256(`${base}${s.types.map((t, i) => word(t, args[i])).join("")}` as Hex) : base;
-      if (!found.has(key)) found.set(key, s.name(args));
+      if (wanted.has(key) && !found.has(key)) found.set(key, s.name(args));
     }
-  };
-  let next = 0;
-  return (key) => {
-    const k = key.toLowerCase();
-    while (!found.has(k) && next < queue.length) fill(queue[next++]);
-    return found.get(k) ?? null;
-  };
+  }
+  return found;
 }
 
 /**
@@ -80,7 +98,7 @@ export function shapeDeriver(shapes: KeyShape[], addresses: string[], words: str
  * argument, for an asset transfer (asset, destination) and for UniswapV3Lib
  * (token, pool); and (address, id) for LayerZero and Centrifuge transfers.
  */
-function monolithicShapes(constant: string): KeyShape[] {
+export function monolithicShapes(constant: string): KeyShape[] {
   const plain = (types: ArgType[]): KeyShape => ({ constant, types, name: (args) => ({ constant, args }) });
   const shapes = [plain([]), plain(["address"]), plain(["uint"]), plain(["bytes32"])];
   if (/^LIMIT_(ASSET_TRANSFER|UNISWAP_V3_\w+)$/.test(constant)) shapes.push({ constant, types: ["address", "address"], name: (args) => ({ constant, args, via: args[1] }) });
@@ -88,10 +106,8 @@ function monolithicShapes(constant: string): KeyShape[] {
   return shapes;
 }
 
-/** A lookup from key to the monolithic constant and arguments that derive it, or null. */
-export function keyDeriver(constants: string[], addresses: string[], words: string[] = []): (key: string) => DerivedKey | null {
-  return shapeDeriver(constants.flatMap(monolithicShapes), addresses, words);
-}
+/** Whether a shape is hashed only from context pairs, so its search follows the deployment rather than the candidates every deployment shares. */
+export const isPairShape = (s: KeyShape) => pairShape(s.types);
 
 type AbiItem = { type?: string; name?: string; inputs?: unknown[] };
 

@@ -11,6 +11,7 @@ import path from "node:path";
 import { encodeAbiParameters, keccak256, toHex } from "viem";
 import type { DerivedKey, LiveRateLimit, PauSnapshot } from "../../lib/pau.ts";
 import { keyNamer, withDiamondKeys } from "./diamond-derive.ts";
+import { contextPairs } from "./key-context.ts";
 import { facetShapesAt } from "./facet-source.ts";
 import type { ChainCall } from "./snapshot.ts";
 
@@ -61,7 +62,7 @@ const aTokenRead = async (_chain: string, calls: ChainCall[]) => {
 describe("withDiamondKeys", () => {
   it("names Grove's keys from its USDS, PSM, Basin and Uniswap V3 facets, each with its roles and identifying argument", async () => {
     const snap = diamond([FACET.usds, FACET.psm, FACET.basin, FACET.uni], Object.values(KEY).slice(0, 7));
-    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, USDC, AUSD, BASIN, UNI_POOL], shapesOf }));
+    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, USDC, AUSD, BASIN, UNI_POOL], pairs: contextPairs([USDS, USDC, AUSD, BASIN, UNI_POOL]), shapesOf }));
     expect(out[KEY.usdsBurn]).toEqual({ constant: "LIMIT_USDS_BURN", args: [], roles: [], facet: "USDSFacet", getter: "burnRateLimitKey" });
     expect(out[KEY.usdcToUsds]).toMatchObject({ constant: "LIMIT_USDC_TO_USDS", facet: "PSMFacet" });
     expect(out[KEY.basinDeposit]).toEqual({ constant: "LIMIT_BASIN_DEPOSIT", args: [USDS, BASIN], roles: ["asset", "basin"], facet: "BasinFacet", getter: "getDepositRateLimitKey", via: BASIN });
@@ -69,6 +70,11 @@ describe("withDiamondKeys", () => {
     expect(out[KEY.uniSwapUsdc]).toEqual({ constant: "LIMIT_UNISWAP_V3_SWAP", args: [USDC, UNI_POOL], roles: ["token", "pool"], facet: "UniswapV3Facet", getter: "getSwapRateLimitKey", via: UNI_POOL });
     expect(out[KEY.uniDepositAusd]).toMatchObject({ getter: "getAssetDepositRateLimitKey", args: [AUSD, UNI_POOL] });
     expect(out[KEY.uniAggregateDeposit]).toMatchObject({ getter: "getAggregateDepositRateLimitKey", args: [UNI_POOL], via: UNI_POOL });
+  });
+  it("names a two-address key only from a pair that belongs together, and a one-address key from any candidate", async () => {
+    const snap = diamond([FACET.basin, FACET.uni], [KEY.basinDeposit, KEY.uniAggregateDeposit]);
+    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, BASIN, UNI_POOL], pairs: contextPairs([USDC, UNI_POOL]), shapesOf }));
+    expect([out[KEY.basinDeposit], out[KEY.uniAggregateDeposit]?.args]).toEqual([null, [UNI_POOL]]);
   });
   it("names Osero's Aave keys from the pool and underlying its aToken reports, as AaveFacet reads them", async () => {
     const params = [{ event: "AaveMaxSlippageSet", subject: SP_USDS, args: { aToken: SP_USDS, maxSlippage: "1" }, setAt: at }];
@@ -128,6 +134,15 @@ describe("keyNamer", () => {
     const gone = { address: jaaa, removedAt: "2025-08-25T14:36:55Z", commit: "dd131566" };
     const snap = await keyNamer([], {}, { dir: CACHE, retired: () => new Map([[jaaa, gone]]) })({ ...diamond([], [key]), kind: "monolithic" }, read);
     expect(snap.contracts[1].rateLimits!.map((r) => [r.derived, r.retired])).toEqual([[{ constant: "LIMIT_7540_DEPOSIT", args: [jaaa] }, gone]]);
+  });
+  it("names an NFAT subscribe key from the facility the registry lists and the gem it reports, with no address guessed (Test Halo)", async () => {
+    const [nfatPrime, facility, gem] = ["0x74d139d6e730f29d62f2acc6a3b59df2f2d6d9a8", "0x02cb9629b0806b11202c59433ece4e664c521128", USDC] as `0x${string}`[];
+    const shape = facetShapesAt(CACHE, 1, nfatPrime).find((s) => s.getter === "getSubscribeRateLimitKey")!;
+    expect(shape.roles).toEqual(["gem", "facility"]);
+    const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "address" }], [keccak256(toHex(shape.constant)), gem, facility]));
+    const snap = diamond([nfatPrime], [key]);
+    snap.contracts.push({ role: "nfatFacility", address: facility, events: 0, historyComplete: true, facility: { gem, gemSymbol: "USDC", recipient: null, stopped: false, operator: true, name: null, symbol: null } });
+    expect(named(await keyNamer([], {}, { dir: CACHE })(snap, read))[key]).toMatchObject({ getter: "getSubscribeRateLimitKey", args: [gem, facility], via: facility });
   });
   it("leaves a facet's keys unnamed when the parser refuses its source, instead of failing the snapshot", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "facets-"));

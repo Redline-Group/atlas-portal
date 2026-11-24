@@ -8,14 +8,20 @@
 // arguments, never by the source's constant name, because one address can mean
 // different things on two chains. `spells` are the address constants named as
 // a spell or payload (`SPARK_SPELL`), which the spell-source sync reads next.
+// `pairs` are the address pairs one argument list passes together
+// (source-pairs.ts), the only pairs a two-address key is hashed with besides
+// the atlas's own (key-context.ts).
 import { EVM_ADDRESS_BODY_SRC } from "../../lib/patterns.ts";
 import { cachedEntries } from "./key-derive.ts";
+import { argumentPairs } from "./source-pairs.ts";
 
 export interface SourceMaterial {
   names: string[];
   addresses: string[];
   words: string[];
   spells: string[];
+  /** `a,b`; absent on a row stored before MATERIAL_VERSION 2. */
+  pairs?: string[];
 }
 
 // No leading word boundary: a multi-file source is JSON inside a string, so a
@@ -27,7 +33,7 @@ const WORD_RE = new RegExp(String.raw`bytes32\s+${VISIBILITY}\w+\s*=\s*(0x[0-9a-
 const SPELL_NAME = /(?:SPELL|PAYLOAD)/;
 
 /** Raise when materialOf would read a source differently, so every stored spell is read again (spell-sources.ts). */
-export const MATERIAL_VERSION = 1;
+export const MATERIAL_VERSION = 2;
 
 const sorted = (xs: Iterable<string>) => [...new Set(xs)].sort();
 
@@ -39,6 +45,7 @@ export function materialOf(source: string): SourceMaterial {
     addresses: sorted(addresses.map((m) => m[2].toLowerCase())),
     words: sorted([...source.matchAll(WORD_RE)].map((m) => m[1].toLowerCase())),
     spells: sorted(addresses.filter((m) => SPELL_NAME.test(m[1])).map((m) => m[2].toLowerCase())),
+    pairs: argumentPairs(source),
   };
 }
 
@@ -49,6 +56,7 @@ export function mergeMaterial(ms: SourceMaterial[]): SourceMaterial {
     addresses: sorted(ms.flatMap((m) => m.addresses)),
     words: sorted(ms.flatMap((m) => m.words)),
     spells: sorted(ms.flatMap((m) => m.spells)),
+    pairs: sorted(ms.flatMap((m) => m.pairs ?? [])),
   };
 }
 

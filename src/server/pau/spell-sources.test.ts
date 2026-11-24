@@ -8,7 +8,7 @@ import { spellMaterial, spellsToRead, syncSpellSources, UNVERIFIED_RETRY_MS } fr
 
 const [DSS, STAR, PAYLOAD, OLD] = ["0x" + "1d".repeat(20), "0x" + "5a".repeat(20), "0x" + "4a".repeat(20), "0x" + "0d".repeat(20)];
 const NOW = Date.UTC(2026, 9, 28);
-const empty = { names: [], addresses: [], words: [], spells: [] };
+const empty = { names: [], addresses: [], words: [], spells: [], pairs: [] as string[] };
 
 type Row = { address: string; contract_name: string; material: unknown; parser_version: number; fetched_at: Date };
 function fakeDb(origins: { address: string }[], rows: Row[]) {

@@ -1,9 +1,9 @@
 // What a deployment's previous snapshot already settled about its keys. A
 // derivation is a hash preimage, so one found before still holds and is reused
 // instead of hashed for again. A key no candidate named is searched again only
-// when the namer's inputs changed (its constants, its candidate addresses, or
-// NAMER_VERSION), since the same inputs fail the same way: without this every
-// rebuild pays the whole address-pair table for the keys nothing names.
+// when the namer's inputs changed (its constants, its candidate addresses and
+// pairs, or NAMER_VERSION), since the same inputs fail the same way: without
+// this every rebuild searches again for the keys nothing names.
 import { createHash } from "node:crypto";
 import type { DerivedKey, PauSnapshot } from "../../lib/pau.ts";
 import { allLimits } from "./snapshot.ts";
@@ -12,9 +12,9 @@ import { allLimits } from "./snapshot.ts";
 export const NAMER_VERSION = 1;
 
 /** The stamp of a monolithic namer's inputs, stored as the snapshot's `keysNamedWith`. */
-export function namingInputs(constants: string[], addresses: string[], words: string[] = []): string {
+export function namingInputs(constants: string[], addresses: string[], words: string[] = [], pairs: string[][] = []): string {
   const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))].sort();
-  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words)];
+  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words), lower(pairs.map((p) => p.join(",")))];
   return `${NAMER_VERSION}:${createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 16)}`;
 }
 

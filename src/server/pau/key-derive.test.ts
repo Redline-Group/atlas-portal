@@ -1,13 +1,14 @@
 // Rate-limit key derivation: each encoding shape the controllers use reproduces
-// its key (the bare constant against the known LIMIT_USDS_MINT id), an
-// underivable key is null, and the ABI and address loaders tolerate a
-// truncated cache file, missing artifacts and addresses.atlas.json's nesting.
+// its key (the bare constant against the known LIMIT_USDS_MINT id), a
+// two-address key only from a pair it is given, an underivable key is null,
+// only the keys asked about are kept, and the ABI and address loaders tolerate
+// a truncated cache file, missing artifacts and addresses.atlas.json's nesting.
 import { afterAll, describe, expect, it } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { encodeAbiParameters, keccak256, toHex } from "viem";
-import { candidateAddresses, keyDeriver, limitConstants } from "./key-derive.ts";
+import { candidateAddresses, deriveKeys, limitConstants, monolithicShapes, type Candidates } from "./key-derive.ts";
 import { withDerivedKeys } from "./snapshot.ts";
 import type { PauSnapshot } from "../../lib/pau.ts";
 
@@ -15,9 +16,11 @@ const VAULT = "0x" + "a".repeat(40);
 const DEST = "0x" + "b".repeat(40);
 const base = (c: string) => keccak256(toHex(c));
 const enc = (types: string[], values: unknown[]) => keccak256(encodeAbiParameters(types.map((type) => ({ type })), values));
+const keyDeriver = (constants: string[], addresses: string[], words: string[] = [], pairs?: Candidates["pairs"]) => (key: string) =>
+  deriveKeys(constants.flatMap(monolithicShapes), { addresses, words, pairs }, [key]).get(key.toLowerCase()) ?? null;
 
-describe("keyDeriver", () => {
-  const derive = keyDeriver(["LIMIT_USDS_MINT", "LIMIT_4626_DEPOSIT", "LIMIT_USDC_TO_DOMAIN", "LIMIT_ASSET_TRANSFER", "LIMIT_LAYERZERO_TRANSFER", "LIMIT_UNISWAP_V3_SWAP"], [VAULT, DEST]);
+describe("deriveKeys over the monolithic shapes", () => {
+  const derive = keyDeriver(["LIMIT_USDS_MINT", "LIMIT_4626_DEPOSIT", "LIMIT_USDC_TO_DOMAIN", "LIMIT_ASSET_TRANSFER", "LIMIT_LAYERZERO_TRANSFER", "LIMIT_UNISWAP_V3_SWAP"], [VAULT, DEST], [], [[VAULT, DEST]]);
 
   it("names the bare constant, matching the atlas-stated LIMIT_USDS_MINT id", () => {
     expect(base("LIMIT_USDS_MINT").startsWith("0xcb0537d5e5dba65a8edbac12555995860e5b8e1b70996011edb")).toBe(true);
@@ -42,6 +45,17 @@ describe("keyDeriver", () => {
   it("tries an address pair only for the transfer and Uniswap V3 constants, and returns null for a key nothing derives", () => {
     expect(derive(enc(["bytes32", "address", "address"], [base("LIMIT_4626_DEPOSIT"), VAULT, DEST]))).toBeNull();
     expect(derive("0x" + "9".repeat(64))).toBeNull();
+  });
+  it("hashes two addresses only as a pair it is given, never every candidate with every other", () => {
+    const key = enc(["bytes32", "address", "address"], [base("LIMIT_ASSET_TRANSFER"), VAULT, DEST]);
+    expect(keyDeriver(["LIMIT_ASSET_TRANSFER"], [VAULT, DEST])(key)).toBeNull();
+    expect(keyDeriver(["LIMIT_ASSET_TRANSFER"], [], [], [[DEST, VAULT]])(key)).toBeNull();
+    expect(keyDeriver(["LIMIT_ASSET_TRANSFER"], [], [], [[VAULT.toUpperCase().replace("0X", "0x"), DEST]])(key)).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [VAULT, DEST], via: DEST });
+  });
+  it("keeps only the keys asked about", () => {
+    const asked = enc(["bytes32", "address"], [base("LIMIT_4626_DEPOSIT"), VAULT]);
+    const found = deriveKeys(["LIMIT_4626_DEPOSIT", "LIMIT_USDS_MINT"].flatMap(monolithicShapes), { addresses: [VAULT, DEST], words: [] }, [asked]);
+    expect([...found.keys()]).toEqual([asked]);
   });
 });
 
