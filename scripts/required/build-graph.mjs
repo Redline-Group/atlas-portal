@@ -42,8 +42,6 @@ import { enrichAddresses } from "../lib/graph-address-enrich.mjs";
 import {
   ETH_ADDR_RE,
   SOL_ADDR_RE,
-  ETH_ADDR_EXACT_RE,
-  SOL_ADDR_EXACT_RE,
   normalizeAddress,
   findTableContext,
 } from "../lib/address-chains.mjs";
@@ -53,7 +51,7 @@ import {
   extractExpectedTokens,
   isPlausibleName,
 } from "../lib/address-annotate.mjs";
-import { normalizeChainLabel } from "../lib/chains.mjs";
+import { icdLabelRank, icdParamAddress, icdParamChain, icdParamLabel, icdParamRole } from "../lib/graph-icd-params.ts";
 import { codeUnitCompare } from "../lib/natural-sort.mjs";
 import { gitHead, stampAtlasCommit } from "../lib/atlas-commit.mjs";
 
@@ -232,62 +230,6 @@ console.log(`  ${edges.length} total edges`);
 // prose-heuristic results from build-index.
 // ---------------------------------------------------------------------------
 
-// Param keys that contain addresses, mapped to role tags.
-// "Token Address (ERC4626 Vault)" is a vault contract, not a token — handled
-// by the prefix rule in icdParamRole(). Bare "Address" is too ambiguous
-// (appears in Pioneer Chain ICDs with no stable meaning) and is omitted.
-const ICD_PARAM_ROLES = new Map([
-  ["Integration Partner Reward Address", "integration-boost-reward"],
-  ["Token Address", "token"],
-  ["Underlying Asset Address", "underlying-asset"],
-  ["Pool Address", "pool"],
-  ["Allocator Role Address", "allocator-role"],
-]);
-
-function icdParamRole(key) {
-  if (ICD_PARAM_ROLES.has(key)) return ICD_PARAM_ROLES.get(key);
-  if (key.startsWith("Token Address (")) return /ERC4626/i.test(key) ? "vault" : "token";
-  return null;
-}
-
-const normalizeChain = (raw) => normalizeChainLabel(raw, "icd-chain");
-
-// Returns the chain the ICD itself names, or null when it names none. The
-// caller supplies the default: "named nothing" must stay distinguishable from
-// "named ethereum", because Phase 4.5a writes this back over the chain
-// build-index detected and would otherwise reset every unlabelled ICD address
-// to ethereum.
-function icdParamChain(key, params) {
-  if (key.startsWith("Token Address (")) {
-    const m = key.match(/\(([^)]+)\)/);
-    if (m && !/ERC4626/i.test(m[1])) return normalizeChain(m[1]);
-  }
-  const raw = params["Integration Partner Chain"]?.[0] ?? params["Network"]?.[0];
-  return raw ? normalizeChain(raw) : null;
-}
-
-function icdParamLabel(key, params, agentName, instanceName) {
-  if (key === "Integration Partner Reward Address") {
-    const partner = params["Integration Partner Name"]?.[0];
-    return partner ? `${partner} (IB reward)` : instanceName;
-  }
-  if (key.startsWith("Token Address")) {
-    return params["Token Symbol"]?.[0] ?? params["Token Name"]?.[0] ?? instanceName;
-  }
-  if (key === "Pool Address") {
-    const protocol = params["Target Protocol"]?.[0];
-    return protocol ? `${protocol} Pool (${agentName ?? instanceName})` : instanceName;
-  }
-  if (key === "Underlying Asset Address") {
-    const token = params["Token"]?.[0] ?? params["Token Symbol"]?.[0];
-    return token ? `${token} underlying asset` : instanceName;
-  }
-  if (key === "Allocator Role Address") {
-    return agentName ? `${agentName} allocator role` : instanceName;
-  }
-  return instanceName;
-}
-
 const icdAnnotations = new Map(); // lowercase addr → { roles, entityLabel, chain }
 // IB partner names and agent token symbols — collected for Phase 4.5 logging.
 const ibPartnerNames = new Set();
@@ -324,24 +266,23 @@ for (const ent of entityMap.values()) {
   }
 
   for (const [key, tuple] of Object.entries(params)) {
-    const role = icdParamRole(key);
-    if (!role) continue;
     const [value, , srcDocNo] = tuple;
-    const isEvm = ETH_ADDR_EXACT_RE.test(value);
-    const isSol = !isEvm && SOL_ADDR_EXACT_RE.test(value);
-    if (!isEvm && !isSol) continue;
-
-    const addr = normalizeAddress(value);
+    const hit = icdParamAddress(key, value);
+    if (!hit) continue;
+    const role = icdParamRole(key);
+    const { addr, isSol } = hit;
     const namedChain = isSol ? "solana" : icdParamChain(key, params);
     const chain = namedChain ?? "ethereum";
     const label = icdParamLabel(key, params, agentName, ent.name);
 
+    const rank = icdLabelRank(key);
     if (!icdAnnotations.has(addr)) {
-      icdAnnotations.set(addr, { roles: [role], entityLabel: label, chain: namedChain });
+      icdAnnotations.set(addr, { roles: [role], entityLabel: label, chain: namedChain, rank });
     } else {
       const existing = icdAnnotations.get(addr);
       if (!existing.roles.includes(role)) existing.roles.push(role);
       existing.chain ??= namedChain;
+      if (rank < existing.rank) Object.assign(existing, { entityLabel: label, rank });
     }
 
     edges.push({
