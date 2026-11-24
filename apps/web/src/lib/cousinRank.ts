@@ -20,10 +20,15 @@ export function nameTier(docs: Record<string, AtlasNode>, a: AtlasNode, b: Atlas
   return key(a.title) === key(b.title) ? 1 : 2;
 }
 
+// Name and prime weigh together: the score is their product, so the same name in
+// the target's own prime (6) leads, then the agent's-name variant there (4), then
+// the same name elsewhere (3), and the two scoring 2 split by name.
+const NAME_WEIGHT = [3, 2, 1];
+const PRIME_WEIGHT = { own: 2, other: 1 };
+
 /**
- * Best cousins first, capped: by name (same, same but the agent's, different),
- * then the target's own prime before the others, then the target's status
- * (active/completed) before the other, then doc_no.
+ * Best cousins first, capped: by the name × prime score, then by name alone,
+ * then the target's status (active/completed) before the other, then doc_no.
  */
 export function rankCousins<T extends RankedCousin>(
   docs: Record<string, AtlasNode>,
@@ -32,8 +37,9 @@ export function rankCousins<T extends RankedCousin>(
   targetCompleted = false,
 ): T[] {
   const tier = new Map(matches.map((m) => [m, nameTier(docs, target, m.node)]));
+  const score = (m: T) => NAME_WEIGHT[tier.get(m)!] * (m.own ? PRIME_WEIGHT.own : PRIME_WEIGHT.other);
   const status = (m: T) => Number(m.completed !== targetCompleted);
   return matches
-    .sort((a, b) => tier.get(a)! - tier.get(b)! || Number(b.own) - Number(a.own) || status(a) - status(b) || byDocNo(a.node, b.node))
+    .sort((a, b) => score(b) - score(a) || tier.get(a)! - tier.get(b)! || status(a) - status(b) || byDocNo(a.node, b.node))
     .slice(0, MAX_COUSINS);
 }

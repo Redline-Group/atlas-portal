@@ -9,7 +9,7 @@ const doc = (id: string, doc_no: string, title: string) => makeNode({ id, doc_no
 const docs = (...nodes: ReturnType<typeof makeNode>[]) => makeAtlasBundle([spark, grove, target, ...nodes]).docs;
 
 describe("rankCousins", () => {
-  it("ranks by name first (same, same but the agent's, different), then own prime, then status", () => {
+  it("ranks by name × prime, then name, then status", () => {
     const same = doc("same", "A.6.1.1.2.9", "Spark Liquidity Layer Addresses");
     const agentOwn = doc("agent-own", "A.6.1.1.1.9", "Spark Liquidity-Layer Addresses");
     const agent = doc("agent", "A.6.1.1.2.8", "Grove Liquidity Layer Addresses");
@@ -20,7 +20,8 @@ describe("rankCousins", () => {
     const ranked = rankCousins(docs(same, agentOwn, agent, otherOwn, otherDone, other), target, [
       m(otherDone, false, true), m(other, false), m(agent, false), m(otherOwn, true), m(agentOwn, true), m(same, false),
     ]);
-    expect(ranked.map((r) => r.node.id)).toEqual(["same", "agent-own", "agent", "other-own", "other", "other-done"]);
+    // agent-own 2×2=4, same 3×1=3, agent 2×1=2 and other-own 1×2=2 (split by name), other and other-done 1.
+    expect(ranked.map((r) => r.node.id)).toEqual(["agent-own", "same", "agent", "other-own", "other", "other-done"]);
   });
 
   it(`keeps the best ${MAX_COUSINS}`, () => {
