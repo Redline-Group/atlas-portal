@@ -121,7 +121,7 @@ async function refreshEach(db: SqlTag, reg: PauRegistry, read: ChainReader, opts
   const historyOf = async (c: string, a: string) => ({ events: await eventsOf(db, c, a), complete: await historyComplete(db, c, a) });
   const beamOf = beamSources(reg, historyOf);
   const prevs = opts.nameKeys ? await storedSnapshots(db) : new Map<string, PauSnapshot>();
-  opts.nameKeys?.prepare?.([...prevs.values()].flatMap((p) => allLimits(p).map((r) => r.key)));
+  opts.nameKeys?.prepare?.([...prevs.values()].flatMap((p) => (Array.isArray(p?.contracts) ? allLimits(p).map((r) => r.key) : [])));
   const atlasKeys = (await opts.atlasKeys?.()) ?? new Map<string, string[]>();
   const roles = await opts.atlasRoles?.();
   const svmProbes = reg.deployments.some((d) => d.kind === "svm") ? ((await opts.svmProbe?.()) ?? new Map<string, SvmProbe>()) : new Map<string, SvmProbe>();

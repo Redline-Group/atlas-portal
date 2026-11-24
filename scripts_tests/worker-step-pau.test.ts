@@ -75,6 +75,19 @@ describe("pau step", () => {
     expect(warn.mock.calls.map((c) => c[0])).toEqual(["atlas-worker: pau snapshot p:base:monolithic not rebuilt, keeping its last: boom"]);
   });
 
+  it("hands the namer the keys the refresh announces before it names anything", async () => {
+    const prepare = vi.fn();
+    keyNamer.mockImplementationOnce(() => Object.assign(async () => "named", { prepare }));
+    pauAtlasInputs.mockResolvedValueOnce(published());
+    maybeRefreshPauState.mockImplementationOnce(async (_db: unknown, _reg: unknown, _read: unknown, opts: Opts & { nameKeys: { prepare: (keys: string[]) => void } }) => {
+      opts.nameKeys.prepare(["0xa", "0xb"]);
+      await opts.nameKeys("snap-a");
+      return { refreshed: 1, removed: 0, reason: "fresh" };
+    });
+    await pau.run({ db, warn: vi.fn() });
+    expect(prepare).toHaveBeenCalledWith(["0xa", "0xb"]);
+  });
+
   it("reads the published graph and address artifacts once per rebuild, and builds the namer once", async () => {
     const paths = published();
     pauAtlasInputs.mockResolvedValueOnce(paths);

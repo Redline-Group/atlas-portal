@@ -78,7 +78,8 @@ const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))];
  * kept, so memory follows the keys asked about, not the candidates tried.
  */
 export function deriveKeys(shapes: KeyShape[], candidates: Candidates, keys: Iterable<string>): Map<string, DerivedKey> {
-  const c = { addresses: lower(candidates.addresses), words: lower(candidates.words), pairs: (candidates.pairs ?? []).map(lower) };
+  const pairs = (candidates.pairs ?? []).map((p) => p.map((a) => a.toLowerCase())).filter((p) => p.length === 2);
+  const c = { addresses: lower(candidates.addresses), words: lower(candidates.words), pairs };
   const wanted = new Set(lower([...keys]));
   const found = new Map<string, DerivedKey>();
   for (const s of [...shapes].sort((a, b) => cost(a, c) - cost(b, c))) {

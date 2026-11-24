@@ -8,6 +8,7 @@ import fs from "node:fs";
 import type { PauSnapshot } from "../../lib/pau.ts";
 
 const ADDRESS_RE = /0x[0-9a-fA-F]{40}(?![0-9a-fA-F])/g;
+const PAIR_RE = /^0x[0-9a-f]{40},0x[0-9a-f]{40}$/;
 const addressesIn = (v: unknown) => [...new Set((JSON.stringify(v).match(ADDRESS_RE) ?? []).map((a) => a.toLowerCase()))];
 
 type Entity = { id: string; entity_type: string; meta?: string | object | null };
@@ -33,9 +34,10 @@ export function snapshotAddresses(snap: PauSnapshot): string[] {
   return addressesIn(snap.contracts.map((c) => ({ ...c, rateLimits: undefined, beam: undefined })));
 }
 
-/** Every ordered pair of distinct addresses in `together`, then each `a,b` of `stated`. */
+/** Every ordered pair of distinct addresses in `together`, then each well-formed `a,b` of `stated` (stored material, so a bad row is dropped, not hashed). */
 export function contextPairs(together: Iterable<string>, stated: string[] = []): string[][] {
   const xs = [...new Set([...together].map((a) => a.toLowerCase()))];
   const own = xs.flatMap((a) => xs.filter((b) => b !== a).map((b) => [a, b]));
-  return [...own, ...stated.map((p) => p.split(","))];
+  const kept = stated.map((p) => p.toLowerCase()).filter((p) => PAIR_RE.test(p));
+  return [...own, ...kept.map((p) => p.split(",")).filter(([a, b]) => a !== b)];
 }

@@ -41,8 +41,9 @@ const SOURCE: SourceConfig = { type: "github", repo: "Redline-Group/atlas-portal
 export const WORKER_CRON_MINUTES = 12;
 
 // Railway starts no tick while the last one is alive, and the worker's own 15m
-// cap is a timer a synchronous loop never lets fire, so the OS kills it at 16m.
-export const WORKER_KILL_AFTER = "16m";
+// cap is a timer a synchronous loop never lets fire, so the OS kills it at 17m:
+// past that cap plus the 60s the tails get after a late heartbeat.
+export const WORKER_KILL_AFTER = "17m";
 export const WORKER_ENTRY = "scripts/required/atlas-worker.mjs";
 
 // The web server. Its image is ./Dockerfile; the builder is pinned because

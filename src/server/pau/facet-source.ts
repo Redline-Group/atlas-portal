@@ -113,3 +113,13 @@ export function facetShapesAt(dir: string, chainId: number, address: string): Fa
   if (!parsed.has(file)) parsed.set(file, fs.existsSync(file) ? parseFacet(JSON.parse(fs.readFileSync(file, "utf8"))) : []);
   return parsed.get(file)!;
 }
+
+/** The contract name the explorer cache records for a facet, whether or not its source parses; null when it is not cached. */
+export function facetNameAt(dir: string, chainId: number, address: string): string | null {
+  try {
+    const entry = JSON.parse(fs.readFileSync(path.join(dir, String(chainId), `${address.toLowerCase()}.json`), "utf8")) as { contractName?: unknown };
+    return typeof entry.contractName === "string" ? entry.contractName : null;
+  } catch {
+    return null;
+  }
+}

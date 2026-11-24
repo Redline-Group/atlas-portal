@@ -634,7 +634,7 @@ so something before it hung — see the entry above.
 
 **Worker execution failed with exit 124 or 137 and no `hard cap` line**
 → The outside kill fired: the start command runs the worker under
-`timeout -k 30s 16m` (`.railway/railway.ts`). The in-process 15m cap is a timer,
+`timeout -k 30s 17m` (`.railway/railway.ts`). The in-process 15m cap is a timer,
 and a synchronous loop (key hashing, a regex, a parse) never lets it fire, so
 without the outside kill one such tick stays alive and Railway starts no later
 tick until someone stops it. The last log line names the step it was in.

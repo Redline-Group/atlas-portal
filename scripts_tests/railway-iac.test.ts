@@ -69,12 +69,13 @@ describe(".railway/railway.ts", () => {
   });
 
   // The worker's in-process 15m cap cannot fire while a synchronous loop holds the
-  // event loop, and Railway starts no tick while one is alive.
-  it("runs the worker under an outside kill past its own 15m cap", async () => {
+  // event loop, and Railway starts no tick while one is alive. A heartbeat just
+  // under the cap still gets its 60s tail floor (atlas-worker.mjs armTailCap).
+  it("runs the worker under an outside kill past its own 15m cap and the tail floor", async () => {
     const { worker } = await evaluate("production");
     const [cmd, , , limit, runtime] = String(worker.deploy?.startCommand).split(" ");
     expect([cmd, runtime]).toEqual(["timeout", "bun"]);
-    expect(Number(limit.replace(/m$/, ""))).toBeGreaterThan(15);
+    expect(Number(limit.replace(/m$/, ""))).toBeGreaterThan(16);
     expect(fs.readFileSync(path.join(ROOT, "scripts/required/atlas-worker.mjs"), "utf8")).toContain("const HARD_CAP_MS = 15 * 60 * 1000;");
   });
 

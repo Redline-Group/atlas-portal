@@ -16,7 +16,7 @@ import { contextPairs, snapshotAddresses } from "./key-context.ts";
 import { monolithicNamer } from "./mono-namer.ts";
 import { withRetiredKeys } from "./retired-addresses.ts";
 import { cachedSourceMaterial, mergeMaterial, type SourceMaterial } from "./source-material.ts";
-import { facetShapesAt, type FacetShape } from "./facet-source.ts";
+import { facetNameAt, facetShapesAt, type FacetShape } from "./facet-source.ts";
 import { facetKeyRule, HOOKS, type FacetHook } from "./facet-keys.ts";
 import { withDerivedKeys, type ChainReader } from "./snapshot.ts";
 
@@ -136,16 +136,19 @@ export function keyNamer(addressFiles: string[], extra: unknown, { dir = ".cache
   const shapesOf = facetShapes(dir);
   const namer: KeyNamer = async (snap, read, prev) => {
     const pairs = contextPairs([...(await stated(snap.prime)), ...snapshotAddresses(snap)], sourced().pairs);
-    const named = snap.kind === "diamond" ? await diamondNamed(snap, read, prev, { addresses: all(), pairs, shapesOf }) : mono.name(snap, prev, pairs);
+    const named = snap.kind === "diamond" ? await diamondNamed(snap, read, prev, { addresses: all(), pairs, shapesOf }, integratedNames(dir, snap)) : mono.name(snap, prev, pairs);
     return withRetiredKeys(named, gone());
   };
   namer.prepare = mono.prepare;
   return namer;
 }
 
+// A derivation records its facet's contract name, so the integrated facets are named the same way.
+const integratedNames = (dir: string, snap: PauSnapshot) =>
+  new Set(integratedFacets(snap).flatMap((f) => (CHAIN_ID.has(snap.chain) ? [facetNameAt(dir, CHAIN_ID.get(snap.chain)!, f)?.toLowerCase() ?? ""] : [])).filter(Boolean));
+
 /** A diamond reuses only a derivation from a facet it still integrates, and never a miss. */
-async function diamondNamed(snap: PauSnapshot, read: ChainReader, prev: PauSnapshot | undefined, src: DiamondSources): Promise<PauSnapshot> {
-  const facets = new Set(integratedFacets(snap));
-  const settled = settledKeys(prev, DIAMOND_INPUTS, (d) => !!d.facet && facets.has(d.facet.toLowerCase()));
+async function diamondNamed(snap: PauSnapshot, read: ChainReader, prev: PauSnapshot | undefined, src: DiamondSources, names: Set<string>): Promise<PauSnapshot> {
+  const settled = settledKeys(prev, DIAMOND_INPUTS, (d) => !!d.facet && names.has(d.facet.toLowerCase()));
   return { ...(await withDiamondKeys(snap, read, { ...src, settled })), keysNamedWith: DIAMOND_INPUTS };
 }

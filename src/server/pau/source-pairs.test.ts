@@ -1,7 +1,7 @@
 // Address pairs one argument list passes together: named constants resolve by
-// owner or unique bare name, a literal counts, a name two owners define
-// differently does not resolve bare, a long registry-like list and a body are
-// not one call, and escaped multi-file sources read the same.
+// owner (read past comments) or unique bare name, a literal counts, a name two
+// owners define differently does not resolve bare, a long registry-like list and
+// a body are not one call, and escaped multi-file sources read the same.
 import { describe, expect, it } from "bun:test";
 import { argumentPairs } from "./source-pairs.ts";
 
@@ -31,6 +31,10 @@ const spell = [
 describe("argumentPairs", () => {
   it("pairs the addresses one call passes, resolving owner-qualified and unique bare constants", () => {
     expect(argumentPairs(spell)).toEqual([`${lc(DEST)},${lc(USDC)}`, `${lc(USDC)},${lc(DEST)}`].sort());
+  });
+  it("reads owners past comments, and falls back to the one constant of a name when the owner is an import alias", () => {
+    const src = ["library Base {", "  /// @notice the contract addresses on Base", `  address internal constant USDC = ${USDC};`, `  address internal constant DEST = ${DEST};`, "}", "contract P { function f() external { g(B.USDC, Base.DEST); } }"].join("\n");
+    expect(argumentPairs(src)).toEqual([`${lc(DEST)},${lc(USDC)}`, `${lc(USDC)},${lc(DEST)}`].sort());
   });
   it("pairs literal addresses too", () => {
     expect(argumentPairs(`f(${USDC}, ${SUSDS})`)).toEqual([`${lc(USDC)},${lc(SUSDS)}`, `${lc(SUSDS)},${lc(USDC)}`].sort());

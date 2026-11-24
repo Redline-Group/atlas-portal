@@ -52,6 +52,10 @@ describe("deriveKeys over the monolithic shapes", () => {
     expect(keyDeriver(["LIMIT_ASSET_TRANSFER"], [], [], [[DEST, VAULT]])(key)).toBeNull();
     expect(keyDeriver(["LIMIT_ASSET_TRANSFER"], [], [], [[VAULT.toUpperCase().replace("0X", "0x"), DEST]])(key)).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [VAULT, DEST], via: DEST });
   });
+  it("skips a pair that is not two addresses instead of failing", () => {
+    const key = enc(["bytes32", "address", "address"], [base("LIMIT_ASSET_TRANSFER"), VAULT, DEST]);
+    expect(keyDeriver(["LIMIT_ASSET_TRANSFER"], [], [], [[VAULT], [VAULT, DEST]])(key)).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [VAULT, DEST], via: DEST });
+  });
   it("keeps only the keys asked about", () => {
     const asked = enc(["bytes32", "address"], [base("LIMIT_4626_DEPOSIT"), VAULT]);
     const found = deriveKeys(["LIMIT_4626_DEPOSIT", "LIMIT_USDS_MINT"].flatMap(monolithicShapes), { addresses: [VAULT, DEST], words: [] }, [asked]);

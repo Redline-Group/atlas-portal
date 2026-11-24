@@ -6,6 +6,8 @@
 const CONST_RE = /\b(\w+)\s*=\s*(0x[0-9a-fA-F]{40})(?![0-9a-fA-F])/g;
 const OWNER_RE = /\b(?:library|contract|interface)\s+(\w+)/g;
 const TOKEN_RE = /0x[0-9a-fA-F]{40}(?![0-9a-fA-F])|\b(?:(\w+)\.)?(\w+)\b/g;
+// A line comment ends at a newline, escaped (`\n`) in a multi-file source held as JSON.
+const COMMENT_RE = /\/\*[\s\S]*?\*\/|\/\/.*?(?=\\n|\n|$)/g;
 // A longer group is a body or a registry, not one call's arguments.
 const MAX_LIST_CHARS = 2000;
 const MAX_LIST_ADDRESSES = 8;
@@ -46,7 +48,8 @@ function addressesOf(list: string, syms: Symbols): string[] {
   const out = new Set<string>();
   for (const m of list.matchAll(TOKEN_RE)) {
     const literal = m[0].startsWith("0x") && m[0].length === 42 ? m[0].toLowerCase() : null;
-    const named = m[1] ? syms.qualified.get(`${m[1]}.${m[2]}`) : syms.bare.get(m[2]);
+    // An owner the reader cannot see (an import alias) falls back to the name, when only one constant has it.
+    const named = (m[1] ? syms.qualified.get(`${m[1]}.${m[2]}`) : undefined) ?? syms.bare.get(m[2]);
     const a = literal ?? named;
     if (a) out.add(a);
   }
@@ -55,7 +58,7 @@ function addressesOf(list: string, syms: Symbols): string[] {
 
 /** Every ordered pair of distinct addresses one argument list of `source` names, as `a,b`. */
 export function argumentPairs(source: string): string[] {
-  const text = source.replace(/\\[nrt]/g, " ");
+  const text = source.replace(COMMENT_RE, " ").replace(/\\[nrt]/g, " ");
   const syms = symbolsOf(text);
   const pairs = new Set<string>();
   for (const list of argumentLists(text)) {
