@@ -83,6 +83,19 @@ function fromGraph(inputs, warn, parse, failure) {
   };
 }
 
+/** Each prime's artifact and instances, from the published graph and docs; unreadable ones warn and leave two-address keys to the snapshot's and the spells' pairs. */
+function atlasContextOf(inputs, warn, reg, atlasContexts) {
+  return async () => {
+    try {
+      const p = await inputs();
+      return atlasContexts(p["graph.json"], [p["docs-shallow.json"], p["docs-deep.json"]], reg.deployments.map((d) => d.prime));
+    } catch (e) {
+      warn(`atlas-worker: pau atlas context not read, two-address keys get only the snapshot's and the spells' pairs: ${e.message}`);
+      return new Map();
+    }
+  };
+}
+
 /**
  * The rebuild's key namer, atlas keys and vault role claims, each built once
  * and only when a rebuild asks for it. An unreadable graph probes no key and
@@ -97,15 +110,7 @@ async function rebuildInputs(db, warn, reg) {
   const material = await storedSpellMaterial(db, warn);
   const retired = await retiredReader(warn);
   const inputs = atlasInputsOnce(db, warn);
-  const context = async () => {
-    try {
-      const p = await inputs();
-      return atlasContexts(p["graph.json"], [p["docs-shallow.json"], p["docs-deep.json"]], reg.deployments.map((d) => d.prime));
-    } catch (e) {
-      warn(`atlas-worker: pau atlas context not read, two-address keys get only the snapshot's and the spells' pairs: ${e.message}`);
-      return new Map();
-    }
-  };
+  const context = atlasContextOf(inputs, warn, reg, atlasContexts);
   // The refresh announces its keys before the namer exists, so they are kept here and the namer reads them.
   const known = [];
   let namer;
