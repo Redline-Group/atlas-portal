@@ -1,7 +1,8 @@
 // The atlas worker's best-effort side steps; atlas-worker.mjs owns the control flow.
 // An entry is `{ id, phase, label?, skipWhenNoFetch?, skipWhenInert?, onlyWhenInert?, run(ctx) }`:
-//   "tick" — before the drift check, sequentially, ctx.db open; run() returns
-//            its log line; a throw is logged and the tick carries on.
+//   "tick" — before the drift check, sequentially, ctx.db open; a line names
+//            the step as it starts, run() returns its closing line (logged
+//            with the step's time); a throw is logged and the tick carries on.
 //            skipWhenNoFetch is the line logged instead under --no-fetch.
 //   "tail" — after the heartbeat, in parallel, ctx.db closed; run() returns
 //            the child's promise; a rejection never fails the run.
@@ -30,6 +31,7 @@ export function stepsIn(steps, phase) {
 }
 
 const message = (e) => e?.message ?? e;
+const since = (t0) => `${((Date.now() - t0) / 1000).toFixed(1)}s`;
 
 /** The line logged instead of running a step in this context, "" to skip silently, null to run it. */
 function skipLine(step, ctx) {
@@ -56,10 +58,13 @@ export async function runTickSteps(steps, ctx) {
       if (line) ctx.log(`atlas-worker: ${line}`);
       continue;
     }
+    // Logged before it runs, so a step that never returns is the last line of a stuck run.
+    ctx.log(`atlas-worker: ${step.label ?? step.id}…`);
+    const t0 = Date.now();
     try {
-      ctx.log(`atlas-worker: ${await step.run(ctx)}`);
+      ctx.log(`atlas-worker: ${await step.run(ctx)} (${since(t0)})`);
     } catch (e) {
-      ctx.warn(`atlas-worker: ${step.label ?? step.id} skipped — ${message(e)}`);
+      ctx.warn(`atlas-worker: ${step.label ?? step.id} skipped — ${message(e)} (${since(t0)})`);
     }
   }
 }
@@ -67,8 +72,15 @@ export async function runTickSteps(steps, ctx) {
 /** Tail phase: every lane started at once, settled together, failures warned in declared order. */
 export async function runTailSteps(steps, ctx) {
   const lanes = runnable(steps, "tail", ctx);
+  const t0 = Date.now();
   // async wrapper: a lane that throws synchronously becomes a rejection, not a crash.
-  const results = await Promise.allSettled(lanes.map(async (lane) => lane.run(ctx)));
+  // Each lane logs as it finishes, so the one a stuck run waits on is the lane with no line.
+  const results = await Promise.allSettled(
+    lanes.map(async (lane) => {
+      await lane.run(ctx);
+      ctx.log(`atlas-worker: ${lane.id} finished (${since(t0)})`);
+    }),
+  );
   results.forEach((result, i) => {
     if (result.status === "rejected") {
       ctx.warn(`atlas-worker: ${lanes[i].id} reconcile error: ${message(result.reason)}`);
