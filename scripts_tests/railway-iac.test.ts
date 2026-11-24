@@ -64,8 +64,18 @@ describe(".railway/railway.ts", () => {
       expect(svc.build?.builder).toBe("DOCKERFILE");
       expect(fs.existsSync(path.join(ROOT, String(svc.build?.dockerfilePath)))).toBe(true);
     }
-    const workerEntry = String(worker.deploy?.startCommand).split(" ")[1];
+    const workerEntry = String(worker.deploy?.startCommand).split(" ").at(-1)!;
     expect(fs.existsSync(path.join(ROOT, workerEntry))).toBe(true);
+  });
+
+  // The worker's in-process 15m cap cannot fire while a synchronous loop holds the
+  // event loop, and Railway starts no tick while one is alive.
+  it("runs the worker under an outside kill past its own 15m cap", async () => {
+    const { worker } = await evaluate("production");
+    const [cmd, , , limit, runtime] = String(worker.deploy?.startCommand).split(" ");
+    expect([cmd, runtime]).toEqual(["timeout", "bun"]);
+    expect(Number(limit.replace(/m$/, ""))).toBeGreaterThan(15);
+    expect(fs.readFileSync(path.join(ROOT, "scripts/required/atlas-worker.mjs"), "utf8")).toContain("const HARD_CAP_MS = 15 * 60 * 1000;");
   });
 
   it("takes its watch patterns from scripts/lib/deploy-skip.ts", async () => {

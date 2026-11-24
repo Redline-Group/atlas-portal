@@ -40,6 +40,11 @@ const SOURCE: SourceConfig = { type: "github", repo: "Redline-Group/atlas-portal
 /** The worker's cron period in minutes. The tail budget in atlas-worker.mjs stays under it. */
 export const WORKER_CRON_MINUTES = 12;
 
+// Railway starts no tick while the last one is alive, and the worker's own 15m
+// cap is a timer a synchronous loop never lets fire, so the OS kills it at 16m.
+export const WORKER_KILL_AFTER = "16m";
+export const WORKER_ENTRY = "scripts/required/atlas-worker.mjs";
+
 // The web server. Its image is ./Dockerfile; the builder is pinned because
 // Railpack's slim runtime cannot carry git, the build toolchain and the atlas
 // clone the image build needs.
@@ -80,7 +85,7 @@ function workerService(name: string) {
     deploy: {
       // A tick with nothing new exits at once.
       cronSchedule: `*/${WORKER_CRON_MINUTES} * * * *`,
-      startCommand: "bun scripts/required/atlas-worker.mjs",
+      startCommand: `timeout -k 30s ${WORKER_KILL_AFTER} bun ${WORKER_ENTRY}`,
     },
   });
 }
