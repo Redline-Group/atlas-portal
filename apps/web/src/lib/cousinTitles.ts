@@ -97,31 +97,62 @@ function headings(atlas: Atlas, doc: AtlasNode, rootDocNo: string): string[] {
   return out;
 }
 
-// The doc under `root` that plays the target's part: the same title key under a
-// parent with the same title key (headings that only name a chain set aside), on
-// a path that names no other chain or status (cousinPaths.ts).
-// ICDs of one primitive are not laid out identically, so the doc_no suffix is only
-// a tie-break, after the longest run of matching headings; no doc is better than
-// one in another heading's place. `accept` narrows the candidates.
-export function equivalentDoc(
-  atlas: Atlas,
-  target: AtlasNode,
-  relSuffix: string,
-  root: AtlasNode,
-  accept: (doc: AtlasNode) => boolean = () => true,
-): AtlasNode | undefined {
-  if (!relSuffix) return root;
+type Accept = (doc: AtlasNode, root: AtlasNode) => boolean;
+
+// Share of words two docs' texts have in common, addresses and agent names aside.
+function textSimilarity(docs: Docs, a: AtlasNode, b: AtlasNode): number {
+  const words = (d: AtlasNode) => titleWords(docs, (d.content ?? "").replace(/0x[0-9a-f]{6,}/gi, " "));
+  const wa = words(a);
+  const wb = words(b);
+  let shared = 0;
+  for (const w of wa) if (wb.has(w)) shared++;
+  const union = wa.size + wb.size - shared;
+  return union ? shared / union : 0;
+}
+
+// Same-titled docs under `root` whose parent shares the target's title key, on a
+// path naming no other chain or status (cousinPaths.ts), with their run of
+// headings in common with the target's.
+function candidates(atlas: Atlas, target: AtlasNode, targetRootNo: string, root: AtlasNode, accept: Accept): Map<AtlasNode, number> {
   const key = titleKeyer(atlas.docs);
-  const want = pathMarks(headings(atlas, target, target.doc_no.slice(0, -relSuffix.length)), key);
+  const want = pathMarks(headings(atlas, target, targetRootNo), key);
   const runOf = new Map<AtlasNode, number>();
   for (const d of titleIndex(atlas.docs).get(key(target.title)) ?? []) {
-    if (!d.doc_no.startsWith(`${root.doc_no}.`) || !accept(d)) continue;
+    if (!d.doc_no.startsWith(`${root.doc_no}.`) || !accept(d, root)) continue;
     const got = pathMarks(headings(atlas, d, root.doc_no), key);
     if ((got.steps[0] ?? "") !== (want.steps[0] ?? "") || contradicts(want, got)) continue;
     runOf.set(d, sharedRun(got.steps, want.steps));
   }
+  return runOf;
+}
+
+// The best candidate: the longest heading run, then the closest text, then the
+// same doc_no suffix; none when still tied.
+function pick(atlas: Atlas, target: AtlasNode, targetRootNo: string, root: AtlasNode, accept: Accept): AtlasNode | undefined {
+  const runOf = candidates(atlas, target, targetRootNo, root, accept);
   const best = Math.max(-1, ...runOf.values());
   const top = [...runOf].filter(([, r]) => r === best).map(([d]) => d);
   if (top.length <= 1) return top[0];
-  return top.find((d) => d.doc_no === `${root.doc_no}${relSuffix}`);
+  const sim = new Map(top.map((d) => [d, textSimilarity(atlas.docs, target, d)]));
+  const closest = Math.max(...sim.values());
+  const nearest = top.filter((d) => sim.get(d) === closest);
+  if (nearest.length === 1) return nearest[0];
+  return nearest.find((d) => d.doc_no === `${root.doc_no}${target.doc_no.slice(targetRootNo.length)}`);
+}
+
+/**
+ * The doc under `root` that plays the target's part. ICDs of one primitive are
+ * not laid out identically, so the match is by title and headings (`pick`), not
+ * doc_no, and it must hold both ways: picking back from the cousin's side lands
+ * on the target, so of two same-titled docs only the closer one claims a cousin.
+ * `accept` narrows the candidates under either root.
+ */
+export function equivalentDoc(atlas: Atlas, target: AtlasNode, relSuffix: string, root: AtlasNode, accept: Accept = () => true): AtlasNode | undefined {
+  if (!relSuffix) return root;
+  const targetRootNo = target.doc_no.slice(0, -relSuffix.length);
+  const found = pick(atlas, target, targetRootNo, root, accept);
+  const targetRootId = atlas.docNoToId.get(targetRootNo);
+  const targetRoot = targetRootId ? atlas.docs[targetRootId] : undefined;
+  if (!found || !targetRoot) return found;
+  return pick(atlas, found, root.doc_no, targetRoot, accept) === target ? found : undefined;
 }

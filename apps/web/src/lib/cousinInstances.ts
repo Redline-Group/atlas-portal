@@ -75,7 +75,7 @@ export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntit
     const other = { ent, filing: filingOf(atlas, ent) };
     if (multi ? !sameKind(atlas, self, other) : own) continue;
     // A primitive's subtree holds its instances' ICDs, whose docs are another cover's.
-    const accept = hit.et === "primitive" ? (d: AtlasNode) => !insideIcdBelow(atlas, d, root) : undefined;
+    const accept = hit.et === "primitive" ? (d: AtlasNode, under: AtlasNode) => !insideIcdBelow(atlas, d, under) : undefined;
     const node = equivalentDoc(atlas, target, relSuffix, root, accept);
     if (node) out.push({ node, agentDocId: otherAgent, own, completed: other.filing.completed });
   }
