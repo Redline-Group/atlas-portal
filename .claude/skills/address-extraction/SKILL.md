@@ -65,7 +65,7 @@ An enumeration (`on the Ethereum Mainnet, Base, and Arbitrum is` — one address
 
 ### Chain from a heading (`chainFromLabel`)
 
-Atomized docs routinely put the chain in a **heading** and never repeat it in the one-line body — either inline (`ALM Proxy (Optimism) Contract`) or as a bare per-chain grouping heading (`Monolithic ALM Contracts` > `Robinhood Chain` > `ALM Proxy Contract`). `build-index` therefore falls back to the node's own title, then its **doc_no** ancestors' titles (`titleChainFor`). It walks doc_no rather than `parentId` because heading depth is capped at 6, which collapses the parent chain exactly in the deeply nested artifact subtrees where this pattern lives.
+Atomized docs routinely put the chain in a **heading** and never repeat it in the one-line body — either inline (`ALM Proxy (Optimism) Contract`) or as a bare per-chain grouping heading (`Monolithic ALM Contracts` > `Robinhood Chain` > `ALM Proxy Contract`). `build-index` therefore falls back to the node's own title, then its **doc_no** ancestors' titles (`titleChainFor`, in `scripts/lib/doc-address-chains.ts` beside `docAddressChains`, the per-doc placement both build-index and the `mentions` edge read). It walks doc_no rather than `parentId` because heading depth is capped at 6, which collapses the parent chain exactly in the deeply nested artifact subtrees where this pattern lives.
 
 A title is a **label**, not prose, so `chainFromLabel` checks specific chains before ethereum — otherwise `Base Mainnet - …` resolves to ethereum on the `\bmainnet\b` hint. It keeps word-boundary matching (unlike `normalizeChainLabel`'s substring test) because a doc title is free text where "Database" must not read as base. A deferred chain (`FUTURE_TO_ETHEREUM`) resolves to ethereum rather than null, so the ancestor walk stops at the heading that named it.
 
@@ -79,6 +79,13 @@ Overall precedence, strongest first:
 2. **Prose** — `detectChainOrNull`.
 3. **Heading** — `chainFromLabel` over the doc's own title, then doc_no ancestors.
 4. **Default** — `ethereum`.
+
+The `mentions` edge (doc → `addr:chain`, pattern 2v) follows the same order **per doc**, not the address's primary chain. Read from the primary alone, a doc saying "on Base is 0x…" pointed at whichever chain another doc named first.
+
+- **A param doc** takes the chains its instance's `has_address` nodes use (`icdStatedChains`, through the same `icdEdgeChain`, ethereum default included), so the two edges meet at one node id. An Agent Token leaf expanded into several `Token Address (<Chain>)` keys for one CREATE2 address gets an edge per chain.
+- **Any other doc** takes every chain it places the address on, over all its occurrences (`docPlacements`): the prose at each, else the heading context.
+- **A guess yields to the chain.** A heading or a nearby keyword stands only on a chain in the address's `presentOnChains` when that field exists, because those are the only chains with a database row, and `atlas_get_address` reads in-edges by row. An explicit `on <chain> is` clause stands regardless. The case it settles: Grove's Pioneer Incentive Pool Address sits under an "Avalanche Instance Configuration Document" heading, while the address (`GROVE_SUBPROXY`) exists only on Ethereum, which its sibling `Network` leaf also says.
+- **With nothing left**, the primary chain, else ethereum.
 
 `build-graph` Phase 2.6 deliberately does **not** recompute chain: it can't see headings, and its "prefer any non-ethereum detection" aggregation let a single stray mention win globally (a doc whose prose said "Gnosis **Protocol**" pinned the address to Gnosis **Chain**).
 

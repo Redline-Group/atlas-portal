@@ -32,10 +32,10 @@ type Observe = (raw: unknown, source: string, doc: CensusDoc) => void;
 
 // -- Half 1: the explicit labels the real extractors read ---------------------
 
-// build-graph.mjs icdParamChain: the `Token Address (X)` parenthetical. The
+// graph-icd-params.ts icdParamChain: the `Token Address (X)` parenthetical. The
 // ERC4626 marker is a vault-type flag, not a chain — icdParamChain skips it.
 const TOKEN_ADDRESS_RE = /^Token Address \(([^)]+)\)/;
-// build-graph.mjs icdParamChain reads `Network` and `Integration Partner Chain`.
+// graph-icd-params.ts icdParamChain reads `Network` and `Integration Partner Chain`.
 // A bare `Chain` title is *not* read by the pipeline — it's included here as a
 // forward-looking near-miss the atlas could plausibly adopt, so the census
 // surfaces it early. Note the asymmetry: a `Chain` param naming a known chain

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   WORKER_STEPS,
   runTailSteps,
@@ -23,6 +23,10 @@ const tick = (id: string, run: WorkerStep["run"], extra: Partial<WorkerStep> = {
   run,
   ...extra,
 });
+
+// A fixed clock, so every step's time reads 0.0s.
+beforeEach(() => vi.spyOn(Date, "now").mockReturnValue(1_000));
+afterEach(() => vi.restoreAllMocks());
 
 describe("worker step registry", () => {
   it("ids are unique and every step is in a known phase", () => {
@@ -52,7 +56,8 @@ describe("in a PR environment", () => {
     await runTickSteps(steps, ctx);
     expect(ran).toEqual(["pr-env-copy"]);
     expect(log.mock.calls.map((c) => c[0])).toEqual([
-      "atlas-worker: pr-env-copy ran",
+      "atlas-worker: pr-env copy…",
+      "atlas-worker: pr-env-copy ran (0.0s)",
       "atlas-worker: pr-state sweep skipped (PR environment) — it calls the GitHub API",
       "atlas-worker: chain-state skipped (--no-fetch) — run `pnpm snap:chainstate` to populate it locally",
       "atlas-worker: balances skipped (--no-fetch) — POST /api/balances to populate them locally",
@@ -89,17 +94,27 @@ describe("in a PR environment", () => {
       "atlas-worker: embeddings skipped (PR environment) — they call OpenRouter",
       "atlas-worker: briefings skipped (PR environment) — the embed pass calls OpenRouter even under --no-fetch",
       "atlas-worker: edit candidates skipped (PR environment) — the sweep calls OpenRouter",
+      "atlas-worker: history finished (0.0s)",
+      "atlas-worker: doc-versions finished (0.0s)",
+      "atlas-worker: pau-rpc finished (0.0s)",
+      "atlas-worker: vote-evidence finished (0.0s)",
     ]);
   });
 });
 
 describe("runTickSteps", () => {
-  it("logs each step's line, and a throwing step warns without stopping the rest", async () => {
+  it("names each step as it starts and logs its line with its time, and a throwing step warns without stopping the rest", async () => {
     const { ctx, log, warn } = fakeCtx();
     const after = vi.fn(async () => "after ok");
     await runTickSteps([tick("a", async () => "a ok"), tick("b", async () => { throw new Error("boom"); }), tick("c", after)], ctx);
-    expect(log.mock.calls.map((c) => c[0])).toEqual(["atlas-worker: a ok", "atlas-worker: after ok"]);
-    expect(warn).toHaveBeenCalledWith("atlas-worker: b step skipped — boom");
+    expect(log.mock.calls.map((c) => c[0])).toEqual([
+      "atlas-worker: a step…",
+      "atlas-worker: a ok (0.0s)",
+      "atlas-worker: b step…",
+      "atlas-worker: c step…",
+      "atlas-worker: after ok (0.0s)",
+    ]);
+    expect(warn).toHaveBeenCalledWith("atlas-worker: b step skipped — boom (0.0s)");
     expect(after).toHaveBeenCalledOnce();
   });
 
@@ -110,7 +125,7 @@ describe("runTickSteps", () => {
     await runTickSteps([tick("net", net, { skipWhenNoFetch: "net skipped (--no-fetch)" }), tick("local", local)], ctx);
     expect(net).not.toHaveBeenCalled();
     expect(local).toHaveBeenCalledOnce();
-    expect(log.mock.calls.map((c) => c[0])).toEqual(["atlas-worker: net skipped (--no-fetch)", "atlas-worker: local ok"]);
+    expect(log.mock.calls.map((c) => c[0])).toEqual(["atlas-worker: net skipped (--no-fetch)", "atlas-worker: local step…", "atlas-worker: local ok (0.0s)"]);
   });
 
   it("ignores tail lanes", async () => {
@@ -122,8 +137,8 @@ describe("runTickSteps", () => {
 });
 
 describe("runTailSteps", () => {
-  it("starts every lane before any settles, and a failing lane only warns", async () => {
-    const { ctx, warn } = fakeCtx();
+  it("starts every lane before any settles, logs each that finishes, and a failing lane only warns", async () => {
+    const { ctx, log, warn } = fakeCtx();
     const started: string[] = [];
     let release!: () => void;
     const gate = new Promise<void>((r) => (release = r));
@@ -140,6 +155,7 @@ describe("runTailSteps", () => {
     expect(started).toEqual(["x", "y", "z"]);
     release();
     await expect(done).resolves.toBeUndefined();
+    expect(log.mock.calls.map((c) => c[0])).toEqual(["atlas-worker: x finished (0.0s)", "atlas-worker: z finished (0.0s)"]);
     expect(warn.mock.calls.map((c) => c[0])).toEqual(["atlas-worker: y reconcile error: y exited 1"]);
   });
 

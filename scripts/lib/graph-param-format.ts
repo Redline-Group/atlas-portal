@@ -79,7 +79,9 @@ const PARAM_FORMATTERS: Record<string, Formatter> = {
   "Asset Supplied By Spark Liquidity Layer": (s) => s.replace(/\.$/, "").trim(),
 };
 export function formatParam(title: string, raw: string): string {
-  const fn = PARAM_FORMATTERS[title];
+  // An address key's suffix names which one ("Underlying Asset Address (USDC)"), not another kind of value.
+  const bare = PARAM_FORMATTERS[title.replace(/\s*\([^)]*\)$/, "")];
+  const fn = PARAM_FORMATTERS[title] ?? (bare === firstBtOrAddr ? bare : undefined);
   if (fn) return fn(raw.trim());
   if (RATE_LIMIT_ID_RE.test(title)) return extractRateLimitId(raw.trim());
   return unwrapBt(raw.trim());
