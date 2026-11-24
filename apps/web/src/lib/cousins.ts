@@ -7,6 +7,7 @@ import { primeRoots, titleIndex, titleKeyer } from "./cousinTitles";
 import { instanceCousins } from "./cousinInstances";
 import { findSkeletonCousins } from "./cousinSkeleton";
 import { rankCousins } from "./cousinRank";
+import { isIcdLocation, locationCousins } from "./cousinLocations";
 
 export interface CousinDoc {
   node: AtlasNode;
@@ -62,6 +63,20 @@ function findOmniCousins(
   return labelled(atlas, graph, targetDoc, [...byAgent].map(([prime, node]) => ({ node, prime })));
 }
 
+// The nearest instance / invocation / primitive entity defined at the target or an ancestor.
+function coveringEntity(targetId: string, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData) {
+  const byDid = new Map<string, { ent: GraphEntity; pool: GraphEntity[] }>();
+  for (const pool of [graph.instances, graph.invocations, graph.primitives]) {
+    for (const ent of pool) if (ent.did) byDid.set(ent.did, { ent, pool });
+  }
+  const chain = buildAncestorsWithSelf(atlas.docs, atlas.docNoToId, targetId);
+  for (let i = chain.length - 1; i >= 0; i--) {
+    const hit = byDid.get(chain[i].id);
+    if (hit) return hit;
+  }
+  return undefined;
+}
+
 // A doc no primitive/instance/invocation entity covers: an omni doc, or the
 // artifact skeleton around the primitives.
 function uncoveredCousins(target: AtlasNode, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData): CousinDoc[] {
@@ -102,15 +117,10 @@ export function findCousinDocs(
   atlas: Pick<AtlasBundle, "docs" | "docNoToId">,
   graph: GraphData,
 ): CousinDoc[] {
-  const byDid = new Map<string, { ent: GraphEntity; pool: GraphEntity[] }>();
-  for (const pool of [graph.instances, graph.invocations, graph.primitives]) {
-    for (const ent of pool) if (ent.did) byDid.set(ent.did, { ent, pool });
-  }
-  const chain = buildAncestorsWithSelf(atlas.docs, atlas.docNoToId, targetId);
-  let hit: { ent: GraphEntity; pool: GraphEntity[] } | undefined;
-  for (let i = chain.length - 1; i >= 0 && !hit; i--) hit = byDid.get(chain[i].id);
   const target = atlas.docs[targetId];
   if (!target) return [];
+  if (isIcdLocation(target)) return locationCousins(atlas.docs, target, (id) => findCousinDocs(id, atlas, graph));
+  const hit = coveringEntity(targetId, atlas, graph);
   if (!hit?.ent.st) return uncoveredCousins(target, atlas, graph);
 
   const agentName = new Map(

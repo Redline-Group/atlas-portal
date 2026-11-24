@@ -233,6 +233,22 @@ describe("findCousinDocs — multi-instance primitives", () => {
     expect(findCousinDocs(sOwner.id, atlas, graph)).toEqual([]);
   });
 
+  it("pairs ICD Location entries through the ICDs they point at", () => {
+    const { atlas, graph } = venueFixture();
+    const loc = (id: string, doc_no: string, icd: string) => {
+      const n = makeNode({ id, doc_no, title: `${atlas.docs[icd].title} Location`, content: `Located at [ICD](${icd}).` });
+      atlas.docs[id] = n;
+      atlas.docNoToId.set(doc_no, id);
+      return n;
+    };
+    const sLoc = loc("s-loc1", "A.6.1.1.1.2.6.1.1.2.1.3.1", "s-v1");
+    const sLoc2 = loc("s-loc2", "A.6.1.1.1.2.6.1.1.2.1.3.2", "s-v2");
+    loc("s-loc-aave", "A.6.1.1.1.2.6.1.1.2.1.5.1", "s-aave1");
+    const gLoc = loc("g-loc1", "A.6.1.1.2.2.6.1.1.2.1.7.1", "g-v1");
+    // Spark's other Morpho entry and Grove's Morpho entry; not Spark's Aave entry, and none for g-old (no entry).
+    expect(findCousinDocs(sLoc.id, atlas, graph).map((c) => c.node.id)).toEqual([sLoc2.id, gLoc.id]);
+  });
+
   it(`caps the list at ${MAX_COUSINS}`, () => {
     const { atlas, graph, sVault } = venueFixture();
     for (let i = 10; i < 40; i++) {
