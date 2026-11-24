@@ -577,7 +577,7 @@ Regex: `/^\s*[-*]\s+\`([^\`\n]+)\`\s*:\s*(.+?)\s*$/gm`. Single-bullet leaves sti
 - `Underlying Asset Address` vs `Underlying Asset Address (<Symbol>)` — a pool with several underlying assets names each in a suffix (Curve AUSD/USDC). `Pool Address` takes the same suffix.
 - `<Section> / <Key>` — a key that collided with a sibling keeps its section (`Contract Addresses / Underlying Asset Address`).
 
-`scripts/lib/graph-icd-params.ts` reads all of these for Phase 2.5's `has_address` edges and Phase 4.5a's labels: the role comes from the last ` / ` segment, with the suffix dropped on `Underlying Asset Address` and `Pool Address` (and kept on `Token Address`, where it names a chain or the vault type). A suffixed underlying asset is labelled by its symbol, and a label from an exact key outranks one from a suffixed or collision-renamed key, so instance order never decides it.
+`scripts/lib/graph-icd-params.ts` reads all of these for Phase 2.5's `has_address` edges and Phase 4.5a's labels: the role comes from the last ` / ` segment, with the suffix dropped on `Underlying Asset Address` and `Pool Address` (and kept on `Token Address`, where it names a chain or the vault type). A suffixed underlying asset is labelled by its symbol. A label from an exact key outranks one from a suffixed or collision-renamed key, and so does a chain, from the best-ranked key that names one (`mergeIcdAnnotation`), so instance order decides neither. A suffixed address key's value goes through its bare key's formatter (`formatParam`), so a sentence-shaped value still yields the address.
 
 ### Pattern 15: `invoked_by` — instance → agent affiliation
 
