@@ -26,6 +26,8 @@ export interface KeyShape {
   types: ArgType[];
   name: (args: string[]) => DerivedKey;
   tuples?: string[][];
+  /** An argument may be one the prime never states (a transfer's asset or destination), so the candidates' `cross` lists are tried too. */
+  outward?: true;
 }
 
 /** CCTP domains, Centrifuge ids and LayerZero v2 endpoint ids (30101 Ethereum onward). */
@@ -45,8 +47,10 @@ const oneWord = (types: ArgType[]) => types.length === 1 && types[0] === "bytes3
 export interface Candidates {
   addresses: string[];
   words: string[];
-  /** Ordered address pairs that belong together (key-context.ts). */
+  /** Ordered address pairs that belong together (key-tiers.ts). */
   pairs?: string[][];
+  /** Two lists an `outward` shape takes one argument from each of, in either order, without building the pairs (key-tiers.ts). */
+  cross?: [string[], string[]];
 }
 
 /** An argument as named and as abi-encoded, so each candidate is encoded once, not once per hash. */
@@ -58,6 +62,7 @@ interface Encoded {
   addresses: Arg[];
   words: Arg[];
   pairs: Arg[][];
+  cross: [Arg[], Arg[]];
 }
 
 const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))];
@@ -67,6 +72,7 @@ function encode(c: Candidates): Encoded {
     addresses: lower(c.addresses).map((a) => arg("address", a)),
     words: lower(c.words).map((w) => arg("bytes32", w)),
     pairs: (c.pairs ?? []).filter((p) => p.length === 2).map((p) => p.map((a) => arg("address", a.toLowerCase()))),
+    cross: [lower(c.cross?.[0] ?? []).map((a) => arg("address", a)), lower(c.cross?.[1] ?? []).map((a) => arg("address", a))],
   };
 }
 
@@ -83,14 +89,17 @@ function* product(slots: Arg[][], prefix: Arg[] = []): Generator<Arg[]> {
 function* argLists(s: KeyShape, c: Encoded): Generator<Arg[]> {
   for (const t of s.tuples ?? []) yield t.map((v, i) => arg(s.types[i], v));
   if (enumerable(s.types)) yield* product(slots(s, c));
-  if (pairShape(s.types)) yield* c.pairs;
+  if (pairShape(s.types)) {
+    yield* c.pairs;
+    if (s.outward) for (const a of c.cross[0]) for (const b of c.cross[1]) yield* [[a, b], [b, a]];
+  }
   if (oneWord(s.types)) for (const w of c.words) yield [w];
 }
 
 const cost = (s: KeyShape, c: Encoded) =>
   (s.tuples?.length ?? 0) +
   (enumerable(s.types) ? slots(s, c).reduce((n, xs) => n * xs.length, 1) : 0) +
-  (pairShape(s.types) ? c.pairs.length : 0) +
+  (pairShape(s.types) ? c.pairs.length + (s.outward ? 2 * c.cross[0].length * c.cross[1].length : 0) : 0) +
   (oneWord(s.types) ? c.words.length : 0);
 
 /**
@@ -124,7 +133,10 @@ export function deriveKeys(shapes: KeyShape[], candidates: Candidates, keys: Ite
 export function monolithicShapes(constant: string): KeyShape[] {
   const plain = (types: ArgType[]): KeyShape => ({ constant, types, name: (args) => ({ constant, args }) });
   const shapes = [plain([]), plain(["address"]), plain(["uint"]), plain(["bytes32"])];
-  if (/^LIMIT_(ASSET_TRANSFER|UNISWAP_V3_\w+)$/.test(constant)) shapes.push({ constant, types: ["address", "address"], name: (args) => ({ constant, args, via: args[1] }) });
+  const pair = (outward?: true): KeyShape => ({ constant, types: ["address", "address"], name: (args) => ({ constant, args, via: args[1] }), ...(outward ? { outward } : {}) });
+  // A transfer may move any asset to any destination; a Uniswap V3 pool is an integration the prime states.
+  if (constant === "LIMIT_ASSET_TRANSFER") shapes.push(pair(true));
+  if (/^LIMIT_UNISWAP_V3_\w+$/.test(constant)) shapes.push(pair());
   if (/^LIMIT_(LAYERZERO|CENTRIFUGE)_TRANSFER$/.test(constant)) shapes.push(plain(["address", "uint"]));
   return shapes;
 }

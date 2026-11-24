@@ -57,6 +57,8 @@ export interface DerivedKey {
   getter?: string;
   /** The argument that says which contract the key is for (a pool, a vault, a transfer's destination). */
   via?: string;
+  /** Address arguments the deployment's prime does not state in its artifact and the deployment does not hold; set on every rebuild (src/server/pau/key-marks.ts). */
+  outsidePrime?: string[];
 }
 
 /** An address the atlas's git history lists and its current commit does not, with the commit that removed it. */

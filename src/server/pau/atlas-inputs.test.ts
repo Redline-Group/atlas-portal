@@ -32,17 +32,19 @@ describe("pauAtlasInputs", () => {
     const { db, asked } = fakeDb("abc", [row("graph.json", '{"entities":[]}'), row("addresses.atlas.json", "{}")]);
     const dir = path.join(scratch(), "out");
     const paths = await pauAtlasInputs(db, { dir, publicDir: "pub" });
-    expect(paths).toEqual({ "graph.json": path.join(dir, "graph.json"), "addresses.atlas.json": path.join(dir, "addresses.atlas.json") });
+    const pub = (n: string) => path.join("pub", n);
+    expect(paths).toEqual({ "graph.json": path.join(dir, "graph.json"), "addresses.atlas.json": path.join(dir, "addresses.atlas.json"), "docs-shallow.json": pub("docs-shallow.json"), "docs-deep.json": pub("docs-deep.json") });
     expect(fs.readFileSync(paths["graph.json"], "utf8")).toBe('{"entities":[]}');
-    expect(asked[1]).toEqual(["abc", ["graph.json", "addresses.atlas.json"]]);
+    expect(asked[1]).toEqual(["abc", ["graph.json", "addresses.atlas.json", "docs-shallow.json", "docs-deep.json"]]);
   });
 
   it("keeps the public/ path for a name the store lacks, and for both when sync_state has no sha", async () => {
     const dir = path.join(scratch(), "out");
     const some = await pauAtlasInputs(fakeDb("abc", [row("graph.json", "{}")]).db, { dir, publicDir: "pub" });
-    expect(some).toEqual({ "graph.json": path.join(dir, "graph.json"), "addresses.atlas.json": path.join("pub", "addresses.atlas.json") });
+    const pub = (n: string) => path.join("pub", n);
+    expect(some).toEqual({ "graph.json": path.join(dir, "graph.json"), "addresses.atlas.json": pub("addresses.atlas.json"), "docs-shallow.json": pub("docs-shallow.json"), "docs-deep.json": pub("docs-deep.json") });
     const none = await pauAtlasInputs(fakeDb(null, []).db, { dir, publicDir: "pub" });
-    expect(none).toEqual({ "graph.json": path.join("pub", "graph.json"), "addresses.atlas.json": path.join("pub", "addresses.atlas.json") });
+    expect(none).toEqual({ "graph.json": pub("graph.json"), "addresses.atlas.json": pub("addresses.atlas.json"), "docs-shallow.json": pub("docs-shallow.json"), "docs-deep.json": pub("docs-deep.json") });
   });
 
   it("refuses a blob whose bytes are not what was published", async () => {

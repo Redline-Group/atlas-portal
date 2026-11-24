@@ -11,7 +11,7 @@ import path from "node:path";
 import { encodeAbiParameters, keccak256, toHex } from "viem";
 import type { DerivedKey, LiveRateLimit, PauSnapshot } from "../../lib/pau.ts";
 import { keyNamer, withDiamondKeys } from "./diamond-derive.ts";
-import { contextPairs } from "./key-context.ts";
+import type { KeyContext } from "./key-context.ts";
 import { DIAMOND_INPUTS } from "./key-memo.ts";
 import { facetShapesAt } from "./facet-source.ts";
 import type { ChainCall } from "./snapshot.ts";
@@ -59,6 +59,7 @@ function diamond(facets: string[], keys: string[], params: PauSnapshot["contract
   };
 }
 
+const ctx = (prime: string[], more: Partial<KeyContext> = {}): KeyContext => ({ instances: [], prime, own: [], stated: [], ...more });
 const named = (s: PauSnapshot) => Object.fromEntries(s.contracts[1].rateLimits!.map((r) => [r.key, r.derived ?? null]));
 const shapesOf = (_chain: string, facet: string) => facetShapesAt(CACHE, 1, facet);
 const reads: ChainCall[] = [];
@@ -70,7 +71,7 @@ const aTokenRead = async (_chain: string, calls: ChainCall[]) => {
 describe("withDiamondKeys", () => {
   it("names Grove's keys from its USDS, PSM, Basin and Uniswap V3 facets, each with its roles and identifying argument", async () => {
     const snap = diamond([FACET.usds, FACET.psm, FACET.basin, FACET.uni], Object.values(KEY).slice(0, 7));
-    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, USDC, AUSD, BASIN, UNI_POOL], pairs: contextPairs({ together: [USDS, USDC, AUSD, BASIN, UNI_POOL], stated: [] }), shapesOf }));
+    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, USDC, AUSD, BASIN, UNI_POOL], context: ctx([USDS, USDC, AUSD, BASIN, UNI_POOL]), shapesOf }));
     expect(out[KEY.usdsBurn]).toEqual({ constant: "LIMIT_USDS_BURN", args: [], roles: [], facet: "USDSFacet", getter: "burnRateLimitKey" });
     expect(out[KEY.usdcToUsds]).toMatchObject({ constant: "LIMIT_USDC_TO_USDS", facet: "PSMFacet" });
     expect(out[KEY.basinDeposit]).toEqual({ constant: "LIMIT_BASIN_DEPOSIT", args: [USDS, BASIN], roles: ["asset", "basin"], facet: "BasinFacet", getter: "getDepositRateLimitKey", via: BASIN });
@@ -81,7 +82,7 @@ describe("withDiamondKeys", () => {
   });
   it("names a two-address key only from a pair that belongs together, and a one-address key from any candidate", async () => {
     const snap = diamond([FACET.basin, FACET.uni], [KEY.basinDeposit, KEY.uniAggregateDeposit]);
-    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, BASIN, UNI_POOL], pairs: contextPairs({ together: [USDC, UNI_POOL], stated: [] }), shapesOf }));
+    const out = named(await withDiamondKeys(snap, aTokenRead, { addresses: [USDS, BASIN, UNI_POOL], context: ctx([USDC, UNI_POOL]), shapesOf }));
     expect([out[KEY.basinDeposit], out[KEY.uniAggregateDeposit]?.args]).toEqual([null, [UNI_POOL]]);
   });
   it("names Osero's Aave keys from the pool and underlying its aToken reports, as AaveFacet reads them", async () => {
@@ -158,9 +159,38 @@ describe("keyNamer", () => {
     const snap = { ...diamond([], [key]), kind: "monolithic" as const };
     const dir = tmpDir("no-cache-");
     expect(named(await keyNamer([], {}, { dir, material })(snap, read))[key]).toBeNull();
-    const withContext = keyNamer([], {}, { dir, material, context: async () => new Map([["p", [USDC, BASIN]]]) });
+    const withContext = keyNamer([], {}, { dir, material, context: async () => new Map([["p", { addresses: [USDC, BASIN], instances: [] }]]) });
     withContext.prepare?.([key]);
     expect(named(await withContext(snap, read))[key]).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [USDC, BASIN], via: BASIN });
+  });
+  it("names a monolithic transfer of a token to its own contract, an address paired with itself", async () => {
+    const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "address" }], [keccak256(toHex("LIMIT_ASSET_TRANSFER")), USDC, USDC]));
+    const material = { names: ["LIMIT_ASSET_TRANSFER"], addresses: [], words: [], spells: [] };
+    const namer = keyNamer([], {}, { dir: tmpDir("no-cache-"), material, context: async () => new Map([["p", { addresses: [], instances: [[USDC]] }]]) });
+    expect(named(await namer({ ...diamond([], [key]), kind: "monolithic" }, read))[key]).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [USDC, USDC], via: USDC });
+  });
+  it("names a monolithic key with one argument from its prime and the other from any candidate, and marks the outside one", async () => {
+    const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "address" }], [keccak256(toHex("LIMIT_ASSET_TRANSFER")), AUSD, BASIN]));
+    const material = { names: ["LIMIT_ASSET_TRANSFER"], addresses: [AUSD], words: [], spells: [] };
+    const namer = keyNamer([], {}, { dir: tmpDir("no-cache-"), material, context: async () => new Map([["p", { addresses: [BASIN], instances: [] }]]) });
+    expect(named(await namer({ ...diamond([], [key]), kind: "monolithic" }, read))[key]).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [AUSD, BASIN], via: BASIN, outsidePrime: [AUSD] });
+  });
+  it("stops a diamond at its prime's artifact: one argument from outside it is not searched for", async () => {
+    const snap = diamond([FACET.basin], [KEY.basinDeposit]);
+    const namer = keyNamer([], { members: [{ address: USDS }] }, { dir: CACHE, context: async () => new Map([["p", { addresses: [BASIN], instances: [] }]]) });
+    expect(named(await namer(snap, read))[KEY.basinDeposit]).toBeNull();
+  });
+  it("marks a name reused from an earlier snapshot by where its arguments sit now, and claims nothing without the prime's atlas", async () => {
+    const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }], [keccak256(toHex("LIMIT_4626_DEPOSIT")), UNI_POOL]));
+    const reused = { constant: "LIMIT_4626_DEPOSIT", args: [UNI_POOL], outsidePrime: [USDC] };
+    const prev = { ...diamond([], []), kind: "monolithic" as const, keysNamedWith: "1:old" };
+    prev.contracts[1].rateLimits = [{ ...lim(key), derived: reused }];
+    const snap = { ...diamond([], [key]), kind: "monolithic" as const };
+    const atlas = (addresses: string[]) => async () => new Map([["p", { addresses, instances: [] }]]);
+    const dir = tmpDir("no-cache-");
+    expect(named(await keyNamer([], {}, { dir, context: atlas([]) })(snap, read, prev))[key]).toEqual({ constant: "LIMIT_4626_DEPOSIT", args: [UNI_POOL], outsidePrime: [UNI_POOL] });
+    expect(named(await keyNamer([], {}, { dir, context: atlas([UNI_POOL]) })(snap, read, prev))[key]).toEqual({ constant: "LIMIT_4626_DEPOSIT", args: [UNI_POOL] });
+    expect(named(await keyNamer([], {}, { dir })(snap, read, prev))[key]).toEqual({ constant: "LIMIT_4626_DEPOSIT", args: [UNI_POOL] });
   });
   it("keeps a diamond's stored name when its facet's source no longer parses, and drops one from a facet it no longer integrates", async () => {
     const dir = tmpDir("facets-");

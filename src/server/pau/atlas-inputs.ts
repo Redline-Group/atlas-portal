@@ -11,7 +11,7 @@ import { getArtifacts } from "../atlas-artifacts.ts";
 import { writeStoredArtifacts } from "../bundle-store.ts";
 import type { SqlTag } from "../sql-types.ts";
 
-export const PAU_ATLAS_ARTIFACTS = ["graph.json", "addresses.atlas.json"] as const;
+export const PAU_ATLAS_ARTIFACTS = ["graph.json", "addresses.atlas.json", "docs-shallow.json", "docs-deep.json"] as const;
 export type PauAtlasInputs = Record<(typeof PAU_ATLAS_ARTIFACTS)[number], string>;
 
 /** Each artifact's public/ path. */

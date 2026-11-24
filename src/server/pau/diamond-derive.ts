@@ -11,8 +11,10 @@
 import chainRegistry from "../../data/chain-registry.json";
 import type { DerivedKey, PauParam, PauSnapshot, RetiredAddress } from "../../lib/pau.ts";
 import { DIAMOND_INPUTS, settledKeys, withSettled } from "./key-memo.ts";
-import { candidateAddresses, deriveKeys, type KeyShape } from "./key-derive.ts";
-import { contextPairs, snapshotAddresses } from "./key-context.ts";
+import { candidateAddresses, type KeyShape } from "./key-derive.ts";
+import { snapshotAddresses, type KeyContext, type PrimeAtlas } from "./key-context.ts";
+import { withPrimeMarks } from "./key-marks.ts";
+import { deriveTiered, nearTier, primeTier } from "./key-tiers.ts";
 import { monolithicNamer } from "./mono-namer.ts";
 import { withRetiredKeys } from "./retired-addresses.ts";
 import { cachedSourceMaterial, mergeMaterial, type SourceMaterial } from "./source-material.ts";
@@ -57,8 +59,8 @@ function keyShape(s: FacetShape, bound: Bound[]): KeyShape {
 
 export interface DiamondSources {
   addresses: string[];
-  /** Ordered address pairs a two-address shape is hashed with (key-context.ts). */
-  pairs?: string[][];
+  /** What a two-address shape is searched against, in tiers (key-tiers.ts); a diamond stops at its prime's artifact. */
+  context?: KeyContext;
   /** The key shapes of the facet at an address on a chain; none when its source is not cached. */
   shapesOf: (chain: string, facet: string) => FacetShape[];
   /** A derivation an earlier snapshot settled (key-memo.ts), used before hashing; undefined to hash. */
@@ -76,8 +78,9 @@ export async function withDiamondKeys(snap: PauSnapshot, read: ChainReader, src:
   for (const h of HOOKS.filter((x) => shapes.some((s) => s.facet === x.facet))) bound.set(h.facet, [...(bound.get(h.facet) ?? []), ...(await hookBound(snap, read, h))]);
   const own = JSON.stringify(params(snap)).match(ADDRESS_RE) ?? [];
   const keyShapes = shapes.map((s) => keyShape(s, bound.get(s.facet) ?? []));
+  const context = src.context ?? { instances: [], prime: [], own: [], stated: [] };
   return withSettled(snap, src.settled, (todo) => {
-    const found = deriveKeys(keyShapes, { addresses: [...src.addresses, ...own], words: [], pairs: src.pairs }, todo);
+    const found = deriveTiered(keyShapes, { addresses: [...src.addresses, ...own], words: [] }, [() => nearTier(context), () => primeTier(context)], todo);
     return (key) => found.get(key.toLowerCase()) ?? null;
   });
 }
@@ -106,8 +109,8 @@ export interface NamerSources {
   retired?: () => Map<string, RetiredAddress>;
   /** The naming material of sources not in `dir`: the spells behind stored changes (spell-sources.ts). */
   material?: SourceMaterial;
-  /** The addresses the atlas states for each prime (key-context.ts), read once, when first needed. */
-  context?: () => Promise<Map<string, string[]>>;
+  /** What the atlas states for each prime (key-context.ts `atlasContexts`), read once, when first needed. */
+  context?: () => Promise<Map<string, PrimeAtlas>>;
   /** Every key the refresh may ask about, read when the shared monolithic scan first runs; `prepare` appends to it. */
   known?: string[];
 }
@@ -130,19 +133,20 @@ export function keyNamer(addressFiles: string[], extra: unknown, { dir = ".cache
   let addresses: string[] | undefined;
   let retired: Map<string, RetiredAddress> | undefined;
   let material: SourceMaterial | undefined;
-  let primes: Promise<Map<string, string[]>> | undefined;
+  let primes: Promise<Map<string, PrimeAtlas>> | undefined;
   const gone = () => (retired ??= sources.retired?.() ?? new Map());
   const sourced = () => (material ??= mergeMaterial([cachedSourceMaterial(dir), ...(sources.material ? [sources.material] : [])]));
   const all = () => (addresses ??= [...candidateAddresses(addressFiles, extra), ...sourced().addresses, ...gone().keys()]);
   // A context that cannot be read leaves two-address keys to the snapshot's and the spells' pairs, rather than failing every deployment.
-  const stated = async (prime: string) => (await (primes ??= (sources.context?.() ?? Promise.resolve(new Map())).catch(() => new Map()))).get(prime) ?? [];
+  const atlasOf = async (prime: string) => (await (primes ??= (sources.context?.() ?? Promise.resolve(new Map())).catch(() => new Map()))).get(prime);
   const known = sources.known ?? [];
   const mono = monolithicNamer(dir, sourced, all, known);
   const shapesOf = facetShapes(dir);
   const namer: KeyNamer = async (snap, read, prev) => {
-    const context = { together: [...(await stated(snap.prime)), ...snapshotAddresses(snap)], stated: sourced().pairs ?? [] };
-    const named = snap.kind === "diamond" ? await diamondNamed(snap, read, prev, { addresses: all(), pairs: contextPairs(context), shapesOf }, integratedNames(dir, snap)) : mono(snap, prev, context);
-    return withRetiredKeys(named, gone());
+    const atlas = await atlasOf(snap.prime);
+    const context = { instances: atlas?.instances ?? [], prime: atlas?.addresses ?? [], own: snapshotAddresses(snap), stated: sourced().pairs ?? [] };
+    const named = snap.kind === "diamond" ? await diamondNamed(snap, read, prev, { addresses: all(), context, shapesOf }, integratedNames(dir, snap)) : mono(snap, prev, context);
+    return withRetiredKeys(withPrimeMarks(named, atlas ? context : undefined), gone());
   };
   namer.prepare = (keys) => void known.push(...keys);
   return namer;

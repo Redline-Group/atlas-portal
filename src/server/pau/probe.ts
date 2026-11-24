@@ -34,14 +34,24 @@ export async function probeKeys(read: ChainReader, chain: string, address: strin
 
 export type Params = Record<string, [string, ...unknown[]]>;
 
-/** Each graph entity's parameters with the prime entity they belong to (an instance's agent, or the prime itself); none without a graph. */
-export function primeParams(file: string): [prime: string, params: Params][] {
+/** A graph entity with the prime entity it belongs to: an instance's agent, or the prime itself. */
+export interface GraphEntity {
+  id: string;
+  type: string;
+  doc: string | null;
+  prime: string | null;
+  params: Params | null;
+}
+
+type RawEntity = { id: string; entity_type: string; defining_doc_id?: string | null; meta?: string | object | null };
+
+/** Every entity of the graph at `file`; none without one. */
+export function graphEntities(file: string): GraphEntity[] {
   if (!fs.existsSync(file)) return [];
-  const graph = JSON.parse(fs.readFileSync(file, "utf8")) as { entities?: { id: string; entity_type: string; meta?: string | object | null }[] };
-  return (graph.entities ?? []).flatMap((e) => {
+  const graph = JSON.parse(fs.readFileSync(file, "utf8")) as { entities?: RawEntity[] };
+  return (graph.entities ?? []).map((e) => {
     const meta = (typeof e.meta === "string" ? JSON.parse(e.meta) : (e.meta ?? {})) as { agent_doc_id?: string; params?: Params };
-    const prime = e.entity_type === "agent" ? e.id : meta.agent_doc_id;
-    return prime && meta.params ? [[prime, meta.params] as [string, Params]] : [];
+    return { id: e.id, type: e.entity_type, doc: e.defining_doc_id ?? null, prime: e.entity_type === "agent" ? e.id : (meta.agent_doc_id ?? null), params: meta.params ?? null };
   });
 }
 
@@ -52,7 +62,8 @@ export function atlasKeysByPrime(file = "public/graph.json"): Map<string, string
     console.warn(`pau: ${file} missing; no atlas key is read live, so none can read as "not set"`);
     return out;
   }
-  for (const [prime, params] of primeParams(file)) {
+  for (const { prime, params } of graphEntities(file)) {
+    if (!prime || !params) continue;
     const keys = Object.entries(params).flatMap(([name, [value]]) => (RATE_LIMIT_ID_RE.test(name) && HASH_RE.test(String(value).trim()) ? [String(value).trim().toLowerCase()] : []));
     if (keys.length) out.set(prime, [...(out.get(prime) ?? []), ...keys]);
   }

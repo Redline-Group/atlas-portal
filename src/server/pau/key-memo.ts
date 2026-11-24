@@ -13,10 +13,11 @@ import { allLimits, withDerivedKeys } from "./snapshot.ts";
 export const NAMER_VERSION = 1;
 
 /** The stamp of a monolithic namer's inputs, stored as the snapshot's `keysNamedWith`. */
-export function namingInputs(constants: string[], addresses: string[], words: string[] = [], context: KeyContext = { together: [], stated: [] }): string {
+export function namingInputs(constants: string[], addresses: string[], words: string[] = [], context: KeyContext = { instances: [], prime: [], own: [], stated: [] }): string {
   const lower = (xs: string[]) => [...new Set(xs.map((x) => x.toLowerCase()))].sort();
-  // The context, not the pairs built from it: the pairs follow from it, and it is linear in size where they are not.
-  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words), lower(context.together), lower(context.stated)];
+  // The context, not the pairs built from it: every tier's pairs follow from these sets (key-tiers.ts), which are linear in size where the pairs are not.
+  const near = [...context.prime, ...context.own, ...context.instances.flat()];
+  const sorted = [[...new Set(constants)].sort(), lower(addresses), lower(words), lower(near), lower(context.stated)];
   return `${NAMER_VERSION}:${createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 16)}`;
 }
 
