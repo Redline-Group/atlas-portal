@@ -46,7 +46,7 @@ export function PanelNotes(props: PanelNotesProps) {
       {cousinDocs.length > 0 && (
         <RelatedDocList {...list} label="cousin documents" kind="cousin_doc"
           blurb="The same document in related instances: the same venue or integration, in this and the other Prime Agents."
-          mark={<SourceMark source="derived" bare hint="Matched by primitive, by the venue each instance is filed under, and by document title." />}
+          mark={<SourceMark source="derived" bare hint="Matched by primitive, by the venue each instance is filed under, and by document title; a directory entry follows the document it links to, and the artifact's outline matches by position." />}
           items={cousinDocs.map(({ node, agent, completed }) => ({
             node,
             eyebrow: <span className="atlas-agent-pill">{completed ? `${agent} · completed` : agent}</span>,

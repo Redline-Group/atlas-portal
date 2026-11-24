@@ -6,7 +6,7 @@ import { abbreviateAgentName } from "@/lib/owningAgent";
 import { primeRoots, titleIndex, titleKeyer } from "./cousinTitles";
 import { instanceCousins } from "./cousinInstances";
 import { findSkeletonCousins } from "./cousinSkeleton";
-import { rankCousins } from "./cousinRank";
+import { MAX_COUSINS, rankCousins } from "./cousinRank";
 import { isIcdLocation, locationCousins } from "./cousinLocations";
 
 export interface CousinDoc {
@@ -116,17 +116,18 @@ export function findCousinDocs(
   targetId: string,
   atlas: Pick<AtlasBundle, "docs" | "docNoToId">,
   graph: GraphData,
+  limit = MAX_COUSINS,
 ): CousinDoc[] {
   const target = atlas.docs[targetId];
   if (!target) return [];
-  if (isIcdLocation(target)) return locationCousins(atlas.docs, target, (id) => findCousinDocs(id, atlas, graph));
+  if (isIcdLocation(target)) return locationCousins(atlas.docs, target, (id) => findCousinDocs(id, atlas, graph, Infinity));
   const hit = coveringEntity(targetId, atlas, graph);
   if (!hit?.ent.st) return uncoveredCousins(target, atlas, graph);
 
   const agentName = new Map(
-    graph.participants.filter((p) => p.et === "agent").map((p) => [p.id, abbreviateAgentName(p.name)]),
+    graph.participants.filter((p) => p.et === "agent" && p.did).map((p) => [p.did as string, abbreviateAgentName(p.name)]),
   );
-  return instanceCousins(atlas, target, hit.ent, hit.pool).map(({ node, agentDocId, completed }) => ({
+  return instanceCousins(atlas, target, hit.ent, hit.pool, limit).map(({ node, agentDocId, completed }) => ({
     node,
     agent: agentName.get(agentDocId) ?? atlas.docs[agentDocId]?.title ?? "Unknown",
     ...(completed ? { completed } : {}),

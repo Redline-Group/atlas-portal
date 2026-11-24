@@ -1,5 +1,6 @@
 import type { AtlasNode } from "@/types";
 import type { CousinDoc } from "./cousins";
+import { MAX_COUSINS } from "./cousinRank";
 
 type Docs = Record<string, AtlasNode>;
 
@@ -37,13 +38,16 @@ function locationIndex(docs: Docs): LocationIndex {
 /**
  * Cousins of an ICD Location doc: the Location docs of the cousins of the ICD it
  * points at, in that ICD list's order (the titles differ only by "Location").
+ * `cousinsOf` must return the ICD's whole ranked list: the cap applies after
+ * cousins without a Location doc drop out.
  */
 export function locationCousins(docs: Docs, target: AtlasNode, cousinsOf: (id: string) => CousinDoc[]): CousinDoc[] {
   const { icdOf, locationOf } = locationIndex(docs);
   const icd = icdOf.get(target.id);
   if (!icd) return [];
-  return cousinsOf(icd.id).flatMap((c) => {
+  const found = cousinsOf(icd.id).flatMap((c) => {
     const loc = locationOf.get(c.node.id);
     return loc && loc.id !== target.id ? [{ ...c, node: loc }] : [];
   });
+  return found.slice(0, MAX_COUSINS);
 }

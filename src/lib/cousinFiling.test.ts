@@ -10,6 +10,9 @@ describe("icdFiling", () => {
   it("reads a direct filing under a status heading", () => {
     expect(icdFiling(["In Progress Invocations", "Distribution Reward Primitive"])).toEqual({ kind: "direct", completed: false });
     expect(icdFiling(["Completed Instances Directory", "Agent Creation Primitive"])).toEqual({ kind: "direct", completed: true });
+    for (const heading of ["Suspended Instances", "Archived Invocations/Instances", "Failed Invocations"]) {
+      expect(icdFiling([heading, "Hub Data Repository"])).toEqual({ kind: "direct", completed: false });
+    }
   });
 
   it("never mistakes a chain heading for a status heading or a venue", () => {

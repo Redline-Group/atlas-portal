@@ -48,6 +48,7 @@ export function rankCousins<T extends RankedCousin>(
   target: AtlasNode,
   matches: T[],
   targetCompleted = false,
+  limit = MAX_COUSINS,
 ): T[] {
   const tier = new Map(matches.map((m) => [m, nameTier(docs, target, m.node)]));
   const similar = new Map(matches.map((m) => [m, tier.get(m) === 2 ? nameSimilarity(docs, target, m.node) : 1]));
@@ -58,5 +59,5 @@ export function rankCousins<T extends RankedCousin>(
       (a, b) =>
         score(b) - score(a) || tier.get(a)! - tier.get(b)! || similar.get(b)! - similar.get(a)! || status(a) - status(b) || byDocNo(a.node, b.node),
     )
-    .slice(0, MAX_COUSINS);
+    .slice(0, limit);
 }

@@ -337,3 +337,29 @@ describe("findCousinDocs — artifact skeleton", () => {
     expect(findCousinDocs("s-omni", atlas, graph)).toEqual([]);
   });
 });
+
+describe("findCousinDocs — primitive-level docs", () => {
+  it("never pairs a primitive-level doc with a doc inside another prime's ICD", () => {
+    const n = (id: string, doc_no: string, title: string) => makeNode({ id, doc_no, title });
+    const docs = [
+      n("s", "A.6.1.1.1", "Spark"), n("g", "A.6.1.1.2", "Grove"),
+      n("s-prim", "A.6.1.1.1.2.6.1", "Allocation System Primitive"), n("g-prim", "A.6.1.1.2.2.6.1", "Allocation System Primitive"),
+      n("s-proc", "A.6.1.1.1.2.6.1.2.4", "Cooldown sUSDe Shares"),
+      n("g-icd", "A.6.1.1.2.2.6.1.3.1", "Ethena sUSDe Instance Configuration Document"),
+      n("g-icd-step", "A.6.1.1.2.2.6.1.3.1.3.2", "Cool Down sUSDe Shares"),
+      n("s-hub", "A.6.1.1.1.2.6.1.1.1", "Global Activation Status"), n("g-hub", "A.6.1.1.2.2.6.1.1.1", "Global Activation Status"),
+    ];
+    const prim = (id: string, did: string, agent: string) =>
+      makeGraphEntity({ id, et: "primitive", st: "allocation-system", did, m: JSON.stringify({ agent_doc_id: agent }) });
+    const graph = makeGraphData({
+      participants: [
+        makeGraphEntity({ id: "s", name: "Spark", et: "agent", st: "prime", did: "s" }),
+        makeGraphEntity({ id: "g", name: "Grove", et: "agent", st: "prime", did: "g" }),
+      ],
+      primitives: [prim("p-s", "s-prim", "s"), prim("p-g", "g-prim", "g")],
+    });
+    const atlas = makeAtlasBundle(docs);
+    expect(findCousinDocs("s-proc", atlas, graph)).toEqual([]);
+    expect(findCousinDocs("s-hub", atlas, graph).map((c) => c.node.id)).toEqual(["g-hub"]);
+  });
+});

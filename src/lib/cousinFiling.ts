@@ -15,9 +15,10 @@ export type IcdFiling =
   | { kind: "unknown"; completed: boolean };
 
 // A status heading leads with the status ("Active Instances", "Completed
-// Instances Directory", "In Progress Invocations"); chain headings such as
+// Instances Directory", "In Progress Invocations", "Suspended Instances",
+// "Archived Invocations/Instances", "Failed Invocations"); chain headings such as
 // "Ethereum Mainnet Instances" do not, so they never pass for one.
-const STATUS_DIRECTORY = /^(active|completed|in progress)\b.*\b(instances|invocations)\b/i;
+const STATUS_DIRECTORY = /^(active|completed|in progress|suspended|archived|failed)\b.*\b(instances|invocations)\b/i;
 
 export const normTitle = (title: string | undefined): string => (title ?? "").trim().toLowerCase().replace(/\s+/g, " ");
 

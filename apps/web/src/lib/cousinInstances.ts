@@ -2,8 +2,8 @@ import type { AtlasNode, GraphEntity } from "@/types";
 import type { AtlasBundle } from "@/lib/docsTypes";
 import { headingTitles, icdFiling, normTitle, type IcdFiling } from "@/lib/cousinFiling";
 import { parseMeta } from "@/lib/meta";
-import { equivalentDoc, titleAt } from "./cousinTitles";
-import { rankCousins } from "./cousinRank";
+import { equivalentDoc, insideIcdBelow, titleAt } from "./cousinTitles";
+import { MAX_COUSINS, rankCousins } from "./cousinRank";
 
 type Atlas = Pick<AtlasBundle, "docs" | "docNoToId">;
 
@@ -50,7 +50,7 @@ function sameKind(a: { ent: GraphEntity; filing: IcdFiling }, b: { ent: GraphEnt
  * above when the primitive is multi-instance, else one per other prime; ranked
  * and capped by cousinRank.ts.
  */
-export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntity, pool: GraphEntity[]): CousinMatch[] {
+export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntity, pool: GraphEntity[], limit = MAX_COUSINS): CousinMatch[] {
   const agentDocId = agentOf(hit);
   const coverDoc = hit.did ? atlas.docs[hit.did] : undefined;
   if (!agentDocId || !coverDoc || !hit.st) return [];
@@ -65,8 +65,10 @@ export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntit
     const own = otherAgent === agentDocId;
     const other = { ent, filing: filingOf(atlas, ent) };
     if (multi ? !sameKind(self, other, own) : own) continue;
-    const node = equivalentDoc(atlas, target, relSuffix, root);
+    // A primitive's subtree holds its instances' ICDs, whose docs are another cover's.
+    const accept = hit.et === "primitive" ? (d: AtlasNode) => !insideIcdBelow(atlas, d, root) : undefined;
+    const node = equivalentDoc(atlas, target, relSuffix, root, accept);
     if (node) out.push({ node, agentDocId: otherAgent, own, completed: other.filing.completed });
   }
-  return rankCousins(atlas.docs, target, out, self.filing.completed);
+  return rankCousins(atlas.docs, target, out, self.filing.completed, limit);
 }

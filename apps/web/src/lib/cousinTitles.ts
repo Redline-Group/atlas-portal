@@ -78,18 +78,34 @@ export function titleAt(atlas: Atlas, docNo: string): string | undefined {
   return id ? atlas.docs[id]?.title : undefined;
 }
 
+const ICD_TITLE_RE = /instance configuration document$/i;
+
+/** Whether `doc` sits inside an instance's ICD somewhere below `root`. */
+export function insideIcdBelow(atlas: Atlas, doc: AtlasNode, root: AtlasNode): boolean {
+  for (let no = doc.doc_no; no.length > root.doc_no.length; no = parentDocNo(no)) {
+    if (ICD_TITLE_RE.test((titleAt(atlas, no) ?? "").trim())) return true;
+  }
+  return false;
+}
+
 // The doc under `root` that plays the target's part. ICDs of one primitive are
 // not laid out identically, so the target's doc_no suffix is only a first guess:
 // the match is by title key, with the parent's title breaking a tie, and no doc
-// is better than a doc with a different title.
-export function equivalentDoc(atlas: Atlas, target: AtlasNode, relSuffix: string, root: AtlasNode): AtlasNode | undefined {
+// is better than a doc with a different title. `accept` narrows the candidates.
+export function equivalentDoc(
+  atlas: Atlas,
+  target: AtlasNode,
+  relSuffix: string,
+  root: AtlasNode,
+  accept: (doc: AtlasNode) => boolean = () => true,
+): AtlasNode | undefined {
   if (!relSuffix) return root;
   const key = titleKeyer(atlas.docs);
   const title = key(target.title);
   const alignedId = atlas.docNoToId.get(`${root.doc_no}${relSuffix}`);
   const aligned = alignedId ? atlas.docs[alignedId] : undefined;
-  if (aligned && key(aligned.title) === title) return aligned;
-  const same = (titleIndex(atlas.docs).get(title) ?? []).filter((d) => d.doc_no.startsWith(`${root.doc_no}.`));
+  if (aligned && key(aligned.title) === title && accept(aligned)) return aligned;
+  const same = (titleIndex(atlas.docs).get(title) ?? []).filter((d) => d.doc_no.startsWith(`${root.doc_no}.`) && accept(d));
   if (same.length <= 1) return same[0];
   const parentTitle = key(titleAt(atlas, parentDocNo(target.doc_no)));
   const byParent = same.filter((d) => key(titleAt(atlas, parentDocNo(d.doc_no))) === parentTitle);
