@@ -4,9 +4,9 @@ import type { GraphData } from "./graph";
 import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
 import { abbreviateAgentName } from "@/lib/owningAgent";
 import { byDocNo } from "@/lib/docNo";
-import { normTitle } from "@/lib/cousinFiling";
-import { titleIndex } from "./cousinTitles";
+import { primeRoots, titleIndex, titleKeyer } from "./cousinTitles";
 import { instanceCousins } from "./cousinInstances";
+import { findSkeletonCousins } from "./cousinSkeleton";
 
 export interface CousinDoc {
   node: AtlasNode;
@@ -30,7 +30,7 @@ const OMNI_SHARE_MIN = 0.7;
 // Primitive"), but that subtree is numbered agent-specifically — the primitive
 // suffix-parallelism doesn't hold and these get no covering instance/invocation/
 // primitive entity, so findCousinDocs' main path misses them. Match them
-// deterministically by exact title across agents, with two guards (no allowlist):
+// deterministically by title key across agents, with two guards (no allowlist):
 //   • same true depth (uncapped doc_no segment count), and
 //   • the title is omni-specific: >= OMNI_SHARE_MIN of its atlas-wide uses are
 //     omni docs — this is what separates real omni docs from generic titles.
@@ -42,11 +42,11 @@ function findOmniCousins(
   const m = targetDoc?.doc_no.match(OMNI_RE);
   if (!targetDoc || !m) return [];
   const targetAgent = m[1];
-  const titleLc = normTitle(targetDoc.title);
-  if (!titleLc) return [];
+  const titleKey = titleKeyer(atlas.docs)(targetDoc.title);
+  if (!titleKey) return [];
   const targetSeg = targetDoc.doc_no.split(".").length;
 
-  const sameTitle = titleIndex(atlas.docs).get(titleLc) ?? [];
+  const sameTitle = titleIndex(atlas.docs).get(titleKey) ?? [];
   const global = sameTitle.length; // atlas-wide docs with this title (always >= 1: target is one)
   let omni = 0; //                    …of which are omni docs
   const byAgent = new Map<string, AtlasNode>(); // other agent → its equivalent doc
@@ -59,18 +59,32 @@ function findOmniCousins(
   }
   if (byAgent.size === 0 || omni / global < OMNI_SHARE_MIN) return [];
 
+  const label = primeLabeler(atlas, graph);
+  return [...byAgent]
+    .map(([prime, node]) => ({ node, agent: label(prime) }))
+    .sort((a, b) => byDocNo(a.node, b.node));
+}
+
+// A doc no primitive/instance/invocation entity covers: an omni doc, or the
+// artifact skeleton around the primitives.
+function uncoveredCousins(target: AtlasNode, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData): CousinDoc[] {
+  if (OMNI_RE.test(target.doc_no)) return findOmniCousins(target, atlas, graph);
+  const label = primeLabeler(atlas, graph);
+  return findSkeletonCousins(target, atlas).map(({ node, prime }) => ({ node, agent: label(prime) }));
+}
+
+// Display name of the Prime Agent whose artifact is A.6.1.1.<prime>.
+function primeLabeler(atlas: Pick<AtlasBundle, "docs">, graph: GraphData): (prime: string) => string {
   const agentName = new Map(
     graph.participants
       .filter((p) => p.et === "agent" && p.did)
       .map((p) => [p.did as string, abbreviateAgentName(p.name)]),
   );
-  const cousins: CousinDoc[] = [];
-  for (const [agentX, doc] of byAgent) {
-    const rootId = atlas.docNoToId.get(`A.6.1.1.${agentX}`);
-    const name = (rootId && agentName.get(rootId)) || (rootId && atlas.docs[rootId]?.title) || "Unknown";
-    cousins.push({ node: doc, agent: name });
-  }
-  return cousins.sort((a, b) => byDocNo(a.node, b.node));
+  const roots = primeRoots(atlas.docs);
+  return (prime) => {
+    const root = roots.get(prime);
+    return (root && (agentName.get(root.id) ?? root.title)) || "Unknown";
+  };
 }
 
 // "Cousins" of a doc: the doc that plays the same part in related instances,
@@ -93,8 +107,8 @@ export function findCousinDocs(
   let hit: { ent: GraphEntity; pool: GraphEntity[] } | undefined;
   for (let i = chain.length - 1; i >= 0 && !hit; i--) hit = byDid.get(chain[i].id);
   const target = atlas.docs[targetId];
-  // No covering primitive/instance/invocation entity → try the omni-doc path.
-  if (!hit?.ent.st || !target) return findOmniCousins(target, atlas, graph);
+  if (!target) return [];
+  if (!hit?.ent.st) return uncoveredCousins(target, atlas, graph);
 
   const agentName = new Map(
     graph.participants.filter((p) => p.et === "agent").map((p) => [p.id, abbreviateAgentName(p.name)]),

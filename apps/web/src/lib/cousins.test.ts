@@ -61,9 +61,28 @@ describe("findCousinDocs", () => {
     expect(findCousinDocs("spark-token-invo", atlas, graph)).toEqual([]);
   });
 
-  it("returns [] for docs not covered by any categorized entity", () => {
+  it("returns [] for docs outside the Prime Agent artifacts", () => {
     const { atlas, graph } = fixture();
-    expect(findCousinDocs("spark-root", atlas, graph)).toEqual([]);
+    const other = makeNode({ id: "outside", doc_no: "A.2.1", title: "Token" });
+    atlas.docs[other.id] = other;
+    atlas.docNoToId.set(other.doc_no, other.id);
+    expect(findCousinDocs(other.id, atlas, graph)).toEqual([]);
+  });
+
+  it("matches titles that differ only by the agent's name or by spacing", () => {
+    const { atlas, graph } = fixture();
+    const add = (id: string, doc_no: string, title: string) => {
+      const n = makeNode({ id, doc_no, title });
+      atlas.docs[id] = n;
+      atlas.docNoToId.set(doc_no, id);
+      return n;
+    };
+    const sparkLayer = add("s-layer", "A.6.1.1.1.2.1.3", "Spark Liquidity Layer Addresses");
+    const groveLayer = add("g-layer", "A.6.1.1.2.2.1.7", "Grove Liquidity Layer Addresses");
+    const sparkId = add("s-rlid", "A.6.1.1.1.2.1.4", "Inflow Rate Limit ID");
+    const groveId = add("g-rlid", "A.6.1.1.2.2.1.8", "Inflow RateLimitID");
+    expect(findCousinDocs(sparkLayer.id, atlas, graph)).toEqual([{ node: groveLayer, agent: "Grove" }]);
+    expect(findCousinDocs(sparkId.id, atlas, graph)).toEqual([{ node: groveId, agent: "Grove" }]);
   });
 
   it("returns [] when the entity has no agent_doc_id meta", () => {
@@ -254,5 +273,50 @@ describe("findCousinDocs — instances filed under a status heading", () => {
     const { atlas, graph } = directFixture();
     expect(findCousinDocs("k-1inch", atlas, graph).map((c) => c.node.id)).toEqual(["k-bridge", "b-1inch"]);
     expect(findCousinDocs("b-cow", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch"]);
+  });
+});
+
+// The artifact skeleton around the primitives has no covering entity; its
+// counterpart is the doc at the same place under each other prime, same title.
+describe("findCousinDocs — artifact skeleton", () => {
+  function skeletonFixture() {
+    const n = (id: string, doc_no: string, title: string) => makeNode({ id, doc_no, title });
+    const docs = [
+      n("s", "A.6.1.1.1", "Spark"), n("g", "A.6.1.1.2", "Grove"), n("k", "A.6.1.1.3", "Keel"),
+      n("s-intro", "A.6.1.1.1.1", "Introduction"), n("g-intro", "A.6.1.1.2.1", "Introduction"), n("k-intro", "A.6.1.1.3.1", "Overview"),
+      n("s-gen", "A.6.1.1.1.2.1", "Genesis Primitives"), n("g-gen", "A.6.1.1.2.2.1", "Genesis Primitives"), n("k-gen", "A.6.1.1.3.2.1", "Genesis Primitives"),
+      n("s-omni", "A.6.1.1.1.3.1", "Parameters"), n("g-omni", "A.6.1.1.2.3.1", "Parameters"),
+    ];
+    const graph = makeGraphData({
+      participants: [
+        makeGraphEntity({ id: "s", name: "Spark", et: "agent", st: "prime", did: "s" }),
+        makeGraphEntity({ id: "g", name: "Grove", et: "agent", st: "prime", did: "g" }),
+        makeGraphEntity({ id: "k", name: "Keel", et: "agent", st: "prime", did: "k" }),
+      ],
+    });
+    return { atlas: makeAtlasBundle(docs), graph };
+  }
+
+  it("pairs the same skeleton doc across primes, by position and title", () => {
+    const { atlas, graph } = skeletonFixture();
+    expect(findCousinDocs("s-gen", atlas, graph).map((c) => [c.node.id, c.agent])).toEqual([["g-gen", "Grove"], ["k-gen", "Keel"]]);
+    // Keel's doc at that place is titled differently, so it is not a counterpart.
+    expect(findCousinDocs("s-intro", atlas, graph).map((c) => c.node.id)).toEqual(["g-intro"]);
+  });
+
+  it("pairs the artifact roots, whose titles are the agents' names", () => {
+    const { atlas, graph } = skeletonFixture();
+    expect(findCousinDocs("s", atlas, graph).map((c) => c.node.id)).toEqual(["g", "k"]);
+  });
+
+  it("leaves omni docs to the omni path", () => {
+    const { atlas, graph } = skeletonFixture();
+    // A generic omni title fails the omni share guard and must not fall back to position.
+    for (let i = 0; i < 4; i++) {
+      const o = makeNode({ id: `o${i}`, doc_no: `A.2.${i}`, title: "Parameters" });
+      atlas.docs[o.id] = o;
+      atlas.docNoToId.set(o.doc_no, o.id);
+    }
+    expect(findCousinDocs("s-omni", atlas, graph)).toEqual([]);
   });
 });
