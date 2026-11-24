@@ -15,6 +15,7 @@ const spellMaterial = vi.fn();
 const atlasRetiredAddresses = vi.fn();
 const atlasKeysByPrime = vi.fn((..._args: unknown[]) => new Map([["p", ["0xk"]]]));
 const pauAtlasInputs = vi.fn();
+const atlasContexts = vi.fn((..._args: unknown[]) => new Map([["p", { addresses: ["0xa"], instances: [] }]]));
 vi.mock("../src/server/config.ts", () => ({ config: { pauEventBudgetSeconds: 30, pauRefreshSeconds: 3600 } }));
 vi.mock("../src/server/pau/sync-events.ts", () => ({ syncPauEvents }));
 vi.mock("../src/server/pau/store.ts", () => ({ maybeRefreshPauState }));
@@ -24,6 +25,7 @@ vi.mock("../scripts/lib/log-sources.ts", () => ({ logSourcesFor: () => [] }));
 vi.mock("../src/server/pau/handover.ts", () => ({ crawlOwnedChains: async () => new Set(["base"]) }));
 vi.mock("../src/server/pau/diamond-derive.ts", () => ({ keyNamer }));
 vi.mock("../src/server/pau/probe.ts", () => ({ atlasKeysByPrime }));
+vi.mock("../src/server/pau/key-context.ts", () => ({ atlasContexts }));
 vi.mock("../src/server/pau/spell-sources.ts", () => ({ spellMaterial }));
 vi.mock("../src/server/pau/retired-addresses.ts", () => ({ atlasRetiredAddresses }));
 // A public/ that holds neither artifact, whatever the checkout has built.
@@ -35,14 +37,15 @@ const { default: pau } = await import("../scripts/lib/worker-steps/pau.mjs");
 const db = {};
 const empty = { names: [], addresses: [], words: [], spells: [] };
 
-type Sources = { retired: () => Map<string, unknown>; material: unknown };
+type Sources = { retired: () => Map<string, unknown>; material: unknown; context: () => Promise<Map<string, unknown>> };
 type Opts = { refreshSeconds: number; nameKeys: (...a: unknown[]) => Promise<unknown>; atlasKeys: () => Promise<Map<string, string[]>> };
 const sourcesGiven = () => keyNamer.mock.calls.at(-1)![2] as Sources;
 
-/** Published copies of both artifacts, as pauAtlasInputs writes them. */
+/** Published copies of the artifacts a rebuild reads, as pauAtlasInputs writes them. */
 function published() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pau-step-"));
-  const paths = { "graph.json": path.join(dir, "graph.json"), "addresses.atlas.json": path.join(dir, "addresses.atlas.json") };
+  const names = ["graph.json", "addresses.atlas.json", "docs-shallow.json", "docs-deep.json"] as const;
+  const paths = Object.fromEntries(names.map((n) => [n, path.join(dir, n)])) as Record<(typeof names)[number], string>;
   for (const p of Object.values(paths)) fs.writeFileSync(p, "{}");
   return paths;
 }
@@ -98,6 +101,34 @@ describe("pau step", () => {
     expect(await maybeRefreshPauState.mock.results[0].value).toMatchObject({ keys: new Map([["p", ["0xk"]]]) });
     expect(keyNamer).toHaveBeenCalledTimes(1);
     expect(keyNamer.mock.calls[0][0]).toEqual([paths["addresses.atlas.json"], "public/addresses.json"]);
+  });
+
+  it("gives the namer each prime's atlas context, read from the published graph and docs for the registry's primes", async () => {
+    const paths = published();
+    pauAtlasInputs.mockResolvedValueOnce(paths);
+    spellMaterial.mockResolvedValueOnce(empty);
+    rebuild({ refreshed: 2, removed: 0, reason: "due" });
+    await pau.run({ db, warn: vi.fn() });
+    expect(await sourcesGiven().context()).toEqual(new Map([["p", { addresses: ["0xa"], instances: [] }]]));
+    const [graph, docs, primes] = atlasContexts.mock.calls[0] as [string, string[], string[]];
+    expect([graph, docs]).toEqual([paths["graph.json"], [paths["docs-shallow.json"], paths["docs-deep.json"]]]);
+    expect(primes.length).toBeGreaterThan(0);
+    expect(primes.every((p) => typeof p === "string")).toBe(true);
+  });
+
+  it("leaves two-address keys to the snapshot's and the spells' pairs when the atlas context cannot be read, warning once", async () => {
+    pauAtlasInputs.mockResolvedValueOnce(published());
+    spellMaterial.mockResolvedValueOnce(empty);
+    atlasContexts.mockImplementationOnce(() => {
+      throw new Error("Unexpected end of JSON input");
+    });
+    rebuild({ refreshed: 1, removed: 0, reason: "due" });
+    const warn = vi.fn();
+    await pau.run({ db, warn });
+    expect(await sourcesGiven().context()).toEqual(new Map());
+    expect(warn.mock.calls.map((c) => c[0])).toEqual([
+      "atlas-worker: pau atlas context not read, two-address keys get only the snapshot's and the spells' pairs: Unexpected end of JSON input",
+    ]);
   });
 
   it("fetches nothing when no rebuild is due", async () => {
