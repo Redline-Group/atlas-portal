@@ -51,7 +51,7 @@ import {
   extractExpectedTokens,
   isPlausibleName,
 } from "../lib/address-annotate.mjs";
-import { icdLabelRank, icdParamAddress, icdParamChain, icdParamLabel, icdParamRole } from "../lib/graph-icd-params.ts";
+import { icdEdgeChain, icdLabelRank, icdParamAddress, icdParamChain, icdParamLabel, icdParamRole, mergeIcdAnnotation } from "../lib/graph-icd-params.ts";
 import { codeUnitCompare } from "../lib/natural-sort.mjs";
 import { gitHead, stampAtlasCommit } from "../lib/atlas-commit.mjs";
 
@@ -230,7 +230,7 @@ console.log(`  ${edges.length} total edges`);
 // prose-heuristic results from build-index.
 // ---------------------------------------------------------------------------
 
-const icdAnnotations = new Map(); // lowercase addr → { roles, entityLabel, chain }
+const icdAnnotations = new Map(); // lowercase addr → IcdAnnotation (graph-icd-params.ts)
 // IB partner names and agent token symbols — collected for Phase 4.5 logging.
 const ibPartnerNames = new Set();
 // (partnerName, instance entity, param-leaf doc_no) triples — consumed by the
@@ -269,21 +269,12 @@ for (const ent of entityMap.values()) {
     const [value, , srcDocNo] = tuple;
     const hit = icdParamAddress(key, value);
     if (!hit) continue;
-    const role = icdParamRole(key);
     const { addr, isSol } = hit;
+    // Nullable, unlike the edge's chain: Phase 4.5a writes it over the chain build-index detected.
     const namedChain = isSol ? "solana" : icdParamChain(key, params);
-    const chain = namedChain ?? "ethereum";
+    const chain = icdEdgeChain(hit, key, params);
     const label = icdParamLabel(key, params, agentName, ent.name);
-
-    const rank = icdLabelRank(key);
-    if (!icdAnnotations.has(addr)) {
-      icdAnnotations.set(addr, { roles: [role], entityLabel: label, chain: namedChain, rank });
-    } else {
-      const existing = icdAnnotations.get(addr);
-      if (!existing.roles.includes(role)) existing.roles.push(role);
-      existing.chain ??= namedChain;
-      if (rank < existing.rank) Object.assign(existing, { entityLabel: label, rank });
-    }
+    mergeIcdAnnotation(icdAnnotations, addr, { role: icdParamRole(key), label, chain: namedChain, rank: icdLabelRank(key) });
 
     edges.push({
       fromId: ent.id,

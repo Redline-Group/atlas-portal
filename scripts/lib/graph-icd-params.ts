@@ -88,32 +88,61 @@ export function icdParamLabel(key: string, params: Params, agentName: string | n
   return instanceName;
 }
 
+type Hit = { addr: string; isSol: boolean };
+
 /** An ICD param holding one address under a role key: the address and whether it is a Solana one. */
-export function icdParamAddress(key: string, value: string): { addr: string; isSol: boolean } | null {
+export function icdParamAddress(key: string, value: string): Hit | null {
   if (!icdParamRole(key)) return null;
   const isEvm = ETH_ADDR_EXACT_RE.test(value);
   const isSol = !isEvm && SOL_ADDR_EXACT_RE.test(value);
   return isEvm || isSol ? { addr: normalizeAddress(value), isSol } : null;
 }
 
+/** The chain of a param's has_address node: the one the ICD names, else ethereum. The mentions edge from the param's doc lands on the same node. */
+export const icdEdgeChain = (hit: Hit, key: string, params: Params) => (hit.isSol ? "solana" : (icdParamChain(key, params) ?? "ethereum"));
+
+export interface IcdAnnotation {
+  roles: string[];
+  entityLabel: string;
+  rank: number;
+  chain: string | null;
+  chainRank: number;
+}
+
+/**
+ * Folds one param into its address's annotation. The label comes from the
+ * best-ranked key (icdLabelRank) and the chain from the best-ranked key that
+ * names one, the first of equals in each, so instance order decides neither.
+ */
+export function mergeIcdAnnotation(into: Map<string, IcdAnnotation>, addr: string, p: { role: string; label: string; chain: string | null; rank: number }) {
+  const ann = into.get(addr);
+  if (!ann) return void into.set(addr, { roles: [p.role], entityLabel: p.label, rank: p.rank, chain: p.chain, chainRank: p.chain ? p.rank : Infinity });
+  if (!ann.roles.includes(p.role)) ann.roles.push(p.role);
+  if (p.rank < ann.rank) Object.assign(ann, { entityLabel: p.label, rank: p.rank });
+  if (p.chain && p.rank < ann.chainRank) Object.assign(ann, { chain: p.chain, chainRank: p.rank });
+}
+
 type Entity = { entity_type: string; meta?: string | null };
 
-/** For each ICD param doc (by doc_no), the chain the ICD states for each address it holds; an address whose ICD names no chain is left out. */
-export function icdStatedChains(entities: Iterable<Entity>): Map<string, Map<string, string>> {
-  const out = new Map<string, Map<string, string>>();
+function paramsOf(ent: Entity): Params | null {
+  if (ent.entity_type !== "instance" && ent.entity_type !== "invocation") return null;
+  try {
+    return (JSON.parse(ent.meta ?? "{}") as { params?: Params }).params ?? {};
+  } catch {
+    return null;
+  }
+}
+
+/** For each ICD param doc (by doc_no), the chains of the has_address nodes its params point each address at (icdEdgeChain); an Agent Token leaf expanded per chain holds several. */
+export function icdStatedChains(entities: Iterable<Entity>): Map<string, Map<string, Set<string>>> {
+  const out = new Map<string, Map<string, Set<string>>>();
   for (const ent of entities) {
-    if (ent.entity_type !== "instance" && ent.entity_type !== "invocation") continue;
-    let params: Params;
-    try {
-      params = (JSON.parse(ent.meta ?? "{}") as { params?: Params }).params ?? {};
-    } catch {
-      continue;
-    }
-    for (const [key, [value, , srcDocNo]] of Object.entries(params)) {
+    const params = paramsOf(ent);
+    for (const [key, [value, , srcDocNo]] of Object.entries(params ?? {})) {
       const hit = icdParamAddress(key, value);
-      const chain = hit && (hit.isSol ? "solana" : icdParamChain(key, params));
-      if (!hit || !chain || typeof srcDocNo !== "string") continue;
-      out.set(srcDocNo, (out.get(srcDocNo) ?? new Map()).set(hit.addr, chain));
+      if (!hit || typeof srcDocNo !== "string") continue;
+      const byAddr = out.get(srcDocNo) ?? out.set(srcDocNo, new Map()).get(srcDocNo)!;
+      byAddr.set(hit.addr, (byAddr.get(hit.addr) ?? new Set()).add(icdEdgeChain(hit, key, params!)));
     }
   }
   return out;
