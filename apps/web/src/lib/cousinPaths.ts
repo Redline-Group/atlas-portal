@@ -12,6 +12,9 @@ const CHAIN_WORDS = new Set([
   "instances",
 ]);
 
+/** A word of some chain's name ("ethereum", "mainnet", "base", "chain"). */
+export const isChainWord = (word: string): boolean => CHAIN_WORDS.has(word.toLowerCase());
+
 /** A heading that only names a chain: "Base", "Robinhood Chain", "Ethereum Mainnet Instances". */
 export const isChainHeading = (title: string): boolean => {
   const words = title.trim().toLowerCase().split(/\s+/);

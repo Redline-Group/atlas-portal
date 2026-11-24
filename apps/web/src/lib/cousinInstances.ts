@@ -1,9 +1,10 @@
 import type { AtlasNode, GraphEntity } from "@/types";
 import type { AtlasBundle } from "@/lib/docsTypes";
-import { headingTitles, icdFiling, normTitle, type IcdFiling } from "@/lib/cousinFiling";
+import { headingTitles, icdFiling, type IcdFiling } from "@/lib/cousinFiling";
 import { parseMeta } from "@/lib/meta";
-import { equivalentDoc, insideIcdBelow, titleAt } from "./cousinTitles";
+import { equivalentDoc, insideIcdBelow, titleAt, titleWords } from "./cousinTitles";
 import { MAX_COUSINS, rankCousins } from "./cousinRank";
+import { isChainWord } from "./cousinPaths";
 
 type Atlas = Pick<AtlasBundle, "docs" | "docNoToId">;
 
@@ -36,13 +37,21 @@ function isMultiInstance(pool: GraphEntity[], st: string): boolean {
   return false;
 }
 
+// Words that say what an instance is: its name past any "<Chain> - " prefix,
+// without filler, chain names or the agent mark.
+const FILLER = new Set(["#", "app", "protocol", "the", "and", "of", "for", "via"]);
+const kindWords = (atlas: Atlas, name: string) =>
+  [...titleWords(atlas.docs, name.slice(name.indexOf(" - ") + 1))].filter((w) => w.length > 2 && !FILLER.has(w) && !isChainWord(w));
+
 // Instances of a multi-instance primitive are cousins when they sit at the same
-// venue, are filed side by side under one prime's status headings, or (failing
-// both) carry the same instance name, as "1inch" does under Keel and Skybase.
-function sameKind(a: { ent: GraphEntity; filing: IcdFiling }, b: { ent: GraphEntity; filing: IcdFiling }, own: boolean): boolean {
+// venue; failing that (instances filed straight under a status heading, one per
+// integrator) when their names share a word that says what they are, so "1inch"
+// meets "1inch" and "Sky.money App" meets "Sky.money Open Source Widgets", but
+// "Solana Bridge" meets only another bridge. `pool` already holds one primitive.
+function sameKind(atlas: Atlas, a: { ent: GraphEntity; filing: IcdFiling }, b: { ent: GraphEntity; filing: IcdFiling }): boolean {
   if (a.filing.kind === "venue" && b.filing.kind === "venue") return a.filing.venue === b.filing.venue;
-  if (own && a.filing.kind === "direct" && b.filing.kind === "direct") return true;
-  return normTitle(a.ent.name) === normTitle(b.ent.name);
+  const words = new Set(kindWords(atlas, a.ent.name));
+  return kindWords(atlas, b.ent.name).some((w) => words.has(w));
 }
 
 /**
@@ -64,7 +73,7 @@ export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntit
     if (ent === hit || ent.st !== hit.st || !otherAgent || !root) continue;
     const own = otherAgent === agentDocId;
     const other = { ent, filing: filingOf(atlas, ent) };
-    if (multi ? !sameKind(self, other, own) : own) continue;
+    if (multi ? !sameKind(atlas, self, other) : own) continue;
     // A primitive's subtree holds its instances' ICDs, whose docs are another cover's.
     const accept = hit.et === "primitive" ? (d: AtlasNode) => !insideIcdBelow(atlas, d, root) : undefined;
     const node = equivalentDoc(atlas, target, relSuffix, root, accept);

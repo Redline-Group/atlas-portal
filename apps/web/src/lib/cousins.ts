@@ -8,6 +8,7 @@ import { instanceCousins } from "./cousinInstances";
 import { findSkeletonCousins } from "./cousinSkeleton";
 import { MAX_COUSINS, rankCousins } from "./cousinRank";
 import { isIcdLocation, locationCousins } from "./cousinLocations";
+import { inTargetCategory } from "./cousinCategory";
 
 export interface CousinDoc {
   node: AtlasNode;
@@ -111,7 +112,8 @@ function primeLabeler(atlas: Pick<AtlasBundle, "docs">, graph: GraphData): (prim
 // primitive slug (st) and owning agent; a doc inside an instance subtree
 // resolves to its covering entity via the doc_no ancestor chain (raw parentId
 // is flattened at the depth-6 heading cap — see instanceDescendants.ts). The
-// matching itself is in cousinInstances.ts.
+// matching itself is in cousinInstances.ts; whatever the path, a cousin stays in
+// the target's primitive category (cousinCategory.ts).
 export function findCousinDocs(
   targetId: string,
   atlas: Pick<AtlasBundle, "docs" | "docNoToId">,
@@ -119,7 +121,11 @@ export function findCousinDocs(
   limit = MAX_COUSINS,
 ): CousinDoc[] {
   const target = atlas.docs[targetId];
-  if (!target) return [];
+  return target ? inTargetCategory(atlas, graph, target, matchCousins(target, atlas, graph, limit)) : [];
+}
+
+function matchCousins(target: AtlasNode, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData, limit: number): CousinDoc[] {
+  const targetId = target.id;
   if (isIcdLocation(atlas, target)) return locationCousins(atlas, target, (id) => findCousinDocs(id, atlas, graph, Infinity));
   const hit = coveringEntity(targetId, atlas, graph);
   if (!hit?.ent.st) return uncoveredCousins(target, atlas, graph);

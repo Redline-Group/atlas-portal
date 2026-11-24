@@ -225,7 +225,7 @@ describe("findCousinDocs — multi-instance primitives", () => {
     expect(findCousinDocs(sVault.id, atlas, graph).map((c) => c.node.id)).toEqual([sVault2.id, "g-v1", "g-old"]);
   });
 
-  it("files a regrouped ICD narrowly: an unrecognised filing matches by instance name only", () => {
+  it("files a regrouped ICD narrowly: an unrecognised filing matches by instance name, not venue", () => {
     const { atlas, graph, sOwner } = venueFixture();
     // The Morpho heading disappears: Spark's vault now sits straight under a chain heading.
     atlas.docs["s-morpho"] = { ...atlas.docs["s-morpho"], title: "Ethereum Mainnet" };
@@ -300,11 +300,12 @@ describe("findCousinDocs — instances filed under a status heading", () => {
     return { atlas: makeAtlasBundle(docs), graph };
   }
 
-  it("links the prime's own siblings and other primes' same-named instance, but not their other instances", () => {
+  it("links instances whose names say they are the same kind, in any prime, and no others", () => {
     const { atlas, graph } = directFixture();
-    // Skybase's 1inch shares the name, so it outranks Keel's own differently named sibling.
-    expect(findCousinDocs("k-1inch", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch", "k-bridge"]);
-    expect(findCousinDocs("b-cow", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch"]);
+    // Keel's Solana Bridge is a sibling of its 1inch, but not the same kind of thing.
+    expect(findCousinDocs("k-1inch", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch"]);
+    expect(findCousinDocs("k-bridge", atlas, graph)).toEqual([]);
+    expect(findCousinDocs("b-cow", atlas, graph)).toEqual([]);
   });
 });
 
@@ -376,5 +377,36 @@ describe("findCousinDocs — primitive-level docs", () => {
     const atlas = makeAtlasBundle(docs);
     expect(findCousinDocs("s-proc", atlas, graph)).toEqual([]);
     expect(findCousinDocs("s-hub", atlas, graph).map((c) => c.node.id)).toEqual(["g-hub"]);
+  });
+});
+
+describe("findCousinDocs — the primitive-category rule", () => {
+  it("pairs a bridge with a bridge, and keeps every cousin inside the target's primitive category", () => {
+    const n = (id: string, doc_no: string, title: string) => makeNode({ id, doc_no, title });
+    const docs = [
+      n("k", "A.6.1.1.3", "Keel"), n("b", "A.6.1.1.4", "Skybase"),
+      n("k-cat", "A.6.1.1.3.2.5", "Demand Side Stablecoin Primitives"), n("b-cat", "A.6.1.1.4.2.5", "Demand Side Stablecoin Primitives"),
+      n("b-cat2", "A.6.1.1.4.2.2", "Operational Primitives"),
+      n("k-act", "A.6.1.1.3.2.5.1.2", "Active Instances"), n("b-act", "A.6.1.1.4.2.5.1.2", "Active Instances"),
+      n("b-act2", "A.6.1.1.4.2.2.1.2", "Active Instances"),
+      n("k-bridge", "A.6.1.1.3.2.5.1.2.1", "Solana Bridge Instance Configuration Document"),
+      n("k-1inch", "A.6.1.1.3.2.5.1.2.2", "1inch Instance Configuration Document"),
+      n("b-bridge", "A.6.1.1.4.2.5.1.2.1", "Base Bridge Instance Configuration Document"),
+      // Same slug, but filed under another category: never a cousin.
+      n("b-stray", "A.6.1.1.4.2.2.1.2.1", "Stray Bridge Instance Configuration Document"),
+    ];
+    const inst = (id: string, name: string, did: string, agent: string, category: string) =>
+      makeGraphEntity({ id, name, st: "distribution-reward", did, m: JSON.stringify({ agent_doc_id: agent, primitive_category_doc_id: category }) });
+    const graph = makeGraphData({
+      participants: [
+        makeGraphEntity({ id: "k", name: "Keel", et: "agent", st: "prime", did: "k" }),
+        makeGraphEntity({ id: "b", name: "Skybase", et: "agent", st: "prime", did: "b" }),
+      ],
+      instances: [
+        inst("1", "Solana Bridge", "k-bridge", "k", "k-cat"), inst("2", "1inch", "k-1inch", "k", "k-cat"),
+        inst("3", "Base Bridge", "b-bridge", "b", "b-cat"), inst("4", "Stray Bridge", "b-stray", "b", "b-cat2"),
+      ],
+    });
+    expect(findCousinDocs("k-bridge", makeAtlasBundle(docs), graph).map((c) => c.node.id)).toEqual(["b-bridge"]);
   });
 });

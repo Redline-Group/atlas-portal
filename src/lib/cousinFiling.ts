@@ -6,8 +6,8 @@
 //   direct:  <status directory> › ICD                       (most primitives)
 //   venue:   <status directory> › <chain> › <venue> › ICD   (Allocation System)
 //
-// Anything else is "unknown", which cousin matching treats narrowly (same
-// instance name only) so a regrouping upstream shrinks the list, never widens it.
+// Anything else is "unknown", which cousin matching treats narrowly (by the
+// instance's name, never its venue) so a regrouping upstream shrinks the list.
 
 export type IcdFiling =
   | { kind: "direct"; completed: boolean }
