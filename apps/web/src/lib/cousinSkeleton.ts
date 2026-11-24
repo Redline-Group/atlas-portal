@@ -1,6 +1,5 @@
 import type { AtlasNode } from "@/types";
 import type { AtlasBundle } from "@/lib/docsTypes";
-import { byDocNo } from "@/lib/docNo";
 import { primeRoots, titleKeyer } from "./cousinTitles";
 
 type Atlas = Pick<AtlasBundle, "docs" | "docNoToId">;
@@ -28,5 +27,5 @@ export function findSkeletonCousins(target: AtlasNode, atlas: Atlas): { node: At
     const node = id ? atlas.docs[id] : undefined;
     if (node && key(node.title) === title) out.push({ node, prime });
   }
-  return out.sort((a, b) => byDocNo(a.node, b.node));
+  return out;
 }

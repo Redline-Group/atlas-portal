@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { findCousinDocs } from "./cousins";
 import { makeNode, makeAtlasBundle, makeGraphEntity, makeGraphData } from "../test/fixtures";
-import { MAX_COUSINS } from "./cousinInstances";
+import { MAX_COUSINS } from "./cousinRank";
 
 // Two primes (Spark, Grove) each with a token instance; Grove also has an
 // unrelated executor-accord instance and Spark a token *invocation* — neither
@@ -271,7 +271,8 @@ describe("findCousinDocs — instances filed under a status heading", () => {
 
   it("links the prime's own siblings and other primes' same-named instance, but not their other instances", () => {
     const { atlas, graph } = directFixture();
-    expect(findCousinDocs("k-1inch", atlas, graph).map((c) => c.node.id)).toEqual(["k-bridge", "b-1inch"]);
+    // Skybase's 1inch shares the name, so it outranks Keel's own differently named sibling.
+    expect(findCousinDocs("k-1inch", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch", "k-bridge"]);
     expect(findCousinDocs("b-cow", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch"]);
   });
 });

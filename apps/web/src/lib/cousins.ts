@@ -3,10 +3,10 @@ import type { AtlasBundle } from "@/lib/docsTypes";
 import type { GraphData } from "./graph";
 import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
 import { abbreviateAgentName } from "@/lib/owningAgent";
-import { byDocNo } from "@/lib/docNo";
 import { primeRoots, titleIndex, titleKeyer } from "./cousinTitles";
 import { instanceCousins } from "./cousinInstances";
 import { findSkeletonCousins } from "./cousinSkeleton";
+import { rankCousins } from "./cousinRank";
 
 export interface CousinDoc {
   node: AtlasNode;
@@ -59,18 +59,21 @@ function findOmniCousins(
   }
   if (byAgent.size === 0 || omni / global < OMNI_SHARE_MIN) return [];
 
-  const label = primeLabeler(atlas, graph);
-  return [...byAgent]
-    .map(([prime, node]) => ({ node, agent: label(prime) }))
-    .sort((a, b) => byDocNo(a.node, b.node));
+  return labelled(atlas, graph, targetDoc, [...byAgent].map(([prime, node]) => ({ node, prime })));
 }
 
 // A doc no primitive/instance/invocation entity covers: an omni doc, or the
 // artifact skeleton around the primitives.
 function uncoveredCousins(target: AtlasNode, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData): CousinDoc[] {
   if (OMNI_RE.test(target.doc_no)) return findOmniCousins(target, atlas, graph);
+  return labelled(atlas, graph, target, findSkeletonCousins(target, atlas));
+}
+
+// Ranks other-prime cousins found by prime number and names each one's agent.
+function labelled(atlas: Pick<AtlasBundle, "docs">, graph: GraphData, target: AtlasNode, found: { node: AtlasNode; prime: string }[]): CousinDoc[] {
   const label = primeLabeler(atlas, graph);
-  return findSkeletonCousins(target, atlas).map(({ node, prime }) => ({ node, agent: label(prime) }));
+  const ranked = rankCousins(atlas.docs, target, found.map((f) => ({ ...f, own: false, completed: false })));
+  return ranked.map(({ node, prime }) => ({ node, agent: label(prime) }));
 }
 
 // Display name of the Prime Agent whose artifact is A.6.1.1.<prime>.

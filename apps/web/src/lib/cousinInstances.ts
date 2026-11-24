@@ -2,8 +2,8 @@ import type { AtlasNode, GraphEntity } from "@/types";
 import type { AtlasBundle } from "@/lib/docsTypes";
 import { headingTitles, icdFiling, normTitle, type IcdFiling } from "@/lib/cousinFiling";
 import { parseMeta } from "@/lib/meta";
-import { byDocNo } from "@/lib/docNo";
 import { equivalentDoc, titleAt } from "./cousinTitles";
+import { rankCousins } from "./cousinRank";
 
 type Atlas = Pick<AtlasBundle, "docs" | "docNoToId">;
 
@@ -13,8 +13,6 @@ export interface CousinMatch {
   own: boolean;
   completed: boolean;
 }
-
-export const MAX_COUSINS = 16;
 
 export const agentOf = (e: GraphEntity) => parseMeta<{ agent_doc_id?: string | null }>(e.m)?.agent_doc_id ?? undefined;
 
@@ -49,8 +47,8 @@ function sameKind(a: { ent: GraphEntity; filing: IcdFiling }, b: { ent: GraphEnt
 
 /**
  * Cousins of `target`, which `hit` covers: same primitive and pool, matched as
- * above when the primitive is multi-instance, else one per other prime. Same
- * status as the target ranks first, then the target's own prime, capped.
+ * above when the primitive is multi-instance, else one per other prime; ranked
+ * and capped by cousinRank.ts.
  */
 export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntity, pool: GraphEntity[]): CousinMatch[] {
   const agentDocId = agentOf(hit);
@@ -70,12 +68,5 @@ export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntit
     const node = equivalentDoc(atlas, target, relSuffix, root);
     if (node) out.push({ node, agentDocId: otherAgent, own, completed: other.filing.completed });
   }
-  return rank(out, self.filing.completed);
-}
-
-function rank(matches: CousinMatch[], targetCompleted: boolean): CousinMatch[] {
-  const sameStatus = (m: CousinMatch) => Number(m.completed === targetCompleted);
-  return matches
-    .sort((a, b) => sameStatus(b) - sameStatus(a) || Number(b.own) - Number(a.own) || byDocNo(a.node, b.node))
-    .slice(0, MAX_COUSINS);
+  return rankCousins(atlas.docs, target, out, self.filing.completed);
 }
