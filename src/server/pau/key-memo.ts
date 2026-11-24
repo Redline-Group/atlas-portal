@@ -35,3 +35,14 @@ export function settledKeys(prev: PauSnapshot | undefined, inputs: string, keep:
   }
   return (key) => out.get(key.toLowerCase());
 }
+
+type Settled = (key: string) => DerivedKey | null | undefined;
+
+/** A snapshot's keys an earlier one did not settle. */
+export const unsettled = (snap: PauSnapshot, settled?: Settled) => allLimits(snap).map((r) => r.key).filter((k) => settled?.(k) === undefined);
+
+/** What an earlier snapshot settled, else `derive`. */
+export const settledFirst = (settled: Settled | undefined, derive: (key: string) => DerivedKey | null) => (key: string) => {
+  const s = settled?.(key);
+  return s === undefined ? derive(key) : s;
+};

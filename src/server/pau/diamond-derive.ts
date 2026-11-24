@@ -10,14 +10,15 @@
 // together (key-context.ts).
 import chainRegistry from "../../data/chain-registry.json";
 import type { DerivedKey, PauParam, PauSnapshot, RetiredAddress } from "../../lib/pau.ts";
-import { DIAMOND_INPUTS, namingInputs, settledKeys } from "./key-memo.ts";
-import { candidateAddresses, deriveKeys, isPairShape, limitConstants, monolithicShapes, type Candidates, type KeyShape } from "./key-derive.ts";
+import { DIAMOND_INPUTS, settledFirst, settledKeys, unsettled } from "./key-memo.ts";
+import { candidateAddresses, deriveKeys, type KeyShape } from "./key-derive.ts";
 import { contextPairs, snapshotAddresses } from "./key-context.ts";
+import { monolithicNamer } from "./mono-namer.ts";
 import { withRetiredKeys } from "./retired-addresses.ts";
 import { cachedSourceMaterial, mergeMaterial, type SourceMaterial } from "./source-material.ts";
 import { facetShapesAt, type FacetShape } from "./facet-source.ts";
 import { facetKeyRule, HOOKS, type FacetHook } from "./facet-keys.ts";
-import { allLimits, withDerivedKeys, type ChainReader } from "./snapshot.ts";
+import { withDerivedKeys, type ChainReader } from "./snapshot.ts";
 
 /** Adds what can be named to a snapshot's rate-limit keys; `prev` is the deployment's stored snapshot, whose settled keys are reused. */
 export type KeyNamer = ((snap: PauSnapshot, read: ChainReader, prev?: PauSnapshot) => Promise<PauSnapshot>) & {
@@ -25,7 +26,6 @@ export type KeyNamer = ((snap: PauSnapshot, read: ChainReader, prev?: PauSnapsho
   prepare?: (keys: string[]) => void;
 };
 
-type Derive = (key: string) => DerivedKey | null;
 
 /** Role → address, for one subject a hook read. */
 type Bound = Record<string, string>;
@@ -66,10 +66,6 @@ export interface DiamondSources {
   settled?: (key: string) => DerivedKey | null | undefined;
 }
 
-/** The keys of a snapshot an earlier one did not settle. */
-const unsettled = (snap: PauSnapshot, settled?: (key: string) => DerivedKey | null | undefined) =>
-  allLimits(snap).map((r) => r.key).filter((k) => settled?.(k) === undefined);
-
 /**
  * A diamond snapshot with each key a facet it integrates derives named. With
  * no shape to hash (no cached or parsable facet source), what an earlier
@@ -85,11 +81,6 @@ export async function withDiamondKeys(snap: PauSnapshot, read: ChainReader, src:
   return withDerivedKeys(snap, settledFirst(src.settled, (key) => found.get(key.toLowerCase()) ?? null));
 }
 
-const settledFirst = (settled: DiamondSources["settled"], derive: Derive) => (key: string) => {
-  const s = settled?.(key);
-  return s === undefined ? derive(key) : s;
-};
-
 const CHAIN_ID = new Map(chainRegistry.chains.map((c) => [c.chain, c.chainId]));
 
 /** The key shapes of each facet's cached source; a source the parser refuses gives none, warned once. */
@@ -103,27 +94,6 @@ function facetShapes(dir: string): DiamondSources["shapesOf"] {
       unparsed.add(facet);
       return [];
     }
-  };
-}
-
-/** The monolithic shapes over the cached ABIs' constants and the material's names: the linear ones every deployment shares, and the two-address ones its own pairs feed. */
-function monolithicShapeSets(dir: string, material: SourceMaterial) {
-  const constants = [...new Set([...limitConstants(dir), ...material.names])];
-  const shapes = constants.flatMap(monolithicShapes);
-  return { constants, linear: shapes.filter((s) => !isPairShape(s)), paired: shapes.filter(isPairShape) };
-}
-
-type MonoSets = ReturnType<typeof monolithicShapeSets> & { scan: (keys: string[]) => Derive };
-
-/** `shapes` hashed once for every key asked so far; a key first asked later is searched for with the others asked then. */
-function sharedScan(shapes: KeyShape[], candidates: Candidates): (keys: string[]) => Derive {
-  const found = new Map<string, DerivedKey>();
-  const searched = new Set<string>();
-  return (keys) => {
-    const todo = [...new Set(keys.map((k) => k.toLowerCase()))].filter((k) => !searched.has(k));
-    if (todo.length) for (const [k, d] of deriveKeys(shapes, candidates, todo)) found.set(k, d);
-    for (const k of todo) searched.add(k);
-    return (key) => found.get(key.toLowerCase()) ?? null;
   };
 }
 
@@ -158,40 +128,24 @@ export function keyNamer(addressFiles: string[], extra: unknown, { dir = ".cache
   let retired: Map<string, RetiredAddress> | undefined;
   let material: SourceMaterial | undefined;
   let primes: Promise<Map<string, string[]>> | undefined;
-  let mono: MonoSets | undefined;
-  const known: string[] = [];
   const gone = () => (retired ??= sources.retired?.() ?? new Map());
   const sourced = () => (material ??= mergeMaterial([cachedSourceMaterial(dir), ...(sources.material ? [sources.material] : [])]));
   const all = () => (addresses ??= [...candidateAddresses(addressFiles, extra), ...sourced().addresses, ...gone().keys()]);
-  const pairsOf = async (snap: PauSnapshot) => contextPairs([...((await (primes ??= sources.context?.() ?? Promise.resolve(new Map()))).get(snap.prime) ?? []), ...snapshotAddresses(snap)], sourced().pairs);
-  const monoSets = (): MonoSets => {
-    if (mono) return mono;
-    const sets = monolithicShapeSets(dir, sourced());
-    return (mono = { ...sets, scan: sharedScan(sets.linear, { addresses: all(), words: sourced().words }) });
-  };
+  const stated = async (prime: string) => (await (primes ??= sources.context?.() ?? Promise.resolve(new Map()))).get(prime) ?? [];
+  const mono = monolithicNamer(dir, sourced, all);
   const shapesOf = facetShapes(dir);
   const namer: KeyNamer = async (snap, read, prev) => {
-    const pairs = await pairsOf(snap);
-    if (snap.kind === "diamond") {
-      const facets = new Set(integratedFacets(snap));
-      const settled = settledKeys(prev, DIAMOND_INPUTS, (d) => !!d.facet && facets.has(d.facet.toLowerCase()));
-      return withRetiredKeys({ ...(await withDiamondKeys(snap, read, { addresses: all(), pairs, shapesOf, settled })), keysNamedWith: DIAMOND_INPUTS }, gone());
-    }
-    const m = monoSets();
-    const inputs = namingInputs(m.constants, all(), sourced().words, pairs);
-    const settled = settledKeys(prev, inputs, (d) => !d.facet);
-    const named = withDerivedKeys(snap, settledFirst(settled, monolithicDerive(m, known, pairs, unsettled(snap, settled))));
-    return withRetiredKeys({ ...named, keysNamedWith: inputs }, gone());
+    const pairs = contextPairs([...(await stated(snap.prime)), ...snapshotAddresses(snap)], sourced().pairs);
+    const named = snap.kind === "diamond" ? await diamondNamed(snap, read, prev, { addresses: all(), pairs, shapesOf }) : mono.name(snap, prev, pairs);
+    return withRetiredKeys(named, gone());
   };
-  namer.prepare = (keys) => void known.push(...keys);
+  namer.prepare = mono.prepare;
   return namer;
 }
 
-/** A monolithic snapshot's unsettled keys: the shared scan (run once for every key the refresh knows), then the deployment's own pairs. */
-function monolithicDerive(m: MonoSets, known: string[], pairs: string[][], todo: string[]): Derive {
-  if (!todo.length) return () => null;
-  const linear = m.scan([...known, ...todo]);
-  const rest = todo.filter((k) => !linear(k));
-  const paired = rest.length ? deriveKeys(m.paired, { addresses: [], words: [], pairs }, rest) : new Map<string, DerivedKey>();
-  return (key) => linear(key) ?? paired.get(key.toLowerCase()) ?? null;
+/** A diamond reuses only a derivation from a facet it still integrates, and never a miss. */
+async function diamondNamed(snap: PauSnapshot, read: ChainReader, prev: PauSnapshot | undefined, src: DiamondSources): Promise<PauSnapshot> {
+  const facets = new Set(integratedFacets(snap));
+  const settled = settledKeys(prev, DIAMOND_INPUTS, (d) => !!d.facet && facets.has(d.facet.toLowerCase()));
+  return { ...(await withDiamondKeys(snap, read, { ...src, settled })), keysNamedWith: DIAMOND_INPUTS };
 }
