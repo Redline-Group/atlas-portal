@@ -6,8 +6,8 @@
 const CONST_RE = /\b(\w+)\s*=\s*(0x[0-9a-fA-F]{40})(?![0-9a-fA-F])/g;
 const OWNER_RE = /\b(?:library|contract|interface)\s+(\w+)/g;
 const TOKEN_RE = /0x[0-9a-fA-F]{40}(?![0-9a-fA-F])|\b(?:(\w+)\.)?(\w+)\b/g;
-// A line comment ends at a newline, escaped (`\n`) in a multi-file source held as JSON.
-const COMMENT_RE = /\/\*[\s\S]*?\*\/|\/\/.*?(?=\\n|\n|$)/g;
+// A line comment ends at a newline, escaped (`\n`) in a multi-file source held as JSON; a `//` after `:` is a URL in a string.
+const COMMENT_RE = /\/\*[\s\S]*?\*\/|(?<!:)\/\/.*?(?=\\n|\n|$)/g;
 // A longer group is a body or a registry, not one call's arguments.
 const MAX_LIST_CHARS = 2000;
 const MAX_LIST_ADDRESSES = 8;

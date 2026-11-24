@@ -26,7 +26,6 @@ export type KeyNamer = ((snap: PauSnapshot, read: ChainReader, prev?: PauSnapsho
   prepare?: (keys: string[]) => void;
 };
 
-
 /** Role → address, for one subject a hook read. */
 type Bound = Record<string, string>;
 
@@ -131,7 +130,8 @@ export function keyNamer(addressFiles: string[], extra: unknown, { dir = ".cache
   const gone = () => (retired ??= sources.retired?.() ?? new Map());
   const sourced = () => (material ??= mergeMaterial([cachedSourceMaterial(dir), ...(sources.material ? [sources.material] : [])]));
   const all = () => (addresses ??= [...candidateAddresses(addressFiles, extra), ...sourced().addresses, ...gone().keys()]);
-  const stated = async (prime: string) => (await (primes ??= sources.context?.() ?? Promise.resolve(new Map()))).get(prime) ?? [];
+  // A context that cannot be read leaves two-address keys to the snapshot's and the spells' pairs, rather than failing every deployment.
+  const stated = async (prime: string) => (await (primes ??= (sources.context?.() ?? Promise.resolve(new Map())).catch(() => new Map()))).get(prime) ?? [];
   const mono = monolithicNamer(dir, sourced, all);
   const shapesOf = facetShapes(dir);
   const namer: KeyNamer = async (snap, read, prev) => {

@@ -4,7 +4,7 @@
 // the facet reads on chain; monolithic constants never name a diamond key. The
 // vectors are keys Grove's and Osero's diamond RateLimits hold, each confirmed
 // by calling the facet's own pure getter on Ethereum.
-import { describe, expect, it } from "bun:test";
+import { afterAll, describe, expect, it } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -17,6 +17,13 @@ import { facetShapesAt } from "./facet-source.ts";
 import type { ChainCall } from "./snapshot.ts";
 
 const CACHE = path.join(import.meta.dir, "../../../.cache/etherscan");
+const scratch: string[] = [];
+const tmpDir = (prefix: string) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  scratch.push(dir);
+  return dir;
+};
+afterAll(() => scratch.forEach((d) => fs.rmSync(d, { recursive: true, force: true })));
 const USDS = "0xdc035d45d973e3ec169d2276ddab16f1e407384f";
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 const AUSD = "0x00000000efe302beaa2b3e6e1b18d08d69a9012a";
@@ -149,14 +156,14 @@ describe("keyNamer", () => {
     const key = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "address" }], [keccak256(toHex("LIMIT_ASSET_TRANSFER")), USDC, BASIN]));
     const material = { names: ["LIMIT_ASSET_TRANSFER"], addresses: [USDC, BASIN], words: [], spells: [] };
     const snap = { ...diamond([], [key]), kind: "monolithic" as const };
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "no-cache-"));
+    const dir = tmpDir("no-cache-");
     expect(named(await keyNamer([], {}, { dir, material })(snap, read))[key]).toBeNull();
     const withContext = keyNamer([], {}, { dir, material, context: async () => new Map([["p", [USDC, BASIN]]]) });
     withContext.prepare?.([key]);
     expect(named(await withContext(snap, read))[key]).toEqual({ constant: "LIMIT_ASSET_TRANSFER", args: [USDC, BASIN], via: BASIN });
   });
   it("keeps a diamond's stored name when its facet's source no longer parses, and drops one from a facet it no longer integrates", async () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "facets-"));
+    const dir = tmpDir("facets-");
     fs.mkdirSync(path.join(dir, "1"));
     fs.writeFileSync(path.join(dir, "1", `${FACET.usds}.json`), JSON.stringify({ contractName: "USDSFacet", sourceCode: "contract Other {}" }));
     const burn = { constant: "LIMIT_USDS_BURN", args: [], roles: [], facet: "USDSFacet", getter: "burnRateLimitKey" };
@@ -167,7 +174,7 @@ describe("keyNamer", () => {
     expect([out[KEY.usdsBurn], out[KEY.aaveDeposit]]).toEqual([burn, null]);
   });
   it("leaves a facet's keys unnamed when the parser refuses its source, instead of failing the snapshot", async () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "facets-"));
+    const dir = tmpDir("facets-");
     fs.mkdirSync(path.join(dir, "1"));
     fs.writeFileSync(path.join(dir, "1", `${FACET.usds}.json`), JSON.stringify({ contractName: "USDSFacet", sourceCode: "contract Other {}" }));
     const bad = keyNamer([], {}, { dir });

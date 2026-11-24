@@ -36,6 +36,10 @@ describe("argumentPairs", () => {
     const src = ["library Base {", "  /// @notice the contract addresses on Base", `  address internal constant USDC = ${USDC};`, `  address internal constant DEST = ${DEST};`, "}", "contract P { function f() external { g(B.USDC, Base.DEST); } }"].join("\n");
     expect(argumentPairs(src)).toEqual([`${lc(DEST)},${lc(USDC)}`, `${lc(USDC)},${lc(DEST)}`].sort());
   });
+  it("keeps a call that shares its line with a URL, and still drops a call inside a comment", () => {
+    const src = `string constant U = "https://forum.sky.money"; f(${USDC}, ${DEST}); // g(${DEST}, ${SUSDS})`;
+    expect(argumentPairs(src)).toEqual([`${lc(DEST)},${lc(USDC)}`, `${lc(USDC)},${lc(DEST)}`].sort());
+  });
   it("pairs literal addresses too", () => {
     expect(argumentPairs(`f(${USDC}, ${SUSDS})`)).toEqual([`${lc(USDC)},${lc(SUSDS)}`, `${lc(SUSDS)},${lc(USDC)}`].sort());
   });
