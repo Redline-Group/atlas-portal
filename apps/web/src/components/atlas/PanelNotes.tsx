@@ -25,8 +25,8 @@ interface PanelNotesProps {
 const CARD_STACK = "flex flex-col gap-[10px]";
 
 // The right panel's notes section: the doc's Element Annotations, the documents
-// it links to, its cousins under the other Prime Agents, what cites it, and its
-// extracted relations. Each list is omitted when empty.
+// it links to, what cites it, its extracted relations, and last its cousins in
+// related instances. Each list is omitted when empty.
 export function PanelNotes(props: PanelNotesProps) {
   const { annotationDocs, linkedNodes, cousinDocs, citedBy, relations, onNav } = props;
   const list = { onNav, selectable: props.selectable, byParent: props.byParent };
@@ -41,14 +41,18 @@ export function PanelNotes(props: PanelNotesProps) {
       {linkedNodes.length > 0 && (
         <RelatedDocList {...list} label="linked documents" kind="linked_doc" items={linkedNodes.map((node) => ({ node }))} />
       )}
-      {cousinDocs.length > 0 && (
-        <RelatedDocList {...list} label="cousin documents" kind="cousin_doc" blurb="Likely counterparts under the other Prime Agents."
-          mark={<SourceMark source="derived" bare hint="Matched by title and by parallel structure across Prime Agents." />}
-          items={cousinDocs.map(({ node, agent }) => ({ node, eyebrow: <span className="atlas-agent-pill">{agent}</span> }))}
-          className="mt-8 pt-5 border-t border-border" listClassName={CARD_STACK} />
-      )}
       {citedBy.length > 0 && <CitedByList citedBy={citedBy} onNav={onNav} />}
       {relations.length > 0 && <RelationsList {...props} />}
+      {cousinDocs.length > 0 && (
+        <RelatedDocList {...list} label="cousin documents" kind="cousin_doc"
+          blurb="The same document in related instances: the same venue or integration, in this and the other Prime Agents."
+          mark={<SourceMark source="derived" bare hint="Matched by primitive, by the venue each instance is filed under, and by document title." />}
+          items={cousinDocs.map(({ node, agent, completed }) => ({
+            node,
+            eyebrow: <span className="atlas-agent-pill">{completed ? `${agent} · completed` : agent}</span>,
+          }))}
+          className="mt-8 pt-5 border-t border-border" listClassName={CARD_STACK} />
+      )}
     </>
   );
 }

@@ -29,6 +29,7 @@ import { fileURLToPath } from "node:url";
 import { slugify } from "../lib/graph-patterns.mjs";
 import { entityAdder } from "../lib/graph-records.ts";
 import { checkGateTripwires, warnDriftCount } from "../lib/graph-tripwires.mjs";
+import { checkCousinFilingTripwire } from "../lib/cousin-filing-tripwire.ts";
 import { extractMultisigs } from "../lib/graph-multisigs.mjs";
 import { extractTransfers } from "../lib/graph-transfers.ts";
 import { extractBridges } from "../lib/graph-bridges.ts";
@@ -88,6 +89,7 @@ const docByDocNo = new Map(allDocs.map((d) => [d.doc_no, d]));
 // Silent-collapse tripwires: a renumber/rename that zeroes a structural gate
 // produces no error anywhere — only these [drift] stderr lines.
 checkGateTripwires(allDocs);
+checkCousinFilingTripwire(allDocs, docByDocNo);
 
 // Load both address artifacts and build a merged in-memory view for graph
 // extraction. Phase 4.5 writes enrichments back to addresses.atlas.json only;

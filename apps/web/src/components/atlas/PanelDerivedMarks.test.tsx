@@ -31,9 +31,10 @@ describe("right panel notes: derived lists", () => {
       />,
     );
     const heads = [...container.querySelectorAll("p")].filter((p) => p.querySelector("[data-source='derived']"));
+    // Cousins come last in the notes, after the relations.
     expect(heads.map((p) => p.textContent)).toEqual([
-      expect.stringContaining("cousin documents"),
       expect.stringContaining("relations"),
+      expect.stringContaining("cousin documents"),
     ]);
     const linked = [...container.querySelectorAll("p")].find((p) => p.textContent?.startsWith("linked documents"));
     expect(linked?.querySelector("[data-source]")).toBeNull();

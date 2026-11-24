@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { findCousinDocs } from "./cousins";
 import { makeNode, makeAtlasBundle, makeGraphEntity, makeGraphData } from "../test/fixtures";
+import { MAX_COUSINS } from "./cousinInstances";
 
 // Two primes (Spark, Grove) each with a token instance; Grove also has an
 // unrelated executor-accord instance and Spark a token *invocation* — neither
@@ -49,11 +50,10 @@ describe("findCousinDocs", () => {
     expect(cousins).toEqual([{ node: groveTokenParam, agent: "Grove" }]);
   });
 
-  it("falls back to the cousin root when no equivalent nested doc exists", () => {
-    const { atlas, graph, sparkTokenSymbol, groveToken } = fixture();
-    // Spark's Token Symbol has no Grove equivalent (A.6.1.1.2.2.1.2 is absent).
-    const cousins = findCousinDocs(sparkTokenSymbol.id, atlas, graph);
-    expect(cousins).toEqual([{ node: groveToken, agent: "Grove" }]);
+  it("offers no cousin when the instance has no doc of the same title", () => {
+    const { atlas, graph, sparkTokenSymbol } = fixture();
+    // Spark's Token Symbol has no Grove equivalent; Grove's ICD root is not a stand-in.
+    expect(findCousinDocs(sparkTokenSymbol.id, atlas, graph)).toEqual([]);
   });
 
   it("does not cross pools: an invocation's cousins exclude instances", () => {
@@ -142,5 +142,117 @@ describe("findCousinDocs — omni docs", () => {
   it("does not link an omni doc whose cousin sits at a different depth", () => {
     const { atlas, graph, sWidget } = omniFixture();
     expect(findCousinDocs(sWidget.id, atlas, graph)).toEqual([]);
+  });
+});
+
+// Multi-instance primitive (Allocation System): ICDs filed by status › chain ›
+// venue. Spark has two Morpho vaults and an Aave market; Grove has a Morpho
+// vault (whose Owner Role Address sits at a different path) and a completed one.
+function venueFixture() {
+  const docs: ReturnType<typeof makeNode>[] = [];
+  const add = (id: string, doc_no: string, title: string) => {
+    const n = makeNode({ id, doc_no, title });
+    docs.push(n);
+    return n;
+  };
+  add("s", "A.6.1.1.1", "Spark");
+  add("g", "A.6.1.1.2", "Grove");
+  add("s-act", "A.6.1.1.1.2.6.1.3", "Active Instances");
+  add("s-eth", "A.6.1.1.1.2.6.1.3.1", "Ethereum Mainnet Instances");
+  add("s-morpho", "A.6.1.1.1.2.6.1.3.1.3", "Morpho");
+  add("s-aave", "A.6.1.1.1.2.6.1.3.1.5", "Aave");
+  const sVault = add("s-v1", "A.6.1.1.1.2.6.1.3.1.3.1", "Morpho USDC Instance Configuration Document");
+  const sOwner = add("s-v1-owner", "A.6.1.1.1.2.6.1.3.1.3.1.4.1.3", "Owner Role Address");
+  const sVault2 = add("s-v2", "A.6.1.1.1.2.6.1.3.1.3.2", "Morpho USDT Instance Configuration Document");
+  const sOwner2 = add("s-v2-owner", "A.6.1.1.1.2.6.1.3.1.3.2.4.1.3", "Owner Role Address");
+  add("s-aave1", "A.6.1.1.1.2.6.1.3.1.5.1", "Aave USDC Instance Configuration Document");
+  add("s-aave1-owner", "A.6.1.1.1.2.6.1.3.1.5.1.4.1.3", "Owner Role Address");
+  add("g-act", "A.6.1.1.2.2.6.1.3", "Active Instances");
+  add("g-eth", "A.6.1.1.2.2.6.1.3.1", "Ethereum Mainnet Instances");
+  add("g-morpho", "A.6.1.1.2.2.6.1.3.1.7", "Morpho");
+  add("g-v1", "A.6.1.1.2.2.6.1.3.1.7.1", "Steakhouse USDC Morpho Instance Configuration Document");
+  add("g-v1-alloc", "A.6.1.1.2.2.6.1.3.1.7.1.4.1.3", "Allocator Role Addresses");
+  const gOwner = add("g-v1-owner", "A.6.1.1.2.2.6.1.3.1.7.1.2.2.3", "Owner Role Address");
+  add("g-done", "A.6.1.1.2.2.6.1.4", "Completed Instances");
+  add("g-done-eth", "A.6.1.1.2.2.6.1.4.1", "Ethereum Mainnet Instances");
+  add("g-done-morpho", "A.6.1.1.2.2.6.1.4.1.1", "Morpho");
+  add("g-old", "A.6.1.1.2.2.6.1.4.1.1.1", "Old Morpho Instance Configuration Document");
+  const gOldOwner = add("g-old-owner", "A.6.1.1.2.2.6.1.4.1.1.1.4.1.3", "Owner Role Address");
+  const inst = (id: string, did: string, agent: string) =>
+    makeGraphEntity({ id, name: `Ethereum Mainnet - ${did}`, st: "allocation-system", did, m: JSON.stringify({ agent_doc_id: agent }) });
+  const graph = makeGraphData({
+    participants: [
+      makeGraphEntity({ id: "s", name: "Spark", et: "agent", st: "prime", did: "s" }),
+      makeGraphEntity({ id: "g", name: "Grove", et: "agent", st: "prime", did: "g" }),
+    ],
+    instances: [inst("i1", "s-v1", "s"), inst("i2", "s-v2", "s"), inst("i3", "s-aave1", "s"), inst("i4", "g-v1", "g"), inst("i5", "g-old", "g")],
+  });
+  return { atlas: makeAtlasBundle(docs), graph, sVault, sVault2, sOwner, sOwner2, gOwner, gOldOwner };
+}
+
+describe("findCousinDocs — multi-instance primitives", () => {
+  it("matches a nested doc by title within same-venue instances, own prime first, completed last", () => {
+    const { atlas, graph, sOwner, sOwner2, gOwner, gOldOwner } = venueFixture();
+    // Not Spark's Aave market (another venue), and not Grove's suffix-aligned "Allocator Role Addresses".
+    expect(findCousinDocs(sOwner.id, atlas, graph)).toEqual([
+      { node: sOwner2, agent: "Spark" },
+      { node: gOwner, agent: "Grove" },
+      { node: gOldOwner, agent: "Grove", completed: true },
+    ]);
+  });
+
+  it("matches an ICD root to the other ICDs at its venue", () => {
+    const { atlas, graph, sVault, sVault2 } = venueFixture();
+    expect(findCousinDocs(sVault.id, atlas, graph).map((c) => c.node.id)).toEqual([sVault2.id, "g-v1", "g-old"]);
+  });
+
+  it("files a regrouped ICD narrowly: an unrecognised filing matches by instance name only", () => {
+    const { atlas, graph, sOwner } = venueFixture();
+    // The Morpho heading disappears: Spark's vault now sits straight under a chain heading.
+    atlas.docs["s-morpho"] = { ...atlas.docs["s-morpho"], title: "Ethereum Mainnet" };
+    atlas.docs["s-eth"] = { ...atlas.docs["s-eth"], title: "Active Instances" };
+    expect(findCousinDocs(sOwner.id, atlas, graph)).toEqual([]);
+  });
+
+  it(`caps the list at ${MAX_COUSINS}`, () => {
+    const { atlas, graph, sVault } = venueFixture();
+    for (let i = 10; i < 40; i++) {
+      const n = makeNode({ id: `g-x${i}`, doc_no: `A.6.1.1.2.2.6.1.3.1.7.${i}`, title: `Vault ${i} Instance Configuration Document` });
+      atlas.docs[n.id] = n;
+      atlas.docNoToId.set(n.doc_no, n.id);
+      graph.instances.push(makeGraphEntity({ id: `ix${i}`, name: `x${i}`, st: "allocation-system", did: n.id, m: JSON.stringify({ agent_doc_id: "g" }) }));
+    }
+    expect(findCousinDocs(sVault.id, atlas, graph)).toHaveLength(MAX_COUSINS);
+  });
+});
+
+// Distribution Reward style: ICDs filed straight under a status heading, one per integrator.
+describe("findCousinDocs — instances filed under a status heading", () => {
+  function directFixture() {
+    const n = (id: string, doc_no: string, title: string) => makeNode({ id, doc_no, title });
+    const docs = [
+      n("k", "A.6.1.1.3", "Keel"), n("b", "A.6.1.1.4", "Skybase"),
+      n("k-act", "A.6.1.1.3.2.5.1.2", "Active Instances"), n("b-act", "A.6.1.1.4.2.5.1.2", "Active Instances"),
+      n("k-1inch", "A.6.1.1.3.2.5.1.2.1", "1inch Instance Configuration Document"),
+      n("k-bridge", "A.6.1.1.3.2.5.1.2.2", "Solana Bridge Instance Configuration Document"),
+      n("b-1inch", "A.6.1.1.4.2.5.1.2.1", "1inch Instance Configuration Document"),
+      n("b-cow", "A.6.1.1.4.2.5.1.2.2", "CoW Swap Instance Configuration Document"),
+    ];
+    const inst = (id: string, name: string, did: string, agent: string) =>
+      makeGraphEntity({ id, name, st: "distribution-reward", did, m: JSON.stringify({ agent_doc_id: agent }) });
+    const graph = makeGraphData({
+      participants: [
+        makeGraphEntity({ id: "k", name: "Keel", et: "agent", st: "prime", did: "k" }),
+        makeGraphEntity({ id: "b", name: "Skybase", et: "agent", st: "prime", did: "b" }),
+      ],
+      instances: [inst("1", "1inch", "k-1inch", "k"), inst("2", "Solana Bridge", "k-bridge", "k"), inst("3", "1inch", "b-1inch", "b"), inst("4", "CoW Swap", "b-cow", "b")],
+    });
+    return { atlas: makeAtlasBundle(docs), graph };
+  }
+
+  it("links the prime's own siblings and other primes' same-named instance, but not their other instances", () => {
+    const { atlas, graph } = directFixture();
+    expect(findCousinDocs("k-1inch", atlas, graph).map((c) => c.node.id)).toEqual(["k-bridge", "b-1inch"]);
+    expect(findCousinDocs("b-cow", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch"]);
   });
 });
