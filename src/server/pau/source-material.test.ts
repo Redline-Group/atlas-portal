@@ -28,7 +28,11 @@ describe("materialOf", () => {
       addresses: [SPELL, FARM, USDC].map((a) => a.toLowerCase()).sort(),
       words: [POOL],
       spells: [SPELL.toLowerCase()],
+      pairs: [],
     });
+  });
+  it("merges a row stored before pairs were read as having none", () => {
+    expect(mergeMaterial([{ names: [], addresses: [], words: [], spells: [] }]).pairs).toEqual([]);
   });
   it("reads a multi-file source, whose lines and quotes are escaped inside a JSON string", () => {
     const escaped = JSON.stringify({ sources: { "a.sol": { content: lines.join("\n") } } });
@@ -48,6 +52,6 @@ describe("cachedSourceMaterial", () => {
     expect(cachedSourceMaterial(dir)).toEqual(mergeMaterial([materialOf(lines.join("\n"))]));
   });
   it("is empty without a cache", () => {
-    expect(cachedSourceMaterial(path.join(dir, "missing"))).toEqual({ names: [], addresses: [], words: [], spells: [] });
+    expect(cachedSourceMaterial(path.join(dir, "missing"))).toEqual({ names: [], addresses: [], words: [], spells: [], pairs: [] });
   });
 });

@@ -79,6 +79,15 @@ describe("maybeRefreshPauState", () => {
     }
     expect(seen).toEqual([before, before]);
   });
+  it("tells the namer every stored key before it names any snapshot, so the shared scan runs once", async () => {
+    const lim = (key: string) => ({ key, configured: { maxAmount: "1", slope: "0" }, setAt: null, changes: 0, data: null, available: null });
+    const stored = { deployment: "p:ethereum:monolithic", contracts: [{ role: "rateLimits", rateLimits: [lim("0xa1")], beam: { defaults: [lim("0xb2")] } }] };
+    const calls: string[] = [];
+    const nameKeys = Object.assign(async (snap: unknown) => (calls.push("name"), snap as never), { prepare: (keys: string[]) => void calls.push(`prepare ${keys.join(" ")}`) });
+    const { db } = fakeDb([{ deployment: "p:ethereum:monolithic", fetched_at: new Date(NOW - 3_600_000), state: stored }]);
+    await maybeRefreshPauState(db, reg, read, { refreshSeconds: 3600, now: NOW, nameKeys: nameKeys as never });
+    expect(calls).toEqual(["prepare 0xa1 0xb2", "name"]);
+  });
 });
 
 describe("a chain with a BeamState", () => {

@@ -632,6 +632,13 @@ embeddings ever span ticks.
 `hard cap (15m)` **is** a failure (exit 1): the tick never reached the heartbeat,
 so something before it hung — see the entry above.
 
+**Worker execution failed with exit 124 or 137 and no `hard cap` line**
+→ The outside kill fired: the start command runs the worker under
+`timeout -k 30s 17m` (`.railway/railway.ts`). The in-process 15m cap is a timer,
+and a synchronous loop (key hashing, a regex, a parse) never lets it fire, so
+without the outside kill one such tick stays alive and Railway starts no later
+tick until someone stops it. The last log line names the step it was in.
+
 **`staleEmbeds=` is flat across ticks and the log says `another reconcile holds the lock`**
 → Not the backfill converging slowly — something else holds `EMBED_LOCK_KEY` and
 this tick stood down. Normally that is the *other* legitimate writer finishing its

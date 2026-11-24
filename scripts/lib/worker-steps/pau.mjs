@@ -90,14 +90,19 @@ function fromGraph(inputs, warn, parse, failure) {
  */
 async function rebuildInputs(db, warn, reg) {
   const { keyNamer } = await import("../../../src/server/pau/diamond-derive.ts");
+  const { atlasAddressesByPrime } = await import("../../../src/server/pau/key-context.ts");
   const { atlasKeysByPrime } = await import("../../../src/server/pau/probe.ts");
   const { atlasRoleClaims } = await import("../../../src/server/pau/role-claims.ts");
   const { atlasSvmProbe } = await import("../../../src/server/pau/svm-probe.ts");
   const material = await storedSpellMaterial(db, warn);
   const retired = await retiredReader(warn);
   const inputs = atlasInputsOnce(db, warn);
+  const context = fromGraph(inputs, warn, atlasAddressesByPrime, "addresses not read, two-address keys get only spell pairs");
+  // The refresh announces its keys before the namer exists, so they are kept here and the namer reads them.
+  const known = [];
   let namer;
-  const nameKeys = async (...a) => (await (namer ??= inputs().then((p) => keyNamer([p["addresses.atlas.json"], "public/addresses.json"], reg, { retired, material }))))(...a);
+  const nameKeys = async (...a) => (await (namer ??= inputs().then((p) => keyNamer([p["addresses.atlas.json"], "public/addresses.json"], reg, { retired, material, context, known }))))(...a);
+  nameKeys.prepare = (keys) => void known.push(...keys);
   const atlasKeys = fromGraph(inputs, warn, atlasKeysByPrime, "RateLimitIDs not read, no key is probed");
   const atlasRoles = fromGraph(inputs, warn, atlasRoleClaims, "vault roles not read, no vault is asked about them");
   const svmProbe = fromGraph(inputs, warn, atlasSvmProbe, "Solana instances not read, no Solana limit can read as not set");
