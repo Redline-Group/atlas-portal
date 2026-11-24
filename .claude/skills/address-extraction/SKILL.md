@@ -87,6 +87,8 @@ The `mentions` edge (doc → `addr:chain`, pattern 2v) follows the same order **
 - **A guess yields to the chain.** A heading or a nearby keyword stands only on a chain in the address's `presentOnChains` when that field exists, because those are the only chains with a database row, and `atlas_get_address` reads in-edges by row. An explicit `on <chain> is` clause stands regardless. The case it settles: Grove's Pioneer Incentive Pool Address sits under an "Avalanche Instance Configuration Document" heading, while the address (`GROVE_SUBPROXY`) exists only on Ethereum, which its sibling `Network` leaf also says.
 - **With nothing left**, the primary chain, else ethereum.
 
+A multisig's `has_address` with no `on <Chain> is` clause in its Address doc takes the same chains (`chainsInDoc`), so it meets the mentions edge from that doc.
+
 `build-graph` Phase 2.6 deliberately does **not** recompute chain: it can't see headings, and its "prefer any non-ethereum detection" aggregation let a single stray mention win globally (a doc whose prose said "Gnosis **Protocol**" pinned the address to Gnosis **Chain**).
 
 ### Ambiguous docs are settled on-chain, not by guessing

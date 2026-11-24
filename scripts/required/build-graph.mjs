@@ -354,7 +354,7 @@ extractActiveData(allDocs, docById, entityMap, edges, addressesAtlas, addressesR
   console.log(`  Phase 2.8: ${partnerEntities.size} integration partners (${partnerEdges} edges)`);
 
   // --- Multisigs (Pattern 17) ---
-  const msStats = extractMultisigs(allDocs, docById, docByDocNo, entityMap, edges).run(addPatternEntity);
+  const msStats = extractMultisigs(allDocs, docById, docByDocNo, entityMap, edges, addressesRaw).run(addPatternEntity);
   console.log(
     `  Phase 2.8: ${msStats.roots} multisigs, ${msStats.signerEdges} signer_of,` +
     ` ${msStats.modifierEdges} can_modify_signers_of, ${msStats.created} new signer entities` +

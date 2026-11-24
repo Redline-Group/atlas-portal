@@ -86,3 +86,22 @@ export function docPlacements(content: string, titleChain: string | null): Recor
   while ((m = SOL_ADDR_RE.exec(content)) !== null) add(normalizeAddress(m[0]), { chain: "solana", stated: true });
   return out;
 }
+
+type PlacedAddress = { chain?: string; presentOnChains?: string[] };
+
+/**
+ * The chains an address's edges from one doc land on: every chain the doc
+ * places it on, a guess (a heading, a nearby keyword) standing only on a chain
+ * the address is present on when presence was read on chain (presentOnChains,
+ * which decides its database rows); with nothing left, its primary chain.
+ */
+export function docChains(placed: Placement[] | undefined, address: PlacedAddress | undefined): string[] {
+  const present = address?.presentOnChains;
+  const kept = (placed ?? []).filter((p) => p.stated || !present || present.includes(p.chain)).map((p) => p.chain);
+  return kept.length ? kept : [address?.chain ?? "ethereum"];
+}
+
+/** The chains `address`'s edges from `doc` land on: docChains over the doc's own placements. */
+export function chainsInDoc(doc: TitledNode & { content?: string | null }, address: string, nodeByDocNo: Map<string, TitledNode>, addresses: Record<string, PlacedAddress>): string[] {
+  return docChains(docPlacements(doc.content ?? "", titleChainFor(doc, nodeByDocNo))[address], addresses[address]);
+}

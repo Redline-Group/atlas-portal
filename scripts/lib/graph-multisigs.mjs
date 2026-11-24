@@ -28,6 +28,7 @@ import { slugify, normalizeKey, buildNameIndex, bulletField, makeWarn, groupChil
 import { parseNameList } from "./graph-content-extract.ts";
 import { normalizeChainLabel } from "./chains.mjs";
 import { normalizeAddress } from "./address-chains.mjs";
+import { chainsInDoc } from "./doc-address-chains.ts";
 
 const THRESHOLD_RE = /The (.+?) (?:currently )?has a (?:default )?(\d+)\/(\d+) signing requirement/;
 // "The Core Council Multisig's required number of signers is five (5) out of six (6)."
@@ -130,7 +131,7 @@ export function signerCompositionMismatch(content, groups) {
   return Number(stated) !== parsed;
 }
 
-export function extractMultisigs(allDocs, docById, docByDocNo, entityMap, edges) {
+export function extractMultisigs(allDocs, docById, docByDocNo, entityMap, edges, addressesRaw = {}) {
   const nameIndex = buildNameIndex(entityMap);
   const entityById = new Map([...entityMap.values()].map((e) => [e.id, e]));
 
@@ -196,16 +197,17 @@ export function extractMultisigs(allDocs, docById, docByDocNo, entityMap, edges)
 
         // Address + chain (parsed before naming — chain is the first
         // collision disambiguator below).
-        let address = null, chain = "ethereum";
+        let address = null, chains = ["ethereum"];
         if (slot.address) {
           const am = (slot.address.content ?? "").match(ADDRESS_RE);
           if (am) {
             address = normalizeAddress(am[1]);
-            chain = am[1].startsWith("0x")
-              ? normalizeChainLabel((slot.address.content ?? "").match(ADDRESS_CHAIN_RE)?.[1], "multisig-chain")
-              : "solana";
+            // Its doc's "address of … on <Chain> is" clause, else where a mentions edge from that doc lands, so both meet.
+            const named = (slot.address.content ?? "").match(ADDRESS_CHAIN_RE)?.[1];
+            chains = !am[1].startsWith("0x") ? ["solana"] : named ? [normalizeChainLabel(named, "multisig-chain")] : chainsInDoc(slot.address, address, docByDocNo, addressesRaw);
           } else warn(`address did not parse: ${slot.address.doc_no}`);
         }
+        const chain = chains[0];
 
         // Agent-subtree multisigs get the agent prefix (five agents each have
         // a "Freezer Multisig"). Remaining collisions are per-chain deployments
@@ -247,11 +249,8 @@ export function extractMultisigs(allDocs, docById, docByDocNo, entityMap, edges)
           fromId: root.id, fromType: "doc", toId: ent.id, toType: "entity",
           edgeType: "defines_entity", sourceDocNos: [],
         });
-        if (address) {
-          edges.push({
-            fromId: ent.id, fromType: "entity", toId: `${address}:${chain}`, toType: "address",
-            edgeType: "has_address", sourceDocNos: [slot.address.doc_no],
-          });
+        for (const c of address ? chains : []) {
+          edges.push({ fromId: ent.id, fromType: "entity", toId: `${address}:${c}`, toType: "address", edgeType: "has_address", sourceDocNos: [slot.address.doc_no] });
         }
 
         // Signers
