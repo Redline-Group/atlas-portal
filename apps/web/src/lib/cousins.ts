@@ -3,40 +3,25 @@ import type { AtlasBundle } from "@/lib/docsTypes";
 import type { GraphData } from "./graph";
 import { buildAncestorsWithSelf } from "@/lib/atlasHelpers";
 import { abbreviateAgentName } from "@/lib/owningAgent";
-import { parseMeta } from "@/lib/meta";
-import { byDocNo } from "@/lib/docNo";
-import { pushTo } from "@/lib/collections";
+import { primeRoots, titleIndex, titleKeyer } from "./cousinTitles";
+import { instanceCousins } from "./cousinInstances";
+import { findSkeletonCousins } from "./cousinSkeleton";
+import { MAX_COUSINS, rankCousins } from "./cousinRank";
+import { isIcdLocation, locationCousins } from "./cousinLocations";
+import { inTargetCategory } from "./cousinCategory";
 
 export interface CousinDoc {
   node: AtlasNode;
   agent: string;
+  /** The cousin's instance is filed under Completed Instances. */
+  completed?: boolean;
 }
-
-const agentOf = (e: GraphEntity) =>
-  parseMeta<{ agent_doc_id?: string | null }>(e.m)?.agent_doc_id;
 
 // A doc under a Prime Agent's "Omni Documents" subtree: A.6.1.1.<agent>.3(.…).
 // fragile: doc_no prefix — the Prime Agents scope root (A.6.1.1) and the omni
 // section suffix (.3) are hardcoded; a renumber silently drops omni cousins.
 const OMNI_RE = /^A\.6\.1\.1\.(\d+)\.3(?:\..+)?$/;
 
-// Lowercased-title → docs index, memoized on the docs object identity so it is
-// built once per atlas load and reused across navigations (the annotations memo
-// re-invokes findCousinDocs on every doc change). Avoids a full atlas rescan +
-// per-doc title normalization on each omni view.
-const titleIndexCache = new WeakMap<Record<string, AtlasNode>, Map<string, AtlasNode[]>>();
-function titleIndex(docs: Record<string, AtlasNode>): Map<string, AtlasNode[]> {
-  let idx = titleIndexCache.get(docs);
-  if (idx) return idx;
-  idx = new Map();
-  for (const d of Object.values(docs)) {
-    const t = (d.title ?? "").trim().toLowerCase();
-    if (!t) continue;
-    pushTo(idx, t, d);
-  }
-  titleIndexCache.set(docs, idx);
-  return idx;
-}
 // A title only counts as an omni cousin when at least this share of its
 // atlas-wide occurrences are omni docs — high enough to reject generic section
 // titles ("Parameters", "Data Repository") that merely recur across the atlas.
@@ -47,7 +32,7 @@ const OMNI_SHARE_MIN = 0.7;
 // Primitive"), but that subtree is numbered agent-specifically — the primitive
 // suffix-parallelism doesn't hold and these get no covering instance/invocation/
 // primitive entity, so findCousinDocs' main path misses them. Match them
-// deterministically by exact title across agents, with two guards (no allowlist):
+// deterministically by title key across agents, with two guards (no allowlist):
 //   • same true depth (uncapped doc_no segment count), and
 //   • the title is omni-specific: >= OMNI_SHARE_MIN of its atlas-wide uses are
 //     omni docs — this is what separates real omni docs from generic titles.
@@ -59,11 +44,11 @@ function findOmniCousins(
   const m = targetDoc?.doc_no.match(OMNI_RE);
   if (!targetDoc || !m) return [];
   const targetAgent = m[1];
-  const titleLc = targetDoc.title.trim().toLowerCase();
-  if (!titleLc) return [];
+  const titleKey = titleKeyer(atlas.docs)(targetDoc.title);
+  if (!titleKey) return [];
   const targetSeg = targetDoc.doc_no.split(".").length;
 
-  const sameTitle = titleIndex(atlas.docs).get(titleLc) ?? [];
+  const sameTitle = titleIndex(atlas.docs).get(titleKey) ?? [];
   const global = sameTitle.length; // atlas-wide docs with this title (always >= 1: target is one)
   let omni = 0; //                    …of which are omni docs
   const byAgent = new Map<string, AtlasNode>(); // other agent → its equivalent doc
@@ -76,80 +61,81 @@ function findOmniCousins(
   }
   if (byAgent.size === 0 || omni / global < OMNI_SHARE_MIN) return [];
 
+  return labelled(atlas, graph, targetDoc, [...byAgent].map(([prime, node]) => ({ node, prime })));
+}
+
+// The nearest instance / invocation / primitive entity defined at the target or an ancestor.
+function coveringEntity(targetId: string, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData) {
+  const byDid = new Map<string, { ent: GraphEntity; pool: GraphEntity[] }>();
+  for (const pool of [graph.instances, graph.invocations, graph.primitives]) {
+    for (const ent of pool) if (ent.did) byDid.set(ent.did, { ent, pool });
+  }
+  const chain = buildAncestorsWithSelf(atlas.docs, atlas.docNoToId, targetId);
+  for (let i = chain.length - 1; i >= 0; i--) {
+    const hit = byDid.get(chain[i].id);
+    if (hit) return hit;
+  }
+  return undefined;
+}
+
+// A doc no primitive/instance/invocation entity covers: an omni doc, or the
+// artifact skeleton around the primitives.
+function uncoveredCousins(target: AtlasNode, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData): CousinDoc[] {
+  if (OMNI_RE.test(target.doc_no)) return findOmniCousins(target, atlas, graph);
+  return labelled(atlas, graph, target, findSkeletonCousins(target, atlas));
+}
+
+// Ranks other-prime cousins found by prime number and names each one's agent.
+function labelled(atlas: Pick<AtlasBundle, "docs">, graph: GraphData, target: AtlasNode, found: { node: AtlasNode; prime: string }[]): CousinDoc[] {
+  const label = primeLabeler(atlas, graph);
+  const ranked = rankCousins(atlas.docs, target, found.map((f) => ({ ...f, own: false, completed: false })));
+  return ranked.map(({ node, prime }) => ({ node, agent: label(prime) }));
+}
+
+// Display name of the Prime Agent whose artifact is A.6.1.1.<prime>.
+function primeLabeler(atlas: Pick<AtlasBundle, "docs">, graph: GraphData): (prime: string) => string {
   const agentName = new Map(
     graph.participants
       .filter((p) => p.et === "agent" && p.did)
       .map((p) => [p.did as string, abbreviateAgentName(p.name)]),
   );
-  const cousins: CousinDoc[] = [];
-  for (const [agentX, doc] of byAgent) {
-    const rootId = atlas.docNoToId.get(`A.6.1.1.${agentX}`);
-    const name = (rootId && agentName.get(rootId)) || (rootId && atlas.docs[rootId]?.title) || "Unknown";
-    cousins.push({ node: doc, agent: name });
-  }
-  return cousins.sort((a, b) => byDocNo(a.node, b.node));
+  const roots = primeRoots(atlas.docs);
+  return (prime) => {
+    const root = roots.get(prime);
+    return (root && (agentName.get(root.id) ?? root.title)) || "Unknown";
+  };
 }
 
-// "Cousins" of a doc: the equivalent docs under other prime agents. The graph
-// already categorizes every instance / invocation / primitive entity by
-// primitive slug (st) and owning agent (meta.agent_doc_id), so equivalence is
-// a lookup — same st, different agent. A doc inside an instance subtree
+// "Cousins" of a doc: the doc that plays the same part in related instances,
+// under other Prime Agents and, for multi-instance primitives, the same one.
+// The graph tags every instance / invocation / primitive entity with its
+// primitive slug (st) and owning agent; a doc inside an instance subtree
 // resolves to its covering entity via the doc_no ancestor chain (raw parentId
-// is flattened at the depth-6 heading cap — see instanceDescendants.ts).
-//
-// When the selected doc is *nested* inside the covering entity (e.g. an ICD
-// parameter, not the ICD root), we carry its position relative to that entity
-// down to each cousin: the target's doc_no suffix below the covering doc is a
-// structural path (the primitive subtree is parallel across primes), so
-// appending it to each cousin's root resolves the equivalent nested doc — the
-// real cousin, not the cousin's ICD root ("cousin once removed"). We fall back
-// to the cousin root when no equivalent nested doc exists under it.
+// is flattened at the depth-6 heading cap — see instanceDescendants.ts). The
+// matching itself is in cousinInstances.ts; whatever the path, a cousin stays in
+// the target's primitive category (cousinCategory.ts).
 export function findCousinDocs(
   targetId: string,
   atlas: Pick<AtlasBundle, "docs" | "docNoToId">,
   graph: GraphData,
+  limit = MAX_COUSINS,
 ): CousinDoc[] {
-  const pools = [graph.instances, graph.invocations, graph.primitives];
-  const byDid = new Map<string, { ent: GraphEntity; pool: GraphEntity[] }>();
-  for (const pool of pools) {
-    for (const ent of pool) if (ent.did) byDid.set(ent.did, { ent, pool });
-  }
+  const target = atlas.docs[targetId];
+  return target ? inTargetCategory(atlas, graph, target, matchCousins(target, atlas, graph, limit)) : [];
+}
 
-  const chain = buildAncestorsWithSelf(atlas.docs, atlas.docNoToId, targetId);
-  let hit: { ent: GraphEntity; pool: GraphEntity[] } | undefined;
-  for (let i = chain.length - 1; i >= 0 && !hit; i--) hit = byDid.get(chain[i].id);
-  // No covering primitive/instance/invocation entity → try the omni-doc path
-  // (docs parallel across agents' Omni Documents subtrees, matched by title).
-  if (!hit?.ent.st) return findOmniCousins(atlas.docs[targetId], atlas, graph);
-
-  const agentDocId = agentOf(hit.ent);
-  if (!agentDocId) return [];
-
-  // The target's doc_no path relative to its covering entity's root doc. Empty
-  // when the target *is* the entity root. Ancestry is resolved by dot-boundary
-  // doc_no prefixes (buildAncestors), so this is always a clean ".x.y" suffix.
-  const targetDoc = atlas.docs[targetId];
-  const coverDoc = atlas.docs[hit.ent.did as string];
-  const relSuffix =
-    targetDoc && coverDoc && targetDoc.doc_no.startsWith(`${coverDoc.doc_no}.`)
-      ? targetDoc.doc_no.slice(coverDoc.doc_no.length)
-      : "";
+function matchCousins(target: AtlasNode, atlas: Pick<AtlasBundle, "docs" | "docNoToId">, graph: GraphData, limit: number): CousinDoc[] {
+  const targetId = target.id;
+  if (isIcdLocation(atlas, target)) return locationCousins(atlas, target, (id) => findCousinDocs(id, atlas, graph, Infinity));
+  const hit = coveringEntity(targetId, atlas, graph);
+  if (!hit?.ent.st) return uncoveredCousins(target, atlas, graph);
 
   const agentName = new Map(
-    graph.participants.filter((p) => p.et === "agent").map((p) => [p.id, abbreviateAgentName(p.name)]),
+    graph.participants.filter((p) => p.et === "agent" && p.did).map((p) => [p.did as string, abbreviateAgentName(p.name)]),
   );
-
-  const cousins: CousinDoc[] = [];
-  for (const other of hit.pool) {
-    if (other.st !== hit.ent.st || !other.did) continue;
-    const otherAgent = agentOf(other);
-    if (!otherAgent || otherAgent === agentDocId) continue;
-    const root = atlas.docs[other.did];
-    if (!root) continue;
-    // Resolve the equivalent nested doc under this cousin; fall back to its root.
-    const equivId = relSuffix ? atlas.docNoToId.get(`${root.doc_no}${relSuffix}`) : undefined;
-    const doc = (equivId && atlas.docs[equivId]) || root;
-    cousins.push({ node: doc, agent: agentName.get(otherAgent) ?? atlas.docs[otherAgent]?.title ?? "Unknown" });
-  }
-  return cousins.sort((a, b) => byDocNo(a.node, b.node));
+  return instanceCousins(atlas, target, hit.ent, hit.pool, limit).map(({ node, agentDocId, completed }) => ({
+    node,
+    agent: agentName.get(agentDocId) ?? atlas.docs[agentDocId]?.title ?? "Unknown",
+    ...(completed ? { completed } : {}),
+  }));
 }
