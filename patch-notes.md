@@ -33,7 +33,7 @@
   validator (pnpm check:patch-notes) rejects a block with more than 10.
 -->
 
-## 2026-11-24
+## 2026-11-25
 
 - Narrowed cousin documents to the same document in instances at the same venue, including the Prime Agent's own, and moved them to the end of the notes.
 
