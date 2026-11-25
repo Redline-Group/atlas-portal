@@ -10,6 +10,8 @@ export interface RankedCousin {
   /** In the target's own Prime Agent artifact. */
   own: boolean;
   completed: boolean;
+  /** Set false for a field matched only through its template, in an instance of another kind. */
+  kin?: boolean;
 }
 
 // 0: the same name; 1: the same once agent names, spacing and punctuation are
@@ -39,7 +41,8 @@ export function nameSimilarity(docs: Record<string, AtlasNode>, a: AtlasNode, b:
 }
 
 /**
- * Best cousins first, capped: by the name × prime score, then by name alone,
+ * Best cousins first, capped: kin before a field matched only through its
+ * template, then by the name × prime score, then by name alone,
  * then (different names only) by name similarity, then the target's status
  * (active/completed) before the other, then doc_no.
  */
@@ -54,9 +57,11 @@ export function rankCousins<T extends RankedCousin>(
   const similar = new Map(matches.map((m) => [m, tier.get(m) === 2 ? nameSimilarity(docs, target, m.node) : 1]));
   const score = (m: T) => NAME_WEIGHT[tier.get(m)!] * (m.own ? PRIME_WEIGHT.own : PRIME_WEIGHT.other);
   const status = (m: T) => Number(m.completed !== targetCompleted);
+  const stranger = (m: T) => Number(m.kin === false);
   return matches
     .sort(
       (a, b) =>
+        stranger(a) - stranger(b) ||
         score(b) - score(a) || tier.get(a)! - tier.get(b)! || similar.get(b)! - similar.get(a)! || status(a) - status(b) || byDocNo(a.node, b.node),
     )
     .slice(0, limit);

@@ -307,6 +307,17 @@ describe("findCousinDocs — instances filed under a status heading", () => {
     expect(findCousinDocs("k-bridge", atlas, graph)).toEqual([]);
     expect(findCousinDocs("b-cow", atlas, graph)).toEqual([]);
   });
+
+  it("pairs a field inside those ICDs with the same field in every instance of the primitive", () => {
+    const { atlas, graph } = directFixture();
+    for (const [id, doc_no] of [["k-1inch-p", "A.6.1.1.3.2.5.1.2.1.1"], ["k-bridge-p", "A.6.1.1.3.2.5.1.2.2.1"], ["b-cow-p", "A.6.1.1.4.2.5.1.2.2.1"], ["b-1inch-p", "A.6.1.1.4.2.5.1.2.1.1"]]) {
+      const n = makeNode({ id, doc_no, title: "Integration Boost Payments" });
+      atlas.docs[id] = n;
+      atlas.docNoToId.set(doc_no, id);
+    }
+    // The same kind (Skybase's 1inch) leads, ahead of Keel's own Solana Bridge and Skybase's CoW Swap.
+    expect(findCousinDocs("k-1inch-p", atlas, graph).map((c) => c.node.id)).toEqual(["b-1inch-p", "k-bridge-p", "b-cow-p"]);
+  });
 });
 
 // The artifact skeleton around the primitives has no covering entity; its

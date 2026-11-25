@@ -13,6 +13,7 @@ export interface CousinMatch {
   agentDocId: string;
   own: boolean;
   completed: boolean;
+  kin: boolean;
 }
 
 export const agentOf = (e: GraphEntity) => parseMeta<{ agent_doc_id?: string | null }>(e.m)?.agent_doc_id ?? undefined;
@@ -47,9 +48,12 @@ const kindWords = (atlas: Atlas, name: string) =>
 // venue; failing that (instances filed straight under a status heading, one per
 // integrator) when their names share a word that says what they are, so "1inch"
 // meets "1inch" and "Sky.money App" meets "Sky.money Open Source Widgets", but
-// "Solana Bridge" meets only another bridge. `pool` already holds one primitive.
-function sameKind(atlas: Atlas, a: { ent: GraphEntity; filing: IcdFiling }, b: { ent: GraphEntity; filing: IcdFiling }): boolean {
+// "Solana Bridge" meets only another bridge. Inside such ICDs, which share one
+// template, a field (`nested`) meets the same field in every instance of the
+// primitive. `pool` already holds one primitive.
+function sameKind(atlas: Atlas, a: { ent: GraphEntity; filing: IcdFiling }, b: { ent: GraphEntity; filing: IcdFiling }, nested: boolean): boolean {
   if (a.filing.kind === "venue" && b.filing.kind === "venue") return a.filing.venue === b.filing.venue;
+  if (nested && a.filing.kind === "direct" && b.filing.kind === "direct") return true;
   const words = new Set(kindWords(atlas, a.ent.name));
   return kindWords(atlas, b.ent.name).some((w) => words.has(w));
 }
@@ -73,11 +77,12 @@ export function instanceCousins(atlas: Atlas, target: AtlasNode, hit: GraphEntit
     if (ent === hit || ent.st !== hit.st || !otherAgent || !root) continue;
     const own = otherAgent === agentDocId;
     const other = { ent, filing: filingOf(atlas, ent) };
-    if (multi ? !sameKind(atlas, self, other) : own) continue;
+    if (multi ? !sameKind(atlas, self, other, relSuffix !== "") : own) continue;
     // A primitive's subtree holds its instances' ICDs, whose docs are another cover's.
     const accept = hit.et === "primitive" ? (d: AtlasNode, under: AtlasNode) => !insideIcdBelow(atlas, d, under) : undefined;
     const node = equivalentDoc(atlas, target, relSuffix, root, accept);
-    if (node) out.push({ node, agentDocId: otherAgent, own, completed: other.filing.completed });
+    const kin = !multi || sameKind(atlas, self, other, false);
+    if (node) out.push({ node, agentDocId: otherAgent, own, completed: other.filing.completed, kin });
   }
   return rankCousins(atlas.docs, target, out, self.filing.completed, limit);
 }
