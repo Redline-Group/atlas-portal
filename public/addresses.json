@@ -296,6 +296,7 @@
     "chains": [
       "ethereum"
     ],
+    "chainlogId": "TEST_HALO_SUBPROXY",
     "etherscanName": "SubProxy",
     "isContract": true,
     "isProxy": false,
@@ -311,6 +312,7 @@
     "chains": [
       "ethereum"
     ],
+    "chainlogId": "TEST_HALO_STARGUARD",
     "etherscanName": "StarGuard",
     "isContract": true,
     "isProxy": false,
@@ -3768,6 +3770,7 @@
     "chains": [
       "xlayer"
     ],
+    "etherscanName": "VaultV2",
     "isContract": true,
     "isProxy": false,
     "codeByChain": {
@@ -5663,7 +5666,10 @@
     "isProxy": false,
     "codeByChain": {
       "ethereum": false
-    }
+    },
+    "presentOnChains": [
+      "ethereum"
+    ]
   },
   "0x9307672c95c7b92e659da63ef5ee64b0c0d14619": {
     "chain": "ethereum",
