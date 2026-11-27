@@ -367,6 +367,78 @@
       "title": "Other Actions Specified In The Atlas"
     },
     {
+      "taskKey": "u:6b0e4732-18d5-43ee-9de2-b1d7d77c4def",
+      "uuid": "6b0e4732-18d5-43ee-9de2-b1d7d77c4def",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.5",
+      "title": "Test NFAT Facility Relayer Multisig"
+    },
+    {
+      "taskKey": "u:cb38b73d-9ea1-4a51-b308-fabf4c7c7672",
+      "uuid": "cb38b73d-9ea1-4a51-b308-fabf4c7c7672",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.5.1",
+      "title": "Address"
+    },
+    {
+      "taskKey": "u:4aa2c4f5-0be2-480e-b41f-4d0c61917b63",
+      "uuid": "4aa2c4f5-0be2-480e-b41f-4d0c61917b63",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.5.2",
+      "title": "Required Number Of Signers"
+    },
+    {
+      "taskKey": "u:6a042449-1bb2-49a9-b6e0-246192f529f7",
+      "uuid": "6a042449-1bb2-49a9-b6e0-246192f529f7",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.5.3",
+      "title": "Signers"
+    },
+    {
+      "taskKey": "u:aff3f1a0-d87a-423e-9f05-9c7289894989",
+      "uuid": "aff3f1a0-d87a-423e-9f05-9c7289894989",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.5.4",
+      "title": "Usage Standards"
+    },
+    {
+      "taskKey": "u:64392bbd-b111-4482-aab4-241c66a997cb",
+      "uuid": "64392bbd-b111-4482-aab4-241c66a997cb",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.5.5",
+      "title": "Modification"
+    },
+    {
+      "taskKey": "u:49bdf660-7489-499f-aad1-31a1355d78c9",
+      "uuid": "49bdf660-7489-499f-aad1-31a1355d78c9",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.6",
+      "title": "Test NFAT Facility Freezer Multisig"
+    },
+    {
+      "taskKey": "u:78cc09de-ce5b-4e4b-aac4-40339f777245",
+      "uuid": "78cc09de-ce5b-4e4b-aac4-40339f777245",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.6.1",
+      "title": "Address"
+    },
+    {
+      "taskKey": "u:9d8e9bcb-a5aa-4a38-9b64-2972bef7d471",
+      "uuid": "9d8e9bcb-a5aa-4a38-9b64-2972bef7d471",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.6.2",
+      "title": "Required Number Of Signers"
+    },
+    {
+      "taskKey": "u:9c27b915-f194-4922-b1f7-9ddb40f623a5",
+      "uuid": "9c27b915-f194-4922-b1f7-9ddb40f623a5",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.6.3",
+      "title": "Signers"
+    },
+    {
+      "taskKey": "u:2a8bd875-400b-4751-8d89-76477b1be1b1",
+      "uuid": "2a8bd875-400b-4751-8d89-76477b1be1b1",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.6.4",
+      "title": "Usage Standards"
+    },
+    {
+      "taskKey": "u:d62117e6-c4dd-4786-974b-ba9162ffef53",
+      "uuid": "d62117e6-c4dd-4786-974b-ba9162ffef53",
+      "docNo": "A.1.14.6.3.1.3.1.1.1.2.2.6.5",
+      "title": "Modification"
+    },
+    {
       "taskKey": "u:862b6d83-f464-4125-8259-233b7de75ec4",
       "uuid": "862b6d83-f464-4125-8259-233b7de75ec4",
       "docNo": "A.2.2.4.3",
@@ -391,10 +463,88 @@
       "title": "Default Admin Role"
     },
     {
+      "taskKey": "u:b7c73a0c-456d-4e75-93ac-8eec185ece31",
+      "uuid": "b7c73a0c-456d-4e75-93ac-8eec185ece31",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2",
+      "title": "Facets"
+    },
+    {
       "taskKey": "u:24faa338-1e0b-41fb-b21c-82b12f0d01e4",
       "uuid": "24faa338-1e0b-41fb-b21c-82b12f0d01e4",
       "docNo": "A.2.2.10.1.1.1.2.3.1.2.7.1",
       "title": "Highest Production Rate Limit For ERC-4626 Facet"
+    },
+    {
+      "taskKey": "u:78e90576-2104-4331-ad42-f60a937a2a45",
+      "uuid": "78e90576-2104-4331-ad42-f60a937a2a45",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.26",
+      "title": "NFAT Prime Facet"
+    },
+    {
+      "taskKey": "u:4c62875c-61f6-490e-b58e-caf47e5c286f",
+      "uuid": "4c62875c-61f6-490e-b58e-caf47e5c286f",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.26.1",
+      "title": "Highest Production Rate Limit For NFAT Prime Facet"
+    },
+    {
+      "taskKey": "u:cf231b22-ce7f-4719-b592-6c539c63cb22",
+      "uuid": "cf231b22-ce7f-4719-b592-6c539c63cb22",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.27",
+      "title": "NFAT Halo Facet"
+    },
+    {
+      "taskKey": "u:b5b54c8e-1edb-4deb-963e-713468a60635",
+      "uuid": "b5b54c8e-1edb-4deb-963e-713468a60635",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.27.1",
+      "title": "Highest Production Rate Limit For NFAT Halo Facet"
+    },
+    {
+      "taskKey": "u:768c5e08-f749-41ac-b96a-a67bb87cd90d",
+      "uuid": "768c5e08-f749-41ac-b96a-a67bb87cd90d",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.28",
+      "title": "Swap Asset Facet"
+    },
+    {
+      "taskKey": "u:5555f221-a8c2-426e-89bc-454f5fcd0765",
+      "uuid": "5555f221-a8c2-426e-89bc-454f5fcd0765",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.2.28.1",
+      "title": "Highest Production Rate Limit For Swap Asset Facet"
+    },
+    {
+      "taskKey": "u:cc980032-b7e4-41c5-ac4d-2f99f89f51dc",
+      "uuid": "cc980032-b7e4-41c5-ac4d-2f99f89f51dc",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.3",
+      "title": "PAU Factory"
+    },
+    {
+      "taskKey": "u:833a0750-ff91-4fdc-95a8-af77df301dbc",
+      "uuid": "833a0750-ff91-4fdc-95a8-af77df301dbc",
+      "docNo": "A.2.2.10.1.1.1.2.3.1.4",
+      "title": "Administered Agent Factory"
+    },
+    {
+      "taskKey": "u:8db42e70-ed35-4628-94ec-614482582b2d",
+      "uuid": "8db42e70-ed35-4628-94ec-614482582b2d",
+      "docNo": "A.2.2.10.1.1.1.2.3.2.4",
+      "title": "Administered Agent Factory"
+    },
+    {
+      "taskKey": "u:34423259-8fc5-4761-af8b-734332d2ada5",
+      "uuid": "34423259-8fc5-4761-af8b-734332d2ada5",
+      "docNo": "A.2.2.10.1.1.1.2.3.2.5",
+      "title": "Configurator"
+    },
+    {
+      "taskKey": "u:1e0bce04-7924-4d12-889f-cb7a17451a90",
+      "uuid": "1e0bce04-7924-4d12-889f-cb7a17451a90",
+      "docNo": "A.2.2.10.1.1.1.2.3.2.6",
+      "title": "BeamState"
+    },
+    {
+      "taskKey": "u:c0642bfe-493c-489d-9f9f-9171dbb99d99",
+      "uuid": "c0642bfe-493c-489d-9f9f-9171dbb99d99",
+      "docNo": "A.2.2.10.1.1.1.2.3.2.7",
+      "title": "Timelock"
     },
     {
       "taskKey": "u:eb4e8e2e-2a55-4c67-aa11-d26b07a481d9",
@@ -409,6 +559,156 @@
       "title": "ERC-4626 Facet"
     },
     {
+      "taskKey": "u:102b7264-c4ae-4f36-ad22-bbfc11707e92",
+      "uuid": "102b7264-c4ae-4f36-ad22-bbfc11707e92",
+      "docNo": "A.2.2.10.1.1.1.2.3.3.4",
+      "title": "Administered Agent Factory"
+    },
+    {
+      "taskKey": "u:e5cf7362-7ea2-4a33-8373-565d56c7da67",
+      "uuid": "e5cf7362-7ea2-4a33-8373-565d56c7da67",
+      "docNo": "A.2.2.10.1.1.1.2.3.3.5",
+      "title": "Configurator"
+    },
+    {
+      "taskKey": "u:ee66bdd5-5344-41e6-8063-c899d22e7f42",
+      "uuid": "ee66bdd5-5344-41e6-8063-c899d22e7f42",
+      "docNo": "A.2.2.10.1.1.1.2.3.3.6",
+      "title": "BeamState"
+    },
+    {
+      "taskKey": "u:72b0384e-0151-44f8-bd0f-c5d90d0fb037",
+      "uuid": "72b0384e-0151-44f8-bd0f-c5d90d0fb037",
+      "docNo": "A.2.2.10.1.1.1.2.3.3.7",
+      "title": "Timelock"
+    },
+    {
+      "taskKey": "u:f61cfbba-2d0a-4c61-ae25-0bfc8ccd38da",
+      "uuid": "f61cfbba-2d0a-4c61-ae25-0bfc8ccd38da",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.2.3",
+      "title": "Test NFAT Facility Diamond PAU"
+    },
+    {
+      "taskKey": "u:d4f794f0-667c-4d44-ae21-9e28854877ad",
+      "uuid": "d4f794f0-667c-4d44-ae21-9e28854877ad",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.2.4",
+      "title": "Spark Diamond PAU"
+    },
+    {
+      "taskKey": "u:2091d01d-461a-4a02-9e82-986cc51960d4",
+      "uuid": "2091d01d-461a-4a02-9e82-986cc51960d4",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.3",
+      "title": "BeamState"
+    },
+    {
+      "taskKey": "u:a824d088-be58-4163-b382-54a95a728103",
+      "uuid": "a824d088-be58-4163-b382-54a95a728103",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.3.2",
+      "title": "Timelock"
+    },
+    {
+      "taskKey": "u:88e11076-5fe1-42a5-b2ba-bdb1bc929ec8",
+      "uuid": "88e11076-5fe1-42a5-b2ba-bdb1bc929ec8",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.3.6",
+      "title": "PASMom"
+    },
+    {
+      "taskKey": "u:45840a10-6c7c-453a-8218-4ab4d705012d",
+      "uuid": "45840a10-6c7c-453a-8218-4ab4d705012d",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4",
+      "title": "Configurator"
+    },
+    {
+      "taskKey": "u:86f5b102-1029-4980-91f2-dbfc5bf8d2ae",
+      "uuid": "86f5b102-1029-4980-91f2-dbfc5bf8d2ae",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.3",
+      "title": "Operator For The Test NFAT Facility Diamond PAU"
+    },
+    {
+      "taskKey": "u:6ec36c2a-ac2e-40f8-8731-1c1d46bfbc87",
+      "uuid": "6ec36c2a-ac2e-40f8-8731-1c1d46bfbc87",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.3.1",
+      "title": "Test NFAT Facility Operator Multisig Address"
+    },
+    {
+      "taskKey": "u:2772ee0e-fd31-4973-bd03-0666dc59c862",
+      "uuid": "2772ee0e-fd31-4973-bd03-0666dc59c862",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.3.2",
+      "title": "Test NFAT Facility Operator Multisig Required Number Of Signers"
+    },
+    {
+      "taskKey": "u:991c4ec1-f37c-425f-aae7-def941c80880",
+      "uuid": "991c4ec1-f37c-425f-aae7-def941c80880",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.3.3",
+      "title": "Test NFAT Facility Operator Multisig Signers"
+    },
+    {
+      "taskKey": "u:dbe35ed4-1c2d-4479-802a-98e4038a810a",
+      "uuid": "dbe35ed4-1c2d-4479-802a-98e4038a810a",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.3.4",
+      "title": "Test NFAT Facility Operator Multisig Usage Standards"
+    },
+    {
+      "taskKey": "u:37c95ecd-8737-4f44-910a-51a0e84acb58",
+      "uuid": "37c95ecd-8737-4f44-910a-51a0e84acb58",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.3.5",
+      "title": "Test NFAT Facility Operator Multisig Modification"
+    },
+    {
+      "taskKey": "u:1e9b4e92-8097-4383-ae54-a7f22f4a114b",
+      "uuid": "1e9b4e92-8097-4383-ae54-a7f22f4a114b",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.4",
+      "title": "Operator For The Spark Diamond PAU"
+    },
+    {
+      "taskKey": "u:d957d6d2-71d3-4b10-a702-78ed11bff739",
+      "uuid": "d957d6d2-71d3-4b10-a702-78ed11bff739",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.4.1",
+      "title": "Spark Operator Multisig Address"
+    },
+    {
+      "taskKey": "u:6246d43d-a4d3-4593-b5e7-2dc89d2c21c8",
+      "uuid": "6246d43d-a4d3-4593-b5e7-2dc89d2c21c8",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.4.2",
+      "title": "Spark Operator Multisig Required Number Of Signers"
+    },
+    {
+      "taskKey": "u:2621a25a-6199-44a1-98bc-7175b2746a64",
+      "uuid": "2621a25a-6199-44a1-98bc-7175b2746a64",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.4.3",
+      "title": "Spark Operator Multisig Signers"
+    },
+    {
+      "taskKey": "u:d4d804c1-0c5a-40fc-a948-3250d90015c9",
+      "uuid": "d4d804c1-0c5a-40fc-a948-3250d90015c9",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.4.4",
+      "title": "Spark Operator Multisig Usage Standards"
+    },
+    {
+      "taskKey": "u:b2504704-b869-4573-9c99-a394e7fdb614",
+      "uuid": "b2504704-b869-4573-9c99-a394e7fdb614",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.3.4.5",
+      "title": "Spark Operator Multisig Modification"
+    },
+    {
+      "taskKey": "u:2bc1359e-07bd-4b6c-ab53-3f2ffeb6626b",
+      "uuid": "2bc1359e-07bd-4b6c-ab53-3f2ffeb6626b",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.4.3",
+      "title": "Controller For The Test NFAT Facility Diamond PAU"
+    },
+    {
+      "taskKey": "u:a5fc25de-7dca-4296-8afe-0db97d829ce0",
+      "uuid": "a5fc25de-7dca-4296-8afe-0db97d829ce0",
+      "docNo": "A.2.2.10.1.1.1.2.4.1.4.4.4",
+      "title": "Controller For The Spark Diamond PAU"
+    },
+    {
+      "taskKey": "u:c8db987b-c15d-4374-8af1-dfc34624001a",
+      "uuid": "c8db987b-c15d-4374-8af1-dfc34624001a",
+      "docNo": "A.2.2.10.1.1.1.2.4.2.4.3.1",
+      "title": "Operator For The Spark Diamond PAU"
+    },
+    {
       "taskKey": "u:e30ab84f-80f9-4933-b7f1-98c1adb8a001",
       "uuid": "e30ab84f-80f9-4933-b7f1-98c1adb8a001",
       "docNo": "A.2.2.10.1.1.1.2.4.3.2.1",
@@ -419,6 +719,12 @@
       "uuid": "24c2fc14-448d-48be-a416-86bfad6f33fe",
       "docNo": "A.2.2.10.1.1.1.2.4.3.2.2",
       "title": "Osero Diamond PAU"
+    },
+    {
+      "taskKey": "u:085bf98e-d355-45b9-abc7-eb5ea50a29a4",
+      "uuid": "085bf98e-d355-45b9-abc7-eb5ea50a29a4",
+      "docNo": "A.2.2.10.1.1.1.2.4.3.4.3.1",
+      "title": "Operator For The Spark Diamond PAU"
     },
     {
       "taskKey": "u:b52fe20e-2927-4191-967f-73934e61a8af",
@@ -469,10 +775,196 @@
       "title": "Record Domain Parameters For CCTP"
     },
     {
+      "taskKey": "u:7963258a-c420-47f0-b64d-e39d64fcdf53",
+      "uuid": "7963258a-c420-47f0-b64d-e39d64fcdf53",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.1.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:7f1f0a21-27ed-4f24-9092-3a3ee3089eec",
+      "uuid": "7f1f0a21-27ed-4f24-9092-3a3ee3089eec",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.1.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:92a9ef8c-0b93-40f0-be5f-1c934825ba12",
+      "uuid": "92a9ef8c-0b93-40f0-be5f-1c934825ba12",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.1.3",
+      "title": "Subscribe Asset To NFAT Facility"
+    },
+    {
+      "taskKey": "u:3dfeabc5-e3bf-4f7d-ba85-c9a93f350f4e",
+      "uuid": "3dfeabc5-e3bf-4f7d-ba85-c9a93f350f4e",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.2.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:f8ab6052-fe7e-4ecf-a24a-d72a1b9007ef",
+      "uuid": "f8ab6052-fe7e-4ecf-a24a-d72a1b9007ef",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.2.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:03cb1781-e449-4b03-a18a-cc88554a4a3e",
+      "uuid": "03cb1781-e449-4b03-a18a-cc88554a4a3e",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.2.3",
+      "title": "Withdraw Asset From NFAT Facility"
+    },
+    {
+      "taskKey": "u:0550b341-fbe1-4723-bb46-8f3b52384e8a",
+      "uuid": "0550b341-fbe1-4723-bb46-8f3b52384e8a",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.3.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:b57a6c9a-41ee-4138-ba94-92e9aabb11d9",
+      "uuid": "b57a6c9a-41ee-4138-ba94-92e9aabb11d9",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.3.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:f3ff67f0-ac1f-44a3-9f8b-bd2e6b47480e",
+      "uuid": "f3ff67f0-ac1f-44a3-9f8b-bd2e6b47480e",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.8.3.3",
+      "title": "Collect Repayments From NFAT Facility"
+    },
+    {
+      "taskKey": "u:4604bbc1-8e8a-43c1-8fe8-0710062480af",
+      "uuid": "4604bbc1-8e8a-43c1-8fe8-0710062480af",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.9.1.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:c9d7ff89-5e75-4a4c-a11b-64bacb953af3",
+      "uuid": "c9d7ff89-5e75-4a4c-a11b-64bacb953af3",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.9.1.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:c4464d92-6508-4fe3-bd14-c697554b8974",
+      "uuid": "c4464d92-6508-4fe3-bd14-c697554b8974",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.9.1.3",
+      "title": "Transfer Asset To Destination"
+    },
+    {
+      "taskKey": "u:5c972c9a-8d90-42c3-ae02-e72ea9f7bcd9",
+      "uuid": "5c972c9a-8d90-42c3-ae02-e72ea9f7bcd9",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.1.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:55db7662-ab99-496e-b999-27e1d057a0bc",
+      "uuid": "55db7662-ab99-496e-b999-27e1d057a0bc",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.1.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:a3d51dbe-ae08-45da-a01a-b8466f724879",
+      "uuid": "a3d51dbe-ae08-45da-a01a-b8466f724879",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.1.3",
+      "title": "Issue NFAT From NFAT Facility"
+    },
+    {
+      "taskKey": "u:1e1262bd-1784-4765-a20c-875b57ac985c",
+      "uuid": "1e1262bd-1784-4765-a20c-875b57ac985c",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.2.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:343dbb90-165f-42d9-ab78-9613cdc4d1d1",
+      "uuid": "343dbb90-165f-42d9-ab78-9613cdc4d1d1",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.2.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:27f49407-3d13-4dfb-8ce0-4fe028eb8eac",
+      "uuid": "27f49407-3d13-4dfb-8ce0-4fe028eb8eac",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.2.3",
+      "title": "Repay Principal To NFAT Facility"
+    },
+    {
+      "taskKey": "u:98383d7a-51a8-4a23-a1ad-103c131ddeef",
+      "uuid": "98383d7a-51a8-4a23-a1ad-103c131ddeef",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.3.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:2d34271b-37d7-477f-b71b-5865af6b032f",
+      "uuid": "2d34271b-37d7-477f-b71b-5865af6b032f",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.3.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:e25bc74b-ecc2-4764-8ec7-76d093d69aed",
+      "uuid": "e25bc74b-ecc2-4764-8ec7-76d093d69aed",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.3.3",
+      "title": "Repay Interest To NFAT Facility"
+    },
+    {
+      "taskKey": "u:1a174a1d-6cf6-48c0-b645-32cda5fd656a",
+      "uuid": "1a174a1d-6cf6-48c0-b645-32cda5fd656a",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.4.1",
+      "title": "Default Admin Role"
+    },
+    {
+      "taskKey": "u:9846bc64-3beb-4274-bb68-aabb10c3d396",
+      "uuid": "9846bc64-3beb-4274-bb68-aabb10c3d396",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.10.4.2",
+      "title": "Record Maximum Annual Growth Rate"
+    },
+    {
+      "taskKey": "u:1dda5fea-1beb-4ffc-8a7d-4ca26d961a90",
+      "uuid": "1dda5fea-1beb-4ffc-8a7d-4ca26d961a90",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.11.1.1",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:ca4d4d24-b060-418b-8735-e1be7002edb9",
+      "uuid": "ca4d4d24-b060-418b-8735-e1be7002edb9",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.11.1.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:06e8e163-6c66-4214-8e25-38e396a3fa9b",
+      "uuid": "06e8e163-6c66-4214-8e25-38e396a3fa9b",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.11.1.3",
+      "title": "Swap Assets With Counterparty"
+    },
+    {
+      "taskKey": "u:394c604c-b839-4acb-8f3d-2c01d99d9991",
+      "uuid": "394c604c-b839-4acb-8f3d-2c01d99d9991",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.11.2",
+      "title": "Complete Swap"
+    },
+    {
+      "taskKey": "u:f454f24f-b688-497c-afac-50a133ea994d",
+      "uuid": "f454f24f-b688-497c-afac-50a133ea994d",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.11.2.1",
+      "title": "Calling ALM Proxy"
+    },
+    {
+      "taskKey": "u:20931c95-6148-471e-adab-af9b5b20366c",
+      "uuid": "20931c95-6148-471e-adab-af9b5b20366c",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.11.2.2",
+      "title": "Rate Limit"
+    },
+    {
+      "taskKey": "u:afd5b9e1-9a35-40bd-bb3d-e643165d5098",
+      "uuid": "afd5b9e1-9a35-40bd-bb3d-e643165d5098",
+      "docNo": "A.2.2.10.1.1.1.2.5.2.11.2.3",
+      "title": "Complete Swap With Initiator"
+    },
+    {
       "taskKey": "u:1dd13ef2-ee4a-4487-8fc3-0e9d83a3bbd1",
       "uuid": "1dd13ef2-ee4a-4487-8fc3-0e9d83a3bbd1",
       "docNo": "A.2.2.10.1.1.1.2.5.4.2.2",
       "title": "Withdraw All Positions From ERC-4626 Facet"
+    },
+    {
+      "taskKey": "u:686b81a9-450d-4340-a25a-5a069cbe8788",
+      "uuid": "686b81a9-450d-4340-a25a-5a069cbe8788",
+      "docNo": "A.2.2.10.1.1.1.3.1",
+      "title": "Role Configuration"
     },
     {
       "taskKey": "u:fe70a940-5ada-48c5-8826-b361ef33275f",
@@ -583,6 +1075,126 @@
       "title": "Relationship To Prime Agent Artifacts"
     },
     {
+      "taskKey": "u:cb0160b9-d804-4a3d-a6e0-233dab98c2c5",
+      "uuid": "cb0160b9-d804-4a3d-a6e0-233dab98c2c5",
+      "docNo": "A.2.2.10.1.1.1.4.1",
+      "title": "Facility Requirements"
+    },
+    {
+      "taskKey": "u:e728cd9a-395b-4f1d-99bf-f45eaaa93c32",
+      "uuid": "e728cd9a-395b-4f1d-99bf-f45eaaa93c32",
+      "docNo": "A.2.2.10.1.1.1.4.2",
+      "title": "Onboarding"
+    },
+    {
+      "taskKey": "u:2ad64c00-28f9-4ac2-a4cd-308f0e631889",
+      "uuid": "2ad64c00-28f9-4ac2-a4cd-308f0e631889",
+      "docNo": "A.2.2.10.1.1.1.4.3",
+      "title": "Subscription And Claim"
+    },
+    {
+      "taskKey": "u:d6a20032-cb17-40b6-8360-ebc344c46789",
+      "uuid": "d6a20032-cb17-40b6-8360-ebc344c46789",
+      "docNo": "A.2.2.10.1.1.1.4.4",
+      "title": "Attestation"
+    },
+    {
+      "taskKey": "u:c6f16373-51d2-4321-aa58-fe7a3ef237d5",
+      "uuid": "c6f16373-51d2-4321-aa58-fe7a3ef237d5",
+      "docNo": "A.2.2.10.1.1.1.4.5",
+      "title": "Redemption"
+    },
+    {
+      "taskKey": "u:e5aaa732-4dcd-45cc-804e-8f08c0bd7676",
+      "uuid": "e5aaa732-4dcd-45cc-804e-8f08c0bd7676",
+      "docNo": "A.2.2.10.1.1.1.4.6",
+      "title": "Risk Treatment"
+    },
+    {
+      "taskKey": "u:c9805e00-1464-44c8-b727-6d0494a6da7e",
+      "uuid": "c9805e00-1464-44c8-b727-6d0494a6da7e",
+      "docNo": "A.2.2.10.1.1.1.4.7",
+      "title": "Approved NFAT Facilities"
+    },
+    {
+      "taskKey": "u:0b4f2a6e-7d1c-4e8a-9f35-2c6d8e1a4b70",
+      "uuid": "0b4f2a6e-7d1c-4e8a-9f35-2c6d8e1a4b70",
+      "docNo": "A.2.2.10.1.1.1.4.7.0.6.1",
+      "title": "List Of Approved NFAT Facilities"
+    },
+    {
+      "taskKey": "u:31a31991-9ece-4b75-80f1-60e8c0b9b258",
+      "uuid": "31a31991-9ece-4b75-80f1-60e8c0b9b258",
+      "docNo": "A.2.2.10.1.1.1.4.8",
+      "title": "NFAT Pilot"
+    },
+    {
+      "taskKey": "u:2580dbb1-7e0f-4cc7-87c6-6de89483920a",
+      "uuid": "2580dbb1-7e0f-4cc7-87c6-6de89483920a",
+      "docNo": "A.2.2.10.1.1.1.4.8.1",
+      "title": "Participating Agents"
+    },
+    {
+      "taskKey": "u:28548f36-a44a-4124-a02a-05b627b4e2fd",
+      "uuid": "28548f36-a44a-4124-a02a-05b627b4e2fd",
+      "docNo": "A.2.2.10.1.1.1.4.8.2",
+      "title": "Asset And Strategy"
+    },
+    {
+      "taskKey": "u:947368eb-3091-4513-824c-519e96c8bb08",
+      "uuid": "947368eb-3091-4513-824c-519e96c8bb08",
+      "docNo": "A.2.2.10.1.1.1.4.8.3",
+      "title": "Pilot Size"
+    },
+    {
+      "taskKey": "u:e6fbb35f-cc70-49ba-ab34-80a58895f144",
+      "uuid": "e6fbb35f-cc70-49ba-ab34-80a58895f144",
+      "docNo": "A.2.2.10.1.1.1.4.8.4",
+      "title": "Duration"
+    },
+    {
+      "taskKey": "u:86be70f3-5caa-4f1a-a002-fbd53ba26070",
+      "uuid": "86be70f3-5caa-4f1a-a002-fbd53ba26070",
+      "docNo": "A.2.2.10.1.1.1.4.8.5",
+      "title": "Risk Treatment"
+    },
+    {
+      "taskKey": "u:d5ad0fc3-277c-4ee2-9128-3f22f320b7e0",
+      "uuid": "d5ad0fc3-277c-4ee2-9128-3f22f320b7e0",
+      "docNo": "A.2.2.10.1.1.1.4.8.6.1",
+      "title": "Yield Treatment Exception"
+    },
+    {
+      "taskKey": "u:4f8e841d-af56-49d1-8ff5-566603936f7d",
+      "uuid": "4f8e841d-af56-49d1-8ff5-566603936f7d",
+      "docNo": "A.2.2.10.1.1.1.4.8.6.2",
+      "title": "Monthly Settlement Cycle Exception"
+    },
+    {
+      "taskKey": "u:33f421ba-fe7e-4547-9491-f4ec2fb0f879",
+      "uuid": "33f421ba-fe7e-4547-9491-f4ec2fb0f879",
+      "docNo": "A.2.2.10.1.1.1.4.8.7",
+      "title": "NFAT Pilot Phases"
+    },
+    {
+      "taskKey": "u:224380d8-85e3-4f8c-8b37-2ea5b9541a94",
+      "uuid": "224380d8-85e3-4f8c-8b37-2ea5b9541a94",
+      "docNo": "A.2.2.10.1.1.1.4.8.7.1",
+      "title": "Target Balances"
+    },
+    {
+      "taskKey": "u:9e2f2f1e-8f43-442d-8a32-060b7c4e9ba0",
+      "uuid": "9e2f2f1e-8f43-442d-8a32-060b7c4e9ba0",
+      "docNo": "A.2.2.10.1.1.1.4.8.7.2",
+      "title": "Rate Limit Increases"
+    },
+    {
+      "taskKey": "u:f3b0915b-302a-45cf-aa64-2f5056e9c52a",
+      "uuid": "f3b0915b-302a-45cf-aa64-2f5056e9c52a",
+      "docNo": "A.2.2.10.1.1.1.4.8.7.3",
+      "title": "Holding Period"
+    },
+    {
       "taskKey": "u:7a36f228-0438-43da-ae5f-a43af70c0121",
       "uuid": "7a36f228-0438-43da-ae5f-a43af70c0121",
       "docNo": "A.2.2.10.1.1.2.2.1",
@@ -625,10 +1237,28 @@
       "title": "Expense Recognition For Legacy Account Consolidation"
     },
     {
+      "taskKey": "u:e87fe248-5983-41d5-9c7a-75064a18d476",
+      "uuid": "e87fe248-5983-41d5-9c7a-75064a18d476",
+      "docNo": "A.2.4.1.2.1.1.2",
+      "title": "Demand Side Buffer Replenishment"
+    },
+    {
+      "taskKey": "u:77fd76fa-8f44-4ac4-8d4e-ef1713c8b638",
+      "uuid": "77fd76fa-8f44-4ac4-8d4e-ef1713c8b638",
+      "docNo": "A.2.4.1.2.1.3.4",
+      "title": "Transfers To Buffers"
+    },
+    {
       "taskKey": "u:075ac7f9-4c78-4dd1-a9b2-225071c09cd2",
       "uuid": "075ac7f9-4c78-4dd1-a9b2-225071c09cd2",
       "docNo": "A.2.4.1.2.1.5.5",
       "title": "Transition To Demand Side Buffer Replenishment"
+    },
+    {
+      "taskKey": "u:adbe704f-9c50-4ee1-b632-398cdd87598a",
+      "uuid": "adbe704f-9c50-4ee1-b632-398cdd87598a",
+      "docNo": "A.2.4.2.1.2",
+      "title": "Calculation Of Applicable Balance"
     },
     {
       "taskKey": "u:00be9ea2-5227-4ce3-9a33-a58b8944c50c",
@@ -671,6 +1301,60 @@
       "uuid": "33ef06d4-6ee3-4302-943d-1b932d8c88b4",
       "docNo": "A.3.2.2.4.3.3",
       "title": "Bidding Process"
+    },
+    {
+      "taskKey": "u:ddb90fee-2851-4bf0-b924-f1d73e30ce7a",
+      "uuid": "ddb90fee-2851-4bf0-b924-f1d73e30ce7a",
+      "docNo": "A.3.5.2",
+      "title": "Smart Burn Engine Parameters"
+    },
+    {
+      "taskKey": "u:f97321f8-c677-4a6c-aa87-8f9a93f8acd3",
+      "uuid": "f97321f8-c677-4a6c-aa87-8f9a93f8acd3",
+      "docNo": "A.3.7.1.1.1.1",
+      "title": "ETH-A"
+    },
+    {
+      "taskKey": "u:87fd7fd2-495f-452f-abed-4a887ba02c7c",
+      "uuid": "87fd7fd2-495f-452f-abed-4a887ba02c7c",
+      "docNo": "A.3.7.1.1.1.2",
+      "title": "ETH-B"
+    },
+    {
+      "taskKey": "u:896ce563-a4f1-4a9d-ad23-fc5840ea2f28",
+      "uuid": "896ce563-a4f1-4a9d-ad23-fc5840ea2f28",
+      "docNo": "A.3.7.1.1.1.3",
+      "title": "ETH-C"
+    },
+    {
+      "taskKey": "u:1dbc84b7-a17e-40af-aef5-63a9b78e85b3",
+      "uuid": "1dbc84b7-a17e-40af-aef5-63a9b78e85b3",
+      "docNo": "A.3.7.1.1.1.4",
+      "title": "WSTETH-A"
+    },
+    {
+      "taskKey": "u:cfb76935-bcd4-4973-967c-7625c1524e58",
+      "uuid": "cfb76935-bcd4-4973-967c-7625c1524e58",
+      "docNo": "A.3.7.1.1.1.5",
+      "title": "WSTETH-B"
+    },
+    {
+      "taskKey": "u:dba74f38-58f3-432a-b14b-bf5bc95ac5ed",
+      "uuid": "dba74f38-58f3-432a-b14b-bf5bc95ac5ed",
+      "docNo": "A.3.7.1.1.1.6",
+      "title": "WBTC-A"
+    },
+    {
+      "taskKey": "u:307ba340-c3d3-42c8-8121-e98c5de607d0",
+      "uuid": "307ba340-c3d3-42c8-8121-e98c5de607d0",
+      "docNo": "A.3.7.1.1.1.7",
+      "title": "WBTC-B"
+    },
+    {
+      "taskKey": "u:2f42fd1f-a79b-4208-ac07-bbfa9a447c18",
+      "uuid": "2f42fd1f-a79b-4208-ac07-bbfa9a447c18",
+      "docNo": "A.3.7.1.1.1.8",
+      "title": "WBTC-C"
     },
     {
       "taskKey": "u:47d69b3d-a650-4dcd-a8f7-0c4f6bf5e8d2",
@@ -805,6 +1489,12 @@
       "title": "All PSM Assets Withdrawal Action"
     },
     {
+      "taskKey": "u:bbef4fe1-9b3a-4d4c-a956-d17907e70b4b",
+      "uuid": "bbef4fe1-9b3a-4d4c-a956-d17907e70b4b",
+      "docNo": "A.6.1.1.1.2.6.1.3.1.4.4.4.2.1",
+      "title": "Spark Savings USDT Risk Parameters"
+    },
+    {
       "taskKey": "u:66799887-71fc-478f-b6a3-83df779bf405",
       "uuid": "66799887-71fc-478f-b6a3-83df779bf405",
       "docNo": "A.6.1.1.1.2.6.1.3.5.2.1.4.1.1",
@@ -845,6 +1535,18 @@
       "uuid": "3d6a3fd3-4f36-45eb-9399-4eedfdc1c30d",
       "docNo": "A.6.1.1.1.2.6.1.4.4.2.1.4.2.1",
       "title": "Spark Savings USDC Risk Parameters"
+    },
+    {
+      "taskKey": "u:995e1318-2545-4109-9596-7d404bf2de0d",
+      "uuid": "995e1318-2545-4109-9596-7d404bf2de0d",
+      "docNo": "A.6.1.1.1.3.5.4.1.1.2.2",
+      "title": "Spark Vaults Administered Agent Roles"
+    },
+    {
+      "taskKey": "u:ba8ab6d9-1377-4679-b991-88161d956018",
+      "uuid": "ba8ab6d9-1377-4679-b991-88161d956018",
+      "docNo": "A.6.1.1.1.3.5.4.1.1.2.3",
+      "title": "Spark Planner Administered Agent Roles"
     },
     {
       "taskKey": "u:d79aed30-65e9-4eae-858c-1a1a63caa6d9",

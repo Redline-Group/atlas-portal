@@ -1,9 +1,9 @@
 {
   "registry-liveness": {
     "counts": {
-      "total": 60,
-      "live": 20,
-      "empty": 40
+      "total": 62,
+      "live": 21,
+      "empty": 41
     },
     "members": [
       {
@@ -88,6 +88,12 @@
         "uuid": "86fce840-f7f3-4617-bb58-d04db8731c9d",
         "doc_no": "A.2.2.10.1.1.1.1.3.0.6.1",
         "title": "List Of Previous Sky Direct Exposures",
+        "bucket": "live"
+      },
+      {
+        "uuid": "0b4f2a6e-7d1c-4e8a-9f35-2c6d8e1a4b70",
+        "doc_no": "A.2.2.10.1.1.1.4.7.0.6.1",
+        "title": "List Of Approved NFAT Facilities",
         "bucket": "live"
       },
       {
@@ -357,6 +363,12 @@
       {
         "uuid": "cc1299ab-b9fb-41a0-8a95-4a6a174fac5a",
         "doc_no": "A.6.1.1.7.2.5.1.2.8.3.1.0.6.1",
+        "title": "List Of Distribution Reward Payments",
+        "bucket": "empty"
+      },
+      {
+        "uuid": "d904073a-ab17-4efb-a8fd-1b9f85a5e84e",
+        "doc_no": "A.6.1.1.7.2.5.1.2.9.3.1.0.6.1",
         "title": "List Of Distribution Reward Payments",
         "bucket": "empty"
       },
@@ -7990,17 +8002,29 @@
   },
   "title-templates": {
     "counts": {
-      "total": 977,
+      "total": 987,
       "Primitive Hub Document": 136,
       "Global Activation Status": 140,
       "Hub Data Repository": 136,
       "Single Instance Configuration Document": 48,
-      "Parameters": 249,
-      "Rate Limits": 158,
-      "Data Repository": 102,
+      "Parameters": 253,
+      "Rate Limits": 163,
+      "Data Repository": 103,
       "Omni Documents": 8
     },
     "members": [
+      {
+        "uuid": "47a1ae26-1106-475b-8565-9ebb07dc16ce",
+        "doc_no": "A.1.14.6.3.1.3.1.1.1.1",
+        "title": "Parameters",
+        "bucket": "Parameters"
+      },
+      {
+        "uuid": "e9922fc4-20d7-4127-aacf-b16ed11e1eb4",
+        "doc_no": "A.1.14.6.3.1.3.1.1.1.2.2.3",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
+      },
       {
         "uuid": "f9de4749-2bf4-4871-a5a8-6fb6849af7ad",
         "doc_no": "A.2.2.5.1.2.1",
@@ -8656,38 +8680,38 @@
         "bucket": "Rate Limits"
       },
       {
-        "uuid": "f3eae5f3-db85-4f92-9fca-46c13af64d99",
+        "uuid": "93f2f53e-1907-4828-b1a6-dbd0838e17ff",
         "doc_no": "A.6.1.1.1.2.6.1.3.1.4.3.2",
         "title": "Parameters",
         "bucket": "Parameters"
       },
       {
-        "uuid": "ab480592-3e9b-4bdb-9e8d-80e4370a964e",
+        "uuid": "8d9562b5-4277-4c63-96a2-923a36afb192",
         "doc_no": "A.6.1.1.1.2.6.1.3.1.4.3.2.4",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
       {
-        "uuid": "3802d641-27cf-4ec1-bba4-6a09a84071af",
+        "uuid": "8a75c7ba-4d34-4e0e-8f6e-25e765fcbe36",
         "doc_no": "A.6.1.1.1.2.6.1.3.1.4.3.4.2.2",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
       {
-        "uuid": "93f2f53e-1907-4828-b1a6-dbd0838e17ff",
+        "uuid": "0d33feac-4664-4b5a-997b-6b910bd57be9",
         "doc_no": "A.6.1.1.1.2.6.1.3.1.4.4.2",
         "title": "Parameters",
         "bucket": "Parameters"
       },
       {
-        "uuid": "8d9562b5-4277-4c63-96a2-923a36afb192",
+        "uuid": "2b35750b-bfa0-46b5-be7a-c163fae38288",
         "doc_no": "A.6.1.1.1.2.6.1.3.1.4.4.2.4",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
       {
-        "uuid": "8a75c7ba-4d34-4e0e-8f6e-25e765fcbe36",
-        "doc_no": "A.6.1.1.1.2.6.1.3.1.4.4.4.2.2",
+        "uuid": "aba5c9dc-79aa-4cd4-8d0f-47760b3deb13",
+        "doc_no": "A.6.1.1.1.2.6.1.3.1.4.4.4.2.3",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
@@ -9310,6 +9334,24 @@
         "bucket": "Rate Limits"
       },
       {
+        "uuid": "f3eae5f3-db85-4f92-9fca-46c13af64d99",
+        "doc_no": "A.6.1.1.1.2.6.1.4.1.12.1.2",
+        "title": "Parameters",
+        "bucket": "Parameters"
+      },
+      {
+        "uuid": "ab480592-3e9b-4bdb-9e8d-80e4370a964e",
+        "doc_no": "A.6.1.1.1.2.6.1.4.1.12.1.2.4",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
+      },
+      {
+        "uuid": "3802d641-27cf-4ec1-bba4-6a09a84071af",
+        "doc_no": "A.6.1.1.1.2.6.1.4.1.12.1.4.2.2",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
+      },
+      {
         "uuid": "c090d021-d1a9-41c9-afcf-4edaa97150c0",
         "doc_no": "A.6.1.1.1.2.6.1.4.2.1.1.2",
         "title": "Parameters",
@@ -9500,6 +9542,12 @@
         "doc_no": "A.6.1.1.1.3.4.2.4.2",
         "title": "Parameters",
         "bucket": "Parameters"
+      },
+      {
+        "uuid": "18b0df9a-acb0-401e-8bbf-c5d25d21216a",
+        "doc_no": "A.6.1.1.1.3.5.4.1.1.5",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
       },
       {
         "uuid": "28443b6e-bf44-4a2b-9592-c1b55f2d4679",
@@ -13270,6 +13318,18 @@
         "bucket": "Data Repository"
       },
       {
+        "uuid": "04dfb560-7ab4-4d00-abe7-70a2496efa10",
+        "doc_no": "A.6.1.1.7.2.5.1.2.9.1",
+        "title": "Parameters",
+        "bucket": "Parameters"
+      },
+      {
+        "uuid": "1c0fc6d3-484f-42db-82a0-c0f4e6350f30",
+        "doc_no": "A.6.1.1.7.2.5.1.2.9.3",
+        "title": "Data Repository",
+        "bucket": "Data Repository"
+      },
+      {
         "uuid": "60d8973d-b5e0-4dc3-ae21-edfda998bc42",
         "doc_no": "A.6.1.1.7.2.5.2.1",
         "title": "Primitive Hub Document",
@@ -13344,6 +13404,18 @@
       {
         "uuid": "cb293144-de0c-4bd8-9971-d96327b38ae9",
         "doc_no": "A.6.1.1.7.2.6.1.3.1.1.1.2.4",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
+      },
+      {
+        "uuid": "98fce148-9496-4409-a729-da96142de5be",
+        "doc_no": "A.6.1.1.7.2.6.1.3.1.2.1.2",
+        "title": "Parameters",
+        "bucket": "Parameters"
+      },
+      {
+        "uuid": "59d4c914-c63b-4348-afa3-32d49e1c49ed",
+        "doc_no": "A.6.1.1.7.2.6.1.3.1.2.1.2.4",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
@@ -14374,8 +14446,8 @@
   },
   "cross-scope-duplication": {
     "counts": {
-      "total": 159,
-      "groups": 64
+      "total": 178,
+      "groups": 72
     },
     "members": [
       {
@@ -14493,6 +14565,36 @@
         "bucket": "agent artifacts"
       },
       {
+        "uuid": "02588819-4604-4e7d-beb3-c3263f447e24",
+        "doc_no": "A.1.14.6.3.1.3.1.1.1.1.4",
+        "title": "Term",
+        "bucket": "term"
+      },
+      {
+        "uuid": "ca6b2c28-2acd-45fa-9424-b95c8f560511",
+        "doc_no": "A.1.14.6.3.1.3.1.1.1.1.6",
+        "title": "Attestation",
+        "bucket": "attestation"
+      },
+      {
+        "uuid": "6f946f54-4723-4d31-bc83-d362afeef29b",
+        "doc_no": "A.1.14.6.3.1.3.1.1.1.1.7",
+        "title": "Redemption",
+        "bucket": "redemption"
+      },
+      {
+        "uuid": "b2970713-1723-4e09-a9fc-19d54a67171f",
+        "doc_no": "A.1.14.6.3.1.3.1.1.1.1.8",
+        "title": "Risk Treatment",
+        "bucket": "risk treatment"
+      },
+      {
+        "uuid": "e4570241-cb6b-4224-acc0-5f65ab9c7386",
+        "doc_no": "A.1.14.6.3.1.3.1.1.1.2.1.2",
+        "title": "NFAT Identifiers",
+        "bucket": "nfat identifiers"
+      },
+      {
         "uuid": "4b76256c-c625-49ce-a91d-88d3fbd2452f",
         "doc_no": "A.2.1.1.1",
         "title": "In General",
@@ -14553,16 +14655,34 @@
         "bucket": "basin facet"
       },
       {
+        "uuid": "17b0a239-b0b0-476e-9a67-b8b6e3156507",
+        "doc_no": "A.2.2.10.1.1.1.2.3.1.2.11",
+        "title": "LayerZero Facet",
+        "bucket": "layerzero facet"
+      },
+      {
+        "uuid": "ad11b1de-41d7-4529-920b-55583445648e",
+        "doc_no": "A.2.2.10.1.1.1.2.3.1.2.17",
+        "title": "Spark Vault Facet",
+        "bucket": "spark vault facet"
+      },
+      {
         "uuid": "b808a829-2f31-42f1-ac9f-6801d3eb8437",
         "doc_no": "A.2.2.10.1.1.1.2.3.1.2.20",
         "title": "Uniswap v3 Facet",
         "bucket": "uniswap v3 facet"
       },
       {
-        "uuid": "5e941add-bf8d-4623-95a1-69795e7f7034",
-        "doc_no": "A.2.2.10.1.1.1.2.5.2",
-        "title": "Diamond PAU Controller Functions",
-        "bucket": "diamond pau controller functions"
+        "uuid": "78e90576-2104-4331-ad42-f60a937a2a45",
+        "doc_no": "A.2.2.10.1.1.1.2.3.1.2.26",
+        "title": "NFAT Prime Facet",
+        "bucket": "nfat prime facet"
+      },
+      {
+        "uuid": "768c5e08-f749-41ac-b96a-a67bb87cd90d",
+        "doc_no": "A.2.2.10.1.1.1.2.3.1.2.28",
+        "title": "Swap Asset Facet",
+        "bucket": "swap asset facet"
       },
       {
         "uuid": "e679e470-17f3-40ef-b455-dd424a498992",
@@ -14601,6 +14721,24 @@
         "bucket": "redeem from erc-4626 vault"
       },
       {
+        "uuid": "b421bd33-1c74-4276-b837-2855dca73458",
+        "doc_no": "A.2.2.10.1.1.1.2.5.2.8",
+        "title": "NFAT Prime Facet",
+        "bucket": "nfat prime facet"
+      },
+      {
+        "uuid": "c4464d92-6508-4fe3-bd14-c697554b8974",
+        "doc_no": "A.2.2.10.1.1.1.2.5.2.9.1.3",
+        "title": "Transfer Asset To Destination",
+        "bucket": "transfer asset to destination"
+      },
+      {
+        "uuid": "054ed277-e5ed-4aaf-b927-4769f1a270fd",
+        "doc_no": "A.2.2.10.1.1.1.2.5.2.11",
+        "title": "Swap Asset Facet",
+        "bucket": "swap asset facet"
+      },
+      {
         "uuid": "1cb17b82-a294-4942-8183-4d90b224a79d",
         "doc_no": "A.2.2.10.1.1.1.2.5.3.1",
         "title": "RateLimits Query",
@@ -14629,6 +14767,30 @@
         "doc_no": "A.2.2.10.1.1.1.2.5.3.5",
         "title": "Set Trigger For RateLimit Increase",
         "bucket": "set trigger for ratelimit increase"
+      },
+      {
+        "uuid": "d6a20032-cb17-40b6-8360-ebc344c46789",
+        "doc_no": "A.2.2.10.1.1.1.4.4",
+        "title": "Attestation",
+        "bucket": "attestation"
+      },
+      {
+        "uuid": "c6f16373-51d2-4321-aa58-fe7a3ef237d5",
+        "doc_no": "A.2.2.10.1.1.1.4.5",
+        "title": "Redemption",
+        "bucket": "redemption"
+      },
+      {
+        "uuid": "e5aaa732-4dcd-45cc-804e-8f08c0bd7676",
+        "doc_no": "A.2.2.10.1.1.1.4.6",
+        "title": "Risk Treatment",
+        "bucket": "risk treatment"
+      },
+      {
+        "uuid": "86be70f3-5caa-4f1a-a002-fbd53ba26070",
+        "doc_no": "A.2.2.10.1.1.1.4.8.5",
+        "title": "Risk Treatment",
+        "bucket": "risk treatment"
       },
       {
         "uuid": "ed10830e-6b17-4117-8ab4-5ea388b518bb",
@@ -15129,12 +15291,6 @@
         "bucket": "grantor"
       },
       {
-        "uuid": "583d17c9-77cf-4d15-b81b-9e51bfc8b3ca",
-        "doc_no": "A.6.1.1.1.2.6.1.2.2.1.2.3",
-        "title": "Diamond PAU Controller Functions",
-        "bucket": "diamond pau controller functions"
-      },
-      {
         "uuid": "89577062-a38b-4cf7-a1ae-33c0bcff1cca",
         "doc_no": "A.6.1.1.1.2.6.1.2.2.1.3.1",
         "title": "RateLimits Query",
@@ -15195,6 +15351,24 @@
         "bucket": "encumbrance ratio"
       },
       {
+        "uuid": "06042ba0-b19b-47f4-ab8b-6e679c458088",
+        "doc_no": "A.6.1.1.1.3.5.4.1.1.3.2",
+        "title": "Spark Vault Facet",
+        "bucket": "spark vault facet"
+      },
+      {
+        "uuid": "8195c358-2b4e-4da8-8a0f-542dd3a39768",
+        "doc_no": "A.6.1.1.1.3.5.4.1.1.3.4",
+        "title": "LayerZero Facet",
+        "bucket": "layerzero facet"
+      },
+      {
+        "uuid": "02fda9c8-195d-4860-a646-eaf7b3c119cc",
+        "doc_no": "A.6.1.1.1.3.5.4.1.1.3.5",
+        "title": "Swap Asset Facet",
+        "bucket": "swap asset facet"
+      },
+      {
         "uuid": "a65302b4-5222-48a9-b37f-282498acb4d6",
         "doc_no": "A.6.1.1.2.2.2.2.2.1.2.4",
         "title": "Short-Term Transitionary Measures",
@@ -15207,6 +15381,12 @@
         "bucket": "redeem from erc-4626 vault"
       },
       {
+        "uuid": "1bac7288-5cd8-4632-9ff1-ef98977f57d8",
+        "doc_no": "A.6.1.1.2.2.6.1.2.2.1.2.1.2.4.1.3",
+        "title": "Transfer Asset To Destination",
+        "bucket": "transfer asset to destination"
+      },
+      {
         "uuid": "222d77a8-3cd1-46da-a720-1c474b760cfa",
         "doc_no": "A.6.1.1.2.2.6.1.2.2.1.2.1.2.9.2",
         "title": "Add Liquidity To Uniswap V3",
@@ -15217,12 +15397,6 @@
         "doc_no": "A.6.1.1.2.2.6.1.2.2.1.2.1.2.9.3",
         "title": "Remove Liquidity From Uniswap V3",
         "bucket": "remove liquidity from uniswap v3"
-      },
-      {
-        "uuid": "6c060c28-5619-48f4-8536-b74c153b1641",
-        "doc_no": "A.6.1.1.2.2.6.1.2.2.1.2.2",
-        "title": "Diamond PAU Controller Functions",
-        "bucket": "diamond pau controller functions"
       },
       {
         "uuid": "3e54ecce-73fc-4f85-be3c-0c89d3d005d2",
@@ -15325,6 +15499,18 @@
         "doc_no": "A.6.1.1.7.2.6.1.2.2.1.2.1.2",
         "title": "Aave v3 Facet",
         "bucket": "aave v3 facet"
+      },
+      {
+        "uuid": "57fe3002-80f4-4c6f-98ad-7b3937913c23",
+        "doc_no": "A.6.1.1.7.2.6.1.2.2.1.2.1.7",
+        "title": "NFAT Prime Facet",
+        "bucket": "nfat prime facet"
+      },
+      {
+        "uuid": "8ca4f24f-61d1-4154-bda6-1165615b336d",
+        "doc_no": "A.6.1.1.7.2.6.1.3.1.2.1.2.1.4",
+        "title": "NFAT Identifiers",
+        "bucket": "nfat identifiers"
       },
       {
         "uuid": "8cfee319-727d-459b-ae67-cac3bec157d9",

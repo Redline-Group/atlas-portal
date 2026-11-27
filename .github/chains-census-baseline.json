@@ -187,6 +187,20 @@
       ]
     },
     {
+      "label": "The USDT OFT adapter is",
+      "sources": [
+        "address-list-row"
+      ],
+      "count": 1,
+      "examples": [
+        {
+          "uuid": "5d997482-2f5d-4371-abf1-b93f5d5d86a4",
+          "doc_no": "A.6.1.1.1.3.5.4.1.1.6.3",
+          "title": "LayerZero Recipients"
+        }
+      ]
+    },
+    {
       "label": "USDC",
       "sources": [
         "prose"
