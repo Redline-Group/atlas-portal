@@ -16,12 +16,12 @@
       "samples": []
     },
     "Active Data Controller|s:resp-party,s:role-for-is": {
-      "total": 32,
+      "total": 33,
       "uncovered": 0,
       "samples": []
     },
     "Active Data Controller|s:resp-party,uuid-link": {
-      "total": 26,
+      "total": 27,
       "uncovered": 0,
       "samples": []
     },
@@ -46,12 +46,17 @@
       "samples": []
     },
     "Active Data|plain": {
-      "total": 74,
+      "total": 75,
       "uncovered": 0,
       "samples": []
     },
     "Active Data|table": {
       "total": 7,
+      "uncovered": 0,
+      "samples": []
+    },
+    "Active Data|table,uuid-link": {
+      "total": 1,
       "uncovered": 0,
       "samples": []
     },
@@ -82,7 +87,7 @@
       ]
     },
     "Core|addr": {
-      "total": 456,
+      "total": 478,
       "uncovered": 0,
       "samples": []
     },
@@ -91,8 +96,13 @@
       "uncovered": 0,
       "samples": []
     },
+    "Core|addr,bullet-kv,s:addr-of-is": {
+      "total": 1,
+      "uncovered": 0,
+      "samples": []
+    },
     "Core|addr,s:addr-of-is": {
-      "total": 209,
+      "total": 212,
       "uncovered": 0,
       "samples": []
     },
@@ -112,17 +122,17 @@
       "samples": []
     },
     "Core|addr,s:role-for-is": {
-      "total": 1,
+      "total": 2,
       "uncovered": 0,
       "samples": []
     },
     "Core|addr,s:role-held-by": {
-      "total": 26,
+      "total": 27,
       "uncovered": 0,
       "samples": []
     },
     "Core|addr,s:role-held-by,table": {
-      "total": 11,
+      "total": 12,
       "uncovered": 0,
       "samples": []
     },
@@ -147,8 +157,8 @@
       "samples": []
     },
     "Core|bullet-kv": {
-      "total": 416,
-      "uncovered": 157,
+      "total": 431,
+      "uncovered": 167,
       "samples": [
         "A.2.2.10.1.1.1.2.3.1.2.1.1",
         "A.2.2.10.1.1.1.2.3.1.2.16.1",
@@ -158,13 +168,13 @@
       ]
     },
     "Core|bullet-kv,uuid-link": {
-      "total": 17,
+      "total": 20,
       "uncovered": 0,
       "samples": []
     },
     "Core|plain": {
-      "total": 8305,
-      "uncovered": 6325,
+      "total": 8419,
+      "uncovered": 6408,
       "samples": [
         "A.0.1.1.1",
         "A.0.1.1.10",
@@ -190,12 +200,12 @@
       "samples": []
     },
     "Core|s:addr-of-is,uuid-link": {
-      "total": 19,
+      "total": 20,
       "uncovered": 0,
       "samples": []
     },
     "Core|s:modify-signers": {
-      "total": 28,
+      "total": 29,
       "uncovered": 0,
       "samples": []
     },
@@ -232,7 +242,7 @@
       ]
     },
     "Core|s:role-for-is,uuid-link": {
-      "total": 36,
+      "total": 37,
       "uncovered": 0,
       "samples": []
     },
@@ -296,7 +306,7 @@
       "samples": []
     },
     "Core|table": {
-      "total": 6,
+      "total": 7,
       "uncovered": 6,
       "samples": [
         "A.2.2.10.1.1.1.3.3.1",
@@ -307,12 +317,12 @@
       ]
     },
     "Core|table,uuid-link": {
-      "total": 4,
+      "total": 6,
       "uncovered": 0,
       "samples": []
     },
     "Core|uuid-link": {
-      "total": 1804,
+      "total": 1878,
       "uncovered": 0,
       "samples": []
     },

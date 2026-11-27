@@ -402,6 +402,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xBBF1ad10455EeD600Cd78A1702F7AcA41C9aBceb\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
     "title": "Allocator Role Addresses",
@@ -3018,6 +3019,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
     "title": "Allocator Role Addresses",
@@ -3143,6 +3145,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xBBF1ad10455EeD600Cd78A1702F7AcA41C9aBceb\` |
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
     "title": "Allocator Role Addresses",
@@ -3269,6 +3272,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
     "title": "Allocator Role Addresses",
@@ -3395,6 +3399,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
     "title": "Allocator Role Addresses",
@@ -3517,6 +3522,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
     "title": "Allocator Role Addresses",
@@ -5133,6 +5139,18 @@ exports[`allocation-system sub-doc content > Grove > Robinhood Chain - Grove x S
     "title": "Underlying Asset Address",
   },
   {
+    "content": "The Allocator role is held by the following entities at the corresponding addresses:
+
+| Entity | Address |
+| --- | --- |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
+| Morpho Blue Public Allocator | \`0xCe5c1aFa115fF8b1D6913509bfc79D9AE08CC857\` |
+| Steakhouse Financial (USDG Faucet) | \`0x69DD1f11da2d97b88B1f61F21724aFB681B52717\` |
+
+The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
+    "title": "Allocator Role Addresses",
+  },
+  {
     "content": "The specific \`RateLimitID\`(s) for this conduit’s inflow and outflow are defined in the subdocuments herein.",
     "title": "Rate Limit IDs",
   },
@@ -6171,8 +6189,8 @@ exports[`allocation-system sub-doc content > Osero > Base - Osero x Gauntlet USD
   {
     "content": "The deposit rate limit parameters are:
 
-- \`maxAmount\`: 15,000,000 USDC
-- \`slope\`: 10,000,000 USDC per day",
+- \`maxAmount\`: 50,000,000 USDC
+- \`slope\`: 50,000,000 USDC per day",
     "title": "Deposit Rate Limit",
   },
   {
@@ -6342,12 +6360,12 @@ exports[`allocation-system sub-doc content > Osero > Ethereum Mainnet - Osero x 
   },
   {
     "content": "The deposit rate limit parameters are:
-- \`maxAmount\`: 15,000,000 USDC
-- \`slope\`: 10,000,000 USDC per day",
+- \`maxAmount\`: 50,000,000 USDC
+- \`slope\`: 50,000,000 USDC per day",
     "title": "Deposit Rate Limit",
   },
   {
-    "content": "The default registered in [A.2.2.10.1.1.1.2.3.1.7 - BeamState](2e36bb4f-91db-4dca-bdb1-e4aa385b1129) via [A.2.2.10.1.1.1.2.4.1.3.3.5 - Add Init Rate Limits Function Call](bbdf1e6a-821b-43ec-aabf-e43a3bd6e113) for this Instance's inflow \`RateLimitID\` ([A.6.1.1.7.2.6.1.3.1.1.1.2.3.1 - Inflow RateLimitID](25e71c76-9cc0-4e2f-bf7a-8b1a27586b9b)) is:
+    "content": "The default registered in [A.2.2.10.1.1.1.2.3.1.6 - BeamState](2e36bb4f-91db-4dca-bdb1-e4aa385b1129) via [A.2.2.10.1.1.1.2.4.1.3.3.5 - Add Init Rate Limits Function Call](bbdf1e6a-821b-43ec-aabf-e43a3bd6e113) for this Instance's inflow \`RateLimitID\` ([A.6.1.1.7.2.6.1.3.1.1.1.2.3.1 - Inflow RateLimitID](25e71c76-9cc0-4e2f-bf7a-8b1a27586b9b)) is:
 - \`maxAmount\`: 5,000,000 USDC
 - \`slope\`: 650,000 USDC per day
 
@@ -6560,6 +6578,111 @@ exports[`allocation-system sub-doc content > Osero > Ethereum Mainnet - SparkLen
   {
     "content": "The documents herein contain operational procedures or monitoring requirements unique to this Instance that deviate from or otherwise supplement the general Osero Liquidity Layer processes.",
     "title": "Instance-specific Operational Processes",
+  },
+]
+`;
+
+exports[`allocation-system sub-doc content > Osero > Ethereum Mainnet - Test NFAT Facility 1`] = `
+[
+  {
+    "content": "**\`Pending\`**",
+    "title": "RRC Framework Full Implementation Coverage",
+  },
+  {
+    "content": "The documents herein define the parameters of the Test NFAT Facility Instance of the Allocation System Primitive on Ethereum Mainnet.",
+    "title": "Parameters",
+  },
+  {
+    "content": "The documents herein define the Instance identifiers.",
+    "title": "Instance Identifiers",
+  },
+  {
+    "content": "Ethereum Mainnet",
+    "title": "Network",
+  },
+  {
+    "content": "Test NFAT Facility",
+    "title": "Target Protocol",
+  },
+  {
+    "content": "USDS",
+    "title": "Asset Supplied By Osero Liquidity Layer",
+  },
+  {
+    "content": "The NFAT identifiers of the Test NFAT Facility are specified in [A.1.14.6.3.1.3.1.1.1.2.1.2 - NFAT Identifiers](e4570241-cb6b-4224-acc0-5f65ab9c7386).",
+    "title": "NFAT Identifiers",
+  },
+  {
+    "content": "The documents herein define the Instance contract addresses.",
+    "title": "Contract Addresses",
+  },
+  {
+    "content": "The address of the Test NFAT Facility is specified in [A.1.14.6.3.1.3.1.1.1.2.1.1 - NFAT Facility Contract Address](f34d512c-f157-487f-b6cc-7ee8a5f49764).",
+    "title": "NFAT Facility Address",
+  },
+  {
+    "content": "\`0xdC035D45d973E3EC169d2276DDab16f1e407384F\`",
+    "title": "Underlying Asset Address",
+  },
+  {
+    "content": "The specific Rate Limit ID(s) for this Instance are defined in the subdocuments herein.",
+    "title": "Rate Limit IDs",
+  },
+  {
+    "content": "The subscribe Rate Limit ID is: \`0x4f1900e2604bdf2ad80de16402ae5bb5ae9196fe59d4377629cc546cd78d6d98\`.",
+    "title": "Subscribe Rate Limit ID",
+  },
+  {
+    "content": "The withdraw Rate Limit ID is: \`0x3ec73e26bc851816b1ea627ba14b63765e90b7885b507ed7757fa47bb23774eb\`.",
+    "title": "Withdraw Rate Limit ID",
+  },
+  {
+    "content": "The collect Rate Limit ID is: \`0x33d797249dda8ed1272964e57b594ab4b6b20d8a66cdfaa248fdbb9d32458c75\`.",
+    "title": "Collect Rate Limit ID",
+  },
+  {
+    "content": "The \`maxAmount\` and \`slope\` for this Instance are defined in the subdocuments herein.",
+    "title": "Rate Limits",
+  },
+  {
+    "content": "The subscribe rate limit has the following values for each phase of the NFAT Pilot, as specified in [A.2.2.10.1.1.1.4.8.7 - NFAT Pilot Phases](33f421ba-fe7e-4547-9491-f4ec2fb0f879):
+
+| Phase | \`maxAmount\` | \`slope\` |
+| --- | --- | --- |
+| 1 | 5,000,000 USDS | 1,000,000 USDS per day |
+| 2 | 5,000,000 USDS | 2,500,000 USDS per day |
+| 3 | 15,000,000 USDS | 10,000,000 USDS per day |
+| 4 | 25,000,000 USDS | 25,000,000 USDS per day |
+| 5 | 50,000,000 USDS | 50,000,000 USDS per day |",
+    "title": "Subscribe Rate Limit",
+  },
+  {
+    "content": "The withdraw rate limit parameter is:
+
+- \`maxAmount\`: Unlimited",
+    "title": "Withdraw Rate Limit",
+  },
+  {
+    "content": "The collect rate limit parameter is:
+
+- \`maxAmount\`: Unlimited",
+    "title": "Collect Rate Limit",
+  },
+  {
+    "content": "The documents herein contain specific off-chain parameters for this Instance.",
+    "title": "Off-chain Operational Parameters",
+  },
+  {
+    "content": "The Capital Ratio Requirement for this Instance, as specified in [A.3.2.1.1.1 - Capital Ratio Requirement](3828778e-0197-4ce9-a836-6770d04f2ea9), is 0%.",
+    "title": "Capital Ratio Requirement",
+  },
+  {
+    "content": "The documents herein contain operational procedures or monitoring requirements unique to this Instance that deviate from or otherwise supplement the general Osero Liquidity Layer processes.",
+    "title": "Instance-specific Operational Processes",
+  },
+  {
+    "content": "The documents herein contain operational parameters or configuration details unique to this Instance that deviate from or otherwise supplement the general Osero Liquidity Layer parameters.",
+    "title": "Instance-specific Operational Parameters",
   },
 ]
 `;
@@ -10766,7 +10889,7 @@ exports[`allocation-system sub-doc content > Spark > Ethereum Mainnet - Spark Sa
     "title": "Parameters",
   },
   {
-    "content": "The documents herein define the Instance identifiers",
+    "content": "The documents herein define the Instance identifiers.",
     "title": "Instance Identifiers",
   },
   {
@@ -10850,19 +10973,148 @@ exports[`allocation-system sub-doc content > Spark > Ethereum Mainnet - Spark Sa
     "title": "Spark Savings USDT Risk Parameters",
   },
   {
-    "content": "The current \`maxAmount\` for this conduit's take and transfer operations are defined in the subdocuments herein.",
+    "content": "The current \`maxAmount\` and \`slope\` for this conduit's take and transfer operations are defined in the subdocuments herein.",
     "title": "Rate Limits",
   },
   {
-    "content": "The take rate limit parameter is:
+    "content": "The take rate limit parameters are:
 
-- \`maxAmount\`: Unlimited",
+- \`maxAmount\`: 0
+- \`slope\`: 0",
     "title": "Take Rate Limit",
   },
   {
-    "content": "The transfer rate limit parameter is:
+    "content": "The transfer rate limit parameters are:
 
-- \`maxAmount\`: Unlimited",
+- \`maxAmount\`: 0
+- \`slope\`: 0",
+    "title": "Transfer Rate Limit",
+  },
+]
+`;
+
+exports[`allocation-system sub-doc content > Spark > Ethereum Mainnet - Spark Savings v2 USDT Diamond PAU 1`] = `
+[
+  {
+    "content": "**\`Covered\`**",
+    "title": "RRC Framework Full Implementation",
+  },
+  {
+    "content": "The documents herein define the parameters of the Spark Savings v2 USDT Diamond PAU Instance of the Allocation System Primitive.",
+    "title": "Parameters",
+  },
+  {
+    "content": "The documents herein define the Instance identifiers.",
+    "title": "Instance Identifiers",
+  },
+  {
+    "content": "Ethereum Mainnet",
+    "title": "Network",
+  },
+  {
+    "content": "Spark Savings Protocol",
+    "title": "Target Protocol",
+  },
+  {
+    "content": "USDT",
+    "title": "Asset Supplied By Users",
+  },
+  {
+    "content": "spUSDT",
+    "title": "Token",
+  },
+  {
+    "content": "The documents herein define the Instance contract addresses.",
+    "title": "Contract Addresses",
+  },
+  {
+    "content": "\`0xe2e7a17dFf93280dec073C995595155283e3C372\`",
+    "title": "Token Address",
+  },
+  {
+    "content": "\`0xdAC17F958D2ee523a2206206994597C13D831ec7\`",
+    "title": "Underlying Asset Address",
+  },
+  {
+    "content": "The specific \`RateLimitID\`(s) for this conduit's inflow and outflow will be specified in a future iteration of the Spark Artifact.",
+    "title": "Rate Limit IDs",
+  },
+  {
+    "content": "The specific \`maxAmount\` and \`slope\` for this conduit's inflow/outflow are not defined for this Instance.",
+    "title": "Rate Limits",
+  },
+  {
+    "content": "The documents herein contain specific off-chain parameters for this Instance.",
+    "title": "Off-chain Operational Parameters",
+  },
+  {
+    "content": "The documents herein contain operational procedures or monitoring requirements unique to this Instance that deviate from or otherwise supplement the general Spark Liquidity Layer processes.",
+    "title": "Instance-specific Operational Processes",
+  },
+  {
+    "content": "The documents herein contain operational parameters or configuration details unique to this Instance that deviate from or otherwise supplement the general Spark Liquidity Layer parameters.",
+    "title": "Instance-specific Operational Parameters",
+  },
+  {
+    "content": "The documents herein define the Instance contract addresses.",
+    "title": "Contract Addresses",
+  },
+  {
+    "content": "\`0x1b992302652A92611DCd5090D1Cb388C6377f455\`",
+    "title": "Spark Vault v2 Implementation",
+  },
+  {
+    "content": "\`0x3300f198988e4C9C63F75dF86De36421f06af8c4\`",
+    "title": "Default admin",
+  },
+  {
+    "content": "\`0x7c9879C80B3B00D3965545e751784f44a3376098\`",
+    "title": "Setter",
+  },
+  {
+    "content": "\`0x982e90885e21cfDE0557A96bac1a65Fdafc0D29b\`",
+    "title": "Taker",
+  },
+  {
+    "content": "The subdocuments herein define the current configuration of the risk parameters.",
+    "title": "Risk Parameters Current Configuration",
+  },
+  {
+    "content": "The Risk parameters are:
+
+- Supply cap: 4,000,000,000 USDT
+- Max yield: 10%
+- Current yield (at launch): 0%",
+    "title": "Spark Savings USDT Risk Parameters",
+  },
+  {
+    "content": "The specific \`RateLimitID\`(s) for this conduit's take and transfer operations are defined in the subdocuments herein.",
+    "title": "Rate Limit IDs",
+  },
+  {
+    "content": "The Take RateLimitID is: \`0x0335f36b87501deed8fd62dd9d0a4b0c149568bf2a7e3dc2ffb0920a60d5ba46\`",
+    "title": "Take Rate Limit ID",
+  },
+  {
+    "content": "The Transfer RateLimitID is: \`0xe3efee79202351ad64bb73712079e37726f09bcdd2010725adb10a4b569deb93\`",
+    "title": "Transfer Rate Limit ID",
+  },
+  {
+    "content": "The current \`maxAmount\` and \`slope\` for this conduit's take and transfer operations are defined in the subdocuments herein.",
+    "title": "Rate Limits",
+  },
+  {
+    "content": "The take rate limit parameters are:
+
+- \`maxAmount\`: 10,000,000 USDT
+- \`slope\`: 200,000,000 USDT per day",
+    "title": "Take Rate Limit",
+  },
+  {
+    "content": "The transfer rate limit parameters are:
+
+- \`maxAmount\`: 10,000,000 USDT
+- \`slope\`: 200,000,000 USDT per day",
     "title": "Transfer Rate Limit",
   },
 ]
@@ -13295,6 +13547,14 @@ exports[`allocation-system sub-doc content > Spark > X Layer - Spark Savings v2 
 - \`maxAmount\`: Unlimited",
     "title": "Transfer Rate Limit",
   },
+  {
+    "content": "The LayerZero recipient for transfers from X Layer to Ethereum is:
+
+- Destination endpoint ID: \`30101\`.
+- Recipient: Ethereum Spark Savings USDT Diamond PAU ALM Proxy.
+- Recipient address: \`0x982e90885e21cfDE0557A96bac1a65Fdafc0D29b\`.",
+    "title": "LayerZero Recipient",
+  },
 ]
 `;
 
@@ -13386,18 +13646,18 @@ exports[`allocation-system sub-doc content > Spark > X Layer - Spark-curated Mor
     "title": "Contract Addresses",
   },
   {
-    "content": "The Curator role is intended to be held jointly by Soter Labs and Spark through the Curator Multisig at \`0x0f963A8A8c01042B69054e787E5763ABbB0646A3\`.
+    "content": "The Curator role is held jointly by Soter Labs and Spark through the Curator Multisig at \`0x0f963A8A8c01042B69054e787E5763ABbB0646A3\`.
 
 The co-curator Safe addresses are:
 
 | Entity | Address |
 | --- | --- |
-| Soter Labs | \`0x50c770E6dC6CfdEE33509273FA9a215bfAffF9B2\` |
-| Spark | \`0xAB5710211458FC8d7E0Be628202F47DdbD3F38Eb\` |",
+| Soter Labs | \`0xAB5710211458FC8d7E0Be628202F47DdbD3F38Eb\` |
+| Spark | \`0x50c770E6dC6CfdEE33509273FA9a215bfAffF9B2\` |",
     "title": "Curator Role Address",
   },
   {
-    "content": "The Sentinel roles are intended to be held at the following addresses:
+    "content": "The Sentinel roles are held at the following addresses:
 
 | Entity | Address |
 | --- | --- |
@@ -13406,7 +13666,7 @@ The co-curator Safe addresses are:
     "title": "Sentinel Role Addresses",
   },
   {
-    "content": "The Owner role is intended to be held by the X Layer Spark Executor at \`0xCF5af6F53ceC74B791cb4182aC778ca9CD323510\`.",
+    "content": "The Owner role is held by the X Layer Spark Executor at \`0xCF5af6F53ceC74B791cb4182aC778ca9CD323510\`.",
     "title": "Owner Role Address",
   },
   {
@@ -13460,31 +13720,31 @@ The following vault functions are intended to be permanently abdicated:
 
 exports[`edge type counts > all edge types and their counts 1`] = `
 {
-  "active_data_for": 93,
+  "active_data_for": 95,
   "aligned_delegate_for": 9,
   "annotates": 101,
-  "can_modify_signers_of": 36,
-  "cites": 2711,
+  "can_modify_signers_of": 37,
+  "cites": 2825,
   "comprises": 22,
   "core_facilitator_for": 1,
   "core_govops_for": 1,
-  "defines_entity": 449,
-  "duty_for": 830,
+  "defines_entity": 454,
+  "duty_for": 835,
   "ecosystem_accord": 20,
   "emergency_response": 16,
   "erg_member_for": 9,
   "governance_channel": 10,
-  "has_address": 368,
+  "has_address": 373,
   "has_status": 136,
   "holds_role_for": 5,
   "implements": 188,
-  "instance_of": 230,
+  "instance_of": 233,
   "integration_partner_of": 10,
   "invocation_of": 5,
-  "invoked_by": 235,
+  "invoked_by": 238,
   "listed_in": 50,
-  "located_at": 229,
-  "mentions": 926,
+  "located_at": 232,
+  "mentions": 977,
   "operational_executor_agent_for": 9,
   "operational_facilitator_for": 2,
   "operational_govops_for": 2,
@@ -13492,10 +13752,10 @@ exports[`edge type counts > all edge types and their counts 1`] = `
   "prime_foundation_of": 5,
   "process_step_responsible_party_for": 32,
   "provides_services_to": 6,
-  "proxies_to": 102,
+  "proxies_to": 105,
   "ranked_delegate_for": 3,
-  "responsible_party_for": 78,
-  "signer_of": 72,
+  "responsible_party_for": 80,
+  "signer_of": 75,
   "validator_of": 27,
 }
 `;
@@ -13685,6 +13945,7 @@ exports[`governance edges > active_data_for — AD doc → ADC doc 1`] = `
   "A.2.11.1.3.4.2.0.6.1 → A.2.11.1.3.4.2",
   "A.2.2.10.1.1.1.1.2.0.6.1 → A.2.2.10.1.1.1.1.2",
   "A.2.2.10.1.1.1.1.3.0.6.1 → A.2.2.10.1.1.1.1.3",
+  "A.2.2.10.1.1.1.4.7.0.6.1 → A.2.2.10.1.1.1.4.7",
   "A.2.2.10.1.1.1.6.2.1.3.1.0.6.1 → A.2.2.10.1.1.1.6.2.1.3.1",
   "A.2.2.4.1.2.1.1.0.6.1 → A.2.2.4.1.2.1.1",
   "A.2.2.4.3.6.1.0.6.1 → A.2.2.4.3.6.1",
@@ -13768,6 +14029,7 @@ exports[`governance edges > active_data_for — AD doc → ADC doc 1`] = `
   "A.6.1.1.7.2.5.1.2.6.3.1.0.6.1 → A.6.1.1.7.2.5.1.2.6.3.1",
   "A.6.1.1.7.2.5.1.2.7.3.1.0.6.1 → A.6.1.1.7.2.5.1.2.7.3.1",
   "A.6.1.1.7.2.5.1.2.8.3.1.0.6.1 → A.6.1.1.7.2.5.1.2.8.3.1",
+  "A.6.1.1.7.2.5.1.2.9.3.1.0.6.1 → A.6.1.1.7.2.5.1.2.9.3.1",
 ]
 `;
 
@@ -13859,6 +14121,11 @@ exports[`governance edges > responsible_party_for — entity → ADC doc 1`] = `
   },
   {
     "adc": "A.2.2.10.1.1.1.1.3",
+    "declared": "Core Facilitator",
+    "party": "JanSky",
+  },
+  {
+    "adc": "A.2.2.10.1.1.1.4.7",
     "declared": "Core Facilitator",
     "party": "JanSky",
   },
@@ -14199,6 +14466,11 @@ exports[`governance edges > responsible_party_for — entity → ADC doc 1`] = `
   },
   {
     "adc": "A.6.1.1.7.2.5.1.2.8.3.1",
+    "declared": "Operational GovOps",
+    "party": "Soter Labs",
+  },
+  {
+    "adc": "A.6.1.1.7.2.5.1.2.9.3.1",
     "declared": "Operational GovOps",
     "party": "Soter Labs",
   },
@@ -15191,6 +15463,22 @@ exports[`instances > allocation-system instances 1`] = `
       "Underlying Asset Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
     },
     "slug": "spark-allocation-system-ethereum-mainnet-spark-savings-v2-usdt",
+    "status": "Completed",
+  },
+  {
+    "agent": "A.6.1.1.1",
+    "name": "Ethereum Mainnet - Spark Savings v2 USDT Diamond PAU",
+    "params": {
+      "Asset Supplied By Users": "USDT",
+      "Network": "Ethereum Mainnet",
+      "Rate Limit IDs": "The specific \`RateLimitID\`(s) for this conduit's inflow and outflow will be specified in a future iteration of the Spark Artifact.",
+      "Rate Limits": "The specific \`maxAmount\` and \`slope\` for this conduit's inflow/outflow are not defined for this Instance.",
+      "Target Protocol": "Spark Savings Protocol",
+      "Token": "spUSDT",
+      "Token Address": "0xe2e7a17dFf93280dec073C995595155283e3C372",
+      "Underlying Asset Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    },
+    "slug": "spark-allocation-system-ethereum-mainnet-spark-savings-v2-usdt-diamond-pau",
     "status": "Active",
   },
   {
@@ -15828,6 +16116,7 @@ exports[`instances > allocation-system instances 1`] = `
 | Steakhouse Financial | \`0xBBF1ad10455EeD600Cd78A1702F7AcA41C9aBceb\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
       "Asset Supplied By Grove Liquidity Layer": "USDC",
@@ -16415,6 +16704,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
       "Asset Supplied By Grove Liquidity Layer": "AUSD",
@@ -16455,6 +16745,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xBBF1ad10455EeD600Cd78A1702F7AcA41C9aBceb\` |
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
       "Asset Supplied By Grove Liquidity Layer": "PYUSD",
@@ -16496,6 +16787,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
       "Asset Supplied By Grove Liquidity Layer": "RLUSD",
@@ -16537,6 +16829,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
       "Asset Supplied By Grove Liquidity Layer": "USDC",
@@ -16581,6 +16874,7 @@ The co-curator addresses are:
 | Steakhouse Financial | \`0xaaD84c80b013c34D70E54fB343D0C2f309F635E7\` |
 | Steakhouse Financial | \`0xfC580f2a77e85f1F47b60F096D36fDc97cE2d827\` |
 | Steakhouse Financial | \`0xfeed46c11F57B7126a773EeC6ae9cA7aE1C03C9a\` |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
 
 The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
       "Asset Supplied By Grove Liquidity Layer": "USDG",
@@ -16947,6 +17241,15 @@ The co-curator addresses are:
     "agent": "A.6.1.1.2",
     "name": "Robinhood Chain - Grove x Steakhouse USDG Morpho Vault V2",
     "params": {
+      "Allocator Role Addresses": "The Allocator role is held by the following entities at the corresponding addresses:
+
+| Entity | Address |
+| --- | --- |
+| Steakhouse Financial (SteakhouseOperator) | \`0xBEEF5F9f39e684CF39e0770fa57a43Fa46a3BEef\` |
+| Morpho Blue Public Allocator | \`0xCe5c1aFa115fF8b1D6913509bfc79D9AE08CC857\` |
+| Steakhouse Financial (USDG Faucet) | \`0x69DD1f11da2d97b88B1f61F21724aFB681B52717\` |
+
+The Morpho Blue Public Allocator is a permissionless contract. Public allocation calls are subject to the vault caps and the settings configured by the vault's Allocators.",
       "Asset Supplied By Grove Liquidity Layer": "USDG",
       "CRR": "The CRR for this Instance, as specified in [A.3.2.1.1.1 - Capital Ratio Requirement](3828778e-0197-4ce9-a836-6770d04f2ea9), applies to the approved spUSDG/USDG market and is initialized at 3%, decreasing linearly to 0.65% over the four (4) weeks following its onboarding. Any allocation to the syrupUSDG/USDG market, which is not approved, is subject to a 100% CRR.",
       "Deposit Rate Limit / maxAmount": "50,000,000 USDG",
@@ -17217,8 +17520,8 @@ The co-curator addresses are:
     "params": {
       "Asset Supplied By Osero Liquidity Layer": "USDC",
       "Capital Ratio Requirement": "The Capital Ratio Requirement for this Instance, as specified in [A.3.2.1.1.1 - Capital Ratio Requirement](3828778e-0197-4ce9-a836-6770d04f2ea9), is 5%.",
-      "Deposit Rate Limit / maxAmount": "15,000,000 USDC",
-      "Deposit Rate Limit / slope": "10,000,000 USDC per day",
+      "Deposit Rate Limit / maxAmount": "50,000,000 USDC",
+      "Deposit Rate Limit / slope": "50,000,000 USDC per day",
       "Inflow RateLimitID": "0x4530b5750e1bd4febbd736da62648a217afd5809f6d9f626fdae219ba97adf32",
       "Maximum Exposure": "The aggregate exposure of this Instance and the Instance specified in [A.6.1.1.7.2.6.1.3.1.1.1 - Ethereum Mainnet - Osero x Gauntlet USDC Prime Morpho Vault V2 Instance Configuration Document](6f00b7cd-21b5-4a8b-ae29-a97669d953ed) must not exceed 80,000,000 USDC.",
       "Network": "Base",
@@ -17238,8 +17541,8 @@ The co-curator addresses are:
     "params": {
       "Asset Supplied By Osero Liquidity Layer": "USDC",
       "Capital Ratio Requirement": "The Capital Ratio Requirement for this Instance, as specified in [A.3.2.1.1.1 - Capital Ratio Requirement](3828778e-0197-4ce9-a836-6770d04f2ea9), is 5%.",
-      "Deposit Rate Limit / maxAmount": "15,000,000 USDC",
-      "Deposit Rate Limit / slope": "10,000,000 USDC per day",
+      "Deposit Rate Limit / maxAmount": "50,000,000 USDC",
+      "Deposit Rate Limit / slope": "50,000,000 USDC per day",
       "Deposit Rate Limit Default / maxAmount": "5,000,000 USDC",
       "Deposit Rate Limit Default / slope": "650,000 USDC per day",
       "Inflow RateLimitID": "0xfc26a91cf7b79b531d45dcc431ee59e4f2504f51cb33e2b67960808a104c92ef",
@@ -17276,6 +17579,35 @@ The co-curator addresses are:
     },
     "slug": "osero-allocation-system-ethereum-mainnet-sparklend-usds",
     "status": "Completed",
+  },
+  {
+    "agent": "A.6.1.1.7",
+    "name": "Ethereum Mainnet - Test NFAT Facility",
+    "params": {
+      "Asset Supplied By Osero Liquidity Layer": "USDS",
+      "Capital Ratio Requirement": "The Capital Ratio Requirement for this Instance, as specified in [A.3.2.1.1.1 - Capital Ratio Requirement](3828778e-0197-4ce9-a836-6770d04f2ea9), is 0%.",
+      "Collect Rate Limit / maxAmount": "Unlimited",
+      "Collect Rate Limit ID": "0x33d797249dda8ed1272964e57b594ab4b6b20d8a66cdfaa248fdbb9d32458c75",
+      "NFAT Facility Address": "The address of the Test NFAT Facility is specified in [A.1.14.6.3.1.3.1.1.1.2.1.1 - NFAT Facility Contract Address](f34d512c-f157-487f-b6cc-7ee8a5f49764).",
+      "NFAT Identifiers": "The NFAT identifiers of the Test NFAT Facility are specified in [A.1.14.6.3.1.3.1.1.1.2.1.2 - NFAT Identifiers](e4570241-cb6b-4224-acc0-5f65ab9c7386).",
+      "Network": "Ethereum Mainnet",
+      "Subscribe Rate Limit": "The subscribe rate limit has the following values for each phase of the NFAT Pilot, as specified in [A.2.2.10.1.1.1.4.8.7 - NFAT Pilot Phases](33f421ba-fe7e-4547-9491-f4ec2fb0f879):
+
+| Phase | \`maxAmount\` | \`slope\` |
+| --- | --- | --- |
+| 1 | 5,000,000 USDS | 1,000,000 USDS per day |
+| 2 | 5,000,000 USDS | 2,500,000 USDS per day |
+| 3 | 15,000,000 USDS | 10,000,000 USDS per day |
+| 4 | 25,000,000 USDS | 25,000,000 USDS per day |
+| 5 | 50,000,000 USDS | 50,000,000 USDS per day |",
+      "Subscribe Rate Limit ID": "0x4f1900e2604bdf2ad80de16402ae5bb5ae9196fe59d4377629cc546cd78d6d98",
+      "Target Protocol": "Test NFAT Facility",
+      "Underlying Asset Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+      "Withdraw Rate Limit / maxAmount": "Unlimited",
+      "Withdraw Rate Limit ID": "0x3ec73e26bc851816b1ea627ba14b63765e90b7885b507ed7757fa47bb23774eb",
+    },
+    "slug": "osero-allocation-system-ethereum-mainnet-test-nfat-facility",
+    "status": "Active",
   },
 ]
 `;
@@ -17529,6 +17861,16 @@ exports[`instances > distribution-reward instances 1`] = `
     "slug": "osero-distribution-reward-utila",
     "status": "Active",
   },
+  {
+    "agent": "A.6.1.1.7",
+    "name": "Yearn Finance",
+    "params": {
+      "Reward Code": "3017",
+      "Tracking Methodology": "This Instance uses the Tracking Methodology specified in [A.2.2.9.1.2.1.1.2.1 - Ethereum Mainnet General Tracking Methodology](87fd6861-ba8a-4bde-945e-ee9ad37ae3e2).",
+    },
+    "slug": "osero-distribution-reward-yearn-finance",
+    "status": "Active",
+  },
 ]
 `;
 
@@ -17613,9 +17955,9 @@ exports[`instances > instance counts by type 1`] = `
 {
   "agent-creation": 8,
   "agent-token": 8,
-  "allocation-system": 138,
+  "allocation-system": 140,
   "core-governance-reward": 1,
-  "distribution-reward": 23,
+  "distribution-reward": 24,
   "ecosystem-upkeep-fee": 8,
   "executor-accord": 8,
   "integration-boost": 9,
