@@ -8002,13 +8002,13 @@
   },
   "title-templates": {
     "counts": {
-      "total": 987,
+      "total": 991,
       "Primitive Hub Document": 136,
       "Global Activation Status": 140,
       "Hub Data Repository": 136,
       "Single Instance Configuration Document": 48,
-      "Parameters": 253,
-      "Rate Limits": 163,
+      "Parameters": 254,
+      "Rate Limits": 166,
       "Data Repository": 103,
       "Omni Documents": 8
     },
@@ -8926,20 +8926,20 @@
         "bucket": "Rate Limits"
       },
       {
-        "uuid": "c513d81f-468c-443d-a347-e4ac1f1e13a9",
+        "uuid": "a7f67bbd-0930-4d28-b12e-e1348174025a",
         "doc_no": "A.6.1.1.1.2.6.1.3.3.1.1.2",
         "title": "Parameters",
         "bucket": "Parameters"
       },
       {
-        "uuid": "bfb9bfe1-e90b-4955-aa23-9892c2c85f2d",
+        "uuid": "a0c7c243-f759-4737-9cf5-8d4fa40b22f7",
         "doc_no": "A.6.1.1.1.2.6.1.3.3.1.1.2.4",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
       {
-        "uuid": "e9b62d67-cb5d-4bcb-9f5d-90688a85f123",
-        "doc_no": "A.6.1.1.1.2.6.1.3.3.1.1.4.2.2",
+        "uuid": "06818fd8-4be6-4e6e-b3b0-9771d7018614",
+        "doc_no": "A.6.1.1.1.2.6.1.3.3.1.1.4.2.3",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
@@ -9400,6 +9400,24 @@
         "bucket": "Rate Limits"
       },
       {
+        "uuid": "c513d81f-468c-443d-a347-e4ac1f1e13a9",
+        "doc_no": "A.6.1.1.1.2.6.1.4.3.3.1.2",
+        "title": "Parameters",
+        "bucket": "Parameters"
+      },
+      {
+        "uuid": "bfb9bfe1-e90b-4955-aa23-9892c2c85f2d",
+        "doc_no": "A.6.1.1.1.2.6.1.4.3.3.1.2.4",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
+      },
+      {
+        "uuid": "e9b62d67-cb5d-4bcb-9f5d-90688a85f123",
+        "doc_no": "A.6.1.1.1.2.6.1.4.3.3.1.4.2.2",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
+      },
+      {
         "uuid": "bf0b9e14-f89d-45d8-83f7-09fd7fa596d4",
         "doc_no": "A.6.1.1.1.2.6.1.4.4.1.1.2",
         "title": "Parameters",
@@ -9546,6 +9564,12 @@
       {
         "uuid": "18b0df9a-acb0-401e-8bbf-c5d25d21216a",
         "doc_no": "A.6.1.1.1.3.5.4.1.1.5",
+        "title": "Rate Limits",
+        "bucket": "Rate Limits"
+      },
+      {
+        "uuid": "e31cce3b-04b5-4b4f-886b-09c34358ff91",
+        "doc_no": "A.6.1.1.1.3.5.4.2.1.5",
         "title": "Rate Limits",
         "bucket": "Rate Limits"
       },
@@ -14446,8 +14470,8 @@
   },
   "cross-scope-duplication": {
     "counts": {
-      "total": 178,
-      "groups": 72
+      "total": 174,
+      "groups": 70
     },
     "members": [
       {
@@ -14637,12 +14661,6 @@
         "bucket": "outflow rate limits"
       },
       {
-        "uuid": "82a04ab9-158e-4c6e-9f2a-04ef68c3a2f0",
-        "doc_no": "A.2.2.10.1.1.1.2.2.6",
-        "title": "Grantor",
-        "bucket": "grantor"
-      },
-      {
         "uuid": "c9ecd9c2-dd1b-426b-8e52-66a2b1892289",
         "doc_no": "A.2.2.10.1.1.1.2.3.1.2.1",
         "title": "Aave v3 Facet",
@@ -14677,12 +14695,6 @@
         "doc_no": "A.2.2.10.1.1.1.2.3.1.2.26",
         "title": "NFAT Prime Facet",
         "bucket": "nfat prime facet"
-      },
-      {
-        "uuid": "768c5e08-f749-41ac-b96a-a67bb87cd90d",
-        "doc_no": "A.2.2.10.1.1.1.2.3.1.2.28",
-        "title": "Swap Asset Facet",
-        "bucket": "swap asset facet"
       },
       {
         "uuid": "e679e470-17f3-40ef-b455-dd424a498992",
@@ -14731,12 +14743,6 @@
         "doc_no": "A.2.2.10.1.1.1.2.5.2.9.1.3",
         "title": "Transfer Asset To Destination",
         "bucket": "transfer asset to destination"
-      },
-      {
-        "uuid": "054ed277-e5ed-4aaf-b927-4769f1a270fd",
-        "doc_no": "A.2.2.10.1.1.1.2.5.2.11",
-        "title": "Swap Asset Facet",
-        "bucket": "swap asset facet"
       },
       {
         "uuid": "1cb17b82-a294-4942-8183-4d90b224a79d",
@@ -15279,18 +15285,6 @@
         "bucket": "short-term transitionary measures"
       },
       {
-        "uuid": "64f794c9-db5f-4875-a800-3da12f4c5bec",
-        "doc_no": "A.6.1.1.1.2.6.1.2.2.1.1.5.1.5",
-        "title": "Grantor",
-        "bucket": "grantor"
-      },
-      {
-        "uuid": "d5a4a7c7-24ad-490e-b057-710d3259a04a",
-        "doc_no": "A.6.1.1.1.2.6.1.2.2.1.1.5.2.5",
-        "title": "Grantor",
-        "bucket": "grantor"
-      },
-      {
         "uuid": "89577062-a38b-4cf7-a1ae-33c0bcff1cca",
         "doc_no": "A.6.1.1.1.2.6.1.2.2.1.3.1",
         "title": "RateLimits Query",
@@ -15363,10 +15357,16 @@
         "bucket": "layerzero facet"
       },
       {
-        "uuid": "02fda9c8-195d-4860-a646-eaf7b3c119cc",
-        "doc_no": "A.6.1.1.1.3.5.4.1.1.3.5",
-        "title": "Swap Asset Facet",
-        "bucket": "swap asset facet"
+        "uuid": "296a3dcf-3d8a-4b04-b52d-f14d3c1e2e96",
+        "doc_no": "A.6.1.1.1.3.5.4.2.1.3.1",
+        "title": "Spark Vault Facet",
+        "bucket": "spark vault facet"
+      },
+      {
+        "uuid": "5f6240f1-805a-4eab-a780-20e74cda5b36",
+        "doc_no": "A.6.1.1.1.3.5.4.2.1.3.3",
+        "title": "LayerZero Facet",
+        "bucket": "layerzero facet"
       },
       {
         "uuid": "a65302b4-5222-48a9-b37f-282498acb4d6",
