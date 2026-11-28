@@ -321,6 +321,11 @@
       "title": "AdministeredAgent Contract"
     },
     {
+      "uuid": "1e0db21e-0063-4f17-adae-d502efe16ecb",
+      "doc_no": "A.6.1.1.1.2.6.1.2.1.1.1.3.3.5",
+      "title": "AdministeredAgent Contract"
+    },
+    {
       "uuid": "1563f1ee-0097-4bb3-a03a-01162d00788b",
       "doc_no": "A.6.1.1.1.2.6.1.2.1.2.2.2.3",
       "title": "Signers"
@@ -343,6 +348,16 @@
     {
       "uuid": "d5a4a7c7-24ad-490e-b057-710d3259a04a",
       "doc_no": "A.6.1.1.1.2.6.1.2.2.1.1.5.2.5",
+      "title": "Grantor"
+    },
+    {
+      "uuid": "897a18b4-c1bd-496d-a935-b2b0ac3b63db",
+      "doc_no": "A.6.1.1.1.2.6.1.2.2.1.1.5.3.4",
+      "title": "Freezer Role"
+    },
+    {
+      "uuid": "d3084b2e-b524-4a43-87b2-3d71c3d64b54",
+      "doc_no": "A.6.1.1.1.2.6.1.2.2.1.1.5.3.5",
       "title": "Grantor"
     },
     {

@@ -1363,6 +1363,18 @@
       "title": "ALLOCATOR-SPARK-A Parameters"
     },
     {
+      "taskKey": "u:3afc0502-e0ba-45a1-ae05-fe539053cf07",
+      "uuid": "3afc0502-e0ba-45a1-ae05-fe539053cf07",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.1.3.1.5",
+      "title": "AdministeredAgent Contract"
+    },
+    {
+      "taskKey": "u:1e0db21e-0063-4f17-adae-d502efe16ecb",
+      "uuid": "1e0db21e-0063-4f17-adae-d502efe16ecb",
+      "docNo": "A.6.1.1.1.2.6.1.2.1.1.1.3.3.5",
+      "title": "AdministeredAgent Contract"
+    },
+    {
       "taskKey": "u:c02294b9-1938-40b5-af8c-57b82c7b1f51",
       "uuid": "c02294b9-1938-40b5-af8c-57b82c7b1f51",
       "docNo": "A.6.1.1.1.2.6.1.2.1.1.3.4.1",
@@ -1465,6 +1477,30 @@
       "title": "Freezer Multisig"
     },
     {
+      "taskKey": "u:fc3f9328-6fdc-4571-a515-5a193acacd0a",
+      "uuid": "fc3f9328-6fdc-4571-a515-5a193acacd0a",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.1.1.5.1.3",
+      "title": "Allocator Role"
+    },
+    {
+      "taskKey": "u:b1ac0b24-fa8b-461e-8e4d-03eb0d405ccb",
+      "uuid": "b1ac0b24-fa8b-461e-8e4d-03eb0d405ccb",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.1.1.5.1.6",
+      "title": "Spark Planner Administered Agent Roles"
+    },
+    {
+      "taskKey": "u:897a18b4-c1bd-496d-a935-b2b0ac3b63db",
+      "uuid": "897a18b4-c1bd-496d-a935-b2b0ac3b63db",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.1.1.5.3.4",
+      "title": "Freezer Role"
+    },
+    {
+      "taskKey": "u:d3084b2e-b524-4a43-87b2-3d71c3d64b54",
+      "uuid": "d3084b2e-b524-4a43-87b2-3d71c3d64b54",
+      "docNo": "A.6.1.1.1.2.6.1.2.2.1.1.5.3.5",
+      "title": "Grantor"
+    },
+    {
       "taskKey": "u:f6b656c2-dc00-4c07-9452-34b01ef2e1ea",
       "uuid": "f6b656c2-dc00-4c07-9452-34b01ef2e1ea",
       "docNo": "A.6.1.1.1.2.6.1.2.2.1.2.1.2.4.1",
@@ -1492,6 +1528,12 @@
       "taskKey": "u:bbef4fe1-9b3a-4d4c-a956-d17907e70b4b",
       "uuid": "bbef4fe1-9b3a-4d4c-a956-d17907e70b4b",
       "docNo": "A.6.1.1.1.2.6.1.3.1.4.4.4.2.1",
+      "title": "Spark Savings USDT Risk Parameters"
+    },
+    {
+      "taskKey": "u:d571fc6b-c298-4dc1-b43a-5a5b77731f32",
+      "uuid": "d571fc6b-c298-4dc1-b43a-5a5b77731f32",
+      "docNo": "A.6.1.1.1.2.6.1.3.3.1.1.4.2.1",
       "title": "Spark Savings USDT Risk Parameters"
     },
     {
@@ -1547,6 +1589,12 @@
       "uuid": "ba8ab6d9-1377-4679-b991-88161d956018",
       "docNo": "A.6.1.1.1.3.5.4.1.1.2.3",
       "title": "Spark Planner Administered Agent Roles"
+    },
+    {
+      "taskKey": "u:db8e2e60-2be7-4a26-a416-c22e8f909d2b",
+      "uuid": "db8e2e60-2be7-4a26-a416-c22e8f909d2b",
+      "docNo": "A.6.1.1.1.3.5.4.2.1.2.2",
+      "title": "Spark Vaults Administered Agent Roles"
     },
     {
       "taskKey": "u:d79aed30-65e9-4eae-858c-1a1a63caa6d9",
